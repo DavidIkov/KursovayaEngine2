@@ -16,6 +16,7 @@
 #include"Tools/ErrorCodes.h"
 #include"GraphicsPrimitives/FrameBuffer.h"
 #include"GraphicsPrimitives/RenderBuffer.h"
+#include"GraphicsPrimitives/RenderingPreset.h"
 
 #include"Windows/WindowsManager.h"
 
@@ -57,6 +58,11 @@ int main()
         }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+        RenderingPreset Preset3D(
+            true, RenderingPresetEnumArguments::FaceCulling::FaceToCull::Back, RenderingPresetEnumArguments::FaceCulling::FaceDetermination::Clockwise,
+            true, true, RenderingPresetEnumArguments::DepthTest::TypeOfComprasion::LessOrEqual,
+            true, 0,0,0,0, RenderingPresetEnumArguments::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArguments::Blending::FunctionForColor::OneMinusSrcAlpha
+        );
 
         unsigned int floatsAmountPerVertex = 3 + 2 + 3;
         std::vector<float> vertexBufferData({
@@ -261,7 +267,7 @@ int main()
 
             FB.Bind();
 
-            glSC(glEnable(GL_BLEND));
+           /* glSC(glEnable(GL_BLEND));
             glSC(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
             glSC(glEnable(GL_CULL_FACE));
@@ -270,7 +276,8 @@ int main()
             
             glSC(glEnable(GL_DEPTH_TEST));
             glSC(glDepthFunc(GL_LEQUAL));
-            glSC(glDepthMask(GL_TRUE));
+            glSC(glDepthMask(GL_TRUE));*/
+            Preset3D.Bind();
             glSC(glClearColor(0.f, 0.5f, 0.2f, 1.f));
 
             glSC(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
@@ -289,9 +296,10 @@ int main()
             glSC(glBindVertexArray(0));
 
             FB.Unbind();
-            glSC(glDisable(GL_BLEND));
+            /*glSC(glDisable(GL_BLEND));
             glSC(glDisable(GL_CULL_FACE));
-            glSC(glDisable(GL_DEPTH_TEST));
+            glSC(glDisable(GL_DEPTH_TEST));*/
+            Preset3D.Unbind();
             glSC(glClearColor(0.f, 0.f, 0.f, 1.f));
 
             glSC(glClear(GL_COLOR_BUFFER_BIT));

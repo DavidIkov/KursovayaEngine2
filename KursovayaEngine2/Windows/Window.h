@@ -9,8 +9,8 @@ enum class CursorModes {
 };
 
 /*
-dosent support more than one monitors for now(maybe)(i cant fucking test it bruh)
-need to make everything about "window context"
+TODO: dosent support more than one monitors for now(maybe)(i cant fucking test it bruh)
+TODO: need to make everything about "window context"
 */
 class Window {
 

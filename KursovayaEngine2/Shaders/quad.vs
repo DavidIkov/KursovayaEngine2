@@ -6,5 +6,5 @@ out vec2 t_TextureCords;
 
 void main(){
 	t_TextureCords=(i_Pos+1)/2;
-	gl_Position=vec4(i_Pos,0,2);
+	gl_Position=vec4(i_Pos,0,1);
 }
