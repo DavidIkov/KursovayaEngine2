@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClCompile Include="Dependencies\glad\src\glad.c" />
     <ClCompile Include="Dependencies\stb_image\stb_image.cpp" />
+    <ClCompile Include="Tools\FileTypesReaders\Obj.cpp" />
     <ClCompile Include="GraphicsPrimitives\FrameBuffer.cpp" />
     <ClCompile Include="GraphicsPrimitives\RenderBuffer.cpp" />
     <ClCompile Include="GraphicsPrimitives\RenderingPreset.cpp" />
@@ -171,13 +172,16 @@
     <ClCompile Include="Maths\Vector3.cpp" />
     <ClCompile Include="Tools\DebuggingTools.cpp" />
     <ClCompile Include="Tools\Event.cpp" />
+    <ClCompile Include="Tools\RandomNumber.cpp" />
     <ClCompile Include="Tools\ReadFromAFile.cpp" />
+    <ClCompile Include="Tools\Time.cpp" />
     <ClCompile Include="Tools\UniqueKeysSystem.cpp" />
     <ClCompile Include="Windows\Window.cpp" />
     <ClCompile Include="Windows\WindowsManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\stb_image\stb_image.h" />
+    <ClInclude Include="Tools\FileTypesReaders\Obj.h" />
     <ClInclude Include="GraphicsPrimitives\FrameBuffer.h" />
     <ClInclude Include="GraphicsPrimitives\RenderBuffer.h" />
     <ClInclude Include="GraphicsPrimitives\RenderingPreset.h" />
@@ -199,7 +203,9 @@
     <ClInclude Include="Tools\ErrorCodes.h" />
     <ClInclude Include="Tools\Event.h" />
     <ClInclude Include="Tools\GLDebug.h" />
+    <ClInclude Include="Tools\RandomNumber.h" />
     <ClInclude Include="Tools\ReadFromFile.h" />
+    <ClInclude Include="Tools\Time.h" />
     <ClInclude Include="Tools\UniqueKeysSystem.h" />
     <ClInclude Include="Windows\Window.h" />
     <ClInclude Include="Windows\WindowsManager.h" />
@@ -226,6 +232,14 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="README_CODERULES.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Models3D\fullhdpenis.obj">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Models3D\xyu.obj">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

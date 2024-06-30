@@ -1,8 +1,8 @@
 #version 330 core
 
 layout (location=0) in vec3 i_VertexLocalPosition;
-layout (location=1) in vec2 i_TextureCords;
-layout (location=2) in vec3 i_NormalVector;
+layout (location=1) in vec3 i_NormalVector;
+layout (location=2) in vec2 i_TextureCords;
 
 out vec3 t_PosInSpace;
 out vec2 t_TextureCords;

@@ -17,6 +17,8 @@
 #include"GraphicsPrimitives/FrameBuffer.h"
 #include"GraphicsPrimitives/RenderBuffer.h"
 #include"GraphicsPrimitives/RenderingPreset.h"
+#include"Tools/ReadFromFile.h"
+#include"Tools/FileTypesReaders/Obj.h"
 
 #include"Windows/WindowsManager.h"
 
@@ -63,64 +65,78 @@ int main()
             true, true, RenderingPresetEnumArguments::DepthTest::TypeOfComprasion::LessOrEqual,
             true, 0,0,0,0, RenderingPresetEnumArguments::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArguments::Blending::FunctionForColor::OneMinusSrcAlpha
         );
+        RenderingPreset QuadPreset(
+            false, RenderingPresetEnumArguments::FaceCulling::FaceToCull::Back, RenderingPresetEnumArguments::FaceCulling::FaceDetermination::Clockwise,
+            false, true, RenderingPresetEnumArguments::DepthTest::TypeOfComprasion::LessOrEqual,
+            false, 0, 0, 0, 0, RenderingPresetEnumArguments::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArguments::Blending::FunctionForColor::OneMinusSrcAlpha
+        );
 
         unsigned int floatsAmountPerVertex = 3 + 2 + 3;
         std::vector<float> vertexBufferData({
 
             //right
-            0.5f,-0.5f,0.5f,1.f,0.f,1.f,0.f,0.f,
-            0.5f,-0.5f,-0.5f,0.f,0.f,1.f,0.f,0.f,
-            0.5f,0.5f,-0.5f,0.f,1.f,1.f,0.f,0.f,
+            0.5f,-0.5f,0.5f,1.f,0.f,0.f,1.f,0.f,
+            0.5f,-0.5f,-0.5f,1.f,0.f,0.f,0.f,0.f,
+            0.5f,0.5f,-0.5f,1.f,0.f,0.f,0.f,1.f,
 
-            0.5f,0.5f,-0.5f,0.f,1.f,1.f,0.f,0.f,
-            0.5f,0.5f,0.5f,1.f,1.f,1.f,0.f,0.f,
-            0.5f,-0.5f,0.5f,1.f,0.f,1.f,0.f,0.f,
+            0.5f,0.5f,-0.5f,1.f,0.f,0.f,0.f,1.f,
+            0.5f,0.5f,0.5f,1.f,0.f,0.f,1.f,1.f,
+            0.5f,-0.5f,0.5f,1.f,0.f,0.f,1.f,0.f,
 
             //left
-            -0.5f,0.5f,-0.5f,0.f,1.f,-1.f,0.f,0.f,
-            -0.5f,-0.5f,-0.5f,0.f,0.f,-1.f,0.f,0.f,
-            -0.5f,-0.5f,0.5f,1.f,0.f,-1.f,0.f,0.f,
+            -0.5f,0.5f,-0.5f,-1.f,0.f,0.f,0.f,1.f,
+            -0.5f,-0.5f,-0.5f,-1.f,0.f,0.f,0.f,0.f,
+            -0.5f,-0.5f,0.5f,-1.f,0.f,0.f,1.f,0.f,
 
-            -0.5f,-0.5f,0.5f,1.f,0.f,-1.f,0.f,0.f,
-            -0.5f,0.5f,0.5f,1.f,1.f,-1.f,0.f,0.f,
-            -0.5f,0.5f,-0.5f,0.f,1.f,-1.f,0.f,0.f,
+            -0.5f,-0.5f,0.5f,-1.f,0.f,0.f,1.f,0.f,
+            -0.5f,0.5f,0.5f,-1.f,0.f,0.f,1.f,1.f,
+            -0.5f,0.5f,-0.5f,-1.f,0.f,0.f,0.f,1.f,
 
             //front
-            -0.5f,0.5f,0.5f,0.f,1.f,0.f,0.f,1.f,
-            -0.5f,-0.5f,0.5f,0.f,0.f,0.f,0.f,1.f,
-            0.5f,-0.5f,0.5f,1.f,0.f,0.f,0.f,1.f,
+            -0.5f,0.5f,0.5f,0.f,0.f,1.f,0.f,1.f,
+            -0.5f,-0.5f,0.5f,0.f,0.f,1.f,0.f,0.f,
+            0.5f,-0.5f,0.5f,0.f,0.f,1.f,1.f,0.f,
 
-            0.5f,-0.5f,0.5f,1.f,0.f,0.f,0.f,1.f,
-            0.5f,0.5f,0.5f,1.f,1.f,0.f,0.f,1.f,
-            -0.5f,0.5f,0.5f,0.f,1.f,0.f,0.f,1.f,
+            0.5f,-0.5f,0.5f,0.f,0.f,1.f,1.f,0.f,
+            0.5f,0.5f,0.5f,0.f,0.f,1.f,1.f,1.f,
+            -0.5f,0.5f,0.5f,0.f,0.f,1.f,0.f,1.f,
 
             //back
-            0.5f,-0.5f,-0.5f,1.f,0.f,0.f,0.f,-1.f,
-            -0.5f,-0.5f,-0.5f,0.f,0.f,0.f,0.f,-1.f,
-            -0.5f,0.5f,-0.5f,0.f,1.f,0.f,0.f,-1.f,
+            0.5f,-0.5f,-0.5f,0.f,0.f,-1.f,1.f,0.f,
+            -0.5f,-0.5f,-0.5f,0.f,0.f,-1.f,0.f,0.f,
+            -0.5f,0.5f,-0.5f,0.f,0.f,-1.f,0.f,1.f,
 
-            -0.5f,0.5f,-0.5f,0.f,1.f,0.f,0.f,-1.f,
-            0.5f,0.5f,-0.5f,1.f,1.f,0.f,0.f,-1.f,
-            0.5f,-0.5f,-0.5f,1.f,0.f,0.f,0.f,-1.f,
+            -0.5f,0.5f,-0.5f,0.f,0.f,-1.f,0.f,1.f,
+            0.5f,0.5f,-0.5f,0.f,0.f,-1.f,1.f,1.f,
+            0.5f,-0.5f,-0.5f,0.f,0.f,-1.f,1.f,0.f,
 
             //top
-           0.5f,0.5f,-0.5f,1.f,0.f,0.f,1.f,0.f,
-           -0.5f,0.5f,-0.5f,0.f,0.f,0.f,1.f,0.f,
-           -0.5f,0.5f,0.5f,0.f,1.f,0.f,1.f,0.f,
+           0.5f,0.5f,-0.5f,0.f,1.f,0.f,1.f,0.f,
+           -0.5f,0.5f,-0.5f,0.f,1.f,0.f,0.f,0.f,
+           -0.5f,0.5f,0.5f,0.f,1.f,0.f,0.f,1.f,
 
-           -0.5f,0.5f,0.5f,0.f,1.f,0.f,1.f,0.f,
-           0.5f,0.5f,0.5f,1.f,1.f,0.f,1.f,0.f,
-           0.5f,0.5f,-0.5f,1.f,0.f,0.f,1.f,0.f,
+           -0.5f,0.5f,0.5f,0.f,1.f,0.f,0.f,1.f,
+           0.5f,0.5f,0.5f,0.f,1.f,0.f,1.f,1.f,
+           0.5f,0.5f,-0.5f,0.f,1.f,0.f,1.f,0.f,
 
            //bottom
-           -0.5f,-0.5f,0.5f,0.f,1.f,0.f,-1.f,0.f,
-           -0.5f,-0.5f,-0.5f,0.f,0.f,0.f,-1.f,0.f,
-           0.5f,-0.5f,-0.5f,1.f,0.f,0.f,-1.f,0.f,
+           -0.5f,-0.5f,0.5f,0.f,-1.f,0.f,0.f,1.f,
+           -0.5f,-0.5f,-0.5f,0.f,-1.f,0.f,0.f,0.f,
+           0.5f,-0.5f,-0.5f,0.f,-1.f,0.f,1.f,0.f,
 
-           0.5f,-0.5f,-0.5f,1.f,0.f,0.f,-1.f,0.f,
-           0.5f,-0.5f,0.5f,1.f,1.f,0.f,-1.f,0.f,
-           -0.5f,-0.5f,0.5f,0.f,1.f,0.f,-1.f,0.f,
+           0.5f,-0.5f,-0.5f,0.f,-1.f,0.f,1.f,0.f,
+           0.5f,-0.5f,0.5f,0.f,-1.f,0.f,1.f,1.f,
+           -0.5f,-0.5f,0.5f,0.f,-1.f,0.f,0.f,1.f,
             });
+
+        
+        {
+            /*std::string fileText = ReadFromFile("Models3D/fullhdpenis.obj");
+            std::vector<float> data = ReadObjFileType(fileText);
+            vertexBufferData = data;*/
+        }
+
+
 
         unsigned int VA_ID;
         glSC(glGenVertexArrays(1, &VA_ID));
@@ -133,9 +149,9 @@ int main()
 
         glSC(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, floatsAmountPerVertex * sizeof(float), (void*)0));
         glSC(glEnableVertexAttribArray(0));
-        glSC(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, floatsAmountPerVertex * sizeof(float), (void*)(3 * sizeof(float))));
+        glSC(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, floatsAmountPerVertex * sizeof(float), (void*)(3 * sizeof(float))));
         glSC(glEnableVertexAttribArray(1));
-        glSC(glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, floatsAmountPerVertex * sizeof(float), (void*)(5 * sizeof(float))));
+        glSC(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, floatsAmountPerVertex * sizeof(float), (void*)(6 * sizeof(float))));
         glSC(glEnableVertexAttribArray(2));
 
         glSC(glBindVertexArray(0));
@@ -267,16 +283,6 @@ int main()
 
             FB.Bind();
 
-           /* glSC(glEnable(GL_BLEND));
-            glSC(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
-            glSC(glEnable(GL_CULL_FACE));
-            glSC(glCullFace(GL_BACK));
-            glFrontFace(GL_CW);
-            
-            glSC(glEnable(GL_DEPTH_TEST));
-            glSC(glDepthFunc(GL_LEQUAL));
-            glSC(glDepthMask(GL_TRUE));*/
             Preset3D.Bind();
             glSC(glClearColor(0.f, 0.5f, 0.2f, 1.f));
 
@@ -296,10 +302,7 @@ int main()
             glSC(glBindVertexArray(0));
 
             FB.Unbind();
-            /*glSC(glDisable(GL_BLEND));
-            glSC(glDisable(GL_CULL_FACE));
-            glSC(glDisable(GL_DEPTH_TEST));*/
-            Preset3D.Unbind();
+            QuadPreset.Bind();
             glSC(glClearColor(0.f, 0.f, 0.f, 1.f));
 
             glSC(glClear(GL_COLOR_BUFFER_BIT));

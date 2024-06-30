@@ -1,8 +1,13 @@
 #include"ReadFromFile.h"
 #include<fstream>
 #include"Tools/DebuggingTools.h"
+#include"Tools/Time.h"
+#include<iostream>
 
 std::string ReadFromFile(const char* filepath) {
+	
+	TimePoint timeStart = Time::GetTimePoint();
+
 	std::string result;
 	std::ifstream fileTextStream;
 	fileTextStream.open(filepath);
@@ -17,5 +22,8 @@ std::string ReadFromFile(const char* filepath) {
 	while (std::getline(fileTextStream,line))
 		result += line + '\n';
 	fileTextStream.close();
+
+	std::cout << "Opened file \"" << filepath << "\" in " << Time::GetDuration(timeStart, Time::GetTimePoint()) << " seconds" << std::endl;
+
 	return result;
 }

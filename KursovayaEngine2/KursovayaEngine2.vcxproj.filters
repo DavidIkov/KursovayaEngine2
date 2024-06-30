@@ -75,6 +75,15 @@
     <ClCompile Include="GraphicsPrimitives\RenderingPreset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Tools\FileTypesReaders\Obj.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools\RandomNumber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools\Time.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\glad\include\glad\glad.h">
@@ -155,6 +164,15 @@
     <ClInclude Include="GraphicsPrimitives\RenderingPreset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Tools\FileTypesReaders\Obj.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\RandomNumber.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\Time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\glfw\3.4_Win32\lib-vc2022\glfw3.lib" />
@@ -171,6 +189,8 @@
     <None Include="Shaders\test.vs" />
     <None Include="Shaders\quad.vs" />
     <None Include="Shaders\quad.fs" />
+    <None Include="Models3D\xyu.obj" />
+    <None Include="Models3D\fullhdpenis.obj" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\blackFace.jpg">
