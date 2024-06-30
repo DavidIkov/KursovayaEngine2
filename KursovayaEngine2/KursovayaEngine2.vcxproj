@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Efficiency|Win32">
+      <Configuration>Efficiency</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Efficiency|x64">
+      <Configuration>Efficiency</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{994478a2-57e4-45b9-b636-a971a949aad5}</ProjectGuid>
+    <RootNamespace>KursovayaEngine2</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">
+    <OutDir>$(SolutionDir)Builds\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Builds\Intermediate\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)Builds\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Builds\Intermediate\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">
+    <OutDir>$(SolutionDir)Builds\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Builds\Intermediate\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)Builds\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Builds\Intermediate\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_CONSOLE;%(PreprocessorDefinitions);$(Platform);$(Configuration);_DEBUG</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\lib-vc2022</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_CONSOLE;%(PreprocessorDefinitions);$(Platform);$(Configuration);NDEBUG</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\lib-vc2022</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions);$(Platform);$(Configuration);_DEBUG</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\lib-vc2022</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions);$(Platform);$(Configuration);NDEBUG</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\lib-vc2022</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Dependencies\glad\src\glad.c" />
+    <ClCompile Include="Dependencies\stb_image\stb_image.cpp" />
+    <ClCompile Include="GraphicsPrimitives\FrameBuffer.cpp" />
+    <ClCompile Include="GraphicsPrimitives\RenderBuffer.cpp" />
+    <ClCompile Include="GraphicsPrimitives\RenderingPreset.cpp" />
+    <ClCompile Include="GraphicsPrimitives\Shader.cpp" />
+    <ClCompile Include="GraphicsPrimitives\ShaderProgram.cpp" />
+    <ClCompile Include="GraphicsPrimitives\Texture.cpp" />
+    <ClCompile Include="Keyboard\Keyboard.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Maths\Matrix.cpp" />
+    <ClCompile Include="Maths\SPCS.cpp" />
+    <ClCompile Include="Maths\Vector2.cpp" />
+    <ClCompile Include="Maths\Vector3.cpp" />
+    <ClCompile Include="Tools\DebuggingTools.cpp" />
+    <ClCompile Include="Tools\Event.cpp" />
+    <ClCompile Include="Tools\ReadFromAFile.cpp" />
+    <ClCompile Include="Tools\UniqueKeysSystem.cpp" />
+    <ClCompile Include="Windows\Window.cpp" />
+    <ClCompile Include="Windows\WindowsManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Dependencies\stb_image\stb_image.h" />
+    <ClInclude Include="GraphicsPrimitives\FrameBuffer.h" />
+    <ClInclude Include="GraphicsPrimitives\RenderBuffer.h" />
+    <ClInclude Include="GraphicsPrimitives\RenderingPreset.h" />
+    <ClInclude Include="GraphicsPrimitives\Shader.h" />
+    <ClInclude Include="GraphicsPrimitives\ShaderProgram.h" />
+    <ClInclude Include="GraphicsPrimitives\Texture.h" />
+    <ClInclude Include="Keyboard\Keyboard.h" />
+    <ClInclude Include="Maths\Matrix.h" />
+    <ClInclude Include="Maths\SPCS.h" />
+    <ClInclude Include="Maths\Vector2.h" />
+    <ClInclude Include="Maths\Vector3.h" />
+    <ClInclude Include="Tools\DebuggingTools.h" />
+    <ClInclude Include="Dependencies\glad\include\glad\glad.h" />
+    <ClInclude Include="Dependencies\glad\include\KHR\khrplatform.h" />
+    <ClInclude Include="Dependencies\glfw\3.4_Win32\include\GLFW\glfw3.h" />
+    <ClInclude Include="Dependencies\glfw\3.4_Win32\include\GLFW\glfw3native.h" />
+    <ClInclude Include="Dependencies\glfw\3.4_x64\include\GLFW\glfw3.h" />
+    <ClInclude Include="Dependencies\glfw\3.4_x64\include\GLFW\glfw3native.h" />
+    <ClInclude Include="Tools\ErrorCodes.h" />
+    <ClInclude Include="Tools\Event.h" />
+    <ClInclude Include="Tools\GLDebug.h" />
+    <ClInclude Include="Tools\ReadFromFile.h" />
+    <ClInclude Include="Tools\UniqueKeysSystem.h" />
+    <ClInclude Include="Windows\Window.h" />
+    <ClInclude Include="Windows\WindowsManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="Dependencies\glfw\3.4_Win32\lib-vc2022\glfw3.lib" />
+    <Library Include="Dependencies\glfw\3.4_Win32\lib-vc2022\glfw3dll.lib" />
+    <Library Include="Dependencies\glfw\3.4_Win32\lib-vc2022\glfw3_mt.lib" />
+    <Library Include="Dependencies\glfw\3.4_x64\lib-vc2022\glfw3.lib" />
+    <Library Include="Dependencies\glfw\3.4_x64\lib-vc2022\glfw3dll.lib" />
+    <Library Include="Dependencies\glfw\3.4_x64\lib-vc2022\glfw3_mt.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Dependencies\glfw\3.4_Win32\lib-vc2022\glfw3.dll" />
+    <None Include="Dependencies\glfw\3.4_x64\lib-vc2022\glfw3.dll" />
+    <None Include="Shaders\quad.fs" />
+    <None Include="Shaders\quad.vs" />
+    <None Include="Shaders\test.fs" />
+    <None Include="Shaders\test.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\blackFace.jpg" />
+    <Image Include="Textures\simpleFace.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="README_CODERULES.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
