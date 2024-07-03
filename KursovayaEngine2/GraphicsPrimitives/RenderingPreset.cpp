@@ -241,5 +241,5 @@ void RenderingPreset::Bind() {
 void RenderingPreset::Unbind() {
 	glSC(glDisable(GL_CULL_FACE));
 	glSC(glDisable(GL_BLEND));
-	glSC(glDisable(GL_DEPTH_TEST))
+	glSC(glDisable(GL_DEPTH_TEST));
 }

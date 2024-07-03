@@ -191,6 +191,7 @@
     <None Include="Shaders\quad.fs" />
     <None Include="Models3D\xyu.obj" />
     <None Include="Models3D\fullhdpenis.obj" />
+    <None Include="Models3D\cube.obj" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\blackFace.jpg">

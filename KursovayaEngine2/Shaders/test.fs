@@ -27,7 +27,7 @@ void main() {
 	{//basic lighting
 		float colorMultiplier=(dot(t_NormalVector,normalize(u_LightPos-t_PosInSpace))+1)/2;
 		float smoothedOutColorMult=colorMultiplier*(1-u_VisualData.MinColorMultiplierForSurfaceLighting)+u_VisualData.MinColorMultiplierForSurfaceLighting;
-
+		
 		PixelColor=vec4(PixelColor.xyz*smoothedOutColorMult,PixelColor.w);
 	}
 

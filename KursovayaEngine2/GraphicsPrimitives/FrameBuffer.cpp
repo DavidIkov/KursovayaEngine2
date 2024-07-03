@@ -21,8 +21,8 @@ unsigned int FrameBuffer::gID() const {
 void FrameBuffer::AttachRenderBuffer(const RenderBuffer& rb) const {
 	bool db = rb.gIsDepthBufferEnabled();
 	bool sb = rb.gIsStencilBufferEnabled();
-	if (db and sb) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rb.gID())) }
-	else if (db and not sb) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rb.gID())) }
+	if (db and sb) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rb.gID())); }
+	else if (db and not sb) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rb.gID())); }
 	else if (not db and sb) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "YOU CANT ATTACH TO FRAMEBUFFER A RENDER BUFFER WHICH HAVE STENCIL BUFFER BUT HAVENT GOT DEPTH BUFFER", KURSAVAYAENGINE2_CORE_ERRORS::ATTEMPING_TO_ATTACH_TO_FRAMEBUFFER_A_RENDERBUFFER_WHICH_HAVE_STENCIL_BUFFER_BUT_HAVENT_GOT_DEPTH_BUFFER });
 	else DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "YOU CANT ATTACH TO FRAMEBUFFER A RENDER BUFFER WHICH DOESNT HAVE ANY BUFFERS ENABLED", KURSAVAYAENGINE2_CORE_ERRORS::ATTEMPING_TO_ATTACH_TO_FRAMEBUFFER_A_RENDERBUFFER_WHICH_DOSENT_HAVE_ANY_BUFFERS_ENABLED });
 }

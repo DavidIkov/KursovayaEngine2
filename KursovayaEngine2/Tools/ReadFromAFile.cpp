@@ -23,7 +23,7 @@ std::string ReadFromFile(const char* filepath) {
 		result += line + '\n';
 	fileTextStream.close();
 
-	std::cout << "Opened file \"" << filepath << "\" in " << Time::GetDuration(timeStart, Time::GetTimePoint()) << " seconds" << std::endl;
+	std::cout << "Opened and saved file to string \"" << filepath << "\" in " << Time::GetDuration(timeStart, Time::GetTimePoint()) << " seconds" << std::endl;
 
 	return result;
 }

@@ -72,69 +72,7 @@ int main()
         );
 
         unsigned int floatsAmountPerVertex = 3 + 2 + 3;
-        std::vector<float> vertexBufferData({
-
-            //right
-            0.5f,-0.5f,0.5f,1.f,0.f,0.f,1.f,0.f,
-            0.5f,-0.5f,-0.5f,1.f,0.f,0.f,0.f,0.f,
-            0.5f,0.5f,-0.5f,1.f,0.f,0.f,0.f,1.f,
-
-            0.5f,0.5f,-0.5f,1.f,0.f,0.f,0.f,1.f,
-            0.5f,0.5f,0.5f,1.f,0.f,0.f,1.f,1.f,
-            0.5f,-0.5f,0.5f,1.f,0.f,0.f,1.f,0.f,
-
-            //left
-            -0.5f,0.5f,-0.5f,-1.f,0.f,0.f,0.f,1.f,
-            -0.5f,-0.5f,-0.5f,-1.f,0.f,0.f,0.f,0.f,
-            -0.5f,-0.5f,0.5f,-1.f,0.f,0.f,1.f,0.f,
-
-            -0.5f,-0.5f,0.5f,-1.f,0.f,0.f,1.f,0.f,
-            -0.5f,0.5f,0.5f,-1.f,0.f,0.f,1.f,1.f,
-            -0.5f,0.5f,-0.5f,-1.f,0.f,0.f,0.f,1.f,
-
-            //front
-            -0.5f,0.5f,0.5f,0.f,0.f,1.f,0.f,1.f,
-            -0.5f,-0.5f,0.5f,0.f,0.f,1.f,0.f,0.f,
-            0.5f,-0.5f,0.5f,0.f,0.f,1.f,1.f,0.f,
-
-            0.5f,-0.5f,0.5f,0.f,0.f,1.f,1.f,0.f,
-            0.5f,0.5f,0.5f,0.f,0.f,1.f,1.f,1.f,
-            -0.5f,0.5f,0.5f,0.f,0.f,1.f,0.f,1.f,
-
-            //back
-            0.5f,-0.5f,-0.5f,0.f,0.f,-1.f,1.f,0.f,
-            -0.5f,-0.5f,-0.5f,0.f,0.f,-1.f,0.f,0.f,
-            -0.5f,0.5f,-0.5f,0.f,0.f,-1.f,0.f,1.f,
-
-            -0.5f,0.5f,-0.5f,0.f,0.f,-1.f,0.f,1.f,
-            0.5f,0.5f,-0.5f,0.f,0.f,-1.f,1.f,1.f,
-            0.5f,-0.5f,-0.5f,0.f,0.f,-1.f,1.f,0.f,
-
-            //top
-           0.5f,0.5f,-0.5f,0.f,1.f,0.f,1.f,0.f,
-           -0.5f,0.5f,-0.5f,0.f,1.f,0.f,0.f,0.f,
-           -0.5f,0.5f,0.5f,0.f,1.f,0.f,0.f,1.f,
-
-           -0.5f,0.5f,0.5f,0.f,1.f,0.f,0.f,1.f,
-           0.5f,0.5f,0.5f,0.f,1.f,0.f,1.f,1.f,
-           0.5f,0.5f,-0.5f,0.f,1.f,0.f,1.f,0.f,
-
-           //bottom
-           -0.5f,-0.5f,0.5f,0.f,-1.f,0.f,0.f,1.f,
-           -0.5f,-0.5f,-0.5f,0.f,-1.f,0.f,0.f,0.f,
-           0.5f,-0.5f,-0.5f,0.f,-1.f,0.f,1.f,0.f,
-
-           0.5f,-0.5f,-0.5f,0.f,-1.f,0.f,1.f,0.f,
-           0.5f,-0.5f,0.5f,0.f,-1.f,0.f,1.f,1.f,
-           -0.5f,-0.5f,0.5f,0.f,-1.f,0.f,0.f,1.f,
-            });
-
-        
-        {
-            /*std::string fileText = ReadFromFile("Models3D/fullhdpenis.obj");
-            std::vector<float> data = ReadObjFileType(fileText);
-            vertexBufferData = data;*/
-        }
+        std::vector<float> vertexBufferData = ReadObjFileType("Models3D/troll.obj");
 
 
 
@@ -208,10 +146,12 @@ int main()
         
         Vector3 Object1Position(0, 0, 3);
         Matrix Object1RotationMatrix(3, 3, { 1,0,0,0,1,0,0,0,1 });
+        Vector3 Object1Scale(20,20,20);
         Vector3 Object2Position(2, 0, 3);
         Matrix Object2RotationMatrix(3, 3, { 1,0,0,0,1,0,0,0,1 });
+        Vector3 Object2Scale(10,10,10);
 
-        Vector3 LightPosition(1, 0, 3);
+        Vector3 LightPosition(0, 0, 0);
 
         Vector3 CameraPosition(0, 0, 0);
         Matrix CameraRotationMatrix(3, 3, { 1,0,0,0,1,0,0,0,1 });
@@ -293,10 +233,12 @@ int main()
 
             glSC(glUniform3fv(glGetUniformLocation(SP.gID(), "u_ObjectPosition"), 1, &Object1Position[0]));
             glSC(glUniformMatrix3fv(glGetUniformLocation(SP.gID(), "u_ObjectRotationMatrix"), 1, GL_FALSE, &Object1RotationMatrix[0]));
+            glSC(glUniform3fv(glGetUniformLocation(SP.gID(), "u_ObjectScale"), 1, &Object1Scale[0]));
             glSC(glDrawArrays(GL_TRIANGLES, 0, (int)vertexBufferData.size() / floatsAmountPerVertex));
 
             glSC(glUniform3fv(glGetUniformLocation(SP.gID(), "u_ObjectPosition"), 1, &Object2Position[0]));
             glSC(glUniformMatrix3fv(glGetUniformLocation(SP.gID(), "u_ObjectRotationMatrix"), 1, GL_FALSE, &Object2RotationMatrix[0]));
+            glSC(glUniform3fv(glGetUniformLocation(SP.gID(), "u_ObjectScale"), 1, &Object2Scale[0]));
             glSC(glDrawArrays(GL_TRIANGLES, 0, (int)vertexBufferData.size() / floatsAmountPerVertex));
 
             glSC(glBindVertexArray(0));

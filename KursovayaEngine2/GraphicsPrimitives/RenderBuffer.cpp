@@ -7,8 +7,8 @@
 RenderBuffer::RenderBuffer(unsigned int width, unsigned int height, bool createDepthBuffer, bool createStencilBuffer):DepthBufferEnabled(createDepthBuffer),StencilBufferEnabled(createStencilBuffer) {
     glSC(glGenRenderbuffers(1, &ID));
     glSC(glBindRenderbuffer(GL_RENDERBUFFER, ID));
-    if (createDepthBuffer and createStencilBuffer) { glSC(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height)) }
-    else if (createDepthBuffer and not createStencilBuffer) { glSC(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height)) }
+    if (createDepthBuffer and createStencilBuffer) { glSC(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height)); }
+    else if (createDepthBuffer and not createStencilBuffer) { glSC(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height)); }
     else if (not createDepthBuffer and createStencilBuffer) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"YOU CANT CREATE RENDER BUFFER WITH STENCIL BUFFER BUT WITHOUT DEPTH BUFFER",KURSAVAYAENGINE2_CORE_ERRORS::ATTEMPING_TO_CREATE_RENDERBUFFER_WITHOUT_ANY_BUFFERS });
     else DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"YOU CANT CREATE RENDER BUFFER WITHOUT ANY BUFFERS",KURSAVAYAENGINE2_CORE_ERRORS::ATTEMPING_TO_CREATE_RENDERBUFFER_WITHOUT_ANY_BUFFERS });
     glSC(glBindRenderbuffer(GL_RENDERBUFFER, 0));
