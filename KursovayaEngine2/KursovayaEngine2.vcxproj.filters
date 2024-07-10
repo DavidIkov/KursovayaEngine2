@@ -84,6 +84,12 @@
     <ClCompile Include="Tools\Time.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GraphicsPrimitives\VertexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsPrimitives\VertexArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\glad\include\glad\glad.h">
@@ -173,6 +179,12 @@
     <ClInclude Include="Tools\Time.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GraphicsPrimitives\VertexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsPrimitives\VertexArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\glfw\3.4_Win32\lib-vc2022\glfw3.lib" />
@@ -192,6 +204,11 @@
     <None Include="Models3D\xyu.obj" />
     <None Include="Models3D\fullhdpenis.obj" />
     <None Include="Models3D\cube.obj" />
+    <None Include="Shaders\normal.vs" />
+    <None Include="Shaders\normal.gs" />
+    <None Include="Shaders\normal.fs" />
+    <None Include="Shaders\outline.fs" />
+    <None Include="Shaders\outline.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\blackFace.jpg">

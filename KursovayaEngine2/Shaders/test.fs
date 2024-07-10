@@ -14,7 +14,7 @@ struct VisualData{
 	float Shininess;
 	float LightSourceReflectionMaxAngle;
 
-	//theese two is responsible for lighting which is calculated for surfaces
+	//responsible for lighting which is calculated for surfaces
 	float MinColorMultiplierForSurfaceLighting;
 };
 uniform VisualData u_VisualData;

@@ -21,11 +21,11 @@ public:
 	}
 	void Remove(UniqueKey key) {
 		if (key == 0) {
-			DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Managable, "Tried removing connection to event with key = 0, which wont exist", KURSAVAYAENGINE2_CORE_ERRORS::ATTEMPING_TO_REMOVE_CONNECTION_FROM_EVENT_WITH_INVALID_KEY });
+			DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "Tried removing connection to event with key = 0, which wont exist", KURSAVAYAENGINE2_CORE_ERRORS::ATTEMPING_TO_REMOVE_CONNECTION_FROM_EVENT_WITH_INVALID_KEY });
 			return;
 		}
 		if (not KeysSystemForConnections.KeyExists(key)) {
-			DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Managable, "Tried removing connection to event with key which dosent exist (its not 0)", KURSAVAYAENGINE2_CORE_ERRORS::ATTEMPING_TO_REMOVE_CONNECTION_FROM_EVENT_WITH_INVALID_KEY });
+			DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "Tried removing connection to event with key which dosent exist (its not 0)", KURSAVAYAENGINE2_CORE_ERRORS::ATTEMPING_TO_REMOVE_CONNECTION_FROM_EVENT_WITH_INVALID_KEY });
 			return;
 		}
 		for (unsigned int i = 0; i < Connections.size(); i++) {

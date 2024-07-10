@@ -157,6 +157,8 @@
   <ItemGroup>
     <ClCompile Include="Dependencies\glad\src\glad.c" />
     <ClCompile Include="Dependencies\stb_image\stb_image.cpp" />
+    <ClCompile Include="GraphicsPrimitives\VertexArray.cpp" />
+    <ClCompile Include="GraphicsPrimitives\VertexBuffer.cpp" />
     <ClCompile Include="Tools\FileTypesReaders\Obj.cpp" />
     <ClCompile Include="GraphicsPrimitives\FrameBuffer.cpp" />
     <ClCompile Include="GraphicsPrimitives\RenderBuffer.cpp" />
@@ -181,6 +183,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\stb_image\stb_image.h" />
+    <ClInclude Include="GraphicsPrimitives\VertexArray.h" />
+    <ClInclude Include="GraphicsPrimitives\VertexBuffer.h" />
     <ClInclude Include="Tools\FileTypesReaders\Obj.h" />
     <ClInclude Include="GraphicsPrimitives\FrameBuffer.h" />
     <ClInclude Include="GraphicsPrimitives\RenderBuffer.h" />
@@ -221,6 +225,11 @@
   <ItemGroup>
     <None Include="Dependencies\glfw\3.4_Win32\lib-vc2022\glfw3.dll" />
     <None Include="Dependencies\glfw\3.4_x64\lib-vc2022\glfw3.dll" />
+    <None Include="Shaders\normal.fs" />
+    <None Include="Shaders\normal.gs" />
+    <None Include="Shaders\normal.vs" />
+    <None Include="Shaders\outline.fs" />
+    <None Include="Shaders\outline.vs" />
     <None Include="Shaders\quad.fs" />
     <None Include="Shaders\quad.vs" />
     <None Include="Shaders\test.fs" />

@@ -1,7 +1,7 @@
 #pragma once
 
 enum class ShaderTypesEnum {
-	Fragment,Vertex
+	Fragment,Vertex,Geometry
 };
 class Shader {
 	unsigned int ID;

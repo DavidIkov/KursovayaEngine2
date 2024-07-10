@@ -53,14 +53,29 @@ public:
 	Vector3 operator*(float num) const;
 	Vector3 operator/(float num) const;
 
+	void operator+=(float num);
+	void operator-=(float num);
+	void operator*=(float num);
+	void operator/=(float num);
+
 	Vector3 operator+(const Vector3& vec) const;
 	Vector3 operator-(const Vector3& vec) const;
 	Vector3 operator*(const Vector3& vec) const;
 	Vector3 operator/(const Vector3& vec) const;
 
+	void operator+=(const Vector3& vec);
+	void operator-=(const Vector3& vec);
+	void operator*=(const Vector3& vec);
+	void operator/=(const Vector3& vec);
+
 	Vector3 operator+(const Matrix& mat) const;
 	Vector3 operator-(const Matrix& mat) const;
 	Vector3 operator*(const Matrix& mat) const;
 	Vector3 operator/(const Matrix& mat) const;
+
+	void operator+=(const Matrix& mat);
+	void operator-=(const Matrix& mat);
+	void operator*=(const Matrix& mat);
+	void operator/=(const Matrix& mat);
 };
 

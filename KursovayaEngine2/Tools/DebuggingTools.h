@@ -5,7 +5,7 @@
 
 namespace DebuggingTools {
 	enum class ErrorTypes {
-		Managable,//managable error means that it can be "ignored" in some way without breaking logics of program. Also known as "warning"
+		Warning,//Warning error means that it can be "ignored" in some way without breaking logics of program. Also known as "warning"
 		Critical,//critical error means that it cant be "ignored", since if you will ignore it program may or will fall apart
 	};
 

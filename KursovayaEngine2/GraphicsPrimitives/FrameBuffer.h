@@ -1,21 +1,28 @@
 #pragma once
 #include"Texture.h"
 #include"RenderBuffer.h"
+#include<vector>
+
+enum class FrameBufferTextureAttachment {
+	Color,Depth,Stencil
+};
 
 class FrameBuffer {
 	unsigned int ID = 0;
 	mutable bool Finished = false;
 	mutable bool Deleted = false;
-	Texture Tex;
+	unsigned int Width, Height;
+	std::vector<Texture*> AttachedTextures;
 
 public:
+
 	FrameBuffer(unsigned int width, unsigned int height);
 	~FrameBuffer();
 	unsigned int gID() const;
 	void Delete();
 	void Finish();
 	void Bind() const;
-	const Texture& gTexture() const;
 	void AttachRenderBuffer(const RenderBuffer& rb) const;
-	static void Unbind();
+	void AttachTexture(Texture& tex);
+	static void Unbind(unsigned int width, unsigned int height);
 };

@@ -130,12 +130,27 @@ Vector3 Vector3::operator-(float num) const { return Vector3(Cords[0] - num, Cor
 Vector3 Vector3::operator*(float num) const { return Vector3(Cords[0] * num, Cords[1] * num, Cords[2] * num); };
 Vector3 Vector3::operator/(float num) const { return Vector3(Cords[0] / num, Cords[1] / num, Cords[2] / num); };
 
+void Vector3::operator+=(float num) { Cords[0] += num; Cords[1] += num; Cords[2] += num; }
+void Vector3::operator-=(float num) { Cords[0] -= num; Cords[1] -= num; Cords[2] -= num; }
+void Vector3::operator*=(float num) { Cords[0] *= num; Cords[1] *= num; Cords[2] *= num; }
+void Vector3::operator/=(float num) { Cords[0] /= num; Cords[1] /= num; Cords[2] /= num; }
+
 Vector3 Vector3::operator+(const Vector3& vec) const { return Vector3(Cords[0] + vec.Cords[0], Cords[1] + vec.Cords[1], Cords[2] + vec.Cords[2]); };
 Vector3 Vector3::operator-(const Vector3& vec) const { return Vector3(Cords[0] - vec.Cords[0], Cords[1] - vec.Cords[1], Cords[2] - vec.Cords[2]); };
 Vector3 Vector3::operator*(const Vector3& vec) const { return Vector3(Cords[0] * vec.Cords[0], Cords[1] * vec.Cords[1], Cords[2] * vec.Cords[2]); };
 Vector3 Vector3::operator/(const Vector3& vec) const { return Vector3(Cords[0] / vec.Cords[0], Cords[1] / vec.Cords[1], Cords[2] / vec.Cords[2]); };
 
+void Vector3::operator+=(const Vector3& vec) { Cords[0] += vec.Cords[0]; Cords[1] += vec.Cords[1]; Cords[2] += vec.Cords[2]; }
+void Vector3::operator-=(const Vector3& vec) { Cords[0] -= vec.Cords[0]; Cords[1] -= vec.Cords[1]; Cords[2] -= vec.Cords[2]; }
+void Vector3::operator*=(const Vector3& vec) { Cords[0] *= vec.Cords[0]; Cords[1] *= vec.Cords[1]; Cords[2] *= vec.Cords[2]; }
+void Vector3::operator/=(const Vector3& vec) { Cords[0] /= vec.Cords[0]; Cords[1] /= vec.Cords[1]; Cords[2] /= vec.Cords[2]; }
+
 Vector3 Vector3::operator+(const Matrix& mat) const { return Vector3(Cords[0] + mat[0], Cords[1] + mat[1], Cords[2] + mat[2]); };
 Vector3 Vector3::operator-(const Matrix& mat) const { return Vector3(Cords[0] - mat[0], Cords[1] - mat[1], Cords[2] - mat[2]); };
 Vector3 Vector3::operator*(const Matrix& mat) const { return Vector3(Cords[0] * mat[0], Cords[1] * mat[1], Cords[2] * mat[2]); };
 Vector3 Vector3::operator/(const Matrix& mat) const { return Vector3(Cords[0] / mat[0], Cords[1] / mat[1], Cords[2] / mat[2]); };
+
+void Vector3::operator+=(const Matrix& mat) { Cords[0] += mat[0]; Cords[1] += mat[1]; Cords[2] += mat[2]; }
+void Vector3::operator-=(const Matrix& mat) { Cords[0] -= mat[0]; Cords[1] -= mat[1]; Cords[2] -= mat[2]; }
+void Vector3::operator*=(const Matrix& mat) { Cords[0] *= mat[0]; Cords[1] *= mat[1]; Cords[2] *= mat[2]; }
+void Vector3::operator/=(const Matrix& mat) { Cords[0] /= mat[0]; Cords[1] /= mat[1]; Cords[2] /= mat[2]; }

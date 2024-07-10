@@ -16,7 +16,7 @@ std::string ReadFromFile(const char* filepath) {
 		errMsg += "Failed to open file \"";
 		errMsg += filepath;
 		errMsg += '\"';
-		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,errMsg.c_str(),KURSAVAYAENGINE2_CORE_ERRORS::FAILED_TO_OPEN_FILE});
+		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,errMsg.c_str(),KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION});
 	}
 	std::string line;
 	while (std::getline(fileTextStream,line))

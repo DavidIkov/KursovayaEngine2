@@ -1,8 +1,8 @@
 #version 330 core
 
 layout (location=0) in vec3 i_VertexLocalPosition;
-layout (location=1) in vec3 i_NormalVector;
-layout (location=2) in vec2 i_TextureCords;
+layout (location=2) in vec3 i_FaceNormalVector;
+layout (location=3) in vec2 i_TextureCords;
 
 out vec3 t_PosInSpace;
 out vec2 t_TextureCords;
@@ -19,7 +19,7 @@ uniform mat4 u_ProjectionMatrix;
 
 void main(){
 	t_PosInSpace=u_ObjectPosition+u_ObjectRotationMatrix*(i_VertexLocalPosition*u_ObjectScale);
-	t_NormalVector=normalize(u_ObjectRotationMatrix*i_NormalVector/u_ObjectScale);
+	t_NormalVector=normalize(u_ObjectRotationMatrix*i_FaceNormalVector/u_ObjectScale);
 	t_TextureCords=i_TextureCords;
 
 	vec3 posFromCamera=u_InversedCameraRotationMatrix*(t_PosInSpace-u_CameraPosition);

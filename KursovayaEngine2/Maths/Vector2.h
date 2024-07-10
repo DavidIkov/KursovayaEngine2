@@ -43,14 +43,29 @@ public:
 	Vector2 operator*(float num) const;
 	Vector2 operator/(float num) const;
 
+	void operator+=(float num);
+	void operator-=(float num);
+	void operator*=(float num);
+	void operator/=(float num);
+
 	Vector2 operator+(const Vector2& vec) const;
 	Vector2 operator-(const Vector2& vec) const;
 	Vector2 operator*(const Vector2& vec) const;
 	Vector2 operator/(const Vector2& vec) const;
 
+	void operator+=(const Vector2& vec);
+	void operator-=(const Vector2& vec);
+	void operator*=(const Vector2& vec);
+	void operator/=(const Vector2& vec);
+
 	Vector2 operator+(const Matrix& mat) const;
 	Vector2 operator-(const Matrix& mat) const;
 	Vector2 operator*(const Matrix& mat) const;
 	Vector2 operator/(const Matrix& mat) const;
+
+	void operator+=(const Matrix& mat);
+	void operator-=(const Matrix& mat);
+	void operator*=(const Matrix& mat);
+	void operator/=(const Matrix& mat);
 };
 

@@ -21,7 +21,7 @@ bool UniqueKeysSystem::KeyExists(UniqueKey key) const {
 void UniqueKeysSystem::RemoveKey(UniqueKey key) {
 #if defined Debug
 	if (key > KeysStates.size()) {
-		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Managable, "Tried removing key that dosent exist", KURSAVAYAENGINE2_CORE_ERRORS::ATTEMPING_TO_REMOVE_NON_EXISTANT_KEY_FROM_KEYS_SYSTEM });
+		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "Tried removing key that dosent exist", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
 		return;
 	} 
 #endif

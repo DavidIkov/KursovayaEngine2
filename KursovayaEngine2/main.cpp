@@ -19,6 +19,9 @@
 #include"GraphicsPrimitives/RenderingPreset.h"
 #include"Tools/ReadFromFile.h"
 #include"Tools/FileTypesReaders/Obj.h"
+#include"Tools/Time.h"
+#include"GraphicsPrimitives/VertexBuffer.h"
+#include"GraphicsPrimitives/VertexArray.h"
 
 #include"Windows/WindowsManager.h"
 
@@ -28,7 +31,7 @@ int main()
     stbi_set_flip_vertically_on_load(true);
 
     if (!glfwInit()) {
-        DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO INITIALIZE GLFW", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_TO_INITIALIZE_GLFW });
+        DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO INITIALIZE GLFW", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_TO_INITIALIZE_LIBRARY });
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -47,68 +50,62 @@ int main()
 
         Window window(Width, Height, "haiiiii", false, 1);
 
-        glSC(glViewport(0, 0, Width, Height));
-
         FrameBuffer FB(Width, Height);
-        RenderBuffer RB(Width, Height, true, false);
+        Texture FB_COLOR_TEX(Width, Height, TextureStorageType::RGB);
+        FB.AttachTexture(FB_COLOR_TEX);
+        RenderBuffer RB(Width, Height, true, true);
         FB.AttachRenderBuffer(RB);
         FB.Finish();
-
-        
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FRAMEBUFFER IS NOT COMPLETE", KURSAVAYAENGINE2_CORE_ERRORS::FRAMEBUFFER_IS_NOT_COMPLETE });
-        }
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        FB.Unbind(Width, Height);
 
         RenderingPreset Preset3D(
             true, RenderingPresetEnumArguments::FaceCulling::FaceToCull::Back, RenderingPresetEnumArguments::FaceCulling::FaceDetermination::Clockwise,
-            true, true, RenderingPresetEnumArguments::DepthTest::TypeOfComprasion::LessOrEqual,
-            true, 0,0,0,0, RenderingPresetEnumArguments::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArguments::Blending::FunctionForColor::OneMinusSrcAlpha
+            true, true, RenderingPresetEnumArguments::DepthTest::TypeOfComparison::LessOrEqual,
+            true,0xff, RenderingPresetEnumArguments::StencilTest::TypeOfComparison::AlwaysPass,1,0xff, RenderingPresetEnumArguments::StencilTest::Actions::Keep,
+            RenderingPresetEnumArguments::StencilTest::Actions::Keep, RenderingPresetEnumArguments::StencilTest::Actions::Replace,
+            true, 0,0,0,0, RenderingPresetEnumArguments::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArguments::Blending::FunctionForColor::OneMinusSrcAlpha,
+            0.1f,0.2f,0.3f
         );
         RenderingPreset QuadPreset(
             false, RenderingPresetEnumArguments::FaceCulling::FaceToCull::Back, RenderingPresetEnumArguments::FaceCulling::FaceDetermination::Clockwise,
-            false, true, RenderingPresetEnumArguments::DepthTest::TypeOfComprasion::LessOrEqual,
-            false, 0, 0, 0, 0, RenderingPresetEnumArguments::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArguments::Blending::FunctionForColor::OneMinusSrcAlpha
+            false, true, RenderingPresetEnumArguments::DepthTest::TypeOfComparison::LessOrEqual,
+            false, 0, RenderingPresetEnumArguments::StencilTest::TypeOfComparison::Equal, 1, 255, RenderingPresetEnumArguments::StencilTest::Actions::Keep,
+            RenderingPresetEnumArguments::StencilTest::Actions::Keep, RenderingPresetEnumArguments::StencilTest::Actions::Keep,
+            false, 0, 0, 0, 0, RenderingPresetEnumArguments::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArguments::Blending::FunctionForColor::OneMinusSrcAlpha,
+            0.f,0.f,0.f
         );
 
-        unsigned int floatsAmountPerVertex = 3 + 2 + 3;
-        std::vector<float> vertexBufferData = ReadObjFileType("Models3D/troll.obj");
+        unsigned int floatsAmountPerVertex = 3 + 3 + 3 + 2;
+        std::vector<float> VB1_DATA = ReadObjFileType("Models3D/fullhdsphere.obj");
+        std::vector<float> VB2_DATA = ReadObjFileType("Models3D/troll.obj");
 
 
 
-        unsigned int VA_ID;
-        glSC(glGenVertexArrays(1, &VA_ID));
-        glSC(glBindVertexArray(VA_ID));
+        VertexArray VA1;
 
-        unsigned int VB_ID;
-        glSC(glGenBuffers(1, &VB_ID));
-        glSC(glBindBuffer(GL_ARRAY_BUFFER, VB_ID));
-        glSC(glBufferData(GL_ARRAY_BUFFER, vertexBufferData.size() * sizeof(float), &(vertexBufferData[0]), GL_STATIC_DRAW));
+        VertexBuffer VB1;
+        VB1.SetData(VB1_DATA, VertexBufferDataUsage::StaticDraw);
+        VB1.SetLayout({ 3,3,3,2 });
 
-        glSC(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, floatsAmountPerVertex * sizeof(float), (void*)0));
-        glSC(glEnableVertexAttribArray(0));
-        glSC(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, floatsAmountPerVertex * sizeof(float), (void*)(3 * sizeof(float))));
-        glSC(glEnableVertexAttribArray(1));
-        glSC(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, floatsAmountPerVertex * sizeof(float), (void*)(6 * sizeof(float))));
-        glSC(glEnableVertexAttribArray(2));
+        VA1.Unbind();
 
-        glSC(glBindVertexArray(0));
+        VertexArray VA2;
+
+        VertexBuffer VB2;
+        VB2.SetData(VB2_DATA, VertexBufferDataUsage::StaticDraw);
+        VB2.SetLayout({ 3,3,3,2 });
+
+        VA2.Unbind();
 
         std::vector<float> quadVBD({ 1,-1,1,1,-1,1,1,-1,-1,-1,-1,1 });
 
-        unsigned int QUAD_VA_ID;
-        glSC(glGenVertexArrays(1, &QUAD_VA_ID));
-        glSC(glBindVertexArray(QUAD_VA_ID));
+        VertexArray QUAD_VA;
 
-        unsigned int QUAD_VB_ID;
-        glSC(glGenBuffers(1, &QUAD_VB_ID));
-        glSC(glBindBuffer(GL_ARRAY_BUFFER, QUAD_VB_ID));
-        glSC(glBufferData(GL_ARRAY_BUFFER, quadVBD.size() * sizeof(float), &(quadVBD[0]), GL_STATIC_DRAW));
+        VertexBuffer QUAD_VB;
+        QUAD_VB.SetData(quadVBD, VertexBufferDataUsage::StaticDraw);
+        QUAD_VB.SetLayout({ 2 });
 
-        glSC(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0));
-        glSC(glEnableVertexAttribArray(0));
-
-        glSC(glBindVertexArray(0));
+        QUAD_VA.Unbind();
 
         ShaderProgram SP;
         {
@@ -121,6 +118,36 @@ int main()
             SP.AttachShader(FS);
 
             SP.LinkShaders();
+        }
+
+        ShaderProgram SP_OUTLINE;
+        {
+            Shader VS(ShaderTypesEnum::Vertex, "Shaders/outline.vs");
+            VS.Compile();
+            SP_OUTLINE.AttachShader(VS);
+
+            Shader FS(ShaderTypesEnum::Fragment, "Shaders/outline.fs");
+            FS.Compile();
+            SP_OUTLINE.AttachShader(FS);
+
+            SP_OUTLINE.LinkShaders();
+        }
+
+        ShaderProgram SP_NORMAL;
+        {
+            Shader VS(ShaderTypesEnum::Vertex, "Shaders/normal.vs");
+            VS.Compile();
+            SP_NORMAL.AttachShader(VS);
+
+            Shader FS(ShaderTypesEnum::Fragment, "Shaders/normal.fs");
+            FS.Compile();
+            SP_NORMAL.AttachShader(FS);
+
+            Shader GS(ShaderTypesEnum::Geometry, "Shaders/normal.gs");
+            GS.Compile();
+            SP_NORMAL.AttachShader(GS);
+
+            SP_NORMAL.LinkShaders();
         }
         
         
@@ -138,18 +165,18 @@ int main()
         }
 
         SP.Bind();
-        glSC(glUniform1i(glGetUniformLocation(SP.gID(), "u_tex1"), 0));
-        glSC(glUniform1i(glGetUniformLocation(SP.gID(), "u_tex2"), 1));
+        SP.SetUniform1i("u_tex1", 0);
+        SP.SetUniform1i("u_tex2", 1);
 
         Texture TEX0("Textures/blackFace.jpg");
         Texture TEX1("Textures/simpleFace.png");
         
-        Vector3 Object1Position(0, 0, 3);
+        Vector3 Object1Position(0, 0, 2);
         Matrix Object1RotationMatrix(3, 3, { 1,0,0,0,1,0,0,0,1 });
-        Vector3 Object1Scale(20,20,20);
+        Vector3 Object1Scale(1,1,1);
         Vector3 Object2Position(2, 0, 3);
         Matrix Object2RotationMatrix(3, 3, { 1,0,0,0,1,0,0,0,1 });
-        Vector3 Object2Scale(10,10,10);
+        Vector3 Object2Scale(2,2,2);
 
         Vector3 LightPosition(0, 0, 0);
 
@@ -172,17 +199,21 @@ int main()
             
             });
 
+        float time = 0;
+
         while (!window.WindowWaitingToClose())
         {
             window.StartUpdatingWindow();
 
-            
+            time += 0.1f;
+
+            Object2Scale = Vector3((sinf(time)+1)/2*20);
 
             Vector2 MouseDelta;
             window.gCursorDelta(&MouseDelta);
 
 
-            float cameraSpeed = 0.1f;
+            float cameraSpeed = 0.04f;
             if (window._Keyboard.gPressableKeyState(PressableKeys::W)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3(0, 0, cameraSpeed);
             if (window._Keyboard.gPressableKeyState(PressableKeys::S)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3(0, 0, -cameraSpeed);
             if (window._Keyboard.gPressableKeyState(PressableKeys::A)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3(-cameraSpeed, 0, 0);
@@ -213,52 +244,102 @@ int main()
 
             Object1RotationMatrix = Object1RotationMatrix * Matrix::RotateIn3DByAnglesXYZ(0.01f, 0.01f, 0);
 
-            glSC(glUniform3fv(glGetUniformLocation(SP.gID(), "u_LightPos"), 1, &LightPosition[0]));
-            glSC(glUniform3fv(glGetUniformLocation(SP.gID(), "u_CameraPosition"), 1, &CameraPosition[0]));
-            glSC(glUniformMatrix3fv(glGetUniformLocation(SP.gID(), "u_InversedCameraRotationMatrix"), 1, GL_FALSE, &InversedCameraRotationMatrix[0]));
-            glSC(glUniformMatrix4fv(glGetUniformLocation(SP.gID(), "u_ProjectionMatrix"), 1, GL_FALSE, &ProjectionMatrix[0]));
-            glSC(glUniform1f(glGetUniformLocation(SP.gID(), "u_VisualData.Shininess"), 4.f));
-            glSC(glUniform1f(glGetUniformLocation(SP.gID(), "u_VisualData.LightSourceReflectionMaxAngle"), 40.f/180.f*3.14f));
-            glSC(glUniform1f(glGetUniformLocation(SP.gID(), "u_VisualData.MinColorMultiplierForSurfaceLighting"), 0.05f));
+            SP.SetUniform3fv("u_LightPos", 1, &LightPosition[0]);
+            SP.SetUniform3fv("u_CameraPosition", 1, &CameraPosition[0]);
+            SP.SetUniformMatrix3fv("u_InversedCameraRotationMatrix", 1, false, &InversedCameraRotationMatrix[0]);
+            SP.SetUniformMatrix4fv("u_ProjectionMatrix", 1, false, &ProjectionMatrix[0]);
+            SP.SetUniform1f("u_VisualData.Shininess", 4.f);
+            SP.SetUniform1f("u_VisualData.LightSourceReflectionMaxAngle", 40.f / 180.f * 3.14f);
+            SP.SetUniform1f("u_VisualData.MinColorMultiplierForSurfaceLighting", 0.05f);
 
             FB.Bind();
 
             Preset3D.Bind();
-            glSC(glClearColor(0.f, 0.5f, 0.2f, 1.f));
 
-            glSC(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+            VA1.Bind();
 
-            glSC(glBindVertexArray(VA_ID));
+            SP.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
+            SP.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
+            SP.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
+            glSC(glDrawArrays(GL_TRIANGLES, 0, (int)VB1_DATA.size() / floatsAmountPerVertex));
+
+            VA2.Bind();
+
+            SP.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
+            SP.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
+            SP.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
+            glSC(glDrawArrays(GL_TRIANGLES, 0, (int)VB2_DATA.size() / floatsAmountPerVertex));
+
+            Preset3D.sStencilTest_BaseMask(0);
+            Preset3D.sStencilTest_ComparisonType(RenderingPresetEnumArguments::StencilTest::TypeOfComparison::NotEqual);
+            Preset3D.sDepthTest_Enabled(false);
+
+            {//outline
 
 
-            glSC(glUniform3fv(glGetUniformLocation(SP.gID(), "u_ObjectPosition"), 1, &Object1Position[0]));
-            glSC(glUniformMatrix3fv(glGetUniformLocation(SP.gID(), "u_ObjectRotationMatrix"), 1, GL_FALSE, &Object1RotationMatrix[0]));
-            glSC(glUniform3fv(glGetUniformLocation(SP.gID(), "u_ObjectScale"), 1, &Object1Scale[0]));
-            glSC(glDrawArrays(GL_TRIANGLES, 0, (int)vertexBufferData.size() / floatsAmountPerVertex));
+                SP_OUTLINE.Bind();
+                SP_OUTLINE.SetUniform3fv("u_CameraPosition", 1, &CameraPosition[0]);
+                SP_OUTLINE.SetUniformMatrix3fv("u_InversedCameraRotationMatrix", 1, false, &InversedCameraRotationMatrix[0]);
+                SP_OUTLINE.SetUniformMatrix4fv("u_ProjectionMatrix", 1, false, &ProjectionMatrix[0]);
+                SP_OUTLINE.SetUniform1f("u_OutlineScale", 0.1f);
+                
+                VA1.Bind();
 
-            glSC(glUniform3fv(glGetUniformLocation(SP.gID(), "u_ObjectPosition"), 1, &Object2Position[0]));
-            glSC(glUniformMatrix3fv(glGetUniformLocation(SP.gID(), "u_ObjectRotationMatrix"), 1, GL_FALSE, &Object2RotationMatrix[0]));
-            glSC(glUniform3fv(glGetUniformLocation(SP.gID(), "u_ObjectScale"), 1, &Object2Scale[0]));
-            glSC(glDrawArrays(GL_TRIANGLES, 0, (int)vertexBufferData.size() / floatsAmountPerVertex));
+                SP_OUTLINE.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
+                SP_OUTLINE.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
+                SP_OUTLINE.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
+                glSC(glDrawArrays(GL_TRIANGLES, 0, (int)VB1_DATA.size() / floatsAmountPerVertex));
 
-            glSC(glBindVertexArray(0));
+                VA2.Bind();
 
-            FB.Unbind();
+                SP_OUTLINE.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
+                SP_OUTLINE.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
+                SP_OUTLINE.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
+                glSC(glDrawArrays(GL_TRIANGLES, 0, (int)VB2_DATA.size() / floatsAmountPerVertex));
+            }
+
+            Preset3D.sStencilTest_BaseMask(0xff);
+            Preset3D.sStencilTest_ComparisonType(RenderingPresetEnumArguments::StencilTest::TypeOfComparison::AlwaysPass);
+            Preset3D.sDepthTest_Enabled(true);
+
+            //////
+
+            SP_NORMAL.Bind();
+            SP_NORMAL.SetUniform3fv("u_CameraPosition", 1, &CameraPosition[0]);
+            SP_NORMAL.SetUniformMatrix3fv("u_InversedCameraRotationMatrix", 1, false, &InversedCameraRotationMatrix[0]);
+            SP_NORMAL.SetUniformMatrix4fv("u_ProjectionMatrix", 1, false, &ProjectionMatrix[0]);
+
+            VA1.Bind();
+
+            SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
+            SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
+            SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
+            //glSC(glDrawArrays(GL_TRIANGLES, 0, (int)vertexBufferData.size() / floatsAmountPerVertex));
+
+            VA2.Bind();
+
+            SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
+            SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
+            SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
+            //glSC(glDrawArrays(GL_TRIANGLES, 0, (int)vertexBufferData.size() / floatsAmountPerVertex));
+
+
+            VertexArray::Unbind();
+
+            FB.Unbind(Width,Height);
+
             QuadPreset.Bind();
-            glSC(glClearColor(0.f, 0.f, 0.f, 1.f));
-
-            glSC(glClear(GL_COLOR_BUFFER_BIT));
             QUAD_SP.Bind();
 
-            glSC(glUniform1i(glGetUniformLocation(QUAD_SP.gID(), "u_Texture"), 0));
+            QUAD_SP.SetUniform1i("u_Texture", 0);
 
-            FB.gTexture().Bind(0);
+            FB_COLOR_TEX.Bind(0);
 
-            glSC(glBindVertexArray(QUAD_VA_ID));
+            QUAD_VA.Bind();
             
             glSC(glDrawArrays(GL_TRIANGLES, 0, (int)quadVBD.size() / 2));
 
-            glSC(glBindVertexArray(0));
+            QUAD_VA.Unbind();
 
             window.EndUpdatingWindow();
         }

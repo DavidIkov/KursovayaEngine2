@@ -14,7 +14,7 @@ Window::Window(unsigned int w, unsigned int h, const char* title, bool fullscree
 
     GLFW_WindowPtr = glfwCreateWindow(w, h, title, fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
     if (!GLFW_WindowPtr) {
-        DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO CREATE WINDOW", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_TO_CREATE_WINDOW });
+        DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO CREATE WINDOW", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
     }
 
     glfwSetWindowUserPointer(GLFW_WindowPtr, (void*)this);
@@ -30,7 +30,7 @@ Window::Window(unsigned int w, unsigned int h, const char* title, bool fullscree
 
     if (FirstWindow) {
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-            DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO INITIALIZE GLAD", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_TO_INITIALIZE_GLAD });
+            DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO INITIALIZE GLAD", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_TO_INITIALIZE_LIBRARY });
         std::cout << "OPENGL VERSION: " << glGetString(GL_VERSION) << std::endl;
     }
 
