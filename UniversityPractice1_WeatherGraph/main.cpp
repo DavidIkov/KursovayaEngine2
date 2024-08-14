@@ -1,38 +1,22 @@
 
-#include<iostream>
-#include"Tools/DebuggingTools.h"
-#include"GraphicsPrimitives/Shader.h"
-#include"GraphicsPrimitives/ShaderProgram.h"
-#include"GraphicsPrimitives/Texture.h"
-#include"Maths/Matrix.h"
-#include"Maths/Vector3.h"
-#include"Maths/Vector2.h"
-#include<vector>
-#include"Windows/Window.h"
-#include"Tools/ErrorCodes.h"
-#include"GraphicsPrimitives/FrameBuffer.h"
-#include"GraphicsPrimitives/RenderBuffer.h"
-#include"GraphicsPrimitives/RenderingPreset.h"
-#include"Tools/ReadFromFile.h"
-#include"Tools/FileTypesReaders/Obj.h"
-#include"Tools/Time.h"
-#include"GraphicsPrimitives/VertexBuffer.h"
-#include"GraphicsPrimitives/VertexArray.h"
-#include"WinOS/FileExplorerDialog.h"
-#include"Tools/RandomNumber.h"
-#include"GraphicsPrimitives/Renderer.h"
-
-#include"GraphicsAbstractions/TextRenderer.h"
+#include<string>
 #include"Quad.h"
 #include"ClickTrigger.h"
-#include"csv_json.h"
-
-#include"KursovayaEngine2Manager.h"
-
-#include"Windows/WindowsManager.h"
-#include"WinOS/wchar_t_Operations.h"
+#include"GraphicsPrimitives/FrameBuffer.h"
+#include"GraphicsPrimitives/VertexBuffer.h"
+#include"GraphicsPrimitives/VertexBuffer.h"
 #include"RussianConsole.h"
-#include"Tools/SimpleLambda.h"
+#include"KursovayaEngine2Manager.h"
+#include"GraphicsPrimitives/RenderingPreset.h"
+#include"GraphicsAbstractions/TextRenderer.h"
+#include"csv_json.h"
+#include"WinOS/FileExplorerDialog.h"
+#include"WinOS/wchar_t_Operations.h"
+#include"GraphicsPrimitives/Renderer.h"
+#include"Tools/DebuggingTools.h"
+#include<iostream>
+#include"Tools/RandomNumber.h"
+
 
 #define MAX_DATES_IN_GRAPH 200
 

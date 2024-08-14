@@ -1,54 +1,28 @@
-#include<glad/glad.h>
-#include<GLFW/glfw3.h>
-#include<stb_image/stb_image.h>
 
 #include<iostream>
 #include"Tools/DebuggingTools.h"
-#include"GraphicsPrimitives/Shader.h"
+#include"KursovayaEngine2Manager.h"
+#include"Windows/Window.h"
+#include"GraphicsAbstractions/TextRenderer.h"
+#include"GraphicsPrimitives/FrameBuffer.h"
+#include"GraphicsPrimitives/VertexArray.h"
+#include"GraphicsPrimitives/VertexBuffer.h"
+#include"GraphicsPrimitives/RenderBuffer.h"
 #include"GraphicsPrimitives/ShaderProgram.h"
 #include"GraphicsPrimitives/Texture.h"
-#include"Tools/GLDebug.h"
-#include"Maths/Matrix.h"
-#include"Maths/Vector3.h"
+#include"GraphicsPrimitives/Renderer.h"
 #include"Maths/Vector2.h"
-#include<vector>
-#include"Windows/Window.h"
-#include"Tools/ErrorCodes.h"
-#include"GraphicsPrimitives/FrameBuffer.h"
-#include"GraphicsPrimitives/RenderBuffer.h"
-#include"GraphicsPrimitives/RenderingPreset.h"
-#include"Tools/ReadFromFile.h"
+#include"Maths/Vector3.h"
+#include"Maths/Matrix.h"
 #include"Tools/FileTypesReaders/Obj.h"
-#include"Tools/Time.h"
-#include"GraphicsPrimitives/VertexBuffer.h"
-#include"GraphicsPrimitives/VertexArray.h"
-#include"WinOS/FileExplorerDialog.h"
-
-#include"TEMPORARY_PRACTICE/TextRenderer.h"
-
-#include"Windows/WindowsManager.h"
 
 int main()
 {
     
-    stbi_set_flip_vertically_on_load(true);
-
-    if (!glfwInit()) {
-        DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO INITIALIZE GLFW", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_TO_INITIALIZE_LIBRARY });
-    }
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+    InitializeKursovayaEngine2();
+    
 
     try {
-
-        
-        
-
-
-
 
         unsigned int Width = 900;
         unsigned int Height = 600;
@@ -57,10 +31,8 @@ int main()
         Window window(Width, Height, "haiiiii", false, 1);
 
 
-        TextRenderer TEXT_RENDERER("Fonts/arial.ttf");
+        TextRenderer TEXT_RENDERER("Fonts/arial.ttf", "Shaders/text.vs", "Shaders/text.fs");
 
-
-        std::cout << FileExplorerDialog::OpenDialog({ {"Text Files","txt"},{"Any File", "*"} }) << '\n';
 
         FrameBuffer FB(Width, Height);
         Texture FB_COLOR_TEX(Width, Height, TextureStorageType::RGB,
@@ -95,7 +67,7 @@ int main()
         
 
         unsigned int floatsAmountPerVertex = 3 + 3 + 3 + 2;
-        std::vector<float> VB1_DATA = ReadObjFileType("Models3D/cube.obj");
+        std::vector<float> VB1_DATA = ReadObjFileType("Models3D/sphere.obj");
         std::vector<float> VB2_DATA = ReadObjFileType("Models3D/sphere.obj");
 
 
@@ -222,19 +194,21 @@ int main()
 
         Vector2 ResolutionLength(tanf(CameraVerticalFov / 2) * Width / Height, tanf(CameraVerticalFov / 2));
 
-        window._Keyboard.gPressableKeyEvent(PressableKeys::L).Connect([&window](bool pressedDown) {
-            if (pressedDown) {
+        EventConnectionsHandlerClass EventsHandler;
+
+        EventsHandler.ConnectToEvent(&window.gKeyboardHandle().gPressableKeyEvent(PressableKeys::L), [&window](void* pressedDown) {
+            if (*(bool*)pressedDown) {
                 if (window.gCursorMode() == CursorModes::Free) window.SetCursorMode(CursorModes::LockedAndInvisible);
                 else window.SetCursorMode(CursorModes::Free);
             }
-            
+
             });
 
         float time = 0;
 
         while (!window.WindowWaitingToClose())
         {
-            window.StartUpdatingWindow();
+            window.UpdateMouseData();
 
             time += 0.1f;
 
@@ -245,12 +219,12 @@ int main()
 
 
             float cameraSpeed = 0.04f;
-            if (window._Keyboard.gPressableKeyState(PressableKeys::W)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3(0, 0, cameraSpeed);
-            if (window._Keyboard.gPressableKeyState(PressableKeys::S)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3(0, 0, -cameraSpeed);
-            if (window._Keyboard.gPressableKeyState(PressableKeys::A)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3(-cameraSpeed, 0, 0);
-            if (window._Keyboard.gPressableKeyState(PressableKeys::D)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3(cameraSpeed, 0, 0);
-            if (window._Keyboard.gPressableKeyState(PressableKeys::Q)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3(0, -cameraSpeed, 0);
-            if (window._Keyboard.gPressableKeyState(PressableKeys::E)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3(0, cameraSpeed, 0);
+            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::W)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3(0, 0, cameraSpeed);
+            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::S)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3(0, 0, -cameraSpeed);
+            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::A)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3(-cameraSpeed, 0, 0);
+            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::D)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3(cameraSpeed, 0, 0);
+            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::Q)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3(0, -cameraSpeed, 0);
+            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::E)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3(0, cameraSpeed, 0);
 
 
             {
@@ -293,14 +267,14 @@ int main()
             SP.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
             SP.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
             SP.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
-            glSC(glDrawArrays(GL_TRIANGLES, 0, (int)VB1_DATA.size() / floatsAmountPerVertex));
+            Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
             VA2.Bind();
 
             SP.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
             SP.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
             SP.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
-            glSC(glDrawArrays(GL_TRIANGLES, 0, (int)VB2_DATA.size() / floatsAmountPerVertex));
+            Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
 
             Preset3D.sStencilTest_BaseMask(0);
             Preset3D.sStencilTest_ComparisonType(RenderingPresetEnumArguments::StencilTest::TypeOfComparison::NotEqual);
@@ -320,14 +294,14 @@ int main()
                 SP_OUTLINE.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
                 SP_OUTLINE.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
                 SP_OUTLINE.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
-                glSC(glDrawArrays(GL_TRIANGLES, 0, (int)VB1_DATA.size() / floatsAmountPerVertex));
+                Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
                 VA2.Bind();
 
                 SP_OUTLINE.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
                 SP_OUTLINE.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
                 SP_OUTLINE.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
-                glSC(glDrawArrays(GL_TRIANGLES, 0, (int)VB2_DATA.size() / floatsAmountPerVertex));
+                Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
             }
 
             Preset3D.sStencilTest_BaseMask(0xff);
@@ -346,14 +320,14 @@ int main()
             SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
             SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
             SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
-            glSC(glDrawArrays(GL_TRIANGLES, 0, (int)VB1_DATA.size() / floatsAmountPerVertex));
+            Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
             VA2.Bind();
 
             SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
             SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
             SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
-            glSC(glDrawArrays(GL_TRIANGLES, 0, (int)VB2_DATA.size() / floatsAmountPerVertex));
+            Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
 
 
 
@@ -368,14 +342,14 @@ int main()
             FB_COLOR_TEX.Bind(0);
 
             QUAD_VA.Bind();
-            
-            glSC(glDrawArrays(GL_TRIANGLES, 0, (int)quadVBD.size() / 2));
+
+            Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, (int)quadVBD.size() / 2);
 
             QUAD_VA.Unbind();
 
             {//text
                 for (unsigned int i = 0; i < 5; i++) {
-                    TEXT_RENDERER.DrawText("wilson is pedophile",
+                    TEXT_RENDERER.DrawText(L"wilson is pedophile",
                         Width, Height,
                         1,
                         -1.f + 2.f * ((float)i / 5), -1.f + 2.f * ((float)i / 5),
@@ -386,14 +360,15 @@ int main()
                 
             }
 
-            window.EndUpdatingWindow();
+            window.SwapScreenBuffers();
+            window.ProcessEvents();
         }
 
-        glfwTerminate();
+        UninitializeKursovayaEngine2();
         return 0;
     }
     catch (KURSAVAYAENGINE2_CORE_ERRORS&) {
-        glfwTerminate();
+        UninitializeKursovayaEngine2();
         return 0;
     }
 }

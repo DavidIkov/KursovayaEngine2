@@ -6,7 +6,7 @@ bool Keyboard::gPressableKeyState(PressableKeys key) const {
 	return PressableKeysStates[(unsigned int)key];
 }
 
-const EventClass& Keyboard::gPressableKeyEvent(PressableKeys key) {
+const EventClass& Keyboard::gPressableKeyEvent(PressableKeys key) const {
 	return PressableKeysEvents[(unsigned int)key];
 }
 

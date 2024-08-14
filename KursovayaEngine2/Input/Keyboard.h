@@ -18,7 +18,7 @@ class Keyboard {
 
 public:
 
-	DLLTREATMENT const EventClass& gPressableKeyEvent(PressableKeys key);
+	DLLTREATMENT const EventClass& gPressableKeyEvent(PressableKeys key) const;
 
 	//not for user
 	void GLFW_KEYCALLBACK(int key, int scancode, int action, int mods);

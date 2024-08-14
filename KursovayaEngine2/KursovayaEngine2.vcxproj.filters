@@ -547,40 +547,9 @@
   <ItemGroup>
     <None Include="Dependencies\glfw\3.4_Win32\lib-vc2022\glfw3.dll" />
     <None Include="Dependencies\glfw\3.4_x64\lib-vc2022\glfw3.dll" />
-    <None Include="Shaders\full3d.fs" />
-    <None Include="Shaders\full3d.vs" />
-    <None Include="Shaders\quad.vs" />
-    <None Include="Shaders\quad.fs" />
-    <None Include="Models3D\xyu.obj" />
-    <None Include="Models3D\fullhdpenis.obj" />
-    <None Include="Models3D\cube.obj" />
-    <None Include="Shaders\normal.vs" />
-    <None Include="Shaders\normal.gs" />
-    <None Include="Shaders\normal.fs" />
-    <None Include="Shaders\outline.fs" />
-    <None Include="Shaders\outline.vs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Textures\blackFace.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Textures\simpleFace.png">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="README_CODERULES.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="Fonts\arial.ttf" />
-    <Font Include="Fonts\arialbd.ttf" />
-    <Font Include="Fonts\arialbi.ttf" />
-    <Font Include="Fonts\ariali.ttf" />
-    <Font Include="Fonts\ARIALN.TTF" />
-    <Font Include="Fonts\ARIALNB.TTF" />
-    <Font Include="Fonts\ARIALNBI.TTF" />
-    <Font Include="Fonts\ARIALNI.TTF" />
-    <Font Include="Fonts\ariblk.ttf" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="KursovayaEngine2.rc">
