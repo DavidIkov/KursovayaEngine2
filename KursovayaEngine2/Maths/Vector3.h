@@ -1,4 +1,5 @@
 #pragma once
+#include"DLL.h"
 #include<math.h>
 class Matrix;
 class Vector2;
@@ -15,67 +16,67 @@ class Vector3 {
 	mutable float UnitZ = 0.f;
 public:
 
-	static void RotateVectors(const Vector3& xv, const Vector3& yv, float angle, Vector3& xvTOWRITE, Vector3& yvTOWRITE);
+	DLLTREATMENT static void RotateVectors(const Vector3& xv, const Vector3& yv, float angle, Vector3& xvTOWRITE, Vector3& yvTOWRITE);
 
-	Vector3();
-	Vector3(float nX, float nY, float nZ);
-	Vector3(float nn);
-	Vector3(const Matrix&& mat);
+	DLLTREATMENT Vector3();
+	DLLTREATMENT Vector3(float nX, float nY, float nZ);
+	DLLTREATMENT Vector3(float nn);
+	DLLTREATMENT Vector3(const Matrix&& mat);
 	
-	Vector3& operator=(const Vector3& toCopy);
+	DLLTREATMENT Vector3& operator=(const Vector3& toCopy);
 
-	float& operator[](unsigned int ind);
-	float operator[](unsigned int ind) const;
+	DLLTREATMENT float& operator[](unsigned int ind);
+	DLLTREATMENT float operator[](unsigned int ind) const;
 
-	float SqLength() const;
-	float Length() const;
-	Vector3 Unit() const;
+	DLLTREATMENT float SqLength() const;
+	DLLTREATMENT float Length() const;
+	DLLTREATMENT Vector3 Unit() const;
 
-	Vector3 Cross(const Vector3& vec) const;
+	DLLTREATMENT Vector3 Cross(const Vector3& vec) const;
 
-	void sX(float nX);
-	float gX() const;
-	void sY(float nY);
-	float gY() const;
-	void sZ(float nZ);
-	float gZ() const;
+	DLLTREATMENT void sX(float nX);
+	DLLTREATMENT float gX() const;
+	DLLTREATMENT void sY(float nY);
+	DLLTREATMENT float gY() const;
+	DLLTREATMENT void sZ(float nZ);
+	DLLTREATMENT float gZ() const;
 
-	Vector2 gvXY() const;
-	Vector2 gvYX() const;
-	Vector2 gvXZ() const;
-	Vector2 gvZX() const;
-	Vector2 gvYZ() const;
-	Vector2 gvZY() const;
+	DLLTREATMENT Vector2 gvXY() const;
+	DLLTREATMENT Vector2 gvYX() const;
+	DLLTREATMENT Vector2 gvXZ() const;
+	DLLTREATMENT Vector2 gvZX() const;
+	DLLTREATMENT Vector2 gvYZ() const;
+	DLLTREATMENT Vector2 gvZY() const;
 
 
-	Vector3 operator+(float num) const;
-	Vector3 operator-(float num) const;
-	Vector3 operator*(float num) const;
-	Vector3 operator/(float num) const;
+	DLLTREATMENT Vector3 operator+(float num) const;
+	DLLTREATMENT Vector3 operator-(float num) const;
+	DLLTREATMENT Vector3 operator*(float num) const;
+	DLLTREATMENT Vector3 operator/(float num) const;
 
-	void operator+=(float num);
-	void operator-=(float num);
-	void operator*=(float num);
-	void operator/=(float num);
+	DLLTREATMENT void operator+=(float num);
+	DLLTREATMENT void operator-=(float num);
+	DLLTREATMENT void operator*=(float num);
+	DLLTREATMENT void operator/=(float num);
 
-	Vector3 operator+(const Vector3& vec) const;
-	Vector3 operator-(const Vector3& vec) const;
-	Vector3 operator*(const Vector3& vec) const;
-	Vector3 operator/(const Vector3& vec) const;
+	DLLTREATMENT Vector3 operator+(const Vector3& vec) const;
+	DLLTREATMENT Vector3 operator-(const Vector3& vec) const;
+	DLLTREATMENT Vector3 operator*(const Vector3& vec) const;
+	DLLTREATMENT Vector3 operator/(const Vector3& vec) const;
 
-	void operator+=(const Vector3& vec);
-	void operator-=(const Vector3& vec);
-	void operator*=(const Vector3& vec);
-	void operator/=(const Vector3& vec);
+	DLLTREATMENT void operator+=(const Vector3& vec);
+	DLLTREATMENT void operator-=(const Vector3& vec);
+	DLLTREATMENT void operator*=(const Vector3& vec);
+	DLLTREATMENT void operator/=(const Vector3& vec);
 
-	Vector3 operator+(const Matrix& mat) const;
-	Vector3 operator-(const Matrix& mat) const;
-	Vector3 operator*(const Matrix& mat) const;
-	Vector3 operator/(const Matrix& mat) const;
+	DLLTREATMENT Vector3 operator+(const Matrix& mat) const;
+	DLLTREATMENT Vector3 operator-(const Matrix& mat) const;
+	DLLTREATMENT Vector3 operator*(const Matrix& mat) const;
+	DLLTREATMENT Vector3 operator/(const Matrix& mat) const;
 
-	void operator+=(const Matrix& mat);
-	void operator-=(const Matrix& mat);
-	void operator*=(const Matrix& mat);
-	void operator/=(const Matrix& mat);
+	DLLTREATMENT void operator+=(const Matrix& mat);
+	DLLTREATMENT void operator-=(const Matrix& mat);
+	DLLTREATMENT void operator*=(const Matrix& mat);
+	DLLTREATMENT void operator/=(const Matrix& mat);
 };
 

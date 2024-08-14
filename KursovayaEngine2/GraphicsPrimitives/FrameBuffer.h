@@ -1,4 +1,5 @@
 #pragma once
+#include"DLL.h"
 #include"Texture.h"
 #include"RenderBuffer.h"
 #include<vector>
@@ -16,13 +17,20 @@ class FrameBuffer {
 
 public:
 
-	FrameBuffer(unsigned int width, unsigned int height);
-	~FrameBuffer();
-	unsigned int gID() const;
-	void Delete();
-	void Finish();
-	void Bind() const;
-	void AttachRenderBuffer(const RenderBuffer& rb) const;
-	void AttachTexture(Texture& tex);
-	static void Unbind(unsigned int width, unsigned int height);
+	DLLTREATMENT void ClearColorBuffer();
+	DLLTREATMENT void ClearDepthBuffer();
+	DLLTREATMENT void ClearStencilBuffer();
+	//color,depth,stencil
+	DLLTREATMENT void ClearAllBuffers();
+
+	DLLTREATMENT FrameBuffer(unsigned int width, unsigned int height);
+	DLLTREATMENT FrameBuffer(FrameBuffer&& tempFB);
+	DLLTREATMENT ~FrameBuffer();
+	DLLTREATMENT unsigned int gID() const;
+	DLLTREATMENT void Delete();
+	DLLTREATMENT void Finish();
+	DLLTREATMENT void Bind() const;
+	DLLTREATMENT void AttachRenderBuffer(const RenderBuffer& rb) const;
+	DLLTREATMENT void AttachTexture(Texture& tex);
+	DLLTREATMENT static void Unbind(unsigned int width, unsigned int height);
 };

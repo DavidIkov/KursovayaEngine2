@@ -1,49 +1,71 @@
 #pragma once
-#include"UniqueKeysSystem.h"
+#include"DLL.h"
 #include"functional"
-#include"DebuggingTools.h"
-template<typename...EventRespodDataTypes>
-class Event {
-	UniqueKeysSystem KeysSystemForConnections;
-	struct Connection {//if Key is 0 then its a "temporary" connection, which cant be removed since it wont record to keys, it will remove automatically
-		unsigned int FiresTillRemoval = 0;
-		UniqueKey Key = 0;
-		std::function<void(EventRespodDataTypes...)> Function;
-	};
-	std::vector<Connection> Connections;
-public:
 
-	//if FiresTillRemoval != 0 then this is "temporary" connection, it cant be removed since it wont record to keys, it will remove automatically
-	UniqueKey Connect(std::function<void(EventRespodDataTypes...)> func, unsigned int FiresTillRemoval = 0) {
-		UniqueKey key = (FiresTillRemoval == 0) ? KeysSystemForConnections.CreateKey() : 0;
-		Connections.push_back({ FiresTillRemoval,key,func });
-		return key;
-	}
-	void Remove(UniqueKey key) {
-		if (key == 0) {
-			DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "Tried removing connection to event with key = 0, which wont exist", KURSAVAYAENGINE2_CORE_ERRORS::ATTEMPING_TO_REMOVE_CONNECTION_FROM_EVENT_WITH_INVALID_KEY });
-			return;
-		}
-		if (not KeysSystemForConnections.KeyExists(key)) {
-			DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "Tried removing connection to event with key which dosent exist (its not 0)", KURSAVAYAENGINE2_CORE_ERRORS::ATTEMPING_TO_REMOVE_CONNECTION_FROM_EVENT_WITH_INVALID_KEY });
-			return;
-		}
-		for (unsigned int i = 0; i < Connections.size(); i++) {
-			if (Connections[i].Key == key) {
-				Connections.erase(Connections.begin() + i);
-				return;
-			}
-		}
-	}
-	void FireEvent(EventRespodDataTypes... eventData) {
-		for (int i = (int)Connections.size()-1; i > -1; i--) {
-			Connections[i].Function(eventData...);
-			if (Connections[i].Key == 0) {
-				if (Connections[i].FiresTillRemoval == 1) {
-					Connections.erase(Connections.begin() + i);
-				}
-				else Connections[i].FiresTillRemoval--;
-			}
-		}
-	}
+class EventConnectionsHandlerClass;
+
+class EventClass {
+	friend class EventConnectionsHandlerClass;
+
+	mutable bool NeedBufferSwap = false;
+
+	bool EventIsFiring = false;
+
+	struct ConnectionDataInFrontBufferClass {
+		std::function<void(void*)> Func;
+		std::function<bool(void*)> CheckFunc;
+		bool CheckFuncPassed;
+
+		bool Deleted = false;
+
+		ConnectionDataInFrontBufferClass(std::function<void(void*)>& func, std::function<bool(void*)>& checkFunc);
+	};
+	mutable std::vector<ConnectionDataInFrontBufferClass> ConnectionsFrontBuffer;
+	struct ConnectionDataInBackBufferClass {
+		std::function<void(void*)> Func;
+		std::function<bool(void*)> CheckFunc;
+
+		float Priority;
+
+		EventConnectionsHandlerClass* EventConnectionsHandler;
+		unsigned int ConnectionInd;
+
+		unsigned int IndInFrontBuffer = 0;//+1 so if its = 0 then its invalid
+
+		ConnectionDataInBackBufferClass(std::function<void(void*)>&& func, std::function<bool(void*)>&& checkFunc, float priority, const EventConnectionsHandlerClass* handler, unsigned int conInd);
+	};
+	mutable std::vector<ConnectionDataInBackBufferClass> ConnectionsBackBuffer;
+public:
+	DLLTREATMENT void FireEvent(void* data);
+
+	DLLTREATMENT ~EventClass();
+};
+
+class EventConnectionsHandlerClass {
+	friend class EventClass;
+
+	mutable unsigned int IDCounter = 0;
+
+public:
+	typedef unsigned int ConnectionID;
+private:
+
+	struct ConnectionDataClass {
+		ConnectionID ID;
+
+		const EventClass* Event;
+		unsigned int ConnectionInd;
+
+		ConnectionDataClass(ConnectionID id, const EventClass* ev, unsigned int conInd);
+	};
+	mutable std::vector<ConnectionDataClass> Connections;
+
+private: ConnectionID _ConnectToEvent(const EventClass* ev, float priority, unsigned int priorityInsertInd, std::function<void(void*)>&& func, std::function<bool(void*)>&& checkFunc) const;
+public:
+	DLLTREATMENT ConnectionID ConnectToEvent(const EventClass* ev, std::function<void(void*)>&& func) const;
+	DLLTREATMENT ConnectionID ConnectToEvent(const EventClass* ev, std::function<void(void*)>&& func, std::function<bool(void*)>&& checkFunc) const;
+	DLLTREATMENT ConnectionID ConnectToEvent(const EventClass* ev, float priority, std::function<void(void*)>&& func) const;
+	DLLTREATMENT ConnectionID ConnectToEvent(const EventClass* ev, float priority, std::function<void(void*)>&& func, std::function<bool(void*)>&& checkFunc) const;
+	DLLTREATMENT void RemoveConnection(const ConnectionID id);
+	DLLTREATMENT ~EventConnectionsHandlerClass();
 };

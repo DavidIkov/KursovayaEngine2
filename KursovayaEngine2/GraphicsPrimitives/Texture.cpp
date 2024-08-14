@@ -5,10 +5,13 @@
 #include"Tools/ReadFromFile.h"
 #include"glad/glad.h"
 #include"Tools/ErrorCodes.h"
+
+
 //TODO make so you can save depth/stencil components into texture, also make same in frame buffer
-Texture::Texture(const char* filePath) {
+Texture::Texture(const char* filePath, TexParameters&& parameters) :Parameters(parameters) {
     int width, height, textureChannelsAmount;
     unsigned char* textureData = stbi_load(filePath, &width, &height, &textureChannelsAmount, 0);
+    Width = width; Height = height;
     if (textureData == nullptr) {
         DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO LOAD IMAGE", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
     }
@@ -16,22 +19,19 @@ Texture::Texture(const char* filePath) {
     glSC(glGenTextures(1, &ID));
     glSC(glBindTexture(GL_TEXTURE_2D, ID));
 
-    glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-    glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
-
-    glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-    glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    UpdateAllParameters();
 
     StorageType = (textureChannelsAmount == 4) ? TextureStorageType::RGBA : TextureStorageType::RGB;
-
+    
     glSC(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, (textureChannelsAmount==4) ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, textureData));
-    glSC(glGenerateMipmap(GL_TEXTURE_2D));
 
     stbi_image_free(textureData);
 }
-Texture::Texture(unsigned int Width, unsigned int Height, TextureStorageType storageTyp) {
+Texture::Texture(unsigned int Width, unsigned int Height, TextureStorageType storageTyp, TexParameters&& parameters) :Parameters(parameters), Width(Width), Height(Height) {
     glGenTextures(1, &ID);
     glBindTexture(GL_TEXTURE_2D, ID);
+
+    UpdateAllParameters();
 
     StorageType = storageTyp;
 
@@ -67,12 +67,51 @@ Texture::Texture(unsigned int Width, unsigned int Height, TextureStorageType sto
         glStorageData = GL_UNSIGNED_INT_24_8;
         break;
     }
+    case TextureStorageType::SingleChannel:
+    {
+        glStorageInternalFormat = GL_RED;
+        glStorageFormat = GL_RED;
+        glStorageData = GL_UNSIGNED_BYTE;
+        break;
+    }
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, glStorageInternalFormat, Width, Height, 0, glStorageFormat, glStorageData, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, glStorageInternalFormat, Width, Height, 0, glStorageFormat, glStorageData, nullptr);
+}
+Texture::Texture(unsigned int Width, unsigned int Height, unsigned int channelsAmount, const unsigned char* data, TexParameters&& parameters) :Parameters(parameters), Width(Width), Height(Height) {
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glSC(glGenTextures(1, &ID));
+    glSC(glBindTexture(GL_TEXTURE_2D, ID));
+    
+    UpdateAllParameters();
+
+    int glTexFormat = 0;
+    switch (channelsAmount) {
+    case 1:
+    {
+        StorageType = TextureStorageType::SingleChannel;
+        glTexFormat = GL_RED;
+        break;
+    }
+    case 3:
+    {
+        StorageType = TextureStorageType::RGB;
+        glTexFormat = GL_RGB;
+        break;
+    }
+    case 4:
+    {
+        StorageType = TextureStorageType::RGBA;
+        glTexFormat = GL_RGBA;
+        break;
+    }
+    }
+
+    glSC(glTexImage2D(GL_TEXTURE_2D, 0, glTexFormat, Width, Height, 0, glTexFormat, GL_UNSIGNED_BYTE, data));
+}
+Texture::Texture(Texture&& tempTex) {
+    memcpy(this, &tempTex, sizeof(tempTex));
+    tempTex.Deleted = true;
 }
 Texture::~Texture() {
     if (not Deleted) {
@@ -83,10 +122,191 @@ Texture::~Texture() {
 TextureStorageType Texture::gStorageType() const {
     return StorageType;
 }
-void Texture::gWidthAndHeight(unsigned int& width, unsigned int& height) const {
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, ACCESING ITS WIDTH AND HEIGHT MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
-    width = Width;
-    height = Height;
+
+void Texture::UpdParameters_WrapTypeByX() {
+
+    glBindTexture(GL_TEXTURE_2D, ID);
+
+    switch (Parameters.WrapTypeByX) {
+    case TextureWrapType::ClampToEdge:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        break;
+    }
+    case TextureWrapType::ClampToBorder:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
+        break;
+    }
+    case TextureWrapType::MirroredRepeat:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT));
+        break;
+    }
+    case TextureWrapType::Repeat:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+        break;
+    }
+    case TextureWrapType::MirrorClampToEdge:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRROR_CLAMP_TO_EDGE));
+        break;
+    }
+    }
+}
+void Texture::UpdParameters_WrapTypeByY() {
+
+    glBindTexture(GL_TEXTURE_2D, ID);
+
+    switch (Parameters.WrapTypeByX) {
+    case TextureWrapType::ClampToEdge:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+        break;
+    }
+    case TextureWrapType::ClampToBorder:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
+        break;
+    }
+    case TextureWrapType::MirroredRepeat:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT));
+        break;
+    }
+    case TextureWrapType::Repeat:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+        break;
+    }
+    case TextureWrapType::MirrorClampToEdge:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRROR_CLAMP_TO_EDGE));
+        break;
+    }
+    }
+}
+void Texture::UpdParameters_DownscalingFilt() {
+
+    glBindTexture(GL_TEXTURE_2D, ID);
+
+    switch (Parameters.DownscalingFilt) {
+    case TextureDownscalingFilterFunc::Nearest:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+        break;
+    }
+    case TextureDownscalingFilterFunc::Linear:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+        break;
+    }
+    case TextureDownscalingFilterFunc::NearestMipmapNearest:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST));
+        break;
+    }
+    case TextureDownscalingFilterFunc::NearestMipmapLinear:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR));
+        break;
+    }
+    case TextureDownscalingFilterFunc::LinearMipmapLinear:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+        break;
+    }
+    case TextureDownscalingFilterFunc::LinearMipmapNearest:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST));
+        break;
+    }
+    }
+}
+void Texture::UpdParameters_UpscalingFilt() {
+
+    glBindTexture(GL_TEXTURE_2D, ID);
+
+    switch (Parameters.UpscalingFilt) {
+    case TextureUpscalingFilterFunc::Nearest:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+        break;
+    }
+    case TextureUpscalingFilterFunc::Linear:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+        break;
+    }
+    }
+}
+void Texture::UpdParameters_DepthStencilReadMode() {
+
+    glBindTexture(GL_TEXTURE_2D, ID);
+
+    switch (Parameters.DepthStencilReadMode)
+    {
+    case TextureDepthStencilReadMode::Depth:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_STENCIL_TEXTURE_MODE, GL_DEPTH_COMPONENT));
+        break;
+    }
+    case TextureDepthStencilReadMode::Stencil:
+    {
+        glSC(glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_STENCIL_TEXTURE_MODE, GL_STENCIL_INDEX));
+        break;
+    }
+    }
+}
+
+void Texture::sParameters_WrapTypeByX(TextureWrapType wrapTypeByX) {
+    Parameters.WrapTypeByX = wrapTypeByX;
+    UpdParameters_WrapTypeByX();
+}
+void Texture::sParameters_WrapTypeByY(TextureWrapType wrapTypeByY) {
+    Parameters.WrapTypeByY = wrapTypeByY;
+    UpdParameters_WrapTypeByY();
+}
+void Texture::sParameters_DownscalingFilt(TextureDownscalingFilterFunc downscalingFilt) {
+    Parameters.DownscalingFilt = downscalingFilt;
+    UpdParameters_DownscalingFilt();
+}
+void Texture::sParameters_UpscalingFilt(TextureUpscalingFilterFunc upscalingFilt) {
+    Parameters.UpscalingFilt = upscalingFilt;
+    UpdParameters_UpscalingFilt();
+}
+void Texture::sParameters_DepthStencilReadMode(TextureDepthStencilReadMode depthStencilReadMode) {
+    Parameters.DepthStencilReadMode = depthStencilReadMode;
+    UpdParameters_DepthStencilReadMode();
+}
+void Texture::GenerateMipmaps() {
+    glBindTexture(GL_TEXTURE_2D, ID);
+    glSC(glGenerateMipmap(GL_TEXTURE_2D));
+}
+void Texture::UpdateAllParameters() {
+
+    glBindTexture(GL_TEXTURE_2D, ID);
+    
+    UpdParameters_WrapTypeByX();
+    UpdParameters_WrapTypeByY();
+
+    UpdParameters_DownscalingFilt();
+    UpdParameters_UpscalingFilt();
+
+    UpdParameters_DepthStencilReadMode();
+
+}
+unsigned int Texture::gWidth() const {
+    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, ACCESING ITS WIDTH MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
+    return Width;
+}
+unsigned int Texture::gHeight() const {
+    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, ACCESING ITS HEIGHT MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
+    return Height;
+}
+Vector2 Texture::gWidthAndHeight() const {
+    return { (float)gWidth(),(float)gHeight() };
 }
 unsigned int Texture::gID() const {
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, ACCESING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });

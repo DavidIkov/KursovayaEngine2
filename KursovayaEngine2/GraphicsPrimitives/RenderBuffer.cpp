@@ -12,6 +12,10 @@ RenderBuffer::RenderBuffer(unsigned int width, unsigned int height, bool createD
     else if (not createDepthBuffer and createStencilBuffer) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"YOU CANT CREATE RENDER BUFFER WITH STENCIL BUFFER BUT WITHOUT DEPTH BUFFER",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
     else DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"YOU CANT CREATE RENDER BUFFER WITHOUT ANY BUFFERS",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
 }
+RenderBuffer::RenderBuffer(RenderBuffer&& tempRB) {
+    memcpy(this, &tempRB, sizeof(tempRB));
+    tempRB.Deleted = true;
+}
 RenderBuffer::~RenderBuffer() {
     if (not Deleted) {
         glSC(glDeleteRenderbuffers(1, &ID));

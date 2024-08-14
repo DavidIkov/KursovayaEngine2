@@ -13,16 +13,20 @@ void VertexBuffer::UnbindLayout() {
 }
 void VertexBuffer::UpdateLayout() {
     glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));
-    unsigned int off = 0;
+    float* off = 0;
     for (unsigned int i = 0; i < Layout.size(); i++) {
         glSC(glVertexAttribPointer(i, Layout[i], GL_FLOAT, GL_FALSE, SumOfLayout * sizeof(float), (void*)off));
         glSC(glEnableVertexAttribArray(i));
-        off += Layout[i]*sizeof(float);
+        off += Layout[i];
     }
 }
 VertexBuffer::VertexBuffer() {
     glSC(glGenBuffers(1, &ID));
     glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));
+}
+VertexBuffer::VertexBuffer(VertexBuffer&& tempVB) {
+    memcpy(this, &tempVB, sizeof(tempVB));
+    tempVB.Deleted = true;
 }
 VertexBuffer::~VertexBuffer() {
     if (not Deleted) {
@@ -55,50 +59,57 @@ void VertexBuffer::AddToLayout(unsigned int len) {
         UpdateLayout();
     }
 }
+
+unsigned int VertexBuffer::GetVBUsageForGL(VertexBufferDataUsage usage) {
+    switch (usage) {
+    case VertexBufferDataUsage::StreamDraw: {
+        return GL_STREAM_DRAW;
+    }
+    case VertexBufferDataUsage::StreamRead: {
+        return GL_STREAM_READ;
+    }
+    case VertexBufferDataUsage::StreamCopy: {
+        return GL_STREAM_COPY;
+    }
+    case VertexBufferDataUsage::StaticDraw: {
+        return GL_STATIC_DRAW;
+    }
+    case VertexBufferDataUsage::StaticRead: {
+        return GL_STATIC_READ;
+    }
+    case VertexBufferDataUsage::StaticCopy: {
+        return GL_STATIC_COPY;
+    }
+    case VertexBufferDataUsage::DynamicDraw: {
+        return GL_DYNAMIC_DRAW;
+    }
+    case VertexBufferDataUsage::DynamicRead: {
+        return GL_DYNAMIC_READ;
+    }
+    case VertexBufferDataUsage::DynamicCopy: {
+        return GL_DYNAMIC_COPY;
+    }
+    }
+    return 0;
+}
 void VertexBuffer::SetData(const std::vector<float>& data, const VertexBufferDataUsage usage) {
+    SetData(&(data[0]), (unsigned int)data.size() * sizeof(float), usage);
+}
+void VertexBuffer::SetData(const float* data, unsigned int dataLength, const VertexBufferDataUsage usage) {
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX BUFFER IS DELETED, YOU CANT CHANGE ITS DATA", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
     else {
-        int GLusage = 0;
-        switch (usage) {
-        case VertexBufferDataUsage::StreamDraw: {
-            GLusage = GL_STREAM_DRAW;
-            break;
-        }
-        case VertexBufferDataUsage::StreamRead: {
-            GLusage = GL_STREAM_READ;
-            break;
-        }
-        case VertexBufferDataUsage::StreamCopy: {
-            GLusage = GL_STREAM_COPY;
-            break;
-        }
-        case VertexBufferDataUsage::StaticDraw: {
-            GLusage = GL_STATIC_DRAW;
-            break;
-        }
-        case VertexBufferDataUsage::StaticRead: {
-            GLusage = GL_STATIC_READ;
-            break;
-        }
-        case VertexBufferDataUsage::StaticCopy: {
-            GLusage = GL_STATIC_COPY;
-            break;
-        }
-        case VertexBufferDataUsage::DynamicDraw: {
-            GLusage = GL_DYNAMIC_DRAW;
-            break;
-        }
-        case VertexBufferDataUsage::DynamicRead: {
-            GLusage = GL_DYNAMIC_READ;
-            break;
-        }
-        case VertexBufferDataUsage::DynamicCopy: {
-            GLusage = GL_DYNAMIC_COPY;
-            break;
-        }
-        }
+
         glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));
-        glSC(glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &(data[0]), GLusage));
+        glSC(glBufferData(GL_ARRAY_BUFFER, dataLength, data, GetVBUsageForGL(usage)));
+    }
+}
+
+void VertexBuffer::ReserveData(unsigned int amountOfElements, VertexBufferDataUsage usage) {
+    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX BUFFER IS DELETED, YOU CANT CHANGE ITS DATA", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
+    else {
+
+        glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));
+        glSC(glBufferData(GL_ARRAY_BUFFER, amountOfElements * sizeof(float), 0, GetVBUsageForGL(usage)));
     }
 }
 void VertexBuffer::SetSubData(unsigned int offset, const std::vector<float>& data) {
@@ -106,6 +117,13 @@ void VertexBuffer::SetSubData(unsigned int offset, const std::vector<float>& dat
     else {
         glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));
         glSC(glBufferSubData(GL_ARRAY_BUFFER, offset, data.size() * sizeof(float), &(data[0])));
+    }
+}
+void VertexBuffer::SetSubData(unsigned int offset, unsigned int elementsAmount, float* firstElement) {
+    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX BUFFER IS DELETED, YOU CANT CHANGE ITS SUB DATA", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
+    else {
+        glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));
+        glSC(glBufferSubData(GL_ARRAY_BUFFER, offset, elementsAmount * sizeof(float), firstElement));
     }
 }
 void VertexBuffer::Bind() {

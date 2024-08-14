@@ -1,4 +1,5 @@
 #pragma once
+#include"DLL.h"
 #include<iostream>
 class Vector2;
 class Vector3;
@@ -18,10 +19,10 @@ class Matrix {
 	void UpdateDeterminant() const;
 
 public:
-	unsigned int gSizeX() const;
-	unsigned int gSizeY() const;
+	DLLTREATMENT unsigned int gSizeX() const;
+	DLLTREATMENT unsigned int gSizeY() const;
 
-	float& operator[](unsigned int i) const;
+	DLLTREATMENT float& operator[](unsigned int i) const;
 
 	/*
 	3d rotation standart: X:F,T; Y:R,F; Z:R,T
@@ -29,40 +30,40 @@ public:
 	R-RightVec,T-TopVec,F-FrontVec
 	*/
 
-	static Matrix RotateIn3DByAnglesXYZ(float xr, float yr, float zr);
-	static Matrix RotateIn3DByAnglesZYX(float xr, float yr, float zr);
-	static Matrix RotateIn3DByAnglesYZX(float xr, float yr, float zr);
-	static Matrix RotateIn3DByAnglesYXZ(float xr, float yr, float zr);
-	static Matrix RotateIn3DByAnglesZXY(float xr, float yr, float zr);
-	static Matrix RotateIn3DByAnglesXZY(float xr, float yr, float zr);
+	DLLTREATMENT static Matrix RotateIn3DByAnglesXYZ(float xr, float yr, float zr);
+	DLLTREATMENT static Matrix RotateIn3DByAnglesZYX(float xr, float yr, float zr);
+	DLLTREATMENT static Matrix RotateIn3DByAnglesYZX(float xr, float yr, float zr);
+	DLLTREATMENT static Matrix RotateIn3DByAnglesYXZ(float xr, float yr, float zr);
+	DLLTREATMENT static Matrix RotateIn3DByAnglesZXY(float xr, float yr, float zr);
+	DLLTREATMENT static Matrix RotateIn3DByAnglesXZY(float xr, float yr, float zr);
 
-	static Matrix RotateIn2DByAngle(float angle);
+	DLLTREATMENT static Matrix RotateIn2DByAngle(float angle);
 
-	Matrix();
-	Matrix(unsigned int sx, unsigned int sy, const float(&&nums)[]);
-	Matrix(unsigned int sx, unsigned int sy, const float nums[]);
-	Matrix(unsigned int sx, unsigned int sy);
-	Matrix(unsigned int l, const Vector3*(&&nums)[]);
-	Matrix(unsigned int l, const Vector2*(&&nums)[]);
-	Matrix(const Matrix& mat);
-	Matrix& operator=(const Matrix& mat);
-	~Matrix();
+	DLLTREATMENT Matrix();
+	DLLTREATMENT Matrix(unsigned int sx, unsigned int sy, const float(&&nums)[]);
+	DLLTREATMENT Matrix(unsigned int sx, unsigned int sy, const float nums[]);
+	DLLTREATMENT Matrix(unsigned int sx, unsigned int sy);
+	DLLTREATMENT Matrix(unsigned int l, const Vector3*(&&nums)[]);
+	DLLTREATMENT Matrix(unsigned int l, const Vector2*(&&nums)[]);
+	DLLTREATMENT Matrix(const Matrix& mat);
+	DLLTREATMENT Matrix& operator=(const Matrix& mat);
+	DLLTREATMENT ~Matrix();
 
-	float gDeterminant() const;
-	const Matrix& gInversedMatrix() const;
+	DLLTREATMENT float gDeterminant() const;
+	DLLTREATMENT const Matrix& gInversedMatrix() const;
 
-	bool IsIndInMatrix(unsigned int i) const;
-	unsigned int GetIndByXY(unsigned int x, unsigned int y) const;
-	bool IsXYInMatrix(unsigned int x, unsigned int y) const;
-	Matrix operator+(const Matrix& mat) const;
-	Matrix operator+(float num) const;
-	Matrix operator-(const Matrix& mat) const;
-	Matrix operator-(float num) const;
+	DLLTREATMENT bool IsIndInMatrix(unsigned int i) const;
+	DLLTREATMENT unsigned int GetIndByXY(unsigned int x, unsigned int y) const;
+	DLLTREATMENT bool IsXYInMatrix(unsigned int x, unsigned int y) const;
+	DLLTREATMENT Matrix operator+(const Matrix& mat) const;
+	DLLTREATMENT Matrix operator+(float num) const;
+	DLLTREATMENT Matrix operator-(const Matrix& mat) const;
+	DLLTREATMENT Matrix operator-(float num) const;
 
-	Matrix operator*(const Matrix& mat) const;
-	Matrix operator*(float num) const;
+	DLLTREATMENT Matrix operator*(const Matrix& mat) const;
+	DLLTREATMENT Matrix operator*(float num) const;
 
-	Matrix operator*(const Vector2& vec) const;
-	Matrix operator*(const Vector3& vec) const;
+	DLLTREATMENT Matrix operator*(const Vector2& vec) const;
+	DLLTREATMENT Matrix operator*(const Vector3& vec) const;
 	
 };

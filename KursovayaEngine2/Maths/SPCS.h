@@ -1,4 +1,5 @@
 #pragma once
+#include"DLL.h"
 #include"Vector2.h"
 
 ///stands for SCALE or PIXEL COORDINATE SYSTEM
@@ -6,22 +7,22 @@ class SPCS {
 	Vector2 Scale;
 	Vector2 Pixel;
 public:
-	SPCS();
-	SPCS(float nsX, float nsY, float npX, float npY);
+	DLLTREATMENT SPCS();
+	DLLTREATMENT SPCS(float nsX, float nsY, float npX, float npY);
 
-	const Vector2& gSV() const;
-	const Vector2& gPV() const;
+	DLLTREATMENT const Vector2& gSV() const;
+	DLLTREATMENT const Vector2& gPV() const;
 
-	void sSX(float nsX);
-	void sSY(float nsY);
-	void sPX(float npX);
-	void sPY(float npY);
+	DLLTREATMENT void sSX(float nsX);
+	DLLTREATMENT void sSY(float nsY);
+	DLLTREATMENT void sPX(float npX);
+	DLLTREATMENT void sPY(float npY);
 
-	float gSX() const;
-	float gSY() const;
-	float gPX() const;
-	float gPY() const;
+	DLLTREATMENT float gSX() const;
+	DLLTREATMENT float gSY() const;
+	DLLTREATMENT float gPX() const;
+	DLLTREATMENT float gPY() const;
 
-	SPCS operator+(const SPCS& cords) const;
-	SPCS operator-(const SPCS& cords) const;
+	DLLTREATMENT SPCS operator+(const SPCS& cords) const;
+	DLLTREATMENT SPCS operator-(const SPCS& cords) const;
 };

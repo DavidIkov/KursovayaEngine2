@@ -1,4 +1,5 @@
 #pragma once
+#include"DLL.h"
 #include<vector>
 
 typedef unsigned int UniqueKey;
@@ -11,7 +12,7 @@ class UniqueKeysSystem {
 	unsigned int FreeKeysAmount = 0;
 
 public:
-	UniqueKey CreateKey();
-	bool KeyExists(UniqueKey key) const;
-	void RemoveKey(UniqueKey key);
+	DLLTREATMENT UniqueKey CreateKey();
+	DLLTREATMENT bool KeyExists(UniqueKey key) const;
+	DLLTREATMENT void RemoveKey(UniqueKey key);
 };

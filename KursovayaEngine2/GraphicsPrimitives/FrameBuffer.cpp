@@ -4,10 +4,33 @@
 #include"Tools/DebuggingTools.h"
 #include"Tools/ErrorCodes.h"
 
+
+void FrameBuffer::ClearColorBuffer() {
+	Bind();
+	glSC(glClear(GL_COLOR_BUFFER_BIT));
+}
+void FrameBuffer::ClearDepthBuffer() {
+	Bind();
+	glSC(glClear(GL_DEPTH_BUFFER_BIT));
+}
+void FrameBuffer::ClearStencilBuffer() {
+	Bind();
+	glSC(glClear(GL_STENCIL_BUFFER_BIT));
+}
+void FrameBuffer::ClearAllBuffers() {
+	Bind();
+	glSC(glClear(GL_COLOR_BUFFER_BIT));
+	glSC(glClear(GL_DEPTH_BUFFER_BIT));
+	glSC(glClear(GL_STENCIL_BUFFER_BIT));
+}
+
 FrameBuffer::FrameBuffer(unsigned int width, unsigned int height) :Width(width), Height(height) {
 	glSC(glGenFramebuffers(1, &ID));
 	glSC(glBindFramebuffer(GL_FRAMEBUFFER, ID));
-	
+}
+FrameBuffer::FrameBuffer(FrameBuffer&& tempFB){
+	memcpy(this, &tempFB, sizeof(tempFB));
+	tempFB.Deleted = true;
 }
 FrameBuffer::~FrameBuffer() {
 	if (not Deleted) {
@@ -34,6 +57,11 @@ void FrameBuffer::AttachTexture(Texture& tex) {
 	int glAtt = 0;
 	switch (tex.gStorageType()) {
 	case TextureStorageType::RGB:
+	{
+		glAtt = GL_COLOR_ATTACHMENT0;
+		break;
+	}
+	case TextureStorageType::RGBA:
 	{
 		glAtt = GL_COLOR_ATTACHMENT0;
 		break;

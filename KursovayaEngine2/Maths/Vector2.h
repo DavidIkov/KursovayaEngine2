@@ -1,4 +1,5 @@
 #pragma once
+#include"DLL.h"
 #include<math.h>
 class Matrix;
 
@@ -13,59 +14,59 @@ class Vector2 {
 	mutable float UnitY = 0.f;
 public:
 
-	static Vector2 atan(const Vector2& vec);
-	static void RotateVectors(const Vector2& xv, const Vector2& yv, float angle, Vector2& xvTOWRITE, Vector2& yvTOWRITE);
+	DLLTREATMENT static Vector2 atan(const Vector2& vec);
+	DLLTREATMENT static void RotateVectors(const Vector2& xv, const Vector2& yv, float angle, Vector2& xvTOWRITE, Vector2& yvTOWRITE);
 
-	Vector2();
-	Vector2(float nX, float nY);
-	Vector2(float nAx);
-	Vector2(const Matrix&& mat);
+	DLLTREATMENT Vector2();
+	DLLTREATMENT Vector2(float nX, float nY);
+	DLLTREATMENT Vector2(float nAx);
+	DLLTREATMENT Vector2(const Matrix&& mat);
 	
-	Vector2& operator=(const Vector2& toCopy);
+	DLLTREATMENT Vector2& operator=(const Vector2& toCopy);
 
-	float& operator[](unsigned int ind);
-	float operator[](unsigned int ind) const;
+	DLLTREATMENT float& operator[](unsigned int ind);
+	DLLTREATMENT float operator[](unsigned int ind) const;
 
-	float SqLength() const;
-	float Length() const;
-	Vector2 Unit() const;
+	DLLTREATMENT float SqLength() const;
+	DLLTREATMENT float Length() const;
+	DLLTREATMENT Vector2 Unit() const;
 
-	float DotProduct(const Vector2& vec) const;
+	DLLTREATMENT float DotProduct(const Vector2& vec) const;
 
-	void sX(float nX);
-	float gX() const;
-	void sY(float nY);
-	float gY() const;
+	DLLTREATMENT void sX(float nX);
+	DLLTREATMENT float gX() const;
+	DLLTREATMENT void sY(float nY);
+	DLLTREATMENT float gY() const;
 
 
-	Vector2 operator+(float num) const;
-	Vector2 operator-(float num) const;
-	Vector2 operator*(float num) const;
-	Vector2 operator/(float num) const;
+	DLLTREATMENT Vector2 operator+(float num) const;
+	DLLTREATMENT Vector2 operator-(float num) const;
+	DLLTREATMENT Vector2 operator*(float num) const;
+	DLLTREATMENT Vector2 operator/(float num) const;
 
-	void operator+=(float num);
-	void operator-=(float num);
-	void operator*=(float num);
-	void operator/=(float num);
+	DLLTREATMENT void operator+=(float num);
+	DLLTREATMENT void operator-=(float num);
+	DLLTREATMENT void operator*=(float num);
+	DLLTREATMENT void operator/=(float num);
 
-	Vector2 operator+(const Vector2& vec) const;
-	Vector2 operator-(const Vector2& vec) const;
-	Vector2 operator*(const Vector2& vec) const;
-	Vector2 operator/(const Vector2& vec) const;
+	DLLTREATMENT Vector2 operator+(const Vector2& vec) const;
+	DLLTREATMENT Vector2 operator-(const Vector2& vec) const;
+	DLLTREATMENT Vector2 operator*(const Vector2& vec) const;
+	DLLTREATMENT Vector2 operator/(const Vector2& vec) const;
 
-	void operator+=(const Vector2& vec);
-	void operator-=(const Vector2& vec);
-	void operator*=(const Vector2& vec);
-	void operator/=(const Vector2& vec);
+	DLLTREATMENT void operator+=(const Vector2& vec);
+	DLLTREATMENT void operator-=(const Vector2& vec);
+	DLLTREATMENT void operator*=(const Vector2& vec);
+	DLLTREATMENT void operator/=(const Vector2& vec);
 
-	Vector2 operator+(const Matrix& mat) const;
-	Vector2 operator-(const Matrix& mat) const;
-	Vector2 operator*(const Matrix& mat) const;
-	Vector2 operator/(const Matrix& mat) const;
+	DLLTREATMENT Vector2 operator+(const Matrix& mat) const;
+	DLLTREATMENT Vector2 operator-(const Matrix& mat) const;
+	DLLTREATMENT Vector2 operator*(const Matrix& mat) const;
+	DLLTREATMENT Vector2 operator/(const Matrix& mat) const;
 
-	void operator+=(const Matrix& mat);
-	void operator-=(const Matrix& mat);
-	void operator*=(const Matrix& mat);
-	void operator/=(const Matrix& mat);
+	DLLTREATMENT void operator+=(const Matrix& mat);
+	DLLTREATMENT void operator-=(const Matrix& mat);
+	DLLTREATMENT void operator*=(const Matrix& mat);
+	DLLTREATMENT void operator/=(const Matrix& mat);
 };
 

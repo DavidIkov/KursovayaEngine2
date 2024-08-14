@@ -1,4 +1,5 @@
 #pragma once
+#include"DLL.h"
 #include<string>
 
-std::string ReadFromFile(const char* filepath);
+DLLTREATMENT std::string ReadFromFile(const char* filepath);

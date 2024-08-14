@@ -5,18 +5,12 @@
 #include"Tools/DebuggingTools.h"
 #include"Tools/ErrorCodes.h"
 #include"Maths/Vector3.h"
+#include<limits>
 
-static void skipToNextLine(const std::string& txt, unsigned int& startInd) {
-	while (txt[startInd] != '\n') {
-		if (txt[startInd] == '\0') return;
-		startInd++;
-	}
-	startInd++;
-}
 static unsigned int findSymbolInd(const std::string& txt, const char symbol, const unsigned int startInd) {
 	unsigned int i = startInd;
 	while (txt[i] != symbol) {
-		if (txt[i] == '\0') return txt.size();
+		if (txt[i] == '\0') return (unsigned int)txt.size();
 		i++;
 	}
 	return i;
@@ -26,6 +20,7 @@ static int mini(int a1, int a2) {
 }
 
 //TODO: add exceptions and some safety
+//TODO: fix problem with repeating vertexes(good example in helicopter.obj)
 
 /*how algorithm works
 1. calculate amount of vertexes,normals,connections
@@ -39,6 +34,9 @@ std::vector<float> ReadObjFileType(const char* filePath) {
 	std::ifstream fileTextStream;
 	fileTextStream.open(filePath);
 	if (fileTextStream.fail()) {
+		/*char buffer[100];
+		strerror_s(buffer, errno);
+		std::cout<< buffer <<'\n';*/
 		std::string errMsg;
 		errMsg += "Failed to open file \"";
 		errMsg += filePath;
@@ -47,7 +45,7 @@ std::vector<float> ReadObjFileType(const char* filePath) {
 	}
 	std::string curLine;
 
-	TimePoint loadStart = Time::GetTimePoint();
+	Time::TimePoint loadStart = Time::GetTimePoint();
 	std::cout << "Starting to load \"" << filePath << "\"'s data\n";
 
 	unsigned int fileVertexesAmount = 0;
@@ -140,8 +138,8 @@ std::vector<float> ReadObjFileType(const char* filePath) {
 	//third step
 	{
 		
-		std::vector<Vector3> smoothedNormals;
-		smoothedNormals.resize(fileVertexesAmount);
+		std::vector<float> smoothedNormalsMins(fileVertexesAmount * 3, nanf(""));
+		std::vector<float> smoothedNormalsMaxs(fileVertexesAmount * 3, nanf(""));
 
 		unsigned int orderForThree[] = { 0,1,2 };
 		unsigned int orderForFour[] = { 0,1,2,2,3,0 };
@@ -150,10 +148,9 @@ std::vector<float> ReadObjFileType(const char* filePath) {
 		for (unsigned int coi = 0; coi < fileVertexConnectionsLens.size(); coi++) {
 			unsigned int len = fileVertexConnectionsLens[coi];
 			unsigned int curTrianglesAmount = len - 2;
-			unsigned int* order = nullptr;
-			if (len == 3) order = orderForThree;
-			else if (len == 4) order = orderForFour;
-			else DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,".OBJ FILE GOT MORE THEN FOUR OR LESS THEN 3 CONNECTIONS",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
+			unsigned int* order = orderForThree;
+			if (len == 4) order = orderForFour;
+			else if (len != 3) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,".OBJ FILE GOT MORE THEN FOUR OR LESS THEN 3 CONNECTIONS",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
 			
 			Vector3 normal = (fileVertexes[fileVertexConnections[curConOff + order[1]]] - fileVertexes[fileVertexConnections[curConOff + order[0]]]).Cross
 			(fileVertexes[fileVertexConnections[curConOff + order[2]]] - fileVertexes[fileVertexConnections[curConOff + order[0]]]);
@@ -182,7 +179,17 @@ std::vector<float> ReadObjFileType(const char* filePath) {
 					preparedData.push_back(unitNormal[1]);
 					preparedData.push_back(unitNormal[2]);
 
-					smoothedNormals[vi[vii]] += normal;
+					for (unsigned int nii = 0; nii < 3; nii++) {
+						unsigned int wi = vi[vii] * 3 + nii;
+						if (isnan(smoothedNormalsMaxs[wi])) {
+							smoothedNormalsMaxs[wi] = unitNormal[nii];
+							smoothedNormalsMins[wi] = unitNormal[nii];
+						}
+						else {
+							if (unitNormal[nii] > smoothedNormalsMaxs[wi]) smoothedNormalsMaxs[wi] = unitNormal[nii];
+							else if (unitNormal[nii] < smoothedNormalsMins[wi]) smoothedNormalsMins[wi] = unitNormal[nii];
+						}
+					}
 
 					//texture cords
 					preparedData.push_back(0);
@@ -194,14 +201,26 @@ std::vector<float> ReadObjFileType(const char* filePath) {
 			curConOff += len;
 		}
 
-
 		for (unsigned int pdi = 3; pdi < preparedData.size(); pdi += 11) {
+			unsigned int smoothedNormalSInd = (unsigned int)preparedData[pdi] * 3;
+			Vector3 unitVec(
+				(smoothedNormalsMins[smoothedNormalSInd + 0] + smoothedNormalsMaxs[smoothedNormalSInd + 0]) / 2,
+				(smoothedNormalsMins[smoothedNormalSInd + 1] + smoothedNormalsMaxs[smoothedNormalSInd + 1]) / 2,
+				(smoothedNormalsMins[smoothedNormalSInd + 2] + smoothedNormalsMaxs[smoothedNormalSInd + 2]) / 2
+			);
+			unitVec /= unitVec.Length();
+
+			preparedData[pdi + 0] = unitVec[0];
+			preparedData[pdi + 1] = unitVec[1];
+			preparedData[pdi + 2] = unitVec[2];
+		}
+		/*for (unsigned int pdi = 3; pdi < preparedData.size(); pdi += 11) {
 			unsigned int smoothedNormaInd = (unsigned int)preparedData[pdi];
 			Vector3 unitVec = smoothedNormals[smoothedNormaInd].Unit();
 			preparedData[pdi + 0] = unitVec[0];
 			preparedData[pdi + 1] = unitVec[1];
 			preparedData[pdi + 2] = unitVec[2];
-		}
+		}*/
 	}
 
 	std::cout << "Finished loading model \"" << filePath << "\" in " <<
@@ -213,166 +232,3 @@ std::vector<float> ReadObjFileType(const char* filePath) {
 
 	return preparedData;
 }
-
-
-//std::vector<float> ReadObjFileType(const char* filePath) {
-//	
-//	std::ifstream fileTextStream;
-//	fileTextStream.open(filePath);
-//	if (fileTextStream.fail()) {
-//		std::string errMsg;
-//		errMsg += "Failed to open file \"";
-//		errMsg += filePath;
-//		errMsg += '\"';
-//		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,errMsg.c_str(),KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-//	}
-//	std::string curLine;
-//
-//
-//	std::vector<float> vertexes;
-//	std::vector<float> smoothedNormals;
-//
-//	std::vector<float> filteredData;
-//
-//	std::cout << "Starting to calculate amount of vertexes/normals/triangles in \"" << filePath << '\"' << std::endl;
-//	TimePoint calculatingStart = Time::GetTimePoint();
-//
-//	{//precalculate vector's lengths
-//
-//		unsigned int vertexesLen = 0;
-//		unsigned int smoothedNormalsLen = 0;
-//		unsigned int fileterDataLen = 0;
-//
-//		while (std::getline(fileTextStream, curLine)) {
-//
-//			std::string name = curLine.substr(0, findSymbolInd(curLine, ' ', 0));
-//			if (name == "v") {//vertex
-//				vertexesLen += 3;
-//			}
-//			else if (name == "vn") {//normal
-//				smoothedNormalsLen += 3;
-//			}
-//			else if (name == "f") {//vertexes order
-//
-//				unsigned int vertexesAmount = 0;
-//
-//				unsigned int i = 0;
-//
-//				while (true) {
-//					i = findSymbolInd(curLine, ' ', i + 1);
-//					if (i==curLine.size()) break;
-//					vertexesAmount++;
-//				}
-//
-//				fileterDataLen += (vertexesAmount - 2) * 3 * 11;
-//			}
-//
-//		
-//		}
-//
-//		vertexes.reserve(vertexesLen);
-//		smoothedNormals.reserve(smoothedNormalsLen);
-//		filteredData.reserve(fileterDataLen);
-//	}
-//	fileTextStream.clear();
-//	fileTextStream.seekg(0, fileTextStream.beg);
-//
-//	TimePoint loadStart = Time::GetTimePoint();
-//
-//	std::cout << "Calculations done, model \"" << filePath << "\" have " <<
-//		vertexes.capacity() / 3 << " vertexes, " << smoothedNormals.capacity() / 3 <<
-//		" smoothed normals, and " << filteredData.capacity() / 11 / 3 <<
-//		" triangles in result, calculations finished in " <<
-//		Time::GetDuration(calculatingStart, loadStart) << " seconds" << std::endl;
-//
-//	std::cout << "Starting to load \"" << filePath << "\" data" << std::endl;
-//
-//	while (std::getline(fileTextStream, curLine)) {
-//
-//		unsigned int i = 0;
-//		std::string name = curLine.substr(0, findSymbolInd(curLine, ' ', 0));
-//		if (name == "v") {//vertex
-//			i = i + 2 - 2;
-//			for (unsigned int mi = 0; mi < 3; mi++) {
-//				//example of data: "v -0.276388 -0.447220 0.850649"
-//				unsigned int si = i + 2;//move to beginning of num
-//				unsigned int ei = mini(findSymbolInd(curLine,' ',si), findSymbolInd(curLine, '\n', si));
-//				vertexes.push_back(std::stof(curLine.substr(si, ei - si)));
-//				i = ei - 1;
-//			}
-//		}
-//		else if (name == "vn") {//normal
-//			i = i + 3 - 2;
-//			for (unsigned int mi = 0; mi < 3; mi++) {
-//				//example of data: "vn 0.7376 -0.4109 -0.5359"
-//				unsigned int si = i + 2;//move to beginning of num
-//				unsigned int ei = mini(findSymbolInd(curLine, ' ', si), findSymbolInd(curLine, '\n', si));
-//
-//				smoothedNormals.push_back(std::stof(curLine.substr(si, ei - si)));
-//				i = ei - 1;
-//			}
-//
-//		}
-//		else if (name == "f") {//vertexes order
-//
-//			/*example of data:
-//			f 98/2/80 86/4/80 99/18/80
-//			f 131/22/91 132/60/91 146/60/91 137/64/91
-//			note that indexes in .obj starts from 1 instead of 0
-//			*/
-//			std::vector<int> nums;
-//			unsigned int lineEnd = findSymbolInd(curLine, '\n', i);
-//			i++;
-//			while (i != lineEnd) {
-//				unsigned int ce = mini(findSymbolInd(curLine, ' ', i + 1), findSymbolInd(curLine, '/', i + 1));
-//				if (ce > lineEnd) ce = lineEnd;
-//				if ((ce - i - 1) == 0) nums.push_back(0);
-//				else nums.push_back(std::stoi(curLine.substr(i + 1, ce - i - 1)) - 1);
-//				i = ce;
-//			}
-//			
-//			{//store results
-//				std::vector<unsigned int> order;
-//				if (nums.size() / 3 == 3) {
-//					order = { 0,1,2 };
-//				}
-//				else if (nums.size() / 3 == 4) {
-//					order = { 0,1,2,2,3,0 };
-//				}
-//				filteredData.reserve(filteredData.size() + order.size() * (3 + 3 + 2));
-//
-//				Vector3 p0(vertexes[nums[0] * 3 + 0], vertexes[nums[0] * 3 + 1], vertexes[nums[0] * 3 + 2]);
-//				Vector3 p1(vertexes[nums[3] * 3 + 0], vertexes[nums[3] * 3 + 1], vertexes[nums[3] * 3 + 2]);
-//				Vector3 p2(vertexes[nums[6] * 3 + 0], vertexes[nums[6] * 3 + 1], vertexes[nums[6] * 3 + 2]);
-//				Vector3 normal = (p1 - p0).Cross(p2 - p0).Unit();
-//				
-//				for (unsigned int ni = 0; ni < order.size(); ni++) {
-//
-//					for (unsigned int vdi = 0; vdi < 3; vdi++) {
-//						filteredData.push_back(vertexes[nums[order[ni] * 3 + 0] * 3 + vdi]);
-//					}
-//					for (unsigned int vdi = 0; vdi < 3; vdi++) {
-//						filteredData.push_back(smoothedNormals[nums[order[ni] * 3 + 2] * 3 + vdi]);
-//					}
-//					for (unsigned int ndi = 0; ndi < 3; ndi++) {
-//						filteredData.push_back(normal[ndi]);
-//					}
-//					filteredData.push_back(0);
-//					filteredData.push_back(0);
-//				}
-//			}
-//
-//
-//		}
-//
-//	}
-//
-//	std::cout << "Finished loading model \"" << filePath << "\" in " <<
-//		Time::GetDuration(loadStart, Time::GetTimePoint()) << " seconds" << std::endl;
-//
-//
-//
-//	fileTextStream.close();
-//
-//	return filteredData;
-//}

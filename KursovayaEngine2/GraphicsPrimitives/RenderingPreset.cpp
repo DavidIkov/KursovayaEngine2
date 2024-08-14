@@ -44,6 +44,10 @@ ClearR(f_ClearR), ClearG(f_ClearG), ClearB(f_ClearB)
 
 }
 
+RenderingPreset::RenderingPreset(RenderingPreset&& tempRP) {
+	memcpy(this, &tempRP, sizeof(tempRP));
+}
+
 
 void RenderingPreset::sFaceCulling_Enabled(bool newVal) { FaceCulling_Enabled = newVal; UpdFaceCulling_Enabled(); }
 void RenderingPreset::sFaceCulling_FaceToCull(RenderingPresetEnumArguments::FaceCulling::FaceToCull newVal) { FaceCulling_FaceToCull = newVal; UpdFaceCulling_FaceToCull(); }
@@ -408,7 +412,6 @@ void RenderingPreset::UpdClearRGB() {
 	glSC(glClearColor(ClearR, ClearG, ClearB, 1.f));
 }
 
-
 void RenderingPreset::Bind() {
 	
 	UpdFaceCulling_Enabled();
@@ -430,10 +433,6 @@ void RenderingPreset::Bind() {
 
 	UpdClearRGB();
 
-	glSC(glClear(GL_COLOR_BUFFER_BIT));
-	if (DepthTest_Enabled) { glSC(glClear(GL_DEPTH_BUFFER_BIT)); }
-	if (StencilTest_Enabled) { glSC(glClear(GL_STENCIL_BUFFER_BIT)); }
-	
 }
 void RenderingPreset::Unbind() {
 	glSC(glDisable(GL_CULL_FACE));

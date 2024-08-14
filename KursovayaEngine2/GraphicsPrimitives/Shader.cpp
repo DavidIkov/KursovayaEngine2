@@ -12,12 +12,21 @@ unsigned int Shader::gID() const {
 	}
 	return ID;
 }
-Shader::Shader(ShaderTypesEnum typ, const char* filePath) {
+Shader::Shader(const char* filePath, ShaderTypesEnum typ) {
 	ShaderType = typ;
 	ID = glCreateShader((typ == ShaderTypesEnum::Fragment) ? GL_FRAGMENT_SHADER : ((typ == ShaderTypesEnum::Vertex) ? GL_VERTEX_SHADER : GL_GEOMETRY_SHADER));
 	std::string scode = ReadFromFile(filePath);
 	const char* code = scode.c_str();
 	glSC(glShaderSource(ID, 1, &code, 0));
+}
+Shader::Shader(ShaderTypesEnum typ, const char* code) {
+	ShaderType = typ;
+	ID = glCreateShader((typ == ShaderTypesEnum::Fragment) ? GL_FRAGMENT_SHADER : ((typ == ShaderTypesEnum::Vertex) ? GL_VERTEX_SHADER : GL_GEOMETRY_SHADER));
+	glSC(glShaderSource(ID, 1, &code, 0));
+}
+Shader::Shader(Shader&& tempS) {
+	memcpy(this, &tempS, sizeof(tempS));
+	tempS.Deleted = true;
 }
 void Shader::Compile() {
 	if (Compiled) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER IS ALREADY COMPILED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });

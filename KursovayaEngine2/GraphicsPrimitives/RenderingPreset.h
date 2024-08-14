@@ -1,4 +1,5 @@
 #pragma once
+#include"DLL.h"
 
 namespace RenderingPresetEnumArguments {
 
@@ -106,39 +107,39 @@ class RenderingPreset {
 
 public:
 
-	void sFaceCulling_Enabled(bool newVal);
-	void sFaceCulling_FaceToCull(RenderingPresetEnumArguments::FaceCulling::FaceToCull newVal);
-	void sFaceCulling_FaceDetermination(RenderingPresetEnumArguments::FaceCulling::FaceDetermination newVal);
+	DLLTREATMENT void sFaceCulling_Enabled(bool newVal);
+	DLLTREATMENT void sFaceCulling_FaceToCull(RenderingPresetEnumArguments::FaceCulling::FaceToCull newVal);
+	DLLTREATMENT void sFaceCulling_FaceDetermination(RenderingPresetEnumArguments::FaceCulling::FaceDetermination newVal);
 
-	void sDepthTest_Enabled(bool newVal);
-	void sDepthTest_WriteInBufferEnabled(bool newVal);
-	void sDepthTest_TypeOfComparison(RenderingPresetEnumArguments::DepthTest::TypeOfComparison newVal);
+	DLLTREATMENT void sDepthTest_Enabled(bool newVal);
+	DLLTREATMENT void sDepthTest_WriteInBufferEnabled(bool newVal);
+	DLLTREATMENT void sDepthTest_TypeOfComparison(RenderingPresetEnumArguments::DepthTest::TypeOfComparison newVal);
 
-	void sStencilTest_Enabled(bool newVal);
-	void sStencilTest_BaseMask(unsigned int newVal);
-	void sStencilTest_ComparisonType(RenderingPresetEnumArguments::StencilTest::TypeOfComparison newVal);
-	void sStencilTest_ReferenceValue(unsigned int newVal);
-	void sStencilTest_Mask(unsigned int newVal);
-	void sStencilTest_ActionOnSF(RenderingPresetEnumArguments::StencilTest::Actions newVal);
-	void sStencilTest_ActionOnSPDF(RenderingPresetEnumArguments::StencilTest::Actions newVal);
-	void sStencilTest_ActionOnSPDP(RenderingPresetEnumArguments::StencilTest::Actions newVal);
+	DLLTREATMENT void sStencilTest_Enabled(bool newVal);
+	DLLTREATMENT void sStencilTest_BaseMask(unsigned int newVal);
+	DLLTREATMENT void sStencilTest_ComparisonType(RenderingPresetEnumArguments::StencilTest::TypeOfComparison newVal);
+	DLLTREATMENT void sStencilTest_ReferenceValue(unsigned int newVal);
+	DLLTREATMENT void sStencilTest_Mask(unsigned int newVal);
+	DLLTREATMENT void sStencilTest_ActionOnSF(RenderingPresetEnumArguments::StencilTest::Actions newVal);
+	DLLTREATMENT void sStencilTest_ActionOnSPDF(RenderingPresetEnumArguments::StencilTest::Actions newVal);
+	DLLTREATMENT void sStencilTest_ActionOnSPDP(RenderingPresetEnumArguments::StencilTest::Actions newVal);
 
-	void sBlending_Enabled(bool newVal);
-	void sBlending_ConstR(float newVal);
-	void sBlending_ConstG(float newVal);
-	void sBlending_ConstB(float newVal);
-	void sBlending_ConstA(float newVal);
-	void sBlending_FuncForColor1(RenderingPresetEnumArguments::Blending::FunctionForColor newVal);
-	void sBlending_FuncForColor2(RenderingPresetEnumArguments::Blending::FunctionForColor newVal);
+	DLLTREATMENT void sBlending_Enabled(bool newVal);
+	DLLTREATMENT void sBlending_ConstR(float newVal);
+	DLLTREATMENT void sBlending_ConstG(float newVal);
+	DLLTREATMENT void sBlending_ConstB(float newVal);
+	DLLTREATMENT void sBlending_ConstA(float newVal);
+	DLLTREATMENT void sBlending_FuncForColor1(RenderingPresetEnumArguments::Blending::FunctionForColor newVal);
+	DLLTREATMENT void sBlending_FuncForColor2(RenderingPresetEnumArguments::Blending::FunctionForColor newVal);
 
-	void sClearR(float newVal);
-	void sClearG(float newVal);
-	void sClearB(float newVal);
-
-
+	DLLTREATMENT void sClearR(float newVal);
+	DLLTREATMENT void sClearG(float newVal);
+	DLLTREATMENT void sClearB(float newVal);
 
 
-	RenderingPreset(
+
+
+	DLLTREATMENT RenderingPreset(
 		bool f_FaceCullingEnabled,
 		RenderingPresetEnumArguments::FaceCulling::FaceToCull f_FaceCulling_FaceToCull,
 		RenderingPresetEnumArguments::FaceCulling::FaceDetermination f_FaceCulling_FaceDetermination,
@@ -168,6 +169,7 @@ public:
 		float f_ClearG,
 		float f_ClearB
 		);
-	void Bind();
-	static void Unbind();
+	DLLTREATMENT RenderingPreset(RenderingPreset&& tempRP);
+	DLLTREATMENT void Bind();
+	DLLTREATMENT static void Unbind();
 };

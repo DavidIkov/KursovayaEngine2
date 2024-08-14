@@ -22,6 +22,9 @@
 #include"Tools/Time.h"
 #include"GraphicsPrimitives/VertexBuffer.h"
 #include"GraphicsPrimitives/VertexArray.h"
+#include"WinOS/FileExplorerDialog.h"
+
+#include"TEMPORARY_PRACTICE/TextRenderer.h"
 
 #include"Windows/WindowsManager.h"
 
@@ -42,6 +45,9 @@ int main()
     try {
 
         
+        
+
+
 
 
         unsigned int Width = 900;
@@ -50,11 +56,23 @@ int main()
 
         Window window(Width, Height, "haiiiii", false, 1);
 
+
+        TextRenderer TEXT_RENDERER("Fonts/arial.ttf");
+
+
+        std::cout << FileExplorerDialog::OpenDialog({ {"Text Files","txt"},{"Any File", "*"} }) << '\n';
+
         FrameBuffer FB(Width, Height);
-        Texture FB_COLOR_TEX(Width, Height, TextureStorageType::RGB);
+        Texture FB_COLOR_TEX(Width, Height, TextureStorageType::RGB,
+            { TextureWrapType::ClampToEdge,TextureWrapType::ClampToEdge,TextureDownscalingFilterFunc::Nearest,TextureUpscalingFilterFunc::Nearest,
+            TextureDepthStencilReadMode::Depth });
         FB.AttachTexture(FB_COLOR_TEX);
-        RenderBuffer RB(Width, Height, true, true);
-        FB.AttachRenderBuffer(RB);
+        Texture FB_DEPTH_STENCIL_TEX(Width, Height, TextureStorageType::DepthStencil,
+            { TextureWrapType::ClampToEdge,TextureWrapType::ClampToEdge,TextureDownscalingFilterFunc::Nearest,TextureUpscalingFilterFunc::Nearest,
+            TextureDepthStencilReadMode::Stencil});
+        FB.AttachTexture(FB_DEPTH_STENCIL_TEX);
+        //RenderBuffer RB(Width, Height, true, true);
+        //FB.AttachRenderBuffer(RB);
         FB.Finish();
         FB.Unbind(Width, Height);
 
@@ -74,10 +92,12 @@ int main()
             false, 0, 0, 0, 0, RenderingPresetEnumArguments::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArguments::Blending::FunctionForColor::OneMinusSrcAlpha,
             0.f,0.f,0.f
         );
+        
 
         unsigned int floatsAmountPerVertex = 3 + 3 + 3 + 2;
-        std::vector<float> VB1_DATA = ReadObjFileType("Models3D/fullhdsphere.obj");
-        std::vector<float> VB2_DATA = ReadObjFileType("Models3D/troll.obj");
+        std::vector<float> VB1_DATA = ReadObjFileType("Models3D/cube.obj");
+        std::vector<float> VB2_DATA = ReadObjFileType("Models3D/sphere.obj");
+
 
 
 
@@ -109,11 +129,11 @@ int main()
 
         ShaderProgram SP;
         {
-            Shader VS(ShaderTypesEnum::Vertex, "Shaders/test.vs");
+            Shader VS("Shaders/full3d.vs", ShaderTypesEnum::Vertex);
             VS.Compile();
             SP.AttachShader(VS);
 
-            Shader FS(ShaderTypesEnum::Fragment, "Shaders/test.fs");
+            Shader FS("Shaders/full3d.fs", ShaderTypesEnum::Fragment);
             FS.Compile();
             SP.AttachShader(FS);
 
@@ -122,11 +142,11 @@ int main()
 
         ShaderProgram SP_OUTLINE;
         {
-            Shader VS(ShaderTypesEnum::Vertex, "Shaders/outline.vs");
+            Shader VS("Shaders/outline.vs", ShaderTypesEnum::Vertex);
             VS.Compile();
             SP_OUTLINE.AttachShader(VS);
 
-            Shader FS(ShaderTypesEnum::Fragment, "Shaders/outline.fs");
+            Shader FS("Shaders/outline.fs", ShaderTypesEnum::Fragment);
             FS.Compile();
             SP_OUTLINE.AttachShader(FS);
 
@@ -135,41 +155,52 @@ int main()
 
         ShaderProgram SP_NORMAL;
         {
-            Shader VS(ShaderTypesEnum::Vertex, "Shaders/normal.vs");
+            Shader VS("Shaders/normal.vs", ShaderTypesEnum::Vertex);
             VS.Compile();
             SP_NORMAL.AttachShader(VS);
 
-            Shader FS(ShaderTypesEnum::Fragment, "Shaders/normal.fs");
+            Shader FS("Shaders/normal.fs", ShaderTypesEnum::Fragment);
             FS.Compile();
             SP_NORMAL.AttachShader(FS);
 
-            Shader GS(ShaderTypesEnum::Geometry, "Shaders/normal.gs");
+            Shader GS("Shaders/normal.gs", ShaderTypesEnum::Geometry);
             GS.Compile();
             SP_NORMAL.AttachShader(GS);
 
             SP_NORMAL.LinkShaders();
         }
-        
-        
+
+
         ShaderProgram QUAD_SP;
         {
-            Shader VS(ShaderTypesEnum::Vertex, "Shaders/quad.vs");
+            Shader VS("Shaders/quad.vs", ShaderTypesEnum::Vertex);
             VS.Compile();
             QUAD_SP.AttachShader(VS);
 
-            Shader FS(ShaderTypesEnum::Fragment, "Shaders/quad.fs");
+            Shader FS("Shaders/quad.fs", ShaderTypesEnum::Fragment);
             FS.Compile();
             QUAD_SP.AttachShader(FS);
 
             QUAD_SP.LinkShaders();
         }
 
-        SP.Bind();
+        
+
+
+        QUAD_SP.SetUniform1i("u_Texture", 0);
+
         SP.SetUniform1i("u_tex1", 0);
         SP.SetUniform1i("u_tex2", 1);
 
-        Texture TEX0("Textures/blackFace.jpg");
-        Texture TEX1("Textures/simpleFace.png");
+        Texture TEX0("Textures/blackFace.jpg",
+            { TextureWrapType::Repeat,TextureWrapType::Repeat,TextureDownscalingFilterFunc::Linear,TextureUpscalingFilterFunc::Linear,
+            TextureDepthStencilReadMode::Depth });
+        Texture TEX1("Textures/simpleFace.png",
+            { TextureWrapType::Repeat,TextureWrapType::Repeat,TextureDownscalingFilterFunc::Linear,TextureUpscalingFilterFunc::Linear,
+            TextureDepthStencilReadMode::Depth });
+        
+
+        
         
         Vector3 Object1Position(0, 0, 2);
         Matrix Object1RotationMatrix(3, 3, { 1,0,0,0,1,0,0,0,1 });
@@ -255,6 +286,7 @@ int main()
             FB.Bind();
 
             Preset3D.Bind();
+            FB.ClearAllBuffers();
 
             VA1.Bind();
 
@@ -314,21 +346,21 @@ int main()
             SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
             SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
             SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
-            //glSC(glDrawArrays(GL_TRIANGLES, 0, (int)vertexBufferData.size() / floatsAmountPerVertex));
+            glSC(glDrawArrays(GL_TRIANGLES, 0, (int)VB1_DATA.size() / floatsAmountPerVertex));
 
             VA2.Bind();
 
             SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
             SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
             SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
-            //glSC(glDrawArrays(GL_TRIANGLES, 0, (int)vertexBufferData.size() / floatsAmountPerVertex));
+            glSC(glDrawArrays(GL_TRIANGLES, 0, (int)VB2_DATA.size() / floatsAmountPerVertex));
 
 
-            VertexArray::Unbind();
 
             FB.Unbind(Width,Height);
 
             QuadPreset.Bind();
+            window.ClearColorBuffer();
             QUAD_SP.Bind();
 
             QUAD_SP.SetUniform1i("u_Texture", 0);
@@ -340,6 +372,19 @@ int main()
             glSC(glDrawArrays(GL_TRIANGLES, 0, (int)quadVBD.size() / 2));
 
             QUAD_VA.Unbind();
+
+            {//text
+                for (unsigned int i = 0; i < 5; i++) {
+                    TEXT_RENDERER.DrawText("wilson is pedophile",
+                        Width, Height,
+                        1,
+                        -1.f + 2.f * ((float)i / 5), -1.f + 2.f * ((float)i / 5),
+                        -1,-1,
+                        0, TextRenderer::ClampingFuncs::None,
+                        0, true, TextRenderer::ClampingFuncs::None);
+                }
+                
+            }
 
             window.EndUpdatingWindow();
         }

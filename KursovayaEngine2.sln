@@ -5,6 +5,8 @@ VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KursovayaEngine2", "KursovayaEngine2\KursovayaEngine2.vcxproj", "{994478A2-57E4-45B9-B636-A971A949AAD5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UniversityPractice1_WeatherGraph", "UniversityPractice1_WeatherGraph\UniversityPractice1_WeatherGraph.vcxproj", "{5EB967AB-6301-4B67-8494-B11E1360EB91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -21,6 +23,14 @@ Global
 		{994478A2-57E4-45B9-B636-A971A949AAD5}.Efficiency|Win32.Build.0 = Efficiency|Win32
 		{994478A2-57E4-45B9-B636-A971A949AAD5}.Efficiency|x64.ActiveCfg = Efficiency|x64
 		{994478A2-57E4-45B9-B636-A971A949AAD5}.Efficiency|x64.Build.0 = Efficiency|x64
+		{5EB967AB-6301-4B67-8494-B11E1360EB91}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5EB967AB-6301-4B67-8494-B11E1360EB91}.Debug|Win32.Build.0 = Debug|Win32
+		{5EB967AB-6301-4B67-8494-B11E1360EB91}.Debug|x64.ActiveCfg = Debug|x64
+		{5EB967AB-6301-4B67-8494-B11E1360EB91}.Debug|x64.Build.0 = Debug|x64
+		{5EB967AB-6301-4B67-8494-B11E1360EB91}.Efficiency|Win32.ActiveCfg = Efficiency|Win32
+		{5EB967AB-6301-4B67-8494-B11E1360EB91}.Efficiency|Win32.Build.0 = Efficiency|Win32
+		{5EB967AB-6301-4B67-8494-B11E1360EB91}.Efficiency|x64.ActiveCfg = Efficiency|x64
+		{5EB967AB-6301-4B67-8494-B11E1360EB91}.Efficiency|x64.Build.0 = Efficiency|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

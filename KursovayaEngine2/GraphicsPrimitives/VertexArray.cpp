@@ -8,6 +8,10 @@ VertexArray::VertexArray() {
     glSC(glGenVertexArrays(1, &ID));
     glSC(glBindVertexArray(ID));
 }
+VertexArray::VertexArray(VertexArray&& tempVA) {
+    memcpy(this, &tempVA, sizeof(tempVA));
+    tempVA.Deleted = true;
+}
 VertexArray::~VertexArray() {
     if (not Deleted) {
         glSC(glDeleteVertexArrays(1, &ID));

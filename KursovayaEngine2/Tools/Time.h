@@ -1,14 +1,19 @@
 #pragma once
+#include"DLL.h"
 #include<chrono>
-typedef std::chrono::steady_clock::time_point TimePoint;
 namespace Time {
+
+	typedef std::chrono::steady_clock::time_point TimePoint;
+
 	inline const TimePoint ProgramStartTime = std::chrono::steady_clock::now();
 	
-	TimePoint GetTimePoint();
+	DLLTREATMENT TimePoint GetTimePoint();
 
-	float GetTime();
+	DLLTREATMENT float GetTime();
 
-	float GetDuration(const TimePoint& p1, const TimePoint& p2);
+	DLLTREATMENT float GetDuration(const TimePoint& start, const TimePoint& end);
+
+	DLLTREATMENT void Wait(float seconds);
 }
 
 #define MeasureTime(toAsign,code) TimePoint MeasureStartTime=Time::GetTimePoint(); code; toAsign=Time::GetDuration(MeasureStartTime,Time::GetTimePoint());}

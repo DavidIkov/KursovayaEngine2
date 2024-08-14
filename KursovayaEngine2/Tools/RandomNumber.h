@@ -1,3 +1,4 @@
 #pragma once
+#include"DLL.h"
 
-float RandNum(float s, float e);
+DLLTREATMENT float RandNum(float s, float e);

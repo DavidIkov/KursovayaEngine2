@@ -15,6 +15,10 @@ unsigned int ShaderProgram::gID() const {
 ShaderProgram::ShaderProgram() {
 	glSC(ID = glCreateProgram());
 }
+ShaderProgram::ShaderProgram(ShaderProgram&& tempSP) {
+	memcpy(this, &tempSP, sizeof(tempSP));
+	tempSP.Deleted = true;
+}
 void ShaderProgram::AttachShader(const Shader& SH) {
 	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "YOU CANT ATTACH SHADER TO SHADER PROGRAM WHEN ITS DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
 	else if (Linked) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "YOU CANT ATTACH SHADER TO SHADER PROGRAM WHEN ITS ALREADY LINKED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
@@ -68,7 +72,10 @@ if (not Linked) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::War
 else {\
 	glSC(glUseProgram(ID));\
 	int location = glGetUniformLocation(ID, name);\
-	if (location == -1) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"UNIFORM NAME NOT FOUND IN SHADER PROGRAM",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });\
+	if (location == -1) {\
+		std::string msg; msg+="UNIFORM CALLED \""; msg+=name; msg+="\" NO FOUND IN SHADER PROGRAM";\
+		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,msg.c_str(),KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });\
+	}\
 	else glSC(funcName(glGetUniformLocation(ID, name), __VA_ARGS__));\
 }
 
