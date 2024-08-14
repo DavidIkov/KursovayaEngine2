@@ -201,7 +201,7 @@ int main()
                 if (window.gCursorMode() == CursorModes::Free) window.SetCursorMode(CursorModes::LockedAndInvisible);
                 else window.SetCursorMode(CursorModes::Free);
             }
-
+            
             });
 
         float time = 0;
@@ -212,7 +212,7 @@ int main()
 
             time += 0.1f;
 
-            Object2Scale = Vector3((sinf(time)+1)/2*20);
+            Object2Scale = Vector3((sinf(time)+1)/2*10);
 
             Vector2 MouseDelta;
             window.gCursorDelta(&MouseDelta);
