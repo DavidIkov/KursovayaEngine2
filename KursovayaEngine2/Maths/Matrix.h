@@ -6,11 +6,10 @@
 X,Y,Z means the rotation axis, and 2 second letter represent local X and Y vectors for rotation in 2d space
 R-RightVec,T-TopVec,F-FrontVec
 */
+constexpr unsigned int RotationStandart3D[6] = { 2,1,0,2,0,1 };
 
 template<unsigned int SizeX, unsigned int SizeY>
 class Matrix {
-
-	static constexpr unsigned int RotationStandart3D[6] = { 2,1,0,2,0,1 };
 
 	float Nums[SizeX * SizeY] = { 0.f };
 
@@ -33,7 +32,7 @@ class Matrix {
 		ConstructFromVecs<vecLen>(otherVecs...);
 	}
 public:
-	template<unsigned int SizeX2, unsigned int SizeY2>
+	template<unsigned int, unsigned int>
 	friend class Matrix;
 
 	template<typename...NumsTyp>
@@ -156,7 +155,13 @@ public:
 		vecs[2] = vecs[0].CrossFL(vecs[1]);
 		vecs[1] = vecs[2].CrossFL(vecs[0]);
 
-		for (unsigned int x = 0; x < 3; x++) memcpy(&Nums[x * 3], &vecs[x][0], sizeof(float) * 3);
+
+		unsigned int axis3 = RotationStandart3D[axis1 * 2];
+		if (axis3 == axis2) axis3 = RotationStandart3D[axis1 * 2 + 1];
+
+		memcpy(&Nums[axis1 * 3], &vecs[0][0], sizeof(float) * 3);
+		memcpy(&Nums[axis2 * 3], &vecs[1][0], sizeof(float) * 3);
+		memcpy(&Nums[axis3 * 3], &vecs[2][0], sizeof(float) * 3);
 	}
 
 	//all vectors are supposed to be length of 1
@@ -179,6 +184,8 @@ public:
 	}
 
 	//"C" stands for Cartesian coordinates system
+	//better to not use if you can optimize and dont use arccos, but if you cant then this is the function you need
+	//be aware that acosf in this function can create "floating point error" very fast
 	template<unsigned int axisX, unsigned int axisY>
 	Vector<SizeY> RotateVectorC(const Vector<SizeY>& vec, const float angle) const {
 
@@ -219,36 +226,15 @@ public:
 
 #define rotVecMacr(i){\
 		constexpr unsigned int xvi = RotationStandart3D[order[i] * 2]; constexpr unsigned int yvi = RotationStandart3D[order[i] * 2 + 1];\
-		Vector<3> nxv = retMat.RotateVectorC<xvi, yvi>(Vector<3>(&retMat.Nums[3 * xvi]), rots[order[i]]);\
-		Vector<3> nyv = retMat.RotateVectorC<xvi, yvi>(Vector<3>(&retMat.Nums[3 * yvi]), rots[order[i]]);\
+		Vector<3> xv(&retMat.Nums[SizeY * xvi]); Vector<3> yv(&retMat.Nums[SizeY * yvi]);\
+		Vector<3> nxv = xv * cosf(rots[order[i]]) + yv * sinf(rots[order[i]]);\
+		Vector<3> nyv = xv * -sinf(rots[order[i]]) + yv * cosf(rots[order[i]]);\
 		memcpy(&retMat.Nums[xvi * SizeX], &nxv[0], sizeof(float) * 3);\
 		memcpy(&retMat.Nums[yvi * SizeX], &nyv[0], sizeof(float) * 3);}
 
-		/*rotVecMacr(0);
+		rotVecMacr(0);
 		rotVecMacr(1);
-		rotVecMacr(2);*/
-		{
-			constexpr unsigned int xvi = RotationStandart3D[order[0] * 2]; constexpr unsigned int yvi = RotationStandart3D[order[0] * 2 + 1];
-			Vector<3> nxv = retMat.RotateVectorC<xvi, yvi>(Vector<3>(&retMat.Nums[3 * xvi]), rots[order[0]]);
-			Vector<3> nyv = retMat.RotateVectorC<xvi, yvi>(Vector<3>(&retMat.Nums[3 * yvi]), rots[order[0]]);
-			memcpy(&retMat.Nums[xvi * SizeX], &nxv[0], sizeof(float) * 3);
-			memcpy(&retMat.Nums[yvi * SizeX], &nyv[0], sizeof(float) * 3);
-		}
-
-		{
-			constexpr unsigned int xvi = RotationStandart3D[order[1] * 2]; constexpr unsigned int yvi = RotationStandart3D[order[1] * 2 + 1];
-			Vector<3> nxv = retMat.RotateVectorC<xvi, yvi>(Vector<3>(&retMat.Nums[3 * xvi]), rots[order[1]]);
-			Vector<3> nyv = retMat.RotateVectorC<xvi, yvi>(Vector<3>(&retMat.Nums[3 * yvi]), rots[order[1]]);
-			memcpy(&retMat.Nums[xvi * SizeX], &nxv[0], sizeof(float) * 3);
-			memcpy(&retMat.Nums[yvi * SizeX], &nyv[0], sizeof(float) * 3);
-		}
-		{
-			constexpr unsigned int xvi = RotationStandart3D[order[2] * 2]; constexpr unsigned int yvi = RotationStandart3D[order[2] * 2 + 1];
-			Vector<3> nxv = retMat.RotateVectorC<xvi, yvi>(Vector<3>(&retMat.Nums[3 * xvi]), rots[order[2]]);
-			Vector<3> nyv = retMat.RotateVectorC<xvi, yvi>(Vector<3>(&retMat.Nums[3 * yvi]), rots[order[2]]);
-			memcpy(&retMat.Nums[xvi * SizeX], &nxv[0], sizeof(float) * 3);
-			memcpy(&retMat.Nums[yvi * SizeX], &nyv[0], sizeof(float) * 3);
-		}
+		rotVecMacr(2);
 
 #undef rotVecMacr
 

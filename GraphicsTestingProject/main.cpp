@@ -230,7 +230,7 @@ int main()
                 Vector<2> CameraRotationByDelta = MouseDelta / Vector<2>((float)Width, (float)Height) / ResolutionLength;
                 CameraRotationByDelta[0] = atanf(CameraRotationByDelta[0]); CameraRotationByDelta[1] = atanf(CameraRotationByDelta[1]);
 
-                CameraRotationMatrix = Matrix<3, 3>(1, 0, 0, 0, 1, 0, 0, 0, 1).RotateIn3DByAnglesC<0, 1, 2>(CameraRotationByDelta[1], 0, 0) * CameraRotationMatrix;
+                CameraRotationMatrix = CameraRotationMatrix.RotateIn3DByAnglesC<0, 1, 2>(CameraRotationByDelta[1], 0, 0);
                 Vector<3> xv(1, 0, 0);
                 Vector<3> zv(0, 0, 1);
                 Matrix<2, 3> rotMat(1, 0, 0, 0, 0, 1);
@@ -238,8 +238,6 @@ int main()
                 zv = rotMat.RotateVectorC<0, 1>(zv, -CameraRotationByDelta[0]);
                 CameraRotationMatrix = Matrix <3, 3>(xv[0], xv[1], xv[2], 0, 1, 0, zv[0], zv[1], zv[2]) * CameraRotationMatrix;
 
-                CameraRotationMatrix.CrossFix3D<0, 1>();
-                CameraRotationMatrix.Normalize();
 
                 InversedCameraRotationMatrix = CameraRotationMatrix.GetInversedMatrix(CameraRotationMatrix.GetDeterminant());
             }
@@ -251,7 +249,7 @@ int main()
 
             Matrix<4, 4> ProjectionMatrix(1 / ResolutionLength[0], 0, 0, 0, 0, 1 / ResolutionLength[1], 0, 0, 0, 0, (far + near) / (far - near), 1, 0, 0, 2 * far * near / (near - far), 0);
 
-            Object1RotationMatrix = Matrix<3,3>(1,0,0,0,1,0,0,0,1).RotateIn3DByAnglesC<0, 1, 2>(0.01f, 0.01f, 0) * Object1RotationMatrix;
+            Object1RotationMatrix = Object1RotationMatrix.RotateIn3DByAnglesC<0, 1, 2>(0.01f, 0.01f, 0);
 
             SP.SetUniform3fv("u_LightPos", 1, &LightPosition[0]);
             SP.SetUniform3fv("u_CameraPosition", 1, &CameraPosition[0]);
