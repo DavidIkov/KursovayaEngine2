@@ -305,8 +305,8 @@ unsigned int Texture::gHeight() const {
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, ACCESING ITS HEIGHT MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
     return Height;
 }
-Vector2 Texture::gWidthAndHeight() const {
-    return { (float)gWidth(),(float)gHeight() };
+Vector<2> Texture::gWidthAndHeight() const {
+    return Vector<2>((float)gWidth(),(float)gHeight());
 }
 unsigned int Texture::gID() const {
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, ACCESING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });

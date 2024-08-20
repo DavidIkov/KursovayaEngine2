@@ -3,8 +3,7 @@
 #include"GraphicsPrimitives/VertexBuffer.h"
 #include"GraphicsPrimitives/ShaderProgram.h"
 #include"GraphicsPrimitives/Texture.h"
-#include"Maths/Vector2.h"
-#include"Maths/Vector3.h"
+#include"Maths/Vector.h"
 class QuadsHandler {
 	friend class Quad;
 	VertexArray VA;
@@ -16,10 +15,10 @@ public:
 	protected:
 		QuadsHandler& Handler;
 	public:
-		Vector2 Position = Vector2(0, 0);
-		Vector2 Size = Vector2(1, 1);
-		Vector2 LocalOffset = Vector2(0, 0);
-		Vector3 Color = Vector3(0, 0, 0);
+		Vector<2> Position = Vector<2>(0, 0);
+		Vector<2> Size = Vector<2>(1, 1);
+		Vector<2> LocalOffset = Vector<2>(0, 0);
+		Vector<3> Color = Vector<3>(0, 0, 0);
 		Quad(QuadsHandler& handler);
 		void Draw();
 	};

@@ -10,8 +10,8 @@
 #include"filesystem"
 
 
-TextRenderer::Character::Character(Texture&& tex, Vector2&& size, Vector2&& bearing, unsigned int advance) 
-	:Tex(std::move(tex)), Size(size), Bearing(bearing), Advance(advance) { }
+TextRenderer::Character::Character(Texture&& tex, Vector<2>&& size, Vector<2>&& bearing, unsigned int advance)
+	:Tex(std::move(tex)), Size(std::move(size)), Bearing(std::move(bearing)), Advance(advance) { }
 
 TextRenderer::TextRenderer(const char* fontDir, const char* vShaderDir, const char* fShaderDir):
     TextPreset(
@@ -58,8 +58,8 @@ TextRenderer::TextRenderer(const char* fontDir, const char* vShaderDir, const ch
             TextureWrapType::ClampToEdge,TextureWrapType::ClampToEdge,
             TextureDownscalingFilterFunc::Linear,TextureUpscalingFilterFunc::Linear
             } },
-            Vector2{ (float)FT_FACE->glyph->bitmap.width, (float)FT_FACE->glyph->bitmap.rows },
-            Vector2{ (float)FT_FACE->glyph->bitmap_left, (float)FT_FACE->glyph->bitmap_top },
+            Vector<2>{ (float)FT_FACE->glyph->bitmap.width, (float)FT_FACE->glyph->bitmap.rows },
+            Vector<2>{ (float)FT_FACE->glyph->bitmap_left, (float)FT_FACE->glyph->bitmap_top },
             (unsigned int)FT_FACE->glyph->advance.x / 64
         );
     }
@@ -83,8 +83,8 @@ TextRenderer::TextRenderer(const char* fontDir, const char* vShaderDir, const ch
                 TextureWrapType::ClampToEdge,TextureWrapType::ClampToEdge,
                 TextureDownscalingFilterFunc::Linear,TextureUpscalingFilterFunc::Linear
                 } },
-                Vector2{ (float)FT_FACE->glyph->bitmap.width, (float)FT_FACE->glyph->bitmap.rows },
-                Vector2{ (float)FT_FACE->glyph->bitmap_left, (float)FT_FACE->glyph->bitmap_top },
+                Vector<2>{ (float)FT_FACE->glyph->bitmap.width, (float)FT_FACE->glyph->bitmap.rows },
+                Vector<2>{ (float)FT_FACE->glyph->bitmap_left, (float)FT_FACE->glyph->bitmap_top },
                 (unsigned int)FT_FACE->glyph->advance.x / 64
             );
         }
@@ -144,10 +144,10 @@ else charData = &BasicCharacters[63];//the '?' symbol
         getCharData();
         
         totalXSize += charData->Advance;
-        float charYSize = charData->Bearing.gY() + (ignoreBottomPartOfSymbol ? 0 : (charData->Size.gY() - charData->Bearing.gY()));
+        float charYSize = charData->Bearing[1] + (ignoreBottomPartOfSymbol ? 0 : (charData->Size[1] - charData->Bearing[1]));
         
-        if (not ignoreBottomPartOfSymbol and maxYDown < charData->Size.gY() - charData->Bearing.gY()) maxYDown = charData->Size.gY() - charData->Bearing.gY();
-        if (maxYUp < charData->Bearing.gY()) maxYUp = charData->Bearing.gY();
+        if (not ignoreBottomPartOfSymbol and maxYDown < charData->Size[1] - charData->Bearing[1]) maxYDown = charData->Size[1] - charData->Bearing[1];
+        if (maxYUp < charData->Bearing[1]) maxYUp = charData->Bearing[1];
 
     }
     float totalYSize = maxYUp + maxYDown;
@@ -184,11 +184,11 @@ else charData = &BasicCharacters[63];//the '?' symbol
         getCharData();
 
         charData->Tex.Bind(0);
-        float xpos = posX + charData->Bearing.gX() * textScale / screenWidth * 2 - localOffsetX;
-        float ypos = posY + (charData->Bearing.gY() - charData->Size.gY()) * textScale / screenHeight * 2 - localOffsetY + maxYDown * 2;
+        float xpos = posX + charData->Bearing[0] * textScale / screenWidth * 2 - localOffsetX;
+        float ypos = posY + (charData->Bearing[1] - charData->Size[1]) * textScale / screenHeight * 2 - localOffsetY + maxYDown * 2;
 
-        float w = charData->Size.gX() * textScale / screenWidth * 2;
-        float h = charData->Size.gY() * textScale / screenHeight * 2;
+        float w = charData->Size[0] * textScale / screenWidth * 2;
+        float h = charData->Size[1] * textScale / screenHeight * 2;
         // update VBO for each character
         float vertices[6 * 4] = {
              xpos,     ypos + h,   0.0f, 0.0f ,

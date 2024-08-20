@@ -91,10 +91,10 @@ void Window::gWindowSize(unsigned int* width, unsigned  int* height) const {
     *width = w;
     *height = h;
 }
-Vector2 Window::gWindowSize() const {
+Vector<2> Window::gWindowSize() const {
     int w, h;
     glfwGetWindowSize((GLFWwindow*)GLFW_WindowPtr, &w, &h);
-    return { (float)w,(float)h };
+    return Vector<2>((float)w,(float)h);
 }
 void Window::UpdateMouseData() {
 
@@ -104,26 +104,26 @@ void Window::UpdateMouseData() {
     double tx, ty;
     glfwGetCursorPos((GLFWwindow*)GLFW_WindowPtr, &tx, &ty);
     
-    Vector2 recordedPrevPos = MousePosition;
+    Vector<2> recordedPrevPos = MousePosition;
 
-    MousePosition.sX((float)tx - (float)width / 2);
-    MousePosition.sY((float)height / 2 - (float)ty);
+    MousePosition[0] = (float)tx - (float)width / 2;
+    MousePosition[1] = (float)height / 2 - (float)ty;
 
     if (DontUpdateDeltaOnce) {
-        MouseDelta = Vector2(0, 0);
+        MouseDelta = Vector<2>(0.f);
         DontUpdateDeltaOnce = false;
     } else MouseDelta = MousePosition - recordedPrevPos;
 }
-void Window::gCursorPosition(Vector2* pos) const {
+void Window::gCursorPosition(Vector<2>* pos) const {
     *pos = MousePosition;
 }
-const Vector2& Window::gCursorPosition() const {
+const Vector<2>& Window::gCursorPosition() const {
     return MousePosition;
 }
-void Window::gCursorDelta(Vector2* delta) const {
+void Window::gCursorDelta(Vector<2>* delta) const {
     *delta = MouseDelta;
 }
-const Vector2& Window::gCursorDelta() const {
+const Vector<2>& Window::gCursorDelta() const {
     return MouseDelta;
 }
 void Window::SwapScreenBuffers() {

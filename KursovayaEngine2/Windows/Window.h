@@ -2,7 +2,7 @@
 #include"DLL.h"
 #include"Input/Keyboard.h"
 #include"Input/Mouse.h"
-#include"Maths/Vector2.h"
+#include"Maths/Vector.h"
 
 enum class CursorModes {
     Free,
@@ -27,8 +27,8 @@ class Window {
     void* GLFW_WindowPtr;
 
     mutable bool DontUpdateDeltaOnce = true;
-    mutable Vector2 MousePosition;
-    mutable Vector2 MouseDelta;
+    mutable Vector<2> MousePosition;
+    mutable Vector<2> MouseDelta;
     static bool FirstWindow;//true
     CursorModes CursorMode = CursorModes::Free;
 
@@ -55,11 +55,11 @@ public:
     //will stop thread until some event will occur, usefull to not use 100% of cpu in while loop
     DLLTREATMENT void WaitTillEvent();
     DLLTREATMENT void gWindowSize(unsigned int* width, unsigned  int* height) const;
-    DLLTREATMENT Vector2 gWindowSize() const;
-    DLLTREATMENT void gCursorPosition(Vector2* pos) const;
-    DLLTREATMENT const Vector2& gCursorPosition() const;
-    DLLTREATMENT void gCursorDelta(Vector2* delta) const;
-    DLLTREATMENT const Vector2& gCursorDelta() const;
+    DLLTREATMENT Vector<2> gWindowSize() const;
+    DLLTREATMENT void gCursorPosition(Vector<2>* pos) const;
+    DLLTREATMENT const Vector<2>& gCursorPosition() const;
+    DLLTREATMENT void gCursorDelta(Vector<2>* delta) const;
+    DLLTREATMENT const Vector<2>& gCursorDelta() const;
     DLLTREATMENT void SetCursorMode(CursorModes mode);
     DLLTREATMENT CursorModes gCursorMode() const;
 };

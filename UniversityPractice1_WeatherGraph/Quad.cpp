@@ -47,26 +47,26 @@ void QuadsHandler::ImageQuad::Draw(unsigned int screenWidth, unsigned int screen
     Handler.VA.Bind();
     Handler.SP.Bind();
     Handler.SP.SetUniform2fv("u_Pos", 1, &Position[0]);
-    Vector2 curSize = Size;
+    Vector<2> curSize = Size;
     switch (TexClampingType) {
     case TextureClampingType::SquareByX:
     {
-        curSize.sY(Size.gX() * screenWidth / screenHeight);
+        curSize[1] = Size[0] * (float)screenWidth / (float)screenHeight;
         break;
     }
     case TextureClampingType::SquareByY:
     {
-        curSize.sX(Size.gY() * screenHeight / screenWidth);
+        curSize[0] = Size[1] * (float)screenHeight / (float)screenWidth;
         break;
     }
     case TextureClampingType::SquareByXY:
     {
-        curSize = Vector2((float)screenWidth, (float)screenHeight) * Size;//get size in pixels
-        if (curSize.gX() > curSize.gY()) {
-            curSize = Vector2(curSize.gY()) / Vector2((float)screenWidth, (float)screenHeight);
+        curSize = Vector<2>((float)screenWidth, (float)screenHeight) * Size;//get size in pixels
+        if (curSize[0] > curSize[1]) {
+            curSize = Vector<2>(curSize[1]) / Vector<2>((float)screenWidth, (float)screenHeight);
         }
         else {
-            curSize = Vector2(curSize.gX()) / Vector2((float)screenWidth, (float)screenHeight);
+            curSize = Vector<2>(curSize[0]) / Vector<2>((float)screenWidth, (float)screenHeight);
         }
         break;
     }

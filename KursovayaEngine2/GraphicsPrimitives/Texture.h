@@ -1,6 +1,6 @@
 #pragma once
 #include"DLL.h"
-#include"Maths/Vector2.h"
+#include"Maths/Vector.h"
 
 enum class TextureStorageType {
     RGB,RGBA,Depth,DepthStencil,SingleChannel
@@ -66,7 +66,7 @@ public:
 
     DLLTREATMENT unsigned int gWidth() const;
     DLLTREATMENT unsigned int gHeight() const;
-    DLLTREATMENT Vector2 gWidthAndHeight() const;
+    DLLTREATMENT Vector<2> gWidthAndHeight() const;
 
     DLLTREATMENT unsigned int gID() const;
     DLLTREATMENT void Delete();

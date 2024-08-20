@@ -168,33 +168,33 @@ int main()
         QuadsHandler QH("Shaders/Quad2d.vs", "Shaders/Quad2d.fs");
 
         QuadsHandler::Quad TopQuad(QH);
-        TopQuad.Position = Vector2(0, 1);
-        TopQuad.LocalOffset = Vector2(0, 1);
-        TopQuad.Size = Vector2(1, Proportions::TopBarSize);
-        TopQuad.Color = Vector3(0.5f,0.1f,1.f);
+        TopQuad.Position = Vector<2>(0, 1);
+        TopQuad.LocalOffset = Vector<2>(0, 1);
+        TopQuad.Size = Vector<2>(1, Proportions::TopBarSize);
+        TopQuad.Color = Vector<3>(0.5f,0.1f,1.f);
 
         ClickTrigger TopTrigger(&window);
-        TopTrigger.Position = Vector2(1, 1);
-        TopTrigger.LocalOffset = Vector2(1, 1);
-        TopTrigger.Size = Vector2(1 - Proportions::TopBarLeftTextSize, Proportions::TopBarSize);
+        TopTrigger.Position = Vector<2>(1, 1);
+        TopTrigger.LocalOffset = Vector<2>(1, 1);
+        TopTrigger.Size = Vector<2>(1 - Proportions::TopBarLeftTextSize, Proportions::TopBarSize);
 
         QuadsHandler::Quad LeftQuad(QH);
-        LeftQuad.Position = Vector2(-1, 1 - 2 * Proportions::TopBarSize);
-        LeftQuad.LocalOffset = Vector2(-1, 1);
-        LeftQuad.Size = Vector2(Proportions::LeftBarSize, 1 - Proportions::TopBarSize);
-        LeftQuad.Color = Vector3(0.2f, 1.f, 0.7f);
+        LeftQuad.Position = Vector<2>(-1, 1 - 2 * Proportions::TopBarSize);
+        LeftQuad.LocalOffset = Vector<2>(-1, 1);
+        LeftQuad.Size = Vector<2>(Proportions::LeftBarSize, 1 - Proportions::TopBarSize);
+        LeftQuad.Color = Vector<3>(0.2f, 1.f, 0.7f);
 
         QuadsHandler QIH("Shaders/Quad2dImage.vs", "Shaders/Quad2dImage.fs");
 
         QuadsHandler::ImageQuad AddGraphSettingPlus(QIH, Texture{ "plus.png",Texture::TexParameters{
             TextureWrapType::ClampToEdge,TextureWrapType::ClampToEdge,TextureDownscalingFilterFunc::Linear,TextureUpscalingFilterFunc::Linear,TextureDepthStencilReadMode::Depth} });
         AddGraphSettingPlus.TexClampingType = QuadsHandler::ImageQuad::TextureClampingType::SquareByY;
-        AddGraphSettingPlus.Size = Vector2(Proportions::GraphicsSettingsBarSize, Proportions::GraphicSettingsSize);
-        AddGraphSettingPlus.LocalOffset = Vector2(0, 1);
+        AddGraphSettingPlus.Size = Vector<2>(Proportions::GraphicsSettingsBarSize, Proportions::GraphicSettingsSize);
+        AddGraphSettingPlus.LocalOffset = Vector<2>(0, 1);
 
         ClickTrigger GraphSettingPlusTrigger(&window);
-        GraphSettingPlusTrigger.Size = Vector2(Proportions::GraphicsSettingsBarSize, Proportions::GraphicSettingsSize);
-        GraphSettingPlusTrigger.LocalOffset = Vector2(-1, 1);
+        GraphSettingPlusTrigger.Size = Vector<2>(Proportions::GraphicsSettingsBarSize, Proportions::GraphicSettingsSize);
+        GraphSettingPlusTrigger.LocalOffset = Vector<2>(-1, 1);
 
         std::function<void()> redraw([&]() {
 
@@ -237,10 +237,10 @@ int main()
                 TEXT_RENDERER.DrawText(csv_json::Devices[sets->DeviceInd].Name,
                     Width, Height,
                     1,
-                    devNamQ.Position.gX(), devNamQ.Position.gY()- devNamQ.Size.gY(),
-                    devNamQ.LocalOffset.gX(), 0,
-                    devNamQ.Size.gX(), TextRenderer::ClampingFuncs::AlwaysScaleTillClamp,
-                    devNamQ.Size.gY(), false, TextRenderer::ClampingFuncs::AlwaysScaleTillClamp);
+                    devNamQ.Position[0], devNamQ.Position[1]- devNamQ.Size[1],
+                    devNamQ.LocalOffset[0], 0,
+                    devNamQ.Size[0], TextRenderer::ClampingFuncs::AlwaysScaleTillClamp,
+                    devNamQ.Size[1], false, TextRenderer::ClampingFuncs::AlwaysScaleTillClamp);
 
 
                 auto& dataNamQ = sets->DataNameQuad;
@@ -249,10 +249,10 @@ int main()
                 TEXT_RENDERER.DrawText(wDataName,
                     Width, Height,
                     1,
-                    dataNamQ.Position.gX(), dataNamQ.Position.gY() - dataNamQ.Size.gY(),
-                    dataNamQ.LocalOffset.gX(), 0,
-                    dataNamQ.Size.gX(), TextRenderer::ClampingFuncs::AlwaysScaleTillClamp,
-                    dataNamQ.Size.gY(), false, TextRenderer::ClampingFuncs::AlwaysScaleTillClamp);
+                    dataNamQ.Position[0], dataNamQ.Position[1] - dataNamQ.Size[1],
+                    dataNamQ.LocalOffset[0], 0,
+                    dataNamQ.Size[0], TextRenderer::ClampingFuncs::AlwaysScaleTillClamp,
+                    dataNamQ.Size[1], false, TextRenderer::ClampingFuncs::AlwaysScaleTillClamp);
                 
 #define dateDrawMacro(num,metric) {\
                 auto& dateQRef = sets->Date##num##metric##Quad;\
@@ -261,10 +261,10 @@ int main()
                 TEXT_RENDERER.DrawText(wideDate,\
                     Width, Height,\
                     1,\
-                    dateQRef.Position.gX() - dateQRef.LocalOffset.gX() * dateQRef.Size.gX(), dateQRef.Position.gY() - dateQRef.Size.gY(),\
+                    dateQRef.Position[0] - dateQRef.LocalOffset[0] * dateQRef.Size[0], dateQRef.Position[1] - dateQRef.Size[1],\
                     0, 0,\
-                    dateQRef.Size.gX(), TextRenderer::ClampingFuncs::AlwaysScaleTillClamp,\
-                    dateQRef.Size.gY(), false, TextRenderer::ClampingFuncs::AlwaysScaleTillClamp);\
+                    dateQRef.Size[0], TextRenderer::ClampingFuncs::AlwaysScaleTillClamp,\
+                    dateQRef.Size[1], false, TextRenderer::ClampingFuncs::AlwaysScaleTillClamp);\
                 }
                 dateDrawMacro(1, Year);
                 dateDrawMacro(2, Year);
@@ -279,7 +279,7 @@ int main()
                 dateDrawMacro(1, Second);
                 dateDrawMacro(2, Second);
 
-                sets->GraphStaterQuad.Color = csv_json::Devices[sets->DeviceInd].DataNames[sets->DataNameInd].IsNumber ? Vector3(0, 1, 0) : Vector3(1, 0, 0);
+                sets->GraphStaterQuad.Color = csv_json::Devices[sets->DeviceInd].DataNames[sets->DataNameInd].IsNumber ? Vector<3>(0, 1, 0) : Vector<3>(1, 0, 0);
                 sets->GraphStaterQuad.Draw();
 
                 sets->GraphStaterQuad.Draw();
@@ -301,7 +301,7 @@ int main()
                     GraphicsSP.Bind();
                     unsigned int datesAmount = sets->Date2Ind - sets->Date1Ind + 1;
                     GraphicsSP.SetUniform1i("GraphDataLength", datesAmount);
-                    GraphicsSP.SetUniform3f("u_LineColor", sets->GraphColorQuad.Color.gX(), sets->GraphColorQuad.Color.gY(), sets->GraphColorQuad.Color.gZ());
+                    GraphicsSP.SetUniform3f("u_LineColor", sets->GraphColorQuad.Color[0], sets->GraphColorQuad.Color[1], sets->GraphColorQuad.Color[2]);
                     GraphicsSP.SetUniform1f("u_PixelSizeX", 1.f / (float)Width / (1.f - Proportions::GraphicsSettingsBarSize));
                     
                     long long unsigned int datesDiff = (csv_json::Devices[sets->DeviceInd].Dates[sets->Date2Ind].Date - csv_json::Devices[sets->DeviceInd].Dates[sets->Date1Ind].Date).GetUniversalTime();
@@ -343,60 +343,60 @@ int main()
 
         std::function<void()> UpdGraphicsAndSettingsView([&]() {
 
-            AddGraphSettingPlus.Position = Vector2(-1 + Proportions::GraphicsSettingsBarSize, 1 - 2 * (Proportions::TopBarSize + GraphicsSettings.size() * Proportions::GraphicSettingsSize));
-            GraphSettingPlusTrigger.Position = Vector2(-1, 1 - 2 * (Proportions::TopBarSize + GraphicsSettings.size() * Proportions::GraphicSettingsSize));
+            AddGraphSettingPlus.Position = Vector<2>(-1 + Proportions::GraphicsSettingsBarSize, 1 - 2 * (Proportions::TopBarSize + GraphicsSettings.size() * Proportions::GraphicSettingsSize));
+            GraphSettingPlusTrigger.Position = Vector<2>(-1, 1 - 2 * (Proportions::TopBarSize + GraphicsSettings.size() * Proportions::GraphicSettingsSize));
 
             for (unsigned int gsi = 0; gsi < GraphicsSettings.size(); gsi++) {
                 GraphicSettingsStruct* settings = GraphicsSettings[gsi];
 
                 float curY = Proportions::TopBarSize + gsi * Proportions::GraphicSettingsSize;
 
-                settings->DeviceNameQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->DeviceNameQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->DeviceNameTrigger.Position = settings->DeviceNameQuad.Position;
 
-                curY += settings->DeviceNameQuad.Size.gY();
+                curY += settings->DeviceNameQuad.Size[1];
 
-                settings->DataNameQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->DataNameQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->DataNameTrigger.Position = settings->DataNameQuad.Position;
 
-                curY += settings->DataNameQuad.Size.gY();
+                curY += settings->DataNameQuad.Size[1];
 
-                settings->Date1YearQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->Date1YearQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->Date1YearTrigger.Position = settings->Date1YearQuad.Position;
-                settings->Date1MonthQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->Date1MonthQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->Date1MonthTrigger.Position = settings->Date1MonthQuad.Position;
-                settings->Date1DayQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->Date1DayQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->Date1DayTrigger.Position = settings->Date1DayQuad.Position;
-                settings->Date1HourQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->Date1HourQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->Date1HourTrigger.Position = settings->Date1HourQuad.Position;
-                settings->Date1MinuteQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->Date1MinuteQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->Date1MinuteTrigger.Position = settings->Date1MinuteQuad.Position;
-                settings->Date1SecondQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->Date1SecondQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->Date1SecondTrigger.Position = settings->Date1SecondQuad.Position;
 
-                curY += settings->Date1YearQuad.Size.gY();
+                curY += settings->Date1YearQuad.Size[1];
 
-                settings->Date2YearQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->Date2YearQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->Date2YearTrigger.Position = settings->Date2YearQuad.Position;
-                settings->Date2MonthQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->Date2MonthQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->Date2MonthTrigger.Position = settings->Date2MonthQuad.Position;
-                settings->Date2DayQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->Date2DayQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->Date2DayTrigger.Position = settings->Date2DayQuad.Position;
-                settings->Date2HourQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->Date2HourQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->Date2HourTrigger.Position = settings->Date2HourQuad.Position;
-                settings->Date2MinuteQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->Date2MinuteQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->Date2MinuteTrigger.Position = settings->Date2MinuteQuad.Position;
-                settings->Date2SecondQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->Date2SecondQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->Date2SecondTrigger.Position = settings->Date2SecondQuad.Position;
                 
-                curY += settings->Date2YearQuad.Size.gY();
+                curY += settings->Date2YearQuad.Size[1];
 
-                settings->GraphStaterQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->GraphStaterQuad.Position = Vector<2>(-1, 1 - 2 * curY);
 
-                settings->GraphColorQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->GraphColorQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->GraphColorTrigger.Position = settings->GraphColorQuad.Position;
 
-                settings->GraphSettingDeleteQuad.Position = Vector2(-1, 1 - 2 * curY);
+                settings->GraphSettingDeleteQuad.Position = Vector<2>(-1, 1 - 2 * curY);
                 settings->GraphSettingDeleteTrigger.Position = settings->GraphSettingDeleteQuad.Position;
                 
             }
@@ -487,17 +487,17 @@ int main()
 
 
                     {
-                        sets->DeviceNameQuad.Size = Vector2(Proportions::GraphicsSettingsBarSize, Proportions::GraphicSettingsSize * Proportions::GraphicSettingsDeviceNameSize);
-                        sets->DeviceNameQuad.LocalOffset = Vector2(-1, 1);
-                        sets->DeviceNameQuad.Color = Vector3(0.1f, 0.4f, 0.2f);
+                        sets->DeviceNameQuad.Size = Vector<2>(Proportions::GraphicsSettingsBarSize, Proportions::GraphicSettingsSize * Proportions::GraphicSettingsDeviceNameSize);
+                        sets->DeviceNameQuad.LocalOffset = Vector<2>(-1, 1);
+                        sets->DeviceNameQuad.Color = Vector<3>(0.1f, 0.4f, 0.2f);
                         sets->DeviceNameTrigger.Size = sets->DeviceNameQuad.Size;
-                        sets->DeviceNameTrigger.LocalOffset = Vector2(-1, 1);
+                        sets->DeviceNameTrigger.LocalOffset = Vector<2>(-1, 1);
 
-                        sets->DataNameQuad.Size = Vector2(Proportions::GraphicsSettingsBarSize, Proportions::GraphicSettingsSize * Proportions::GraphicSettingsDataNameSize);
-                        sets->DataNameQuad.LocalOffset = Vector2(-1, 1);
-                        sets->DataNameQuad.Color = Vector3(0.1f, 0.2f, 0.4f);
+                        sets->DataNameQuad.Size = Vector<2>(Proportions::GraphicsSettingsBarSize, Proportions::GraphicSettingsSize * Proportions::GraphicSettingsDataNameSize);
+                        sets->DataNameQuad.LocalOffset = Vector<2>(-1, 1);
+                        sets->DataNameQuad.Color = Vector<3>(0.1f, 0.2f, 0.4f);
                         sets->DataNameTrigger.Size = sets->DataNameQuad.Size;
-                        sets->DataNameTrigger.LocalOffset = Vector2(-1, 1);
+                        sets->DataNameTrigger.LocalOffset = Vector<2>(-1, 1);
 
                         sets->DeviceNameTrigger.gEventsConsHandler().ConnectToEvent(&sets->DeviceNameTrigger.gLeftMouseButtonEvent(), [&, sets](void* pressedDown) {
                             if (*(bool*)pressedDown) {
@@ -560,19 +560,19 @@ int main()
                     {
                         float dateXOffset = 0;
 #define quadAndTriggerSetUpMacro(metric,size){\
-                    sets->Date1##metric##Quad.Size = Vector2(Proportions::GraphicsSettingsBarSize * size, Proportions::GraphicSettingsSize * Proportions::GraphicSettingsDateSettingsSize / 2);\
-                    sets->Date1##metric##Quad.LocalOffset = Vector2(-1 - dateXOffset / (sets->Date1##metric##Quad.Size.gX() / 2), 1);\
-                    sets->Date1##metric##Quad.Color = Vector3(RandNum(0, 1), RandNum(0, 1), RandNum(0, 1));\
+                    sets->Date1##metric##Quad.Size = Vector<2>(Proportions::GraphicsSettingsBarSize * size, Proportions::GraphicSettingsSize * Proportions::GraphicSettingsDateSettingsSize / 2);\
+                    sets->Date1##metric##Quad.LocalOffset = Vector<2>(-1 - dateXOffset / (sets->Date1##metric##Quad.Size[0] / 2), 1);\
+                    sets->Date1##metric##Quad.Color = Vector<3>(RandNum(0, 1), RandNum(0, 1), RandNum(0, 1));\
                     sets->Date1##metric##Trigger.Size = sets->Date1##metric##Quad.Size;\
                     sets->Date1##metric##Trigger.LocalOffset = sets->Date1##metric##Quad.LocalOffset;\
                     \
-                    sets->Date2##metric##Quad.Size = Vector2(Proportions::GraphicsSettingsBarSize * size, Proportions::GraphicSettingsSize * Proportions::GraphicSettingsDateSettingsSize / 2);\
-                    sets->Date2##metric##Quad.LocalOffset = Vector2(-1 - dateXOffset / (sets->Date1##metric##Quad.Size.gX() / 2), 1);\
-                    sets->Date2##metric##Quad.Color = Vector3(RandNum(0, 1), RandNum(0, 1), RandNum(0, 1));\
+                    sets->Date2##metric##Quad.Size = Vector<2>(Proportions::GraphicsSettingsBarSize * size, Proportions::GraphicSettingsSize * Proportions::GraphicSettingsDateSettingsSize / 2);\
+                    sets->Date2##metric##Quad.LocalOffset = Vector<2>(-1 - dateXOffset / (sets->Date1##metric##Quad.Size[0] / 2), 1);\
+                    sets->Date2##metric##Quad.Color = Vector<3>(RandNum(0, 1), RandNum(0, 1), RandNum(0, 1));\
                     sets->Date2##metric##Trigger.Size = sets->Date2##metric##Quad.Size;\
                     sets->Date2##metric##Trigger.LocalOffset = sets->Date2##metric##Quad.LocalOffset;\
                     \
-                    dateXOffset += sets->Date1##metric##Quad.Size.gX();\
+                    dateXOffset += sets->Date1##metric##Quad.Size[0];\
                     }
 
                         quadAndTriggerSetUpMacro(Year, 2.f / 7.f);
@@ -673,30 +673,30 @@ int main()
                     {
                         float xOff = 0;
 
-                        sets->GraphStaterQuad.Size = Vector2(Proportions::GraphicsSettingsBarSize * 0.1f, Proportions::GraphicSettingsSize *
+                        sets->GraphStaterQuad.Size = Vector<2>(Proportions::GraphicsSettingsBarSize * 0.1f, Proportions::GraphicSettingsSize *
                             (1 - Proportions::GraphicSettingsDeviceNameSize - Proportions::GraphicSettingsDataNameSize - Proportions::GraphicSettingsDateSettingsSize));
-                        sets->GraphStaterQuad.LocalOffset = Vector2(-1, 1);
+                        sets->GraphStaterQuad.LocalOffset = Vector<2>(-1, 1);
 
-                        xOff += sets->GraphStaterQuad.Size.gX();
+                        xOff += sets->GraphStaterQuad.Size[0];
 
-                        sets->GraphColorQuad.Color = Vector3(RandNum(0, 1), RandNum(0, 1), RandNum(0, 1));
-                        sets->GraphColorQuad.Size = Vector2(Proportions::GraphicsSettingsBarSize * 0.7f, sets->GraphStaterQuad.Size.gY());
-                        sets->GraphColorQuad.LocalOffset = Vector2(-1 - xOff / (sets->GraphColorQuad.Size.gX() / 2), 1);
+                        sets->GraphColorQuad.Color = Vector<3>(RandNum(0, 1), RandNum(0, 1), RandNum(0, 1));
+                        sets->GraphColorQuad.Size = Vector<2>(Proportions::GraphicsSettingsBarSize * 0.7f, sets->GraphStaterQuad.Size[1]);
+                        sets->GraphColorQuad.LocalOffset = Vector<2>(-1 - xOff / (sets->GraphColorQuad.Size[0] / 2), 1);
                         sets->GraphColorTrigger.Size = sets->GraphColorQuad.Size;
                         sets->GraphColorTrigger.LocalOffset = sets->GraphColorQuad.LocalOffset;
 
-                        xOff += sets->GraphColorQuad.Size.gX();
+                        xOff += sets->GraphColorQuad.Size[0];
 
-                        sets->GraphSettingDeleteQuad.Color = Vector3(1,0,0);
-                        sets->GraphSettingDeleteQuad.Size = Vector2(Proportions::GraphicsSettingsBarSize * 0.2f, sets->GraphStaterQuad.Size.gY());
-                        sets->GraphSettingDeleteQuad.LocalOffset = Vector2(-1 - xOff / (sets->GraphSettingDeleteQuad.Size.gX() / 2), 1);
+                        sets->GraphSettingDeleteQuad.Color = Vector<3>(1,0,0);
+                        sets->GraphSettingDeleteQuad.Size = Vector<2>(Proportions::GraphicsSettingsBarSize * 0.2f, sets->GraphStaterQuad.Size[1]);
+                        sets->GraphSettingDeleteQuad.LocalOffset = Vector<2>(-1 - xOff / (sets->GraphSettingDeleteQuad.Size[0] / 2), 1);
                         sets->GraphSettingDeleteTrigger.Size = sets->GraphSettingDeleteQuad.Size;
                         sets->GraphSettingDeleteTrigger.LocalOffset = sets->GraphSettingDeleteQuad.LocalOffset;
 
                         sets->GraphColorTrigger.gEventsConsHandler().ConnectToEvent(&sets->GraphColorTrigger.gLeftMouseButtonEvent(), [&, sets](void* pressedDown) {
                             if (*(bool*)pressedDown) {
 
-                                sets->GraphColorQuad.Color = Vector3(RandNum(0, 1), RandNum(0, 1), RandNum(0, 1));
+                                sets->GraphColorQuad.Color = Vector<3>(RandNum(0, 1), RandNum(0, 1), RandNum(0, 1));
 
                                 sets->RequiresGraphUpdate = true;
 

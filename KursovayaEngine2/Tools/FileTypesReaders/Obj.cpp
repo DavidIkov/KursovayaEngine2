@@ -4,7 +4,7 @@
 #include<fstream>
 #include"Tools/DebuggingTools.h"
 #include"Tools/ErrorCodes.h"
-#include"Maths/Vector3.h"
+#include"Maths/Vector.h"
 #include<limits>
 
 static unsigned int findSymbolInd(const std::string& txt, const char symbol, const unsigned int startInd) {
@@ -51,7 +51,7 @@ std::vector<float> ReadObjFileType(const char* filePath) {
 	unsigned int fileVertexesAmount = 0;
 	unsigned int fileVertexConnectionsAmount = 0;
 	unsigned int fileVertexConnectionsLensAmount = 0;
-	std::vector<Vector3> fileVertexes;
+	std::vector<Vector<3>> fileVertexes;
 	std::vector<unsigned int> fileVertexConnections;//how much is there "a/b/c"
 	std::vector<unsigned int> fileVertexConnectionsLens;
 
@@ -98,7 +98,7 @@ std::vector<float> ReadObjFileType(const char* filePath) {
 						si = ci + 1;
 					}
 				}
-				fileVertexes.push_back({ nums[0],nums[1],nums[2] });
+				fileVertexes.push_back(Vector<3>(nums[0],nums[1],nums[2]));
 			}
 			else if (name == "f") {
 
@@ -152,9 +152,9 @@ std::vector<float> ReadObjFileType(const char* filePath) {
 			if (len == 4) order = orderForFour;
 			else if (len != 3) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,".OBJ FILE GOT MORE THEN FOUR OR LESS THEN 3 CONNECTIONS",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
 			
-			Vector3 normal = (fileVertexes[fileVertexConnections[curConOff + order[1]]] - fileVertexes[fileVertexConnections[curConOff + order[0]]]).Cross
+			Vector<3> normal = (fileVertexes[fileVertexConnections[curConOff + order[1]]] - fileVertexes[fileVertexConnections[curConOff + order[0]]]).Cross
 			(fileVertexes[fileVertexConnections[curConOff + order[2]]] - fileVertexes[fileVertexConnections[curConOff + order[0]]]);
-			Vector3 unitNormal = normal.Unit();
+			Vector<3> unitNormal = normal.Normalize();
 
 			for (unsigned int to = 0; to < curTrianglesAmount; to++) {
 				unsigned int vi[] = {
@@ -203,7 +203,7 @@ std::vector<float> ReadObjFileType(const char* filePath) {
 
 		for (unsigned int pdi = 3; pdi < preparedData.size(); pdi += 11) {
 			unsigned int smoothedNormalSInd = (unsigned int)preparedData[pdi] * 3;
-			Vector3 unitVec(
+			Vector<3> unitVec(
 				(smoothedNormalsMins[smoothedNormalSInd + 0] + smoothedNormalsMaxs[smoothedNormalSInd + 0]) / 2,
 				(smoothedNormalsMins[smoothedNormalSInd + 1] + smoothedNormalsMaxs[smoothedNormalSInd + 1]) / 2,
 				(smoothedNormalsMins[smoothedNormalSInd + 2] + smoothedNormalsMaxs[smoothedNormalSInd + 2]) / 2

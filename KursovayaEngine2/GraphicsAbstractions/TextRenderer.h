@@ -1,7 +1,7 @@
 #pragma once
 #include"DLL.h"
 #include"GraphicsPrimitives/Texture.h"
-#include"Maths/Vector2.h"
+#include"Maths/Vector.h"
 #include"GraphicsPrimitives/ShaderProgram.h"
 #include"GraphicsPrimitives/RenderingPreset.h"
 #include"GraphicsPrimitives/VertexArray.h"
@@ -13,10 +13,10 @@ class TextRenderer {
 public:
     struct Character {
         Texture Tex;
-        Vector2   Size;       // Size of glyph
-        Vector2   Bearing;    // Offset from baseline to left/top of glyph
+        Vector<2>   Size;       // Size of glyph
+        Vector<2>   Bearing;    // Offset from baseline to left/top of glyph
         unsigned int Advance;    // Offset to advance to next glyph
-        Character(Texture&& tex, Vector2&& size, Vector2&& bearing, unsigned int advance);
+        Character(Texture&& tex, Vector<2>&& size, Vector<2>&& bearing, unsigned int advance);
     };
 private:
     std::vector<Character> BasicCharacters;

@@ -179,10 +179,6 @@
     <ClCompile Include="GraphicsPrimitives\ShaderProgram.cpp" />
     <ClCompile Include="GraphicsPrimitives\Texture.cpp" />
     <ClCompile Include="Input\Keyboard.cpp" />
-    <ClCompile Include="Maths\Matrix.cpp" />
-    <ClCompile Include="Maths\SPCS.cpp" />
-    <ClCompile Include="Maths\Vector2.cpp" />
-    <ClCompile Include="Maths\Vector3.cpp" />
     <ClCompile Include="Tools\DebuggingTools.cpp" />
     <ClCompile Include="Tools\Event.cpp" />
     <ClCompile Include="Tools\RandomNumber.cpp" />
@@ -305,6 +301,8 @@
     <ClInclude Include="GraphicsPrimitives\VertexBuffer.h" />
     <ClInclude Include="KursovayaEngine2Manager.h" />
     <ClInclude Include="Input\Mouse.h" />
+    <ClInclude Include="Maths\Matrix.h" />
+    <ClInclude Include="Maths\Vector.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Tools\SimpleLambda.h" />
     <ClInclude Include="WinOS\wchar_t_Operations.h" />
@@ -316,10 +314,6 @@
     <ClInclude Include="GraphicsPrimitives\ShaderProgram.h" />
     <ClInclude Include="GraphicsPrimitives\Texture.h" />
     <ClInclude Include="Input\Keyboard.h" />
-    <ClInclude Include="Maths\Matrix.h" />
-    <ClInclude Include="Maths\SPCS.h" />
-    <ClInclude Include="Maths\Vector2.h" />
-    <ClInclude Include="Maths\Vector3.h" />
     <ClInclude Include="Tools\DebuggingTools.h" />
     <ClInclude Include="Dependencies\glad\include\glad\glad.h" />
     <ClInclude Include="Dependencies\glad\include\KHR\khrplatform.h" />
