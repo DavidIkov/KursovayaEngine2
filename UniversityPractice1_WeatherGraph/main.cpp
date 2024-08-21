@@ -245,7 +245,7 @@ int main()
 
                 auto& dataNamQ = sets->DataNameQuad;
                 dataNamQ.Draw();
-                std::wstring wDataName; char_to_wchar(&csv_json::Devices[sets->DeviceInd].DataNames[sets->DataNameInd].DataName, &wDataName);
+                std::wstring wDataName; char_to_wchar(1251, csv_json::Devices[sets->DeviceInd].DataNames[sets->DataNameInd].DataName, wDataName);
                 TEXT_RENDERER.DrawText(wDataName,
                     Width, Height,
                     1,
@@ -257,7 +257,7 @@ int main()
 #define dateDrawMacro(num,metric) {\
                 auto& dateQRef = sets->Date##num##metric##Quad;\
                 dateQRef.Draw();\
-                std::wstring wideDate; std::string strDate = std::to_string(csv_json::Devices[sets->DeviceInd].Dates[sets->Date##num##Ind].Date.metric); char_to_wchar(&strDate, &wideDate);\
+                std::wstring wideDate; std::string strDate = std::to_string(csv_json::Devices[sets->DeviceInd].Dates[sets->Date##num##Ind].Date.metric); char_to_wchar(1251, strDate, wideDate);\
                 TEXT_RENDERER.DrawText(wideDate,\
                     Width, Height,\
                     1,\

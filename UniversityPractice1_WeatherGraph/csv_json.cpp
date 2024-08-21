@@ -66,7 +66,7 @@ void csv_json::ReadFromCSV(const wchar_t* filepath) {
 
 	{//first line
 		std::getline(fileTextStream, curLine);
-		char_to_wchar(&curLine, &curWideLine);
+		char_to_wchar(1251, curLine, curWideLine);
 
 		unsigned int first = (unsigned int)curWideLine.find_first_of(L';');
 		unsigned int second = (unsigned int)curWideLine.find_first_of(L';', first + 1);
@@ -193,11 +193,11 @@ void csv_json::ReadFromJSON(const wchar_t* filepath) {
 
 		std::string serverName; unsigned int nameStart; unsigned int nameEnd;
 		GetNextNameAndValue(text, dataInd, serverName, nameStart, nameEnd, dataInd); serverName = text.substr(nameStart + 1, nameEnd - nameStart - 1);
-		std::wstring wideServerName; char_to_wchar(&serverName, &wideServerName);
+		std::wstring wideServerName; char_to_wchar(1251, serverName, wideServerName);
 
 		std::string serverSerial; unsigned int serialStart; unsigned int serialEnd;
 		GetNextNameAndValue(text, dataInd, serverSerial, serialStart, serialEnd, dataInd); serverSerial = text.substr(serialStart + 1, serialEnd - serialStart - 1);
-		std::wstring wideServerSerial; char_to_wchar(&serverSerial, &wideServerSerial);//just to concatenate serial and name
+		std::wstring wideServerSerial; char_to_wchar(1251, serverSerial, wideServerSerial);//just to concatenate serial and name
 
 		wideServerName += L'(' + wideServerSerial + L')';
 
