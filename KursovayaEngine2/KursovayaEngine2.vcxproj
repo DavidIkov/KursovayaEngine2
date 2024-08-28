@@ -182,12 +182,12 @@
     <ClCompile Include="Tools\DebuggingTools.cpp" />
     <ClCompile Include="Tools\Event.cpp" />
     <ClCompile Include="Tools\RandomNumber.cpp" />
-    <ClCompile Include="Tools\ReadFromFile.cpp" />
     <ClCompile Include="Tools\Time.cpp" />
     <ClCompile Include="Tools\UniqueKeysSystem.cpp" />
     <ClCompile Include="Windows\Window.cpp" />
     <ClCompile Include="Windows\WindowsManager.cpp" />
     <ClCompile Include="WinOS\FileExplorerDialog.cpp" />
+    <ClCompile Include="WinOS\FilesSystem.cpp" />
     <ClCompile Include="WinOS\wchar_t_Operations.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -304,7 +304,9 @@
     <ClInclude Include="Maths\Matrix.h" />
     <ClInclude Include="Maths\Vector.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Tools\DynArr.h" />
     <ClInclude Include="Tools\SimpleLambda.h" />
+    <ClInclude Include="WinOS\FilesSystem.h" />
     <ClInclude Include="WinOS\wchar_t_Operations.h" />
     <ClInclude Include="Tools\FileTypesReaders\Obj.h" />
     <ClInclude Include="GraphicsPrimitives\FrameBuffer.h" />
@@ -325,7 +327,6 @@
     <ClInclude Include="Tools\Event.h" />
     <ClInclude Include="Tools\GLDebug.h" />
     <ClInclude Include="Tools\RandomNumber.h" />
-    <ClInclude Include="Tools\ReadFromFile.h" />
     <ClInclude Include="Tools\Time.h" />
     <ClInclude Include="Tools\UniqueKeysSystem.h" />
     <ClInclude Include="Windows\Window.h" />

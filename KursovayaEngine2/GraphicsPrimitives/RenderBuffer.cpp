@@ -4,7 +4,7 @@
 #include"Tools/DebuggingTools.h"
 #include"Tools/ErrorCodes.h"
 
-RenderBuffer::RenderBuffer(unsigned int width, unsigned int height, bool createDepthBuffer, bool createStencilBuffer):DepthBufferEnabled(createDepthBuffer),StencilBufferEnabled(createStencilBuffer) {
+RenderBuffer::RenderBuffer(unsigned int width, unsigned int height, bool createDepthBuffer, bool createStencilBuffer) {
     glSC(glGenRenderbuffers(1, &ID));
     glSC(glBindRenderbuffer(GL_RENDERBUFFER, ID));
     if (createDepthBuffer and createStencilBuffer) { glSC(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height)); }
@@ -12,9 +12,18 @@ RenderBuffer::RenderBuffer(unsigned int width, unsigned int height, bool createD
     else if (not createDepthBuffer and createStencilBuffer) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"YOU CANT CREATE RENDER BUFFER WITH STENCIL BUFFER BUT WITHOUT DEPTH BUFFER",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
     else DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"YOU CANT CREATE RENDER BUFFER WITHOUT ANY BUFFERS",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
 }
-RenderBuffer::RenderBuffer(RenderBuffer&& tempRB) {
-    memcpy(this, &tempRB, sizeof(tempRB));
-    tempRB.Deleted = true;
+RenderBuffer::RenderBuffer(const RenderBuffer* toCopy) {
+    memcpy(this, toCopy, sizeof(RenderBuffer));
+    toCopy->Deleted = true;
+}
+RenderBuffer::RenderBuffer(const RenderBuffer&& toCopy) {
+    memcpy(this, &toCopy, sizeof(RenderBuffer));
+    toCopy.Deleted = true;
+}
+void RenderBuffer::operator=(const RenderBuffer&& toCopy) {
+    this->~RenderBuffer();
+    memcpy(this, &toCopy, sizeof(RenderBuffer));
+    toCopy.Deleted = true;
 }
 RenderBuffer::~RenderBuffer() {
     if (not Deleted) {
@@ -29,12 +38,4 @@ void RenderBuffer::Delete() {
 unsigned int RenderBuffer::gID() const {
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"RENDER BUFFER IS ALREADY DELETED, ACCESSING ITS ID MAY CAUSE PROBLEMS",KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
     return ID;
-}
-bool RenderBuffer::gIsDepthBufferEnabled() const {
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"RENDER BUFFER IS ALREADY DELETED, ACCESSING IF DEPTH BUFFER IS ENABLED MAY CAUSE PROBLEMS",KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
-    return DepthBufferEnabled;
-}
-bool RenderBuffer::gIsStencilBufferEnabled() const {
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"RENDER BUFFER IS ALREADY DELETED, ACCESSING IF STENCIL BUFFER IS ENABLED MAY CAUSE PROBLEMS",KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
-    return StencilBufferEnabled;
 }

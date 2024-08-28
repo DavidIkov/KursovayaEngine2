@@ -7,13 +7,23 @@
 #include"FreeType/ft2build.h"
 #include FT_FREETYPE_H
 
-#include"filesystem"
+
+bool TextRenderer::First = false;
+
+TextRenderer::CharacterClass::CharacterClass(TextureClass&& tex, unsigned int unicodeInd, Vector<2>&& size, Vector<2>&& bearing, unsigned int advance)
+    :Tex(&tex), UnicodeInd(unicodeInd), Size(std::move(size)), Bearing(std::move(bearing)), Advance(advance) { }
+//TextRenderer::CharacterClass& TextRenderer::CharacterClass::operator=(const CharacterClass& copy) {
+//
+//}
 
 
-TextRenderer::Character::Character(Texture&& tex, Vector<2>&& size, Vector<2>&& bearing, unsigned int advance)
-	:Tex(std::move(tex)), Size(std::move(size)), Bearing(std::move(bearing)), Advance(advance) { }
 
-TextRenderer::TextRenderer(const char* fontDir, const char* vShaderDir, const char* fShaderDir):
+TextRenderer::CharacterClass::CharacterClass(const CharacterClass* toCopy) :
+    Tex(&toCopy->Tex), UnicodeInd(toCopy->UnicodeInd), Size(toCopy->Size), Bearing(toCopy->Bearing), Advance(toCopy->Advance) {
+
+}
+
+TextRenderer::TextRenderer(const wchar_t* vShaderDir, const wchar_t* fShaderDir):
     TextPreset(
     false, RenderingPresetEnumArguments::FaceCulling::FaceToCull::Back, RenderingPresetEnumArguments::FaceCulling::FaceDetermination::Clockwise,
     false, true, RenderingPresetEnumArguments::DepthTest::TypeOfComparison::LessOrEqual,
@@ -23,86 +33,19 @@ TextRenderer::TextRenderer(const char* fontDir, const char* vShaderDir, const ch
     0.f, 0.f, 0.f
 ){
 
-    FT_Library FT;
-    if (FT_Init_FreeType(&FT)) {
+    FreeTypeLib = (void*)(new FT_Library);
+
+    if (FT_Init_FreeType((FT_Library*)FreeTypeLib)) {
         DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"FAILED TO INITIALIZE FreeType LIBRARY",KURSAVAYAENGINE2_CORE_ERRORS::FAILED_TO_INITIALIZE_LIBRARY });
     }
 
-    FT_Face FT_FACE;
-    if (FT_New_Face(FT, fontDir, 0, &FT_FACE))
-    {
-        std::string errMsg;
-        errMsg += "FreeType ERROR: FAILED TO OPEN FONT \"";
-        errMsg += fontDir;
-        errMsg += "\"";
-        DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,errMsg.c_str(),KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-    }
-
-    FT_Set_Pixel_Sizes(FT_FACE, 0, 48);
-
-    glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); // disable byte-alignment restriction
-
-
-    BasicCharacters.reserve(128);
-
-    for (unsigned int ci = 0; ci < 128; ci++)
-    {
-        // load character glyph 
-        if (FT_Load_Char(FT_FACE, ci, FT_LOAD_RENDER))
-        {
-            DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"FreeType ERROR: FAILED TO LOAD Glyph",KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-            continue;
-        }
-        BasicCharacters.emplace_back(
-            Texture{ FT_FACE->glyph->bitmap.width, FT_FACE->glyph->bitmap.rows,1,FT_FACE->glyph->bitmap.buffer,{
-            TextureWrapType::ClampToEdge,TextureWrapType::ClampToEdge,
-            TextureDownscalingFilterFunc::Linear,TextureUpscalingFilterFunc::Linear
-            } },
-            Vector<2>{ (float)FT_FACE->glyph->bitmap.width, (float)FT_FACE->glyph->bitmap.rows },
-            Vector<2>{ (float)FT_FACE->glyph->bitmap_left, (float)FT_FACE->glyph->bitmap_top },
-            (unsigned int)FT_FACE->glyph->advance.x / 64
-        );
-    }
-
-    {//russian characters
-        unsigned int first = L'À';
-        unsigned int last = L'ÿ';
-
-        RussianCharacters.reserve(last - first + 1);
-
-        for (unsigned int ci = first; ci < last + 1; ci++)
-        {
-            // load character glyph 
-            if (FT_Load_Char(FT_FACE, (wchar_t)ci, FT_LOAD_RENDER))
-            {
-                DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"FreeType ERROR: FAILED TO LOAD Glyph",KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-                continue;
-            }
-            RussianCharacters.emplace_back(
-                Texture{ FT_FACE->glyph->bitmap.width, FT_FACE->glyph->bitmap.rows,1,FT_FACE->glyph->bitmap.buffer,{
-                TextureWrapType::ClampToEdge,TextureWrapType::ClampToEdge,
-                TextureDownscalingFilterFunc::Linear,TextureUpscalingFilterFunc::Linear
-                } },
-                Vector<2>{ (float)FT_FACE->glyph->bitmap.width, (float)FT_FACE->glyph->bitmap.rows },
-                Vector<2>{ (float)FT_FACE->glyph->bitmap_left, (float)FT_FACE->glyph->bitmap_top },
-                (unsigned int)FT_FACE->glyph->advance.x / 64
-            );
-        }
-    }
-
-    glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 4));
-
-    FT_Done_Face(FT_FACE);
-    FT_Done_FreeType(FT);
-
-
 
     {
-        Shader VS(vShaderDir, ShaderTypesEnum::Vertex);
+        Shader VS(vShaderDir, Shader::TypesEnum::Vertex);
         VS.Compile();
         TEXT_SP.AttachShader(VS);
 
-        Shader FS(fShaderDir, ShaderTypesEnum::Fragment);
+        Shader FS(fShaderDir, Shader::TypesEnum::Fragment);
         FS.Compile();
         TEXT_SP.AttachShader(FS);
 
@@ -111,11 +54,115 @@ TextRenderer::TextRenderer(const char* fontDir, const char* vShaderDir, const ch
         TEXT_SP.SetUniform1i("u_TextTexture", 0);
     }
 
-    TEXT_VB.ReserveData(6 * 4, VertexBufferDataUsage::DynamicDraw);
-    TEXT_VB.SetLayout({ 2,2 });
+    TEXT_VB.ReserveData(6 * 4 * sizeof(float), VertexBuffer::BufferDataUsage::DynamicDraw);
+    TEXT_VB.SetLayout(VertexBuffer::BufferDataType::Float, { 2,2 });
 }
+TextRenderer::FontClass::FontClass() { }
+TextRenderer::FontClass::FontClass(const FontClass* toCopy) {
+    toCopy->Deleted = true;
+    memcpy(this, toCopy, sizeof(FontClass));
+}
+TextRenderer::FontClass::~FontClass() {
+    if (not Deleted) {
+        FT_Done_Face(*(FT_Face*)FreeTypeFace);
+        delete (FT_Face*)FreeTypeFace;
+    }
+}
+
+TextRenderer::~TextRenderer() {
+    FT_Done_FreeType(*(FT_Library*)FreeTypeLib);
+    delete (FT_Library*)FreeTypeLib;
+}
+std::string TextRenderer::LoadFont(const char* fontDir, unsigned int charsSize) {
+
+    FontClass font;
+    font.FreeTypeFace = new FT_Face;
+
+    if (FT_New_Face(*(FT_Library*)FreeTypeLib, fontDir, 0, (FT_Face*)font.FreeTypeFace)) {
+        std::string errMsg;
+        errMsg += "FreeType ERROR: FAILED TO OPEN FONT \"";
+        errMsg += fontDir;
+        errMsg += "\"";
+        DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,errMsg.c_str(),KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
+    }
+
+    FT_Set_Pixel_Sizes(*(FT_Face*)font.FreeTypeFace, 0, charsSize);//charsSize=48
+
+    {//name
+        std::string dir(fontDir);
+        size_t lastSlash = dir.find_last_of('/');
+        size_t dot = dir.find_first_of('.');
+        if (lastSlash == dir.npos) font.FontName = dir.substr(0, dot);
+        else font.FontName = dir.substr(lastSlash + 1, dot - lastSlash - 1);
+    }
+
+    Fonts.InsertByCopy(Fonts.gLength(), font);
+
+    return font.FontName;
+}
+void TextRenderer::LoadCharacters(const std::string& fontName, const wchar_t* chars) {
+    for (unsigned int fi = 0; fi < Fonts.gLength(); fi++) {
+        if (Fonts[fi].FontName == fontName) {
+
+            FontClass& font = Fonts[fi];
+            
+            unsigned int charsAmount = 0; while (chars[charsAmount] != L'\0') charsAmount++;
+            
+            font.Characters.Resize(font.Characters.gLength() + charsAmount);
+
+            glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); // disable byte-alignment restriction
+
+            for (unsigned int ci = 0; ci < charsAmount; ci++) {
+
+                unsigned int unicodeInd = (unsigned int)chars[ci];
+
+
+                unsigned int insertInd = font.Characters.gLength();
+                for (unsigned int cci = 0; cci < font.Characters.gLength(); cci++) {
+                    if (font.Characters[cci].UnicodeInd == unicodeInd) { goto continueStop; }
+                    else if (font.Characters[cci].UnicodeInd > unicodeInd) { insertInd = cci; break; }
+                }
+                goto skipContinue;
+            continueStop:
+                continue;
+            skipContinue:
+
+                
+
+                
+
+                
+                if (FT_Load_Char(*(FT_Face*)font.FreeTypeFace, unicodeInd, FT_LOAD_RENDER))
+                {
+                    DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"FreeType ERROR: FAILED TO LOAD CHAR",KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
+                    continue;
+                }
+                FT_Face& face = *(FT_Face*)font.FreeTypeFace;
+
+                
+                font.Characters.InsertByConstructor(insertInd,
+                    TextureClass{ face->glyph->bitmap.width, face->glyph->bitmap.rows,face->glyph->bitmap.buffer,
+                    TextureClass::SettingsClass{
+                    TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,
+                    TextureClass::SettingsClass::DownscalingFilterFuncEnum::Linear,TextureClass::SettingsClass::UpscalingFilterFuncEnum::Linear,
+                    TextureClass::SettingsClass::DepthStencilReadModeEnum::Depth},
+                    TextureClass::DataSettingsClass{TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::Red,
+                    TextureClass::DataSettingsClass::DataFormatOnCPU_Enum::Red,TextureClass::DataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte} }, unicodeInd,
+                    Vector<2>{ (float)face->glyph->bitmap.width, (float)face->glyph->bitmap.rows },
+                    Vector<2>{ (float)face->glyph->bitmap_left, (float)face->glyph->bitmap_top },
+                    (unsigned int)face->glyph->advance.x / 64
+                );
+            }
+
+            glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 4));
+
+            break;
+        }
+    }
+}
+
 void TextRenderer::DrawText(
-    std::wstring text,
+    const std::string& fontName, std::wstring text,
     unsigned int screenWidth, unsigned int screenHeight,
     float textScale,
     float posX, float posY,
@@ -134,14 +181,26 @@ void TextRenderer::DrawText(
     float maxYUp = 0;
     float maxYDown = 0;
 
-#define getCharData()\
-if (text[i] < BasicCharacters.size()) charData = &BasicCharacters[text[i]];\
-else if (text[i] >= L'À' and text[i] <= L'ÿ') charData = &RussianCharacters[text[i] - L'À'];\
-else charData = &BasicCharacters[63];//the '?' symbol
+    FontClass* font = nullptr;
+    for (unsigned int fi = 0; fi < Fonts.gLength(); fi++) if (Fonts[fi].FontName == fontName) { font = &Fonts[fi]; break; }
+
+    std::vector<CharacterClass*> chars; chars.reserve(text.size());
 
     for (unsigned int i = 0; i < text.size(); i++) {
-        Character* charData = nullptr;
-        getCharData();
+        CharacterClass* charData = nullptr;
+        {
+            unsigned int unicodeInd = (unsigned int)text[i];
+            for (unsigned int ci = 0; ci < font->Characters.gLength(); ci++) 
+                if (font->Characters[ci].UnicodeInd == unicodeInd) { charData = &font->Characters[ci]; break; }
+        }
+
+        if (charData == nullptr) {
+            std::string errMsg("Could not display symbol " + std::to_string((unsigned int)text[i]));
+            DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,errMsg.c_str(),KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS});
+            continue;
+        }
+
+        chars.push_back(charData);
         
         totalXSize += charData->Advance;
         float charYSize = charData->Bearing[1] + (ignoreBottomPartOfSymbol ? 0 : (charData->Size[1] - charData->Bearing[1]));
@@ -179,9 +238,8 @@ else charData = &BasicCharacters[63];//the '?' symbol
     localOffsetX = (localOffsetX / 2 + 0.5f) * totalXSize * 2;
     localOffsetY = (localOffsetY / 2 + 0.5f) * totalYSize * 2;
 
-    for (unsigned int i = 0; i < text.size(); i++) {
-        Character* charData = nullptr;
-        getCharData();
+    for (unsigned int i = 0; i < chars.size(); i++) {
+        CharacterClass* charData = chars[i];
 
         charData->Tex.Bind(0);
         float xpos = posX + charData->Bearing[0] * textScale / screenWidth * 2 - localOffsetX;
@@ -200,7 +258,7 @@ else charData = &BasicCharacters[63];//the '?' symbol
              xpos + w, ypos + h,   1.0f, 0.0f
         };
 
-        TEXT_VB.SetSubData(0, 6 * 4, vertices);
+        TEXT_VB.SetSubData(0, 6 * 4 * sizeof(float), vertices);
         Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, 6);
         posX += (charData->Advance) * textScale / screenWidth * 2;
     }

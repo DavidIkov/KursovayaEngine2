@@ -5,19 +5,19 @@
 #include"Tools/ErrorCodes.h"
 
 
-void FrameBuffer::ClearColorBuffer() {
+void FrameBuffer::ClearColorBuffer() const {
 	Bind();
 	glSC(glClear(GL_COLOR_BUFFER_BIT));
 }
-void FrameBuffer::ClearDepthBuffer() {
+void FrameBuffer::ClearDepthBuffer() const {
 	Bind();
 	glSC(glClear(GL_DEPTH_BUFFER_BIT));
 }
-void FrameBuffer::ClearStencilBuffer() {
+void FrameBuffer::ClearStencilBuffer() const {
 	Bind();
 	glSC(glClear(GL_STENCIL_BUFFER_BIT));
 }
-void FrameBuffer::ClearAllBuffers() {
+void FrameBuffer::ClearAllBuffers() const {
 	Bind();
 	glSC(glClear(GL_COLOR_BUFFER_BIT));
 	glSC(glClear(GL_DEPTH_BUFFER_BIT));
@@ -28,9 +28,18 @@ FrameBuffer::FrameBuffer(unsigned int width, unsigned int height) :Width(width),
 	glSC(glGenFramebuffers(1, &ID));
 	glSC(glBindFramebuffer(GL_FRAMEBUFFER, ID));
 }
-FrameBuffer::FrameBuffer(FrameBuffer&& tempFB){
-	memcpy(this, &tempFB, sizeof(tempFB));
-	tempFB.Deleted = true;
+FrameBuffer::FrameBuffer(const FrameBuffer* toCopy) {
+	memcpy(this, toCopy, sizeof(FrameBuffer));
+	toCopy->Deleted = true;
+}
+FrameBuffer::FrameBuffer(const FrameBuffer&& toCopy) {
+	memcpy(this, &toCopy, sizeof(FrameBuffer));
+	toCopy.Deleted = true;
+}
+void FrameBuffer::operator=(const FrameBuffer&& toCopy) {
+	this->~FrameBuffer();
+	memcpy(this, &toCopy, sizeof(FrameBuffer));
+	toCopy.Deleted = true;
 }
 FrameBuffer::~FrameBuffer() {
 	if (not Deleted) {
@@ -42,42 +51,25 @@ unsigned int FrameBuffer::gID() const {
 	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "FRAME BUFFER IS DELETED, ACCESSING ITS ID MAY CAUSE PROBLEMS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
 	return ID;
 }
-void FrameBuffer::AttachRenderBuffer(const RenderBuffer& rb) const {
+void FrameBuffer::AttachRenderBuffer(unsigned int renderBufferID, bool depthBufferEnabled, bool stencilBufferEnabled) {
 	glSC(glBindFramebuffer(GL_FRAMEBUFFER, ID));
-	bool db = rb.gIsDepthBufferEnabled();
-	bool sb = rb.gIsStencilBufferEnabled();
-	if (db and sb) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rb.gID())); }
-	else if (db and not sb) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rb.gID())); }
-	else if (not db and sb) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "YOU CANT ATTACH TO FRAMEBUFFER A RENDER BUFFER WHICH HAVE STENCIL BUFFER BUT HAVENT GOT DEPTH BUFFER", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
+	if (depthBufferEnabled and stencilBufferEnabled) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBufferID)); }
+	else if (depthBufferEnabled and not stencilBufferEnabled) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBufferID)); }
+	else if (not depthBufferEnabled and stencilBufferEnabled) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "YOU CANT ATTACH TO FRAMEBUFFER A RENDER BUFFER WHICH HAVE STENCIL BUFFER BUT HAVENT GOT DEPTH BUFFER", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
 	else DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "YOU CANT ATTACH TO FRAMEBUFFER A RENDER BUFFER WHICH DOESNT HAVE ANY BUFFERS ENABLED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
 }
-void FrameBuffer::AttachTexture(Texture& tex) {
-	AttachedTextures.push_back(&tex);
+void FrameBuffer::AttachTexture(unsigned int texID, TextureClass::DataSettingsClass::DataFormatOnGPU_Enum dataFormat) {
 
 	int glAtt = 0;
-	switch (tex.gStorageType()) {
-	case TextureStorageType::RGB:
-	{
-		glAtt = GL_COLOR_ATTACHMENT0;
-		break;
+	switch (dataFormat) {//DepthComponent, DepthStencil, Red, RG, RGB, RGBA
+	case TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthComponent: glAtt = GL_DEPTH_ATTACHMENT; break;
+	case TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil: glAtt = GL_DEPTH_STENCIL_ATTACHMENT; break;
+	case TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::Red: glAtt = GL_COLOR_ATTACHMENT0; break;
+	case TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::RG: glAtt = GL_COLOR_ATTACHMENT0; break;
+	case TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::RGB: glAtt = GL_COLOR_ATTACHMENT0; break;
+	case TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::RGBA: glAtt = GL_COLOR_ATTACHMENT0; break;
 	}
-	case TextureStorageType::RGBA:
-	{
-		glAtt = GL_COLOR_ATTACHMENT0;
-		break;
-	}
-	case TextureStorageType::Depth:
-	{
-		glAtt = GL_DEPTH_ATTACHMENT;
-		break;
-	}
-	case TextureStorageType::DepthStencil:
-	{
-		glAtt = GL_DEPTH_STENCIL_ATTACHMENT;
-		break;
-	}
-	}
-	glSC(glFramebufferTexture2D(GL_FRAMEBUFFER, glAtt, GL_TEXTURE_2D, tex.gID(), 0));
+	glSC(glFramebufferTexture2D(GL_FRAMEBUFFER, glAtt, GL_TEXTURE_2D, texID, 0));
 }
 void FrameBuffer::Delete() {
 	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "FRAME BUFFER IS ALREADY DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });

@@ -8,7 +8,9 @@ class ShaderProgram {
 public:
 	DLLTREATMENT unsigned int gID() const;
 	DLLTREATMENT ShaderProgram();
-	DLLTREATMENT ShaderProgram(ShaderProgram&& tempSP);
+	DLLTREATMENT ShaderProgram(const ShaderProgram* toCopy);
+	DLLTREATMENT ShaderProgram(const ShaderProgram&& toCopy);
+	DLLTREATMENT void operator=(const ShaderProgram&& toCopy);
 	DLLTREATMENT void AttachShader(const Shader& SH);
 	DLLTREATMENT void LinkShaders();
 	DLLTREATMENT ~ShaderProgram();

@@ -1,5 +1,5 @@
 #include"csv_json.h"
-#include"fstream"
+#include"WinOS/FilesSystem.h"
 #include"Tools/DebuggingTools.h"
 #include<iostream>
 #include"WinOS/wchar_t_Operations.h"
@@ -46,26 +46,18 @@ static void ReadDate(std::string& text, unsigned int startInd, unsigned int endI
 
 }
 
-void csv_json::ReadFromCSV(const wchar_t* filepath) {
+void csv_json::ReadFromCSV(const wchar_t* filePath) {
 	Devices.clear();
 	Devices.resize(1);
 
-	std::ifstream fileTextStream;
-	fileTextStream.open(filepath);
-	if (fileTextStream.fail()) {
-		std::wstring errMsg;
-		errMsg += L"Failed to open file \"";
-		errMsg += filepath;
-		errMsg += L'\"';
-		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,errMsg.c_str(),KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-	}
+	FilesSystem::OpenedFile file(filePath);
 
 	std::string curLine;
 	std::wstring curWideLine;
 
 
 	{//first line
-		std::getline(fileTextStream, curLine);
+		file.GetNextLine(curLine);
 		char_to_wchar(1251, curLine, curWideLine);
 
 		unsigned int first = (unsigned int)curWideLine.find_first_of(L';');
@@ -74,7 +66,7 @@ void csv_json::ReadFromCSV(const wchar_t* filepath) {
 		Devices[0].Name = curWideLine.substr(first + 1, second - first - 1);
 	}
 	{//second line
-		std::getline(fileTextStream, curLine);
+		file.GetNextLine(curLine);
 
 		size_t start = curLine.find_first_of(L';');
 		while (start != curLine.npos) {
@@ -86,7 +78,7 @@ void csv_json::ReadFromCSV(const wchar_t* filepath) {
 		}
 	}
 
-	while (std::getline(fileTextStream, curLine)) {
+	while (file.GetNextLine(curLine)) {
 		if (Devices[0].Dates.size() == Devices[0].Dates.capacity()) Devices[0].Dates.reserve(Devices[0].Dates.size() + 500);
 
 		DeviceDataStruct::DateWidthDataStruct obj;
@@ -164,22 +156,14 @@ static void GetNextNameAndValue(std::string& text, unsigned int start, std::stri
 	}
 
 }
-void csv_json::ReadFromJSON(const wchar_t* filepath) {
+void csv_json::ReadFromJSON(const wchar_t* filePath) {
 	Devices.clear();
 	
-	std::ifstream fileTextStream;
-	fileTextStream.open(filepath);
-	if (fileTextStream.fail()) {
-		std::wstring errMsg;
-		errMsg += L"Failed to open file \"";
-		errMsg += filepath;
-		errMsg += L'\"';
-		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,errMsg.c_str(),KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-	}
+	FilesSystem::OpenedFile file(filePath);
 
 
 	std::string text;
-	std::getline(fileTextStream, text);
+	file.GetNextLine(text);
 
 	
 	std::string recordName; unsigned int dataStart; unsigned int dataEnd; unsigned int startInd = 0;

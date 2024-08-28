@@ -30,20 +30,30 @@ int main()
         Window window(Width, Height, "haiiiii", false, 1);
 
 
-        TextRenderer TEXT_RENDERER("Fonts/arial.ttf", "Shaders/text.vs", "Shaders/text.fs");
-
+        TextRenderer TEXT_RENDERER(L"Shaders/text.vs", L"Shaders/text.fs");
+        std::string ArialFont = TEXT_RENDERER.LoadFont("Fonts/arial.ttf", 48);
+        TEXT_RENDERER.LoadCharacters(ArialFont,
+            L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
+            "`abcdefghijklmnopqrstuvwxyz{|}~");
 
         FrameBuffer FB(Width, Height);
-        Texture FB_COLOR_TEX(Width, Height, TextureStorageType::RGB,
-            { TextureWrapType::ClampToEdge,TextureWrapType::ClampToEdge,TextureDownscalingFilterFunc::Nearest,TextureUpscalingFilterFunc::Nearest,
-            TextureDepthStencilReadMode::Depth });
-        FB.AttachTexture(FB_COLOR_TEX);
-        Texture FB_DEPTH_STENCIL_TEX(Width, Height, TextureStorageType::DepthStencil,
-            { TextureWrapType::ClampToEdge,TextureWrapType::ClampToEdge,TextureDownscalingFilterFunc::Nearest,TextureUpscalingFilterFunc::Nearest,
-            TextureDepthStencilReadMode::Stencil});
-        FB.AttachTexture(FB_DEPTH_STENCIL_TEX);
-        //RenderBuffer RB(Width, Height, true, true);
-        //FB.AttachRenderBuffer(RB);
+        TextureClass FB_COLOR_TEX(Width, Height, nullptr,
+            TextureClass::SettingsClass{ TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,
+            TextureClass::SettingsClass::DownscalingFilterFuncEnum::Nearest,TextureClass::SettingsClass::UpscalingFilterFuncEnum::Nearest,
+            TextureClass::SettingsClass::DepthStencilReadModeEnum::Depth },
+            TextureClass::DataSettingsClass{ TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::RGB,
+            TextureClass::DataSettingsClass::DataFormatOnCPU_Enum::RGB, TextureClass::DataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte }
+        );
+        FB.AttachTexture(FB_COLOR_TEX.gID(), TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::RGB);
+        /*TextureClass FB_DEPTH_STENCIL_TEX(Width, Height, nullptr,
+            TextureClass::SettingsClass{ TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,
+            TextureClass::SettingsClass::DownscalingFilterFuncEnum::Nearest,TextureClass::SettingsClass::UpscalingFilterFuncEnum::Nearest,
+            TextureClass::SettingsClass::DepthStencilReadModeEnum::Stencil },
+            TextureClass::DataSettingsClass{ TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil,
+            TextureClass::DataSettingsClass::DataFormatOnCPU_Enum::DepthStencil, TextureClass::DataSettingsClass::DataTypeOnCPU_Enum::UnsignedInt_24_8 });
+        FB.AttachTexture(FB_DEPTH_STENCIL_TEX.gID(), TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil);*/
+        RenderBuffer RB(Width, Height, true, true);
+        FB.AttachRenderBuffer(RB.gID(), true, true);
         FB.Finish();
         FB.Unbind(Width, Height);
 
@@ -66,8 +76,8 @@ int main()
         
 
         unsigned int floatsAmountPerVertex = 3 + 3 + 3 + 2;
-        std::vector<float> VB1_DATA = ReadObjFileType("Models3D/sphere.obj");
-        std::vector<float> VB2_DATA = ReadObjFileType("Models3D/sphere.obj");
+        std::vector<float> VB1_DATA = ReadObjFileType(L"Models3D/sphere.obj");
+        std::vector<float> VB2_DATA = ReadObjFileType(L"Models3D/sphere.obj");
 
 
 
@@ -75,16 +85,16 @@ int main()
         VertexArray VA1;
 
         VertexBuffer VB1;
-        VB1.SetData(VB1_DATA, VertexBufferDataUsage::StaticDraw);
-        VB1.SetLayout({ 3,3,3,2 });
+        VB1.SetData(&VB1_DATA[0],(unsigned int)(VB1_DATA.size()*sizeof(float)), VertexBuffer::BufferDataUsage::StaticDraw);
+        VB1.SetLayout(VertexBuffer::BufferDataType::Float, { 3,3,3,2 });
 
         VA1.Unbind();
 
         VertexArray VA2;
 
         VertexBuffer VB2;
-        VB2.SetData(VB2_DATA, VertexBufferDataUsage::StaticDraw);
-        VB2.SetLayout({ 3,3,3,2 });
+        VB2.SetData(&VB2_DATA[0], (unsigned int)(VB2_DATA.size() * sizeof(float)), VertexBuffer::BufferDataUsage::StaticDraw);
+        VB2.SetLayout(VertexBuffer::BufferDataType::Float, { 3,3,3,2 });
 
         VA2.Unbind();
 
@@ -93,18 +103,18 @@ int main()
         VertexArray QUAD_VA;
 
         VertexBuffer QUAD_VB;
-        QUAD_VB.SetData(quadVBD, VertexBufferDataUsage::StaticDraw);
-        QUAD_VB.SetLayout({ 2 });
+        QUAD_VB.SetData(&quadVBD[0], (unsigned int)(quadVBD.size()*sizeof(float)), VertexBuffer::BufferDataUsage::StaticDraw);
+        QUAD_VB.SetLayout(VertexBuffer::BufferDataType::Float, { 2 });
 
         QUAD_VA.Unbind();
 
         ShaderProgram SP;
         {
-            Shader VS("Shaders/full3d.vs", ShaderTypesEnum::Vertex);
+            Shader VS(L"Shaders/full3d.vs", Shader::TypesEnum::Vertex);
             VS.Compile();
             SP.AttachShader(VS);
 
-            Shader FS("Shaders/full3d.fs", ShaderTypesEnum::Fragment);
+            Shader FS(L"Shaders/full3d.fs", Shader::TypesEnum::Fragment);
             FS.Compile();
             SP.AttachShader(FS);
 
@@ -113,11 +123,11 @@ int main()
 
         ShaderProgram SP_OUTLINE;
         {
-            Shader VS("Shaders/outline.vs", ShaderTypesEnum::Vertex);
+            Shader VS(L"Shaders/outline.vs", Shader::TypesEnum::Vertex);
             VS.Compile();
             SP_OUTLINE.AttachShader(VS);
 
-            Shader FS("Shaders/outline.fs", ShaderTypesEnum::Fragment);
+            Shader FS(L"Shaders/outline.fs", Shader::TypesEnum::Fragment);
             FS.Compile();
             SP_OUTLINE.AttachShader(FS);
 
@@ -126,15 +136,15 @@ int main()
 
         ShaderProgram SP_NORMAL;
         {
-            Shader VS("Shaders/normal.vs", ShaderTypesEnum::Vertex);
+            Shader VS(L"Shaders/normal.vs", Shader::TypesEnum::Vertex);
             VS.Compile();
             SP_NORMAL.AttachShader(VS);
 
-            Shader FS("Shaders/normal.fs", ShaderTypesEnum::Fragment);
+            Shader FS(L"Shaders/normal.fs", Shader::TypesEnum::Fragment);
             FS.Compile();
             SP_NORMAL.AttachShader(FS);
 
-            Shader GS("Shaders/normal.gs", ShaderTypesEnum::Geometry);
+            Shader GS(L"Shaders/normal.gs", Shader::TypesEnum::Geometry);
             GS.Compile();
             SP_NORMAL.AttachShader(GS);
 
@@ -144,11 +154,11 @@ int main()
 
         ShaderProgram QUAD_SP;
         {
-            Shader VS("Shaders/quad.vs", ShaderTypesEnum::Vertex);
+            Shader VS(L"Shaders/quad.vs", Shader::TypesEnum::Vertex);
             VS.Compile();
             QUAD_SP.AttachShader(VS);
 
-            Shader FS("Shaders/quad.fs", ShaderTypesEnum::Fragment);
+            Shader FS(L"Shaders/quad.fs", Shader::TypesEnum::Fragment);
             FS.Compile();
             QUAD_SP.AttachShader(FS);
 
@@ -163,12 +173,14 @@ int main()
         SP.SetUniform1i("u_tex1", 0);
         SP.SetUniform1i("u_tex2", 1);
 
-        Texture TEX0("Textures/blackFace.jpg",
-            { TextureWrapType::Repeat,TextureWrapType::Repeat,TextureDownscalingFilterFunc::Linear,TextureUpscalingFilterFunc::Linear,
-            TextureDepthStencilReadMode::Depth });
-        Texture TEX1("Textures/simpleFace.png",
-            { TextureWrapType::Repeat,TextureWrapType::Repeat,TextureDownscalingFilterFunc::Linear,TextureUpscalingFilterFunc::Linear,
-            TextureDepthStencilReadMode::Depth });
+        TextureClass TEX0("Textures/blackFace.jpg",
+            TextureClass::SettingsClass{ TextureClass::SettingsClass::WrapTypeEnum::Repeat,TextureClass::SettingsClass::WrapTypeEnum::Repeat,
+            TextureClass::SettingsClass::DownscalingFilterFuncEnum::Linear,TextureClass::SettingsClass::UpscalingFilterFuncEnum::Linear,
+            TextureClass::SettingsClass::DepthStencilReadModeEnum::Depth });
+        TextureClass TEX1("Textures/simpleFace.png",
+            TextureClass::SettingsClass{ TextureClass::SettingsClass::WrapTypeEnum::Repeat,TextureClass::SettingsClass::WrapTypeEnum::Repeat,
+            TextureClass::SettingsClass::DownscalingFilterFuncEnum::Linear,TextureClass::SettingsClass::UpscalingFilterFuncEnum::Linear,
+            TextureClass::SettingsClass::DepthStencilReadModeEnum::Depth });
         
 
         
@@ -350,7 +362,7 @@ int main()
 
             {//text
                 for (unsigned int i = 0; i < 5; i++) {
-                    TEXT_RENDERER.DrawText(L"wilson is pedophile",
+                    TEXT_RENDERER.DrawText(ArialFont, L"wilson is pedophile",
                         Width, Height,
                         1,
                         -1.f + 2.f * ((float)i / 5), -1.f + 2.f * ((float)i / 5),

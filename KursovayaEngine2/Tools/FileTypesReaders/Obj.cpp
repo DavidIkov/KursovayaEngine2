@@ -1,11 +1,10 @@
 #include"Obj.h"
 #include<iostream>
-#include"Tools/Time.h"
-#include<fstream>
 #include"Tools/DebuggingTools.h"
 #include"Tools/ErrorCodes.h"
 #include"Maths/Vector.h"
 #include<limits>
+#include"WinOS/FilesSystem.h"
 
 static unsigned int findSymbolInd(const std::string& txt, const char symbol, const unsigned int startInd) {
 	unsigned int i = startInd;
@@ -29,24 +28,11 @@ static int mini(int a1, int a2) {
 */
 
 //return packed data: Position,SmoothedNormal,FaceNormal,TextureCords
-std::vector<float> ReadObjFileType(const char* filePath) {
+std::vector<float> ReadObjFileType(const wchar_t* filePath) {
 
-	std::ifstream fileTextStream;
-	fileTextStream.open(filePath);
-	if (fileTextStream.fail()) {
-		/*char buffer[100];
-		strerror_s(buffer, errno);
-		std::cout<< buffer <<'\n';*/
-		std::string errMsg;
-		errMsg += "Failed to open file \"";
-		errMsg += filePath;
-		errMsg += '\"';
-		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,errMsg.c_str(),KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-	}
+	FilesSystem::OpenedFile file(filePath);
 	std::string curLine;
 
-	Time::TimePoint loadStart = Time::GetTimePoint();
-	std::cout << "Starting to load \"" << filePath << "\"'s data\n";
 
 	unsigned int fileVertexesAmount = 0;
 	unsigned int fileVertexConnectionsAmount = 0;
@@ -57,7 +43,7 @@ std::vector<float> ReadObjFileType(const char* filePath) {
 
 	//first step
 	{
-		while (std::getline(fileTextStream, curLine)) {
+		while (file.GetNextLine(curLine)) {
 
 			std::string name = curLine.substr(0, findSymbolInd(curLine, ' ', 0));
 			if (name == "v")//vertex
@@ -76,14 +62,13 @@ std::vector<float> ReadObjFileType(const char* filePath) {
 
 	}
 	
-	fileTextStream.clear();
-	fileTextStream.seekg(0, fileTextStream.beg);
+	file.GoToStartOfStream();
 
 	unsigned int trianglesAmount = 0;
 
 	//second step
 	{
-		while (std::getline(fileTextStream, curLine)) {
+		while (file.GetNextLine(curLine)) {
 
 			std::string name = curLine.substr(0, findSymbolInd(curLine, ' ', 0));
 			if (name == "v") {//vertex
@@ -223,12 +208,7 @@ std::vector<float> ReadObjFileType(const char* filePath) {
 		}*/
 	}
 
-	std::cout << "Finished loading model \"" << filePath << "\" in " <<
-		Time::GetDuration(loadStart, Time::GetTimePoint()) << " seconds" << std::endl;
 
-
-
-	fileTextStream.close();
 
 	return preparedData;
 }

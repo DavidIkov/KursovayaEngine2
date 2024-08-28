@@ -6,14 +6,14 @@ namespace RenderingPresetEnumArguments {
 	//used to not render vertexes which cant be seen since they facing away from the camera
 	namespace FaceCulling {
 		//describes which face to cull
-		enum class FaceToCull {
+		enum class FaceToCull :unsigned short int {
 			Back, Front
 		};
 		/*describe how to determine fs face front or back,
 		to determine that, gpu takes position of 3 vertexes of triangle from camera perspective
 		and then IF they positioned clockwise and setting is set to clockwise then its front face,
 		and IF they positioned anticlockwise then its back face, if settings is set to anticlockwise then everything is same but reversed*/
-		enum class FaceDetermination {
+		enum class FaceDetermination :unsigned short int {
 			Clockwise, AntiClockwise,
 		};
 	}
@@ -21,7 +21,7 @@ namespace RenderingPresetEnumArguments {
 	//used to determine if object is behind some other object or nah
 	namespace DepthTest {
 		//gpu will compare two values, current value and stored value, if test passes then pixel will be drawn, otherwise it will be discarded
-		enum class TypeOfComparison {
+		enum class TypeOfComparison :unsigned short int {
 			Never, Less, LessOrEqual, Greater, GreaterOrEqual, Equal, NotEqual, AlwaysPass
 		};
 	}
@@ -29,11 +29,11 @@ namespace RenderingPresetEnumArguments {
 	//used to discard some elements from screen, can be used for outlining
 	namespace StencilTest {
 		//gpu will comparison two values, if comparison fails then pixel is discarder, othervise it wont
-		enum class TypeOfComparison {
+		enum class TypeOfComparison :unsigned short int {
 			Never, Less, LessOrEqual, Greater, GreaterOrEqual, Equal, NotEqual, AlwaysPass
 		};
 		//actions to take with current stencil buffer value on different events that may occur, for move info visit "https://docs.gl/gl3/glStencilOp"
-		enum class Actions {
+		enum class Actions :unsigned short int {
 			Keep,Zero,Replace,Increase,IncreaseWrap,Decrease,DecreaseWrap,Invert
 		};
 	}
@@ -44,7 +44,7 @@ namespace RenderingPresetEnumArguments {
 		for more technical info visit "https://docs.gl/gl4/glBlendFunc" since there is a good explanation
 		on this topic and i dont see why i should copy it in here since it will be same but with different names
 		TODO: make thing named "dual source blending" since glBlendFunc have arguments where second source mentioned*/
-		enum class FunctionForColor {
+		enum class FunctionForColor :unsigned short int {
 			Zero,One,SrcColor,OneMinusSrcColor,DstColor,OneMinusDstColor,SrcAlpha,OneMinusSrcAlpha,
 			DstAlpha,OneMinusDstAlpha,ConstColor,OneMinusConstColor,ConstAlpha,OneMinusConstAlpha,
 			SrcAlphaSaturate,
@@ -65,10 +65,10 @@ class RenderingPreset {
 	RenderingPresetEnumArguments::DepthTest::TypeOfComparison DepthTest_TypeOfComparison;
 
 	bool StencilTest_Enabled;
-	unsigned int StencilTest_BaseMask;
+	unsigned short int StencilTest_BaseMask;
 	RenderingPresetEnumArguments::StencilTest::TypeOfComparison StencilTest_ComparisonType;
-	unsigned int StencilTest_ReferenceValue;
-	unsigned int StencilTest_Mask;
+	unsigned short int StencilTest_ReferenceValue;
+	unsigned short int StencilTest_Mask;
 	RenderingPresetEnumArguments::StencilTest::Actions StencilTest_ActionOnSF;
 	RenderingPresetEnumArguments::StencilTest::Actions StencilTest_ActionOnSPDF;
 	RenderingPresetEnumArguments::StencilTest::Actions StencilTest_ActionOnSPDP;
@@ -169,7 +169,8 @@ public:
 		float f_ClearG,
 		float f_ClearB
 		);
-	DLLTREATMENT RenderingPreset(RenderingPreset&& tempRP);
+	DLLTREATMENT RenderingPreset(const RenderingPreset& toCopy);
+	DLLTREATMENT void operator=(const RenderingPreset& toCopy);
 	DLLTREATMENT void Bind();
 	DLLTREATMENT static void Unbind();
 };

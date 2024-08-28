@@ -2,7 +2,7 @@
 #include"DLL.h"
 #include"Tools/Event.h"
 
-enum class MouseInputKeys {
+enum class MouseInputKeys :unsigned short int {
     Left, Right, Middle,
 
 	ENUMEND
@@ -10,10 +10,10 @@ enum class MouseInputKeys {
 
 class Mouse {
 
-	bool MouseInputKeysStates[(unsigned int)MouseInputKeys::ENUMEND];
+	bool MouseInputKeysStates[(unsigned short int)MouseInputKeys::ENUMEND];
 
 	//parameters: bool if it was pressed down or up:true=down,false=up
-	EventClass MouseInputKeysEvents[(unsigned int)MouseInputKeys::ENUMEND];
+	EventClass MouseInputKeysEvents[(unsigned short int)MouseInputKeys::ENUMEND];
 
 public:
 

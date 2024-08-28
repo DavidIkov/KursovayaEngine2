@@ -15,9 +15,17 @@ unsigned int ShaderProgram::gID() const {
 ShaderProgram::ShaderProgram() {
 	glSC(ID = glCreateProgram());
 }
-ShaderProgram::ShaderProgram(ShaderProgram&& tempSP) {
-	memcpy(this, &tempSP, sizeof(tempSP));
-	tempSP.Deleted = true;
+ShaderProgram::ShaderProgram(const ShaderProgram* toCopy) {
+	memcpy(this, toCopy, sizeof(ShaderProgram));
+	toCopy->Deleted = true;
+}
+ShaderProgram::ShaderProgram(const ShaderProgram&& toCopy) {
+	memcpy(this, &toCopy, sizeof(ShaderProgram));
+	toCopy.Deleted = true;
+}
+void ShaderProgram::operator=(const ShaderProgram&& toCopy) {
+	memcpy(this, &toCopy, sizeof(ShaderProgram));
+	toCopy.Deleted = true;
 }
 void ShaderProgram::AttachShader(const Shader& SH) {
 	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "YOU CANT ATTACH SHADER TO SHADER PROGRAM WHEN ITS DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });

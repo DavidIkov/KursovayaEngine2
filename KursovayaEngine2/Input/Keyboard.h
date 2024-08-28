@@ -3,7 +3,7 @@
 #include<vector>
 #include"Tools/Event.h"
 
-enum class PressableKeys {
+enum class PressableKeys :unsigned short int {
 	A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
 
 	ENUMEND
@@ -11,10 +11,10 @@ enum class PressableKeys {
 
 class Keyboard {
 
-	bool PressableKeysStates[(unsigned int)PressableKeys::ENUMEND];
+	bool PressableKeysStates[(unsigned short int)PressableKeys::ENUMEND];
 
 	//parameters: bool if it was pressed down or up:true=down,false=up
-	EventClass PressableKeysEvents[(unsigned int)PressableKeys::ENUMEND];
+	EventClass PressableKeysEvents[(unsigned short int)PressableKeys::ENUMEND];
 
 public:
 

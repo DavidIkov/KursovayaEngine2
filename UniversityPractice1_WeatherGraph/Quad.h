@@ -10,7 +10,7 @@ class QuadsHandler {
 	VertexBuffer VB;
 	ShaderProgram SP;
 public:
-	QuadsHandler(const char* vs, const char* fs);
+	QuadsHandler(const wchar_t* vs, const wchar_t* fs);
 	class Quad {
 	protected:
 		QuadsHandler& Handler;
@@ -23,13 +23,13 @@ public:
 		void Draw();
 	};
 	class ImageQuad: public Quad {
-		Texture Tex;
+		TextureClass Tex;
 	public:
 		enum class TextureClampingType {
 			FullScale,SquareByX,SquareByY,SquareByXY
 		};
 		TextureClampingType TexClampingType = TextureClampingType::FullScale;
-		ImageQuad(QuadsHandler& handler, Texture&& tex);
+		ImageQuad(QuadsHandler& handler, TextureClass&& tex);
 		void Draw(unsigned int screenWidth, unsigned int screenHeight);
 	};
 };

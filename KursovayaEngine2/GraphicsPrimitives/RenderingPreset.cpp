@@ -44,8 +44,11 @@ ClearR(f_ClearR), ClearG(f_ClearG), ClearB(f_ClearB)
 
 }
 
-RenderingPreset::RenderingPreset(RenderingPreset&& tempRP) {
-	memcpy(this, &tempRP, sizeof(tempRP));
+RenderingPreset::RenderingPreset(const RenderingPreset& toCopy) {
+	memcpy(this, &toCopy, sizeof(RenderingPreset));
+}
+void RenderingPreset::operator=(const RenderingPreset& toCopy) {
+	memcpy(this, &toCopy, sizeof(RenderingPreset));
 }
 
 

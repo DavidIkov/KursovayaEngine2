@@ -1,7 +1,6 @@
 #pragma once
 #include"DLL.h"
 #include"Texture.h"
-#include"RenderBuffer.h"
 #include<vector>
 
 enum class FrameBufferTextureAttachment {
@@ -13,24 +12,26 @@ class FrameBuffer {
 	mutable bool Finished = false;
 	mutable bool Deleted = false;
 	unsigned int Width, Height;
-	std::vector<Texture*> AttachedTextures;
+
 
 public:
 
-	DLLTREATMENT void ClearColorBuffer();
-	DLLTREATMENT void ClearDepthBuffer();
-	DLLTREATMENT void ClearStencilBuffer();
+	DLLTREATMENT void ClearColorBuffer() const;
+	DLLTREATMENT void ClearDepthBuffer() const;
+	DLLTREATMENT void ClearStencilBuffer() const;
 	//color,depth,stencil
-	DLLTREATMENT void ClearAllBuffers();
+	DLLTREATMENT void ClearAllBuffers() const;
 
 	DLLTREATMENT FrameBuffer(unsigned int width, unsigned int height);
-	DLLTREATMENT FrameBuffer(FrameBuffer&& tempFB);
+	DLLTREATMENT FrameBuffer(const FrameBuffer* toCopy);
+	DLLTREATMENT FrameBuffer(const FrameBuffer&& toCopy);
+	DLLTREATMENT void operator=(const FrameBuffer&& toCopy);
 	DLLTREATMENT ~FrameBuffer();
 	DLLTREATMENT unsigned int gID() const;
 	DLLTREATMENT void Delete();
 	DLLTREATMENT void Finish();
 	DLLTREATMENT void Bind() const;
-	DLLTREATMENT void AttachRenderBuffer(const RenderBuffer& rb) const;
-	DLLTREATMENT void AttachTexture(Texture& tex);
+	DLLTREATMENT void AttachRenderBuffer(unsigned int renderBufferID, bool depthBufferEnabled, bool stencilBufferEnabled);
+	DLLTREATMENT void AttachTexture(unsigned int texID, TextureClass::DataSettingsClass::DataFormatOnGPU_Enum dataFormat);
 	DLLTREATMENT static void Unbind(unsigned int width, unsigned int height);
 };

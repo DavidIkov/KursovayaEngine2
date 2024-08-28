@@ -14,6 +14,7 @@
 #include"WinOS/wchar_t_Operations.h"
 #include"GraphicsPrimitives/Renderer.h"
 #include"Tools/DebuggingTools.h"
+#include"Tools/DynArr.h"
 #include<iostream>
 #include"Tools/RandomNumber.h"
 
@@ -92,7 +93,7 @@ struct GraphicSettingsStruct {
     VertexBuffer VB_TEX;
     VertexArray VA_GRAPH;
     VertexBuffer VB_GRAPH;
-    Texture FB_TEX;
+    TextureClass FB_TEX;
     FrameBuffer FB;
 };
 std::vector<GraphicSettingsStruct*> GraphicsSettings;
@@ -120,8 +121,12 @@ int main()
 
         Window window(Width, Height, "kursavayaengine2 window...", false, 10);
 
-
-        TextRenderer TEXT_RENDERER("arial.ttf", "Shaders/text.vs", "Shaders/text.fs");
+        TextRenderer TEXT_RENDERER(L"Shaders/text.vs", L"Shaders/text.fs");
+        std::string ArialFont = TEXT_RENDERER.LoadFont("arial.ttf", 48);
+        TEXT_RENDERER.LoadCharacters(ArialFont,
+            L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
+            "`abcdefghijklmnopqrstuvwxyz{|}~"\
+            "¿¡¬√ƒ≈®∆«»… ÀÃÕŒœ–—“”‘’÷◊ÿŸ⁄€‹›ﬁﬂˇ˛˝¸˚˙˘¯˜ˆıÙÛÚÒÔÓÌÏÎÍÈËÁÊ∏Â‰„‚·‡");
 
         RenderingPreset Preset2D(
             false, RenderingPresetEnumArguments::FaceCulling::FaceToCull::Back, RenderingPresetEnumArguments::FaceCulling::FaceDetermination::Clockwise,
@@ -142,11 +147,11 @@ int main()
 
         ShaderProgram GraphicsSP;
         {
-            Shader VS("Shaders/graphic.vs", ShaderTypesEnum::Vertex);
+            Shader VS(L"Shaders/graphic.vs", Shader::TypesEnum::Vertex);
             VS.Compile();
             GraphicsSP.AttachShader(VS);
 
-            Shader FS("Shaders/graphic.fs", ShaderTypesEnum::Fragment);
+            Shader FS(L"Shaders/graphic.fs", Shader::TypesEnum::Fragment);
             FS.Compile();
             GraphicsSP.AttachShader(FS);
 
@@ -154,18 +159,18 @@ int main()
         }
         ShaderProgram SimpleImageSP;
         {
-            Shader VS("Shaders/simpleImage.vs", ShaderTypesEnum::Vertex);
+            Shader VS(L"Shaders/simpleImage.vs", Shader::TypesEnum::Vertex);
             VS.Compile();
             SimpleImageSP.AttachShader(VS);
 
-            Shader FS("Shaders/Quad2dImage.fs", ShaderTypesEnum::Fragment);
+            Shader FS(L"Shaders/Quad2dImage.fs", Shader::TypesEnum::Fragment);
             FS.Compile();
             SimpleImageSP.AttachShader(FS);
 
             SimpleImageSP.LinkShaders();
         }
         
-        QuadsHandler QH("Shaders/Quad2d.vs", "Shaders/Quad2d.fs");
+        QuadsHandler QH(L"Shaders/Quad2d.vs", L"Shaders/Quad2d.fs");
 
         QuadsHandler::Quad TopQuad(QH);
         TopQuad.Position = Vector<2>(0, 1);
@@ -184,10 +189,12 @@ int main()
         LeftQuad.Size = Vector<2>(Proportions::LeftBarSize, 1 - Proportions::TopBarSize);
         LeftQuad.Color = Vector<3>(0.2f, 1.f, 0.7f);
 
-        QuadsHandler QIH("Shaders/Quad2dImage.vs", "Shaders/Quad2dImage.fs");
+        QuadsHandler QIH(L"Shaders/Quad2dImage.vs", L"Shaders/Quad2dImage.fs");
 
-        QuadsHandler::ImageQuad AddGraphSettingPlus(QIH, Texture{ "plus.png",Texture::TexParameters{
-            TextureWrapType::ClampToEdge,TextureWrapType::ClampToEdge,TextureDownscalingFilterFunc::Linear,TextureUpscalingFilterFunc::Linear,TextureDepthStencilReadMode::Depth} });
+        QuadsHandler::ImageQuad AddGraphSettingPlus(QIH, TextureClass{ "plus.png",TextureClass::SettingsClass{
+            TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,
+            TextureClass::SettingsClass::DownscalingFilterFuncEnum::Linear,TextureClass::SettingsClass::UpscalingFilterFuncEnum::Linear,
+            TextureClass::SettingsClass::DepthStencilReadModeEnum::Depth} });
         AddGraphSettingPlus.TexClampingType = QuadsHandler::ImageQuad::TextureClampingType::SquareByY;
         AddGraphSettingPlus.Size = Vector<2>(Proportions::GraphicsSettingsBarSize, Proportions::GraphicSettingsSize);
         AddGraphSettingPlus.LocalOffset = Vector<2>(0, 1);
@@ -205,7 +212,7 @@ int main()
 
             TopQuad.Draw();
 
-            TEXT_RENDERER.DrawText(L"File name:",
+            TEXT_RENDERER.DrawText(ArialFont, L"File name:",
                 Width, Height,
                 1,
                 -1, 1 - Proportions::TopBarSize,
@@ -213,7 +220,7 @@ int main()
                 Proportions::TopBarLeftTextSize, TextRenderer::ClampingFuncs::AlwaysScaleTillClamp,
                 Proportions::TopBarSize, false, TextRenderer::ClampingFuncs::AlwaysScaleTillClamp);
 
-            TEXT_RENDERER.DrawText(CurrentFileName,
+            TEXT_RENDERER.DrawText(ArialFont, CurrentFileName,
                 Width, Height,
                 1,
                 -1 + Proportions::TopBarLeftTextSize * 2, 1 - Proportions::TopBarSize,
@@ -234,7 +241,7 @@ int main()
 
                 auto& devNamQ = sets->DeviceNameQuad;
                 devNamQ.Draw();
-                TEXT_RENDERER.DrawText(csv_json::Devices[sets->DeviceInd].Name,
+                TEXT_RENDERER.DrawText(ArialFont, csv_json::Devices[sets->DeviceInd].Name,
                     Width, Height,
                     1,
                     devNamQ.Position[0], devNamQ.Position[1]- devNamQ.Size[1],
@@ -246,7 +253,7 @@ int main()
                 auto& dataNamQ = sets->DataNameQuad;
                 dataNamQ.Draw();
                 std::wstring wDataName; char_to_wchar(1251, csv_json::Devices[sets->DeviceInd].DataNames[sets->DataNameInd].DataName, wDataName);
-                TEXT_RENDERER.DrawText(wDataName,
+                TEXT_RENDERER.DrawText(ArialFont, wDataName,
                     Width, Height,
                     1,
                     dataNamQ.Position[0], dataNamQ.Position[1] - dataNamQ.Size[1],
@@ -258,7 +265,7 @@ int main()
                 auto& dateQRef = sets->Date##num##metric##Quad;\
                 dateQRef.Draw();\
                 std::wstring wideDate; std::string strDate = std::to_string(csv_json::Devices[sets->DeviceInd].Dates[sets->Date##num##Ind].Date.metric); char_to_wchar(1251, strDate, wideDate);\
-                TEXT_RENDERER.DrawText(wideDate,\
+                TEXT_RENDERER.DrawText(ArialFont, wideDate,\
                     Width, Height,\
                     1,\
                     dateQRef.Position[0] - dateQRef.LocalOffset[0] * dateQRef.Size[0], dateQRef.Position[1] - dateQRef.Size[1],\
@@ -446,14 +453,17 @@ int main()
                         0,//date2
                         {QH},{&window},{QH},{&window},{QH},{&window},{QH},{&window},{QH},{&window},{QH},{&window},
                         {QH},{QH},{&window},{QH},{&window},
-                        true,{},{},{},{},{graphWidth,graphHeight,TextureStorageType::RGBA,
-                        Texture::TexParameters{ TextureWrapType::ClampToEdge,TextureWrapType::ClampToEdge,
-                        TextureDownscalingFilterFunc::Nearest,TextureUpscalingFilterFunc::Nearest,TextureDepthStencilReadMode::Depth }},
+                        true,{},{},{},{},TextureClass{graphWidth,graphHeight,nullptr,
+                        TextureClass::SettingsClass{TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,
+                        TextureClass::SettingsClass::DownscalingFilterFuncEnum::Nearest,TextureClass::SettingsClass::UpscalingFilterFuncEnum::Nearest,
+                        TextureClass::SettingsClass::DepthStencilReadModeEnum::Depth},
+                        TextureClass::DataSettingsClass{TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::RGBA,
+                        TextureClass::DataSettingsClass::DataFormatOnCPU_Enum::RGBA,TextureClass::DataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte}},
                         {graphWidth,graphHeight}
                     };
                     GraphicsSettings.push_back(sets);
 
-                    sets->FB.AttachTexture(sets->FB_TEX);
+                    sets->FB.AttachTexture(sets->FB_TEX.gID(), TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::RGBA);
                     sets->FB.Finish();
 
                     {
@@ -466,8 +476,8 @@ int main()
                             -1 + Proportions::GraphicsSettingsBarSize * 2,-1,0,0
                         };
                         sets->VA_TEX.Bind();
-                        sets->VB_TEX.SetLayout({ 2,2 });
-                        sets->VB_TEX.SetData(data_tex, sizeof(data_tex), VertexBufferDataUsage::StaticDraw);
+                        sets->VB_TEX.SetLayout(VertexBuffer::BufferDataType::Float, { 2,2 });
+                        sets->VB_TEX.SetData(data_tex, sizeof(data_tex), VertexBuffer::BufferDataUsage::StaticDraw);
                         sets->VA_TEX.Unbind();
 
                         float data_graph[] = {
@@ -479,8 +489,8 @@ int main()
                             -1,-1,0,0
                         };
                         sets->VA_GRAPH.Bind();
-                        sets->VB_GRAPH.SetLayout({ 2,2 });
-                        sets->VB_GRAPH.SetData(data_graph, sizeof(data_graph), VertexBufferDataUsage::StaticDraw);
+                        sets->VB_GRAPH.SetLayout(VertexBuffer::BufferDataType::Float, { 2,2 });
+                        sets->VB_GRAPH.SetData(data_graph, sizeof(data_graph), VertexBuffer::BufferDataUsage::StaticDraw);
                         sets->VA_GRAPH.Unbind();
 
                     }

@@ -1,7 +1,7 @@
 #include"Quad.h"
 #include"GraphicsPrimitives/Renderer.h"
 
-QuadsHandler::QuadsHandler(const char* vs, const char* fs) {
+QuadsHandler::QuadsHandler(const wchar_t* vs, const wchar_t* fs) {
 
     VA.Bind();
 
@@ -13,16 +13,16 @@ QuadsHandler::QuadsHandler(const char* vs, const char* fs) {
             1,-1,
             -1,-1
     };
-    VB.SetData(data, sizeof(data), VertexBufferDataUsage::StaticDraw);
-    VB.SetLayout({ 2 });
+    VB.SetData(data, sizeof(data), VertexBuffer::BufferDataUsage::StaticDraw);
+    VB.SetLayout(VertexBuffer::BufferDataType::Float, { 2 });
 
     VA.Unbind();
 
-    Shader VS(vs, ShaderTypesEnum::Vertex);
+    Shader VS(vs, Shader::TypesEnum::Vertex);
     VS.Compile();
     SP.AttachShader(VS);
 
-    Shader FS(fs, ShaderTypesEnum::Fragment);
+    Shader FS(fs, Shader::TypesEnum::Fragment);
     FS.Compile();
     SP.AttachShader(FS);
 
@@ -42,7 +42,7 @@ void QuadsHandler::Quad::Draw() {
     Handler.VA.Unbind();
 }
 
-QuadsHandler::ImageQuad::ImageQuad(QuadsHandler& handler, Texture&& tex) :Quad(handler), Tex(std::move(tex)) {};
+QuadsHandler::ImageQuad::ImageQuad(QuadsHandler& handler, TextureClass&& tex) :Quad(handler), Tex(std::move(tex)) {};
 void QuadsHandler::ImageQuad::Draw(unsigned int screenWidth, unsigned int screenHeight) {
     Handler.VA.Bind();
     Handler.SP.Bind();
