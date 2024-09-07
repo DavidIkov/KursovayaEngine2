@@ -14,7 +14,6 @@
 #include"Maths/Vector.h"
 #include"Maths/Matrix.h"
 #include"Tools/FileTypesReaders/Obj.h"
-#include"GraphicsPrimitives/Buffer.h"
 
 int main()
 {
