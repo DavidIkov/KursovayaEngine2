@@ -518,6 +518,12 @@
     <ClInclude Include="Tools\DynArr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Tools\StaticLambda.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\UniversalLambda.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\glfw\3.4_Win32\lib-vc2022\glfw3.lib" />

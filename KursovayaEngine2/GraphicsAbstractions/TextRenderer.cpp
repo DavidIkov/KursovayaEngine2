@@ -10,7 +10,7 @@
 
 bool TextRenderer::First = false;
 
-TextRenderer::CharacterClass::CharacterClass(TextureClass&& tex, unsigned int unicodeInd, Vector<2>&& size, Vector<2>&& bearing, unsigned int advance)
+TextRenderer::CharacterClass::CharacterClass(TextureClass<TextureTypeEnum::Texture2D>&& tex, unsigned int unicodeInd, Vector<2>&& size, Vector<2>&& bearing, unsigned int advance)
     :Tex(&tex), UnicodeInd(unicodeInd), Size(std::move(size)), Bearing(std::move(bearing)), Advance(advance) { }
 //TextRenderer::CharacterClass& TextRenderer::CharacterClass::operator=(const CharacterClass& copy) {
 //
@@ -141,13 +141,13 @@ void TextRenderer::LoadCharacters(const std::string& fontName, const wchar_t* ch
 
                 
                 font.Characters.InsertByConstructor(insertInd,
-                    TextureClass{ face->glyph->bitmap.width, face->glyph->bitmap.rows,face->glyph->bitmap.buffer,
-                    TextureClass::SettingsClass{
-                    TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,
-                    TextureClass::SettingsClass::DownscalingFilterFuncEnum::Linear,TextureClass::SettingsClass::UpscalingFilterFuncEnum::Linear,
-                    TextureClass::SettingsClass::DepthStencilReadModeEnum::Depth},
-                    TextureClass::DataSettingsClass{TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::Red,
-                    TextureClass::DataSettingsClass::DataFormatOnCPU_Enum::Red,TextureClass::DataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte} }, unicodeInd,
+                    TextureClass<TextureTypeEnum::Texture2D>{ Vector<2>((float)face->glyph->bitmap.width, (float)face->glyph->bitmap.rows) ,face->glyph->bitmap.buffer,
+                    TextureSettingsClass{
+                    TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
+                    TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
+                    TextureSettingsClass::DepthStencilReadModeEnum::Depth},
+                    TextureDataSettingsClass{TextureDataSettingsClass::DataFormatOnGPU_Enum::Red,
+                    TextureDataSettingsClass::DataFormatOnCPU_Enum::Red,TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte} }, unicodeInd,
                     Vector<2>{ (float)face->glyph->bitmap.width, (float)face->glyph->bitmap.rows },
                     Vector<2>{ (float)face->glyph->bitmap_left, (float)face->glyph->bitmap_top },
                     (unsigned int)face->glyph->advance.x / 64

@@ -306,6 +306,8 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Tools\DynArr.h" />
     <ClInclude Include="Tools\SimpleLambda.h" />
+    <ClInclude Include="Tools\StaticLambda.h" />
+    <ClInclude Include="Tools\UniversalLambda.h" />
     <ClInclude Include="WinOS\FilesSystem.h" />
     <ClInclude Include="WinOS\wchar_t_Operations.h" />
     <ClInclude Include="Tools\FileTypesReaders\Obj.h" />

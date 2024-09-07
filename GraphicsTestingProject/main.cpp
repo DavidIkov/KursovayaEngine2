@@ -14,6 +14,7 @@
 #include"Maths/Vector.h"
 #include"Maths/Matrix.h"
 #include"Tools/FileTypesReaders/Obj.h"
+#include"GraphicsPrimitives/Buffer.h"
 
 int main()
 {
@@ -37,18 +38,18 @@ int main()
             "`abcdefghijklmnopqrstuvwxyz{|}~");
 
         FrameBuffer FB(Width, Height);
-        TextureClass FB_COLOR_TEX(Width, Height, nullptr,
-            TextureClass::SettingsClass{ TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,
-            TextureClass::SettingsClass::DownscalingFilterFuncEnum::Nearest,TextureClass::SettingsClass::UpscalingFilterFuncEnum::Nearest,
-            TextureClass::SettingsClass::DepthStencilReadModeEnum::Depth },
-            TextureClass::DataSettingsClass{ TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::RGB,
-            TextureClass::DataSettingsClass::DataFormatOnCPU_Enum::RGB, TextureClass::DataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte }
+        TextureClass<TextureTypeEnum::Texture2D> FB_COLOR_TEX(Vector<2>(Width, Height), nullptr,
+            TextureSettingsClass{ TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
+            TextureSettingsClass::DownscalingFilterFuncEnum::Nearest,TextureSettingsClass::UpscalingFilterFuncEnum::Nearest,
+            TextureSettingsClass::DepthStencilReadModeEnum::Depth },
+            TextureDataSettingsClass{ TextureDataSettingsClass::DataFormatOnGPU_Enum::RGB,
+            TextureDataSettingsClass::DataFormatOnCPU_Enum::RGB, TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte }
         );
-        FB.AttachTexture(FB_COLOR_TEX.gID(), TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::RGB);
-        /*TextureClass FB_DEPTH_STENCIL_TEX(Width, Height, nullptr,
-            TextureClass::SettingsClass{ TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,
-            TextureClass::SettingsClass::DownscalingFilterFuncEnum::Nearest,TextureClass::SettingsClass::UpscalingFilterFuncEnum::Nearest,
-            TextureClass::SettingsClass::DepthStencilReadModeEnum::Stencil },
+        FB.AttachTexture(FB_COLOR_TEX.gID(), TextureDataSettingsClass::DataFormatOnGPU_Enum::RGB);
+        /*TextureClass FB_DEPTH_STENCIL_TEX(Width, Height, nullptr, TextureClass::TypeEnum::Texture2D,
+            TextureSettingsClass{ TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
+            TextureSettingsClass::DownscalingFilterFuncEnum::Nearest,TextureSettingsClass::UpscalingFilterFuncEnum::Nearest,
+            TextureSettingsClass::DepthStencilReadModeEnum::Stencil },
             TextureClass::DataSettingsClass{ TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil,
             TextureClass::DataSettingsClass::DataFormatOnCPU_Enum::DepthStencil, TextureClass::DataSettingsClass::DataTypeOnCPU_Enum::UnsignedInt_24_8 });
         FB.AttachTexture(FB_DEPTH_STENCIL_TEX.gID(), TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil);*/
@@ -76,7 +77,7 @@ int main()
         
 
         unsigned int floatsAmountPerVertex = 3 + 3 + 3 + 2;
-        std::vector<float> VB1_DATA = ReadObjFileType(L"Models3D/sphere.obj");
+        std::vector<float> VB1_DATA = ReadObjFileType(L"Models3D/xyu.obj");
         std::vector<float> VB2_DATA = ReadObjFileType(L"Models3D/sphere.obj");
 
 
@@ -173,14 +174,14 @@ int main()
         SP.SetUniform1i("u_tex1", 0);
         SP.SetUniform1i("u_tex2", 1);
 
-        TextureClass TEX0("Textures/blackFace.jpg",
-            TextureClass::SettingsClass{ TextureClass::SettingsClass::WrapTypeEnum::Repeat,TextureClass::SettingsClass::WrapTypeEnum::Repeat,
-            TextureClass::SettingsClass::DownscalingFilterFuncEnum::Linear,TextureClass::SettingsClass::UpscalingFilterFuncEnum::Linear,
-            TextureClass::SettingsClass::DepthStencilReadModeEnum::Depth });
-        TextureClass TEX1("Textures/simpleFace.png",
-            TextureClass::SettingsClass{ TextureClass::SettingsClass::WrapTypeEnum::Repeat,TextureClass::SettingsClass::WrapTypeEnum::Repeat,
-            TextureClass::SettingsClass::DownscalingFilterFuncEnum::Linear,TextureClass::SettingsClass::UpscalingFilterFuncEnum::Linear,
-            TextureClass::SettingsClass::DepthStencilReadModeEnum::Depth });
+        TextureClass<TextureTypeEnum::Texture2D> TEX0("Textures/blackFace.jpg",
+            TextureSettingsClass{ TextureSettingsClass::WrapTypeEnum::Repeat,TextureSettingsClass::WrapTypeEnum::Repeat,
+            TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
+            TextureSettingsClass::DepthStencilReadModeEnum::Depth });
+        TextureClass<TextureTypeEnum::Texture2D> TEX1("Textures/simpleFace.png",
+            TextureSettingsClass{ TextureSettingsClass::WrapTypeEnum::Repeat,TextureSettingsClass::WrapTypeEnum::Repeat,
+            TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
+            TextureSettingsClass::DepthStencilReadModeEnum::Depth });
         
 
         
@@ -362,7 +363,7 @@ int main()
 
             {//text
                 for (unsigned int i = 0; i < 5; i++) {
-                    TEXT_RENDERER.DrawText(ArialFont, L"wilson is pedophile",
+                    TEXT_RENDERER.DrawText(ArialFont, L"abcds",
                         Width, Height,
                         1,
                         -1.f + 2.f * ((float)i / 5), -1.f + 2.f * ((float)i / 5),

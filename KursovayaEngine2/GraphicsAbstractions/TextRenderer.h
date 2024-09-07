@@ -13,12 +13,12 @@
 class TextRenderer {
     static bool First; //false
     struct CharacterClass {
-        TextureClass Tex;
+        TextureClass<TextureTypeEnum::Texture2D> Tex;
         unsigned int UnicodeInd;
         Vector<2> Size;       // Size of glyph
         Vector<2> Bearing;    // Offset from baseline to left/top of glyph
         unsigned int Advance; // Offset to advance to next glyph
-        CharacterClass(TextureClass&& tex, unsigned int unicodeInd, Vector<2>&& size, Vector<2>&& bearing, unsigned int advance);
+        CharacterClass(TextureClass<TextureTypeEnum::Texture2D>&& tex, unsigned int unicodeInd, Vector<2>&& size, Vector<2>&& bearing, unsigned int advance);
         //CharacterClass& operator=(const CharacterClass& copy);
         CharacterClass(const CharacterClass* toCopy);
     };

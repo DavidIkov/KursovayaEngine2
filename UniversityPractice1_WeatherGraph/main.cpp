@@ -19,7 +19,6 @@
 #include"Tools/RandomNumber.h"
 
 
-#define MAX_DATES_IN_GRAPH 200
 
 namespace Proportions {
     float TopBarSize = 0.1f;
@@ -93,8 +92,10 @@ struct GraphicSettingsStruct {
     VertexBuffer VB_TEX;
     VertexArray VA_GRAPH;
     VertexBuffer VB_GRAPH;
-    TextureClass FB_TEX;
+    TextureClass<TextureTypeEnum::Texture2D> FB_TEX;
     FrameBuffer FB;
+
+    TextureClass<TextureTypeEnum::Texture1D> GRAPH_DATA_TEX;
 };
 std::vector<GraphicSettingsStruct*> GraphicsSettings;
 float GraphicsSettingsOffset = 0;
@@ -145,6 +146,7 @@ int main()
             0.1f, 0.2f, 0.3f
         );
 
+
         ShaderProgram GraphicsSP;
         {
             Shader VS(L"Shaders/graphic.vs", Shader::TypesEnum::Vertex);
@@ -191,10 +193,10 @@ int main()
 
         QuadsHandler QIH(L"Shaders/Quad2dImage.vs", L"Shaders/Quad2dImage.fs");
 
-        QuadsHandler::ImageQuad AddGraphSettingPlus(QIH, TextureClass{ "plus.png",TextureClass::SettingsClass{
-            TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,
-            TextureClass::SettingsClass::DownscalingFilterFuncEnum::Linear,TextureClass::SettingsClass::UpscalingFilterFuncEnum::Linear,
-            TextureClass::SettingsClass::DepthStencilReadModeEnum::Depth} });
+        QuadsHandler::ImageQuad AddGraphSettingPlus(QIH, TextureClass<TextureTypeEnum::Texture2D>{ "plus.png", TextureSettingsClass{
+            TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
+            TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
+            TextureSettingsClass::DepthStencilReadModeEnum::Depth} });
         AddGraphSettingPlus.TexClampingType = QuadsHandler::ImageQuad::TextureClampingType::SquareByY;
         AddGraphSettingPlus.Size = Vector<2>(Proportions::GraphicsSettingsBarSize, Proportions::GraphicSettingsSize);
         AddGraphSettingPlus.LocalOffset = Vector<2>(0, 1);
@@ -307,13 +309,11 @@ int main()
 
                     GraphicsSP.Bind();
                     unsigned int datesAmount = sets->Date2Ind - sets->Date1Ind + 1;
-                    GraphicsSP.SetUniform1i("GraphDataLength", datesAmount);
                     GraphicsSP.SetUniform3f("u_LineColor", sets->GraphColorQuad.Color[0], sets->GraphColorQuad.Color[1], sets->GraphColorQuad.Color[2]);
-                    GraphicsSP.SetUniform1f("u_PixelSizeX", 1.f / (float)Width / (1.f - Proportions::GraphicsSettingsBarSize));
                     
-                    long long unsigned int datesDiff = (csv_json::Devices[sets->DeviceInd].Dates[sets->Date2Ind].Date - csv_json::Devices[sets->DeviceInd].Dates[sets->Date1Ind].Date).GetUniversalTime();
-                    
-                    for (unsigned int i = 0; i < datesAmount; i++) {
+                    float* nums = new float[datesAmount];
+
+                    /*for (unsigned int i = 0; i < datesAmount; i++) {
                         std::string unifName = "GraphData[";
                         unifName += std::to_string(i);
                         unifName += "].";
@@ -327,10 +327,25 @@ int main()
 
                         std::string vStr = unifName + "v";
                         GraphicsSP.SetUniform1f(vStr.c_str(), val);
+                    }*/
+                    for (unsigned int i = 0; i < datesAmount; i++) {
+
+                        float val = csv_json::Devices[sets->DeviceInd].Dates[sets->Date1Ind + i].Data[sets->DataNameInd];
+                        val = (val - minValue) / (maxValue - minValue);
+
+                        nums[i] = val;
+                        
                     }
+
+
+                    sets->GRAPH_DATA_TEX.SetData(Vector<1>(datesAmount), nums, TextureDataSettingsClass{ TextureDataSettingsClass::DataFormatOnGPU_Enum::Red,
+                        TextureDataSettingsClass::DataFormatOnCPU_Enum::Red,TextureDataSettingsClass::DataTypeOnCPU_Enum::Float });
+
+                    delete[] nums;
 
                     sets->FB.ClearColorBuffer();
                     sets->VA_GRAPH.Bind();
+                    sets->GRAPH_DATA_TEX.Bind(0);
                     Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, 6);
                     sets->VA_GRAPH.Unbind();
                     sets->FB.Unbind(Width, Height);
@@ -453,17 +468,23 @@ int main()
                         0,//date2
                         {QH},{&window},{QH},{&window},{QH},{&window},{QH},{&window},{QH},{&window},{QH},{&window},
                         {QH},{QH},{&window},{QH},{&window},
-                        true,{},{},{},{},TextureClass{graphWidth,graphHeight,nullptr,
-                        TextureClass::SettingsClass{TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,TextureClass::SettingsClass::WrapTypeEnum::ClampToEdge,
-                        TextureClass::SettingsClass::DownscalingFilterFuncEnum::Nearest,TextureClass::SettingsClass::UpscalingFilterFuncEnum::Nearest,
-                        TextureClass::SettingsClass::DepthStencilReadModeEnum::Depth},
-                        TextureClass::DataSettingsClass{TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::RGBA,
-                        TextureClass::DataSettingsClass::DataFormatOnCPU_Enum::RGBA,TextureClass::DataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte}},
-                        {graphWidth,graphHeight}
+                        true,{},{},{},{},TextureClass<TextureTypeEnum::Texture2D>{Vector<2>(graphWidth,graphHeight),nullptr, 
+                        TextureSettingsClass{TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
+                        TextureSettingsClass::DownscalingFilterFuncEnum::Nearest,TextureSettingsClass::UpscalingFilterFuncEnum::Nearest,
+                        TextureSettingsClass::DepthStencilReadModeEnum::Depth},
+                        TextureDataSettingsClass{TextureDataSettingsClass::DataFormatOnGPU_Enum::RGBA,
+                        TextureDataSettingsClass::DataFormatOnCPU_Enum::RGBA,TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte}},
+                        {graphWidth,graphHeight},TextureClass<TextureTypeEnum::Texture1D>{Vector<1>(0.f),nullptr,
+                        TextureSettingsClass{TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
+                        TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
+                        TextureSettingsClass::DepthStencilReadModeEnum::Depth},
+                        TextureDataSettingsClass{TextureDataSettingsClass::DataFormatOnGPU_Enum::Red,
+                        TextureDataSettingsClass::DataFormatOnCPU_Enum::Red,TextureDataSettingsClass::DataTypeOnCPU_Enum::Float}},
+
                     };
                     GraphicsSettings.push_back(sets);
 
-                    sets->FB.AttachTexture(sets->FB_TEX.gID(), TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::RGBA);
+                    sets->FB.AttachTexture(sets->FB_TEX.gID(), TextureDataSettingsClass::DataFormatOnGPU_Enum::RGBA);
                     sets->FB.Finish();
 
                     {
@@ -622,8 +643,6 @@ int main()
                                 if (fi != (csv_json::Devices[sets->DeviceInd].Dates.size() - 1) and (fi + 1) != sets->Date##num##Ind and (csv_json::Devices[sets->DeviceInd].Dates[fi + 1].Date - newDate) < (newDate - csv_json::Devices[sets->DeviceInd].Dates[fi].Date)) fi++;\
                                 sets->Date##num##Ind = fi;\
                                 sets->Date2Ind=(sets->Date2Ind > sets->Date1Ind) ? sets->Date2Ind : sets->Date1Ind;\
-                                if ((sets->Date2Ind-sets->Date1Ind)>=MAX_DATES_IN_GRAPH)\
-                                    sets->Date2Ind=sets->Date1Ind+MAX_DATES_IN_GRAPH-1;\
                                 sets->RequiresGraphUpdate = ((oldDate1!=sets->Date1Ind) or (oldDate2!=sets->Date2Ind));\
                                 redraw();\
                                 window.SwapScreenBuffers();\
@@ -653,9 +672,6 @@ int main()
                                 if (fi != 0 and (fi - 1) != sets->Date##num##Ind and (newDate - csv_json::Devices[sets->DeviceInd].Dates[fi - 1].Date) < (csv_json::Devices[sets->DeviceInd].Dates[fi].Date - newDate)) fi--;\
                                 sets->Date##num##Ind = fi;\
                                 sets->Date2Ind=(sets->Date2Ind > sets->Date1Ind) ? sets->Date2Ind : sets->Date1Ind;\
-                                bool curDiffRes=((sets->Date2Ind-sets->Date1Ind)<MAX_DATES_IN_GRAPH);\
-                                if ((sets->Date2Ind-sets->Date1Ind)>=MAX_DATES_IN_GRAPH)\
-                                    sets->Date2Ind=sets->Date1Ind+MAX_DATES_IN_GRAPH-1;\
                                 sets->RequiresGraphUpdate = ((oldDate1!=sets->Date1Ind) or (oldDate2!=sets->Date2Ind));\
                                 redraw();\
                                 window.SwapScreenBuffers();\
