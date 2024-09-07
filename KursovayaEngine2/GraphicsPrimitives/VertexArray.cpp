@@ -27,16 +27,24 @@ VertexArray::~VertexArray() {
     }
 }
 unsigned int VertexArray::gID() const {
+#if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"KILL YOURSELF",KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
+#endif
     return ID;
 }
 void VertexArray::Delete() {
+#if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"ATTEMPING TO DELETE ALREADY DELETED VERTEX ARRAY",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
-    else this->~VertexArray();
+    else 
+#endif
+        this->~VertexArray();
 }
 void VertexArray::Bind() const {
+#if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX ARRAY IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-    else {
+    else 
+#endif
+    {
         glSC(glBindVertexArray(ID));
     }
 }

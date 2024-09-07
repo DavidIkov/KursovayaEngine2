@@ -6,10 +6,12 @@
 #include"WinOS/FilesSystem.h"
 
 unsigned int Shader::gID() const {
+#if defined Debug
 	if (Deleted) {
 		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER IS ALREADY DELETED, ACCESSING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
 		return 0;
 	}
+#endif
 	return ID;
 }
 Shader::Shader(const wchar_t* filePath, TypesEnum typ) {
@@ -41,9 +43,13 @@ void Shader::operator=(const Shader&& toCopy) {
 	toCopy.Deleted = true;
 }
 void Shader::Compile() {
+#if defined Debug
 	if (Compiled) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER IS ALREADY COMPILED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
-	else {
+	else 
+#endif
+	{
 		glSC(glCompileShader(ID));
+#if defined Debug
 		Compiled = true;
 		{//check for compilation
 			int success;
@@ -51,16 +57,13 @@ void Shader::Compile() {
 			glSC(glGetShaderiv(ID, GL_COMPILE_STATUS, &success));
 			if (!success) {
 				glSC(glGetShaderInfoLog(ID, 512, 0, info));
-#if defined Debug
 				std::string msg = (ShaderType == TypesEnum::Fragment) ? "FRAGMENT " : ((ShaderType == TypesEnum::Vertex) ? "VERTEX " : "GEOMETRY ");
-#else
-				std::string msg;
-#endif
 				msg += "SHADER COMPILATION ERROR: ";
 				msg += info;
 				DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, msg.c_str(), KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
 			}
 		}
+#endif
 	}
 }
 Shader::~Shader() {
@@ -70,6 +73,9 @@ Shader::~Shader() {
 	}
 }
 void Shader::Delete() {
+#if defined Debug
 	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER IS ALREADY DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
-	else this->~Shader();
+	else 
+#endif
+		this->~Shader();
 }

@@ -9,7 +9,9 @@ enum class FrameBufferTextureAttachment {
 
 class FrameBuffer {
 	unsigned int ID = 0;
+#if defined Debug
 	mutable bool Finished = false;
+#endif
 	mutable bool Deleted = false;
 	unsigned int Width, Height;
 

@@ -4,7 +4,9 @@
 class Shader {
 	unsigned int ID;
 	mutable bool Deleted = false;
+#if defined Debug
 	mutable bool Compiled = false;
+#endif
 public:
 	enum class TypesEnum :unsigned short int {
 		Fragment, Vertex, Geometry

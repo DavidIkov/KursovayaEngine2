@@ -5,6 +5,8 @@
 
 
 KURSAVAYAENGINE2_CORE_ERRORS InitializeKursovayaEngine2() {
+
+    static_assert(sizeof(unsigned char) == 1, "cant initialize KursovayaEngine2 since sizeof(unsigned char) is not 1");
 	
     try {
         stbi_set_flip_vertically_on_load(true);

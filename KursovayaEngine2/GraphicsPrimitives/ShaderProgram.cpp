@@ -6,10 +6,12 @@
 #include"Tools/GLDebug.h"
 
 unsigned int ShaderProgram::gID() const {
+#if defined Debug
 	if (Deleted) {
 		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER PROGRAM IS ALREADY DELETED, ACCESSING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
 		return 0;
 	}
+#endif
 	return ID;
 }
 ShaderProgram::ShaderProgram() {
@@ -28,14 +30,21 @@ void ShaderProgram::operator=(const ShaderProgram&& toCopy) {
 	toCopy.Deleted = true;
 }
 void ShaderProgram::AttachShader(const Shader& SH) {
+#if defined Debug
 	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "YOU CANT ATTACH SHADER TO SHADER PROGRAM WHEN ITS DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
 	else if (Linked) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "YOU CANT ATTACH SHADER TO SHADER PROGRAM WHEN ITS ALREADY LINKED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-	else glSC(glAttachShader(ID, SH.gID()));
+	else 
+#endif
+		glSC(glAttachShader(ID, SH.gID()));
 }
 void ShaderProgram::LinkShaders() {
+#if defined Debug
 	if (Linked) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER PROGRAM IS ALREADY LINKED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
-	else {
+	else 
+#endif
+	{
 		glSC(glLinkProgram(ID));
+#if defined Debug
 		Linked = true;
 		{//check for linking
 			int success;
@@ -48,6 +57,7 @@ void ShaderProgram::LinkShaders() {
 				DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, msg.c_str(), KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
 			}
 		}
+#endif
 	}
 }
 ShaderProgram::~ShaderProgram() {
@@ -57,14 +67,20 @@ ShaderProgram::~ShaderProgram() {
 	}
 }
 void ShaderProgram::Delete() {
+#if defined Debug
 	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER PROGRAM IS ALREADY DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
-	else this->~ShaderProgram();
+	else 
+#endif
+		this->~ShaderProgram();
 }
 
 void ShaderProgram::Bind() const {
+#if defined Debug
 	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER PROGRAM IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
 	else if (not Linked) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER PROGRAM IS NOT LINKED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION }  );
-	else glSC(glUseProgram(ID));
+	else 
+#endif
+		glSC(glUseProgram(ID));
 }
 void ShaderProgram::Unbind() {
 	glSC(glUseProgram(0));
@@ -74,6 +90,7 @@ void ShaderProgram::Unbind() {
 
 
 
+#if defined Debug
 #define uniformCOPYPASTE(funcName, ...)\
 if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"SHADER PROGRAM IS DELETED, YOU CANT CHANGE ITS UNIFORM",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });\
 if (not Linked) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"SHADER PROGRAM IS NOT LINKED, YOU CANT CHANGE ITS UNIFORM",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });\
@@ -81,11 +98,14 @@ else {\
 	glSC(glUseProgram(ID));\
 	int location = glGetUniformLocation(ID, name);\
 	if (location == -1) {\
-		std::string msg; msg+="UNIFORM CALLED \""; msg+=name; msg+="\" NO FOUND IN SHADER PROGRAM";\
+		std::string msg; msg+="UNIFORM CALLED \""; msg+=name; msg+="\" NOT FOUND IN SHADER PROGRAM";\
 		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,msg.c_str(),KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });\
 	}\
 	else glSC(funcName(glGetUniformLocation(ID, name), __VA_ARGS__));\
 }
+#else
+#define uniformCOPYPASTE(funcName, ...) glSC(funcName(glGetUniformLocation(ID, name), __VA_ARGS__));
+#endif
 
 void ShaderProgram::SetUniform1f(const char* name, float v0) { uniformCOPYPASTE(glUniform1f, v0); }
 void ShaderProgram::SetUniform2f(const char* name, float v0, float v1) { uniformCOPYPASTE(glUniform2f, v0, v1); }

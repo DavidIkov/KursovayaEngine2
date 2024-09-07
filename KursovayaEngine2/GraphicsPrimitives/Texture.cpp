@@ -154,14 +154,14 @@ template<>
 void TextureClass<TextureTypeEnum::Texture2D>::SetSubData(Vector<2> offsets, Vector<2> dimensions, const void* data, 
     TextureDataSettingsClass::DataFormatOnCPU_Enum dataFormatOnCPU, TextureDataSettingsClass::DataTypeOnCPU_Enum dataTypeOnCPU) {
     Bind();
-    glSC(glTexSubImage2D(GL_TEXTURE_2D, 0, offsets[0],offsets[1], (int)dimensions[0], (int)dimensions[1],
+    glSC(glTexSubImage2D(GL_TEXTURE_2D, 0, (int)offsets[0], (int)offsets[1], (int)dimensions[0], (int)dimensions[1],
         _DataFormatOnCPU_SwitchCase(dataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataTypeOnCPU), data));
 }
 template<>
 void TextureClass<TextureTypeEnum::Texture1D>::SetSubData(Vector<1> offsets, Vector<1> dimensions, const void* data,
     TextureDataSettingsClass::DataFormatOnCPU_Enum dataFormatOnCPU, TextureDataSettingsClass::DataTypeOnCPU_Enum dataTypeOnCPU) {
     Bind();
-    glSC(glTexSubImage1D(GL_TEXTURE_1D, 0, offsets[0], (int)dimensions[0],
+    glSC(glTexSubImage1D(GL_TEXTURE_1D, 0, (int)offsets[0], (int)dimensions[0],
         _DataFormatOnCPU_SwitchCase(dataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataTypeOnCPU), data));
 }
 
@@ -233,19 +233,27 @@ void TextureClass<TextureTypeEnum::Texture1D>::GenerateMipmaps() {
 
 template<>
 void TextureClass<TextureTypeEnum::Texture2D>::Bind(unsigned int textureInd) const {
+#if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
     else {
+#endif
         glSC(glActiveTexture(GL_TEXTURE0 + textureInd));
         glSC(glBindTexture(GL_TEXTURE_2D, ID));
+#if defined Debug
     }
+#endif
 }
 template<>
 void TextureClass<TextureTypeEnum::Texture1D>::Bind(unsigned int textureInd) const {
+#if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
     else {
+#endif
         glSC(glActiveTexture(GL_TEXTURE0 + textureInd));
         glSC(glBindTexture(GL_TEXTURE_1D, ID));
+#if defined Debug
     }
+#endif
 }
 
 template<>

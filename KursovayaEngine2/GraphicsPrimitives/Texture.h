@@ -104,12 +104,17 @@ public:
     void sSettings_DepthStencilReadMode(TextureSettingsClass::DepthStencilReadModeEnum depthStencilReadMode) { _UpdSettings_DepthStencilReadMode(depthStencilReadMode); }
 
     unsigned int gID() const {
+#if defined Debug
         if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, ACCESING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
+#endif
         return ID;
     }
     void Delete() {
+#if defined Debug
         if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS ALREADY DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
-        else this->~TextureClass();
+        else 
+#endif
+            this->~TextureClass();
     }
     DLLTREATMENT void Bind(unsigned int textureInd = 0) const;
     DLLTREATMENT void Unbind();

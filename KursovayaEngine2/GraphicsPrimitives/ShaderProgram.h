@@ -3,7 +3,9 @@
 
 class ShaderProgram {
 	unsigned int ID;
+#if defined Debug
 	mutable bool Linked = false;
+#endif
 	mutable bool Deleted = false;
 public:
 	DLLTREATMENT unsigned int gID() const;
