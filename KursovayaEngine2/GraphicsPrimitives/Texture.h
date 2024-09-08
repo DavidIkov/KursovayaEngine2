@@ -55,7 +55,7 @@ class TextureClass {
     
 private:
     
-    DLLTREATMENT void _Constructor(Vector<(unsigned int)TextureType> dimensions, const void* data, const TextureDataSettingsClass& dataSets);
+    DLLTREATMENT void _Constructor(Vector<(unsigned int)TextureType, unsigned int> dimensions, const void* data, const TextureDataSettingsClass& dataSets);
 
     DLLTREATMENT void _UpdSettings_WrapTypeByX(TextureSettingsClass::WrapTypeEnum wrapTyp);
     DLLTREATMENT void _UpdSettings_WrapTypeByY(TextureSettingsClass::WrapTypeEnum wrapTyp);
@@ -72,7 +72,7 @@ private:
     }
 public:
     DLLTREATMENT TextureClass(const char* filePath, const TextureSettingsClass& sets);
-    TextureClass(Vector<(unsigned int)TextureType> dimensions, const void* data, const TextureSettingsClass& sets, const TextureDataSettingsClass& dataSets) {
+    TextureClass(Vector<(unsigned int)TextureType, unsigned int> dimensions, const void* data, const TextureSettingsClass& sets, const TextureDataSettingsClass& dataSets) {
         _Constructor(dimensions, data, dataSets);
         _UpdateSettings(sets);
     }
@@ -91,8 +91,8 @@ public:
     }
     DLLTREATMENT ~TextureClass();
 
-    DLLTREATMENT void SetData(Vector<(unsigned int)TextureType> dimensions, const void* data, const TextureDataSettingsClass& dataSets);
-    DLLTREATMENT void SetSubData(Vector<(unsigned int)TextureType> offsets, Vector<(unsigned int)TextureType> dimensions, const void* data, 
+    DLLTREATMENT void SetData(Vector<(unsigned int)TextureType, unsigned int> dimensions, const void* data, const TextureDataSettingsClass& dataSets);
+    DLLTREATMENT void SetSubData(Vector<(unsigned int)TextureType, unsigned int> offsets, Vector<(unsigned int)TextureType, unsigned int> dimensions, const void* data, 
         TextureDataSettingsClass::DataFormatOnCPU_Enum dataFormatOnCPU, TextureDataSettingsClass::DataTypeOnCPU_Enum dataTypeOnCPU);
 
     DLLTREATMENT void GenerateMipmaps();

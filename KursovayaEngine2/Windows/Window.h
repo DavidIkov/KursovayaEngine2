@@ -27,8 +27,8 @@ class Window {
     void* GLFW_WindowPtr;
 
     mutable bool DontUpdateDeltaOnce = true;
-    mutable Vector<2> MousePosition;
-    mutable Vector<2> MouseDelta;
+    mutable Vector2I MousePosition;
+    mutable Vector2I MouseDelta;
     static bool FirstWindow;//true
     CursorModes CursorMode = CursorModes::Free;
 
@@ -55,11 +55,11 @@ public:
     //will stop thread until some event will occur, usefull to not use 100% of cpu in while loop
     DLLTREATMENT void WaitTillEvent();
     DLLTREATMENT void gWindowSize(unsigned int* width, unsigned  int* height) const;
-    DLLTREATMENT Vector<2> gWindowSize() const;
-    DLLTREATMENT void gCursorPosition(Vector<2>* pos) const;
-    DLLTREATMENT const Vector<2>& gCursorPosition() const;
-    DLLTREATMENT void gCursorDelta(Vector<2>* delta) const;
-    DLLTREATMENT const Vector<2>& gCursorDelta() const;
+    DLLTREATMENT Vector2U gWindowSize() const;
+    DLLTREATMENT void gCursorPosition(Vector2I* pos) const;
+    DLLTREATMENT const Vector2I& gCursorPosition() const;
+    DLLTREATMENT void gCursorDelta(Vector2I* delta) const;
+    DLLTREATMENT const Vector2I& gCursorDelta() const;
     DLLTREATMENT void SetCursorMode(CursorModes mode);
     DLLTREATMENT CursorModes gCursorMode() const;
 };

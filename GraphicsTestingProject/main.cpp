@@ -37,7 +37,7 @@ int main()
             "`abcdefghijklmnopqrstuvwxyz{|}~");
 
         FrameBuffer FB(Width, Height);
-        TextureClass<TextureTypeEnum::Texture2D> FB_COLOR_TEX(Vector<2>(Width, Height), nullptr,
+        TextureClass<TextureTypeEnum::Texture2D> FB_COLOR_TEX(Vector2U(Width, Height), nullptr,
             TextureSettingsClass{ TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
             TextureSettingsClass::DownscalingFilterFuncEnum::Nearest,TextureSettingsClass::UpscalingFilterFuncEnum::Nearest,
             TextureSettingsClass::DepthStencilReadModeEnum::Depth },
@@ -185,25 +185,25 @@ int main()
 
         
         
-        Vector<3> Object1Position(0, 0, 2);
-        Matrix<3, 3> Object1RotationMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
-        Vector<3> Object1Scale(1,1,1);
-        Vector<3> Object2Position(2, 0, 3);
-        Matrix<3, 3> Object2RotationMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
-        Vector<3> Object2Scale(2,2,2);
+        Vector3F Object1Position(0, 0, 2);
+        Matrix33F Object1RotationMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
+        Vector3F Object1Scale(1,1,1);
+        Vector3F Object2Position(2, 0, 3);
+        Matrix33F Object2RotationMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
+        Vector3F Object2Scale(2,2,2);
 
-        Vector<3> LightPosition(0, 0, 0);
+        Vector3F LightPosition(0, 0, 0);
 
-        Vector<3> CameraPosition(0, 0, 0);
-        Matrix<3, 3> CameraRotationMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
-        Matrix<3, 3> InversedCameraRotationMatrix = CameraRotationMatrix.GetInversedMatrix(CameraRotationMatrix.GetDeterminant());
+        Vector3F CameraPosition(0, 0, 0);
+        Matrix33F CameraRotationMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
+        Matrix33F InversedCameraRotationMatrix = CameraRotationMatrix.GetInversedMatrix(CameraRotationMatrix.GetDeterminant());
 
         float CameraVerticalFov = 80.f / 180.f * 3.14f;
 
         float near = 0.1f;
         float far = 100;
 
-        Vector<2> ResolutionLength(tanf(CameraVerticalFov / 2) * Width / Height, tanf(CameraVerticalFov / 2));
+        Vector2F ResolutionLength(tanf(CameraVerticalFov / 2) * Width / Height, tanf(CameraVerticalFov / 2));
 
         EventConnectionsHandlerClass EventsHandler;
 
@@ -223,32 +223,32 @@ int main()
 
             time += 0.1f;
 
-            Object2Scale = Vector<3>(sinf(time)+1);
+            Object2Scale = Vector3F(sinf(time)+1);
 
-            Vector<2> MouseDelta;
+            Vector2I MouseDelta;
             window.gCursorDelta(&MouseDelta);
 
 
             float cameraSpeed = 0.04f;
-            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::W)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector<3>(0, 0, cameraSpeed);
-            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::S)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector<3>(0, 0, -cameraSpeed);
-            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::A)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector<3>(-cameraSpeed, 0, 0);
-            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::D)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector<3>(cameraSpeed, 0, 0);
-            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::Q)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector<3>(0, -cameraSpeed, 0);
-            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::E)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector<3>(0, cameraSpeed, 0);
+            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::W)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, 0, cameraSpeed);
+            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::S)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, 0, -cameraSpeed);
+            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::A)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(-cameraSpeed, 0, 0);
+            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::D)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(cameraSpeed, 0, 0);
+            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::Q)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, -cameraSpeed, 0);
+            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::E)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, cameraSpeed, 0);
 
 
             {
-                Vector<2> CameraRotationByDelta = MouseDelta / Vector<2>((float)Width, (float)Height) / ResolutionLength;
+                Vector2F CameraRotationByDelta = (Vector2F)MouseDelta / Vector2F((float)Width, (float)Height) / ResolutionLength;
                 CameraRotationByDelta[0] = atanf(CameraRotationByDelta[0]); CameraRotationByDelta[1] = atanf(CameraRotationByDelta[1]);
 
                 CameraRotationMatrix = CameraRotationMatrix.RotateIn3DByAnglesC<0, 1, 2>(CameraRotationByDelta[1], 0, 0);
-                Vector<3> xv(1, 0, 0);
-                Vector<3> zv(0, 0, 1);
-                Matrix<2, 3> rotMat(1, 0, 0, 0, 0, 1);
+                Vector3F xv(1, 0, 0);
+                Vector3F zv(0, 0, 1);
+                Matrix23F rotMat(1, 0, 0, 0, 0, 1);
                 xv = rotMat.RotateVectorC<0, 1>(xv, -CameraRotationByDelta[0]);
                 zv = rotMat.RotateVectorC<0, 1>(zv, -CameraRotationByDelta[0]);
-                CameraRotationMatrix = Matrix <3, 3>(xv[0], xv[1], xv[2], 0, 1, 0, zv[0], zv[1], zv[2]) * CameraRotationMatrix;
+                CameraRotationMatrix = Matrix33F(xv[0], xv[1], xv[2], 0, 1, 0, zv[0], zv[1], zv[2]) * CameraRotationMatrix;
 
 
                 InversedCameraRotationMatrix = CameraRotationMatrix.GetInversedMatrix(CameraRotationMatrix.GetDeterminant());
@@ -259,7 +259,7 @@ int main()
             TEX1.Bind(1);
             SP.Bind();
 
-            Matrix<4, 4> ProjectionMatrix(1 / ResolutionLength[0], 0, 0, 0, 0, 1 / ResolutionLength[1], 0, 0, 0, 0, (far + near) / (far - near), 1, 0, 0, 2 * far * near / (near - far), 0);
+            Matrix44F ProjectionMatrix(1 / ResolutionLength[0], 0, 0, 0, 0, 1 / ResolutionLength[1], 0, 0, 0, 0, (far + near) / (far - near), 1, 0, 0, 2 * far * near / (near - far), 0);
 
             Object1RotationMatrix = Object1RotationMatrix.RotateIn3DByAnglesC<0, 1, 2>(0.01f, 0.01f, 0);
 

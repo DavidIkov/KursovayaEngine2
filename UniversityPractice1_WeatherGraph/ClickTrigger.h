@@ -10,9 +10,9 @@ private:
 	EventConnectionsHandlerClass EventsConsHandler;
 public:
 
-	Vector<2> Position;
-	Vector<2> Size;
-	Vector<2> LocalOffset;
+	Vector2F Position;
+	Vector2F Size;
+	Vector2F LocalOffset;
 
 	ClickTrigger(Window* windPtr);
 	~ClickTrigger();

@@ -85,7 +85,7 @@ static unsigned int _DepthStencilReadMode_SwitchCase(TextureSettingsClass::Depth
 }
 
 template<>
-void TextureClass<TextureTypeEnum::Texture2D>::_Constructor(Vector<2> dimensions, const void* data, const TextureDataSettingsClass& dataSets) {
+void TextureClass<TextureTypeEnum::Texture2D>::_Constructor(Vector2U dimensions, const void* data, const TextureDataSettingsClass& dataSets) {
 
     glSC(glGenTextures(1, &ID));
     glSC(glBindTexture(GL_TEXTURE_2D, ID));
@@ -94,7 +94,7 @@ void TextureClass<TextureTypeEnum::Texture2D>::_Constructor(Vector<2> dimensions
         _DataFormatOnCPU_SwitchCase(dataSets.DataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataSets.DataTypeOnCPU), data));
 }
 template<>
-void TextureClass<TextureTypeEnum::Texture1D>::_Constructor(Vector<1> dimensions, const void* data, const TextureDataSettingsClass& dataSets) {
+void TextureClass<TextureTypeEnum::Texture1D>::_Constructor(Vector1U dimensions, const void* data, const TextureDataSettingsClass& dataSets) {
 
     glSC(glGenTextures(1, &ID));
     glSC(glBindTexture(GL_TEXTURE_1D, ID));
@@ -116,7 +116,7 @@ TextureClass<TextureTypeEnum::Texture2D>::TextureClass(const char* filePath, con
     dataSettings.DataFormatOnCPU = (textureChannelsAmount == 4) ? TextureDataSettingsClass::DataFormatOnCPU_Enum::RGBA : TextureDataSettingsClass::DataFormatOnCPU_Enum::RGB;
     dataSettings.DataTypeOnCPU = TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte;
 
-    _Constructor(Vector<2>((float)width, (float)height), textureData, dataSettings);
+    _Constructor(Vector2U(width, height), textureData, dataSettings);
     _UpdateSettings(sets);
 
     stbi_image_free(textureData);
@@ -138,27 +138,27 @@ TextureClass<TextureTypeEnum::Texture1D>::~TextureClass() {
 }
 
 template<>
-void TextureClass<TextureTypeEnum::Texture2D>::SetData(Vector<2> dimensions, const void* data, const TextureDataSettingsClass& dataSets) {
+void TextureClass<TextureTypeEnum::Texture2D>::SetData(Vector2U dimensions, const void* data, const TextureDataSettingsClass& dataSets) {
     Bind();
     glSC(glTexImage2D(GL_TEXTURE_2D, 0, _DataFormatOnGPU_SwitchCase(dataSets.DataFormatOnGPU), (int)dimensions[0], (int)dimensions[1], 0,
         _DataFormatOnCPU_SwitchCase(dataSets.DataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataSets.DataTypeOnCPU), data));
 }
 template<>
-void TextureClass<TextureTypeEnum::Texture1D>::SetData(Vector<1> dimensions, const void* data, const TextureDataSettingsClass& dataSets) {
+void TextureClass<TextureTypeEnum::Texture1D>::SetData(Vector1U dimensions, const void* data, const TextureDataSettingsClass& dataSets) {
     Bind();
     glSC(glTexImage1D(GL_TEXTURE_1D, 0, _DataFormatOnGPU_SwitchCase(dataSets.DataFormatOnGPU), (int)dimensions[0], 0,
         _DataFormatOnCPU_SwitchCase(dataSets.DataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataSets.DataTypeOnCPU), data));
 }
 
 template<>
-void TextureClass<TextureTypeEnum::Texture2D>::SetSubData(Vector<2> offsets, Vector<2> dimensions, const void* data, 
+void TextureClass<TextureTypeEnum::Texture2D>::SetSubData(Vector2U offsets, Vector2U dimensions, const void* data, 
     TextureDataSettingsClass::DataFormatOnCPU_Enum dataFormatOnCPU, TextureDataSettingsClass::DataTypeOnCPU_Enum dataTypeOnCPU) {
     Bind();
     glSC(glTexSubImage2D(GL_TEXTURE_2D, 0, (int)offsets[0], (int)offsets[1], (int)dimensions[0], (int)dimensions[1],
         _DataFormatOnCPU_SwitchCase(dataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataTypeOnCPU), data));
 }
 template<>
-void TextureClass<TextureTypeEnum::Texture1D>::SetSubData(Vector<1> offsets, Vector<1> dimensions, const void* data,
+void TextureClass<TextureTypeEnum::Texture1D>::SetSubData(Vector1U offsets, Vector1U dimensions, const void* data,
     TextureDataSettingsClass::DataFormatOnCPU_Enum dataFormatOnCPU, TextureDataSettingsClass::DataTypeOnCPU_Enum dataTypeOnCPU) {
     Bind();
     glSC(glTexSubImage1D(GL_TEXTURE_1D, 0, (int)offsets[0], (int)dimensions[0],

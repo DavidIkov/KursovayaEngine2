@@ -37,7 +37,7 @@ std::vector<float> ReadObjFileType(const wchar_t* filePath) {
 	unsigned int fileVertexesAmount = 0;
 	unsigned int fileVertexConnectionsAmount = 0;
 	unsigned int fileVertexConnectionsLensAmount = 0;
-	std::vector<Vector<3>> fileVertexes;
+	std::vector<Vector3F> fileVertexes;
 	std::vector<unsigned int> fileVertexConnections;//how much is there "a/b/c"
 	std::vector<unsigned int> fileVertexConnectionsLens;
 
@@ -83,7 +83,7 @@ std::vector<float> ReadObjFileType(const wchar_t* filePath) {
 						si = ci + 1;
 					}
 				}
-				fileVertexes.push_back(Vector<3>(nums[0],nums[1],nums[2]));
+				fileVertexes.push_back(Vector3F(nums[0],nums[1],nums[2]));
 			}
 			else if (name == "f") {
 
@@ -137,9 +137,9 @@ std::vector<float> ReadObjFileType(const wchar_t* filePath) {
 			if (len == 4) order = orderForFour;
 			else if (len != 3) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,".OBJ FILE GOT MORE THEN FOUR OR LESS THEN 3 CONNECTIONS",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
 			
-			Vector<3> normal = (fileVertexes[fileVertexConnections[curConOff + order[1]]] - fileVertexes[fileVertexConnections[curConOff + order[0]]]).Cross
+			Vector3F normal = (fileVertexes[fileVertexConnections[curConOff + order[1]]] - fileVertexes[fileVertexConnections[curConOff + order[0]]]).Cross
 			(fileVertexes[fileVertexConnections[curConOff + order[2]]] - fileVertexes[fileVertexConnections[curConOff + order[0]]]);
-			Vector<3> unitNormal = normal.Normalize();
+			Vector3F unitNormal = normal.Normalize();
 
 			for (unsigned int to = 0; to < curTrianglesAmount; to++) {
 				unsigned int vi[] = {
@@ -188,7 +188,7 @@ std::vector<float> ReadObjFileType(const wchar_t* filePath) {
 
 		for (unsigned int pdi = 3; pdi < preparedData.size(); pdi += 11) {
 			unsigned int smoothedNormalSInd = (unsigned int)preparedData[pdi] * 3;
-			Vector<3> unitVec(
+			Vector3F unitVec(
 				(smoothedNormalsMins[smoothedNormalSInd + 0] + smoothedNormalsMaxs[smoothedNormalSInd + 0]) / 2,
 				(smoothedNormalsMins[smoothedNormalSInd + 1] + smoothedNormalsMaxs[smoothedNormalSInd + 1]) / 2,
 				(smoothedNormalsMins[smoothedNormalSInd + 2] + smoothedNormalsMaxs[smoothedNormalSInd + 2]) / 2

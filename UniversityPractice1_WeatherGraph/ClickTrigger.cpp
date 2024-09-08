@@ -9,8 +9,8 @@ ClickTrigger::ClickTrigger(Window* windPtr) {
 	EventsConsHandler.ConnectToEvent(&windPtr->gMouseHandle().gMouseInputKeyEvent(MouseInputKeys::Left), [&](void* data) {
 		LeftMouseButtonEvent.FireEvent(data);
 		}, [&](void* pressedDown)->bool {
-			Vector<2> mousePos; WindPtr->gCursorPosition(&mousePos); mousePos /= WindPtr->gWindowSize() / 2;
-			Vector<2> PosOnScreen = Position - Size * LocalOffset;
+			Vector2F mousePos; mousePos = (Vector2F)WindPtr->gCursorPosition() / WindPtr->gWindowSize() * 2;
+			Vector2F PosOnScreen = Position - Size * LocalOffset;
 			if (mousePos[0] > PosOnScreen[0] - Size[0] and mousePos[0] < PosOnScreen[0] + Size[0]
 				and mousePos[1] > PosOnScreen[1] - Size[1] and mousePos[1] < PosOnScreen[1] + Size[1])
 				return true;
@@ -19,8 +19,8 @@ ClickTrigger::ClickTrigger(Window* windPtr) {
 	EventsConsHandler.ConnectToEvent(&windPtr->gMouseHandle().gMouseInputKeyEvent(MouseInputKeys::Right), [&](void* data) {
 		RightMouseButtonEvent.FireEvent(data);
 		}, [&](void* pressedDown)->bool {
-			Vector<2> mousePos; WindPtr->gCursorPosition(&mousePos); mousePos /= WindPtr->gWindowSize() / 2;
-			Vector<2> PosOnScreen = Position - Size * LocalOffset;
+			Vector2F mousePos; mousePos = (Vector2F)WindPtr->gCursorPosition() / WindPtr->gWindowSize() * 2;
+			Vector2F PosOnScreen = Position - Size * LocalOffset;
 			if (mousePos[0] > PosOnScreen[0] - Size[0] and mousePos[0] < PosOnScreen[0] + Size[0]
 				and mousePos[1] > PosOnScreen[1] - Size[1] and mousePos[1] < PosOnScreen[1] + Size[1])
 				return true;

@@ -10,7 +10,7 @@
 
 bool TextRenderer::First = false;
 
-TextRenderer::CharacterClass::CharacterClass(TextureClass<TextureTypeEnum::Texture2D>&& tex, unsigned int unicodeInd, Vector<2>&& size, Vector<2>&& bearing, unsigned int advance)
+TextRenderer::CharacterClass::CharacterClass(TextureClass<TextureTypeEnum::Texture2D>&& tex, unsigned int unicodeInd, Vector2I&& size, Vector2I&& bearing, unsigned int advance)
     :Tex(&tex), UnicodeInd(unicodeInd), Size(std::move(size)), Bearing(std::move(bearing)), Advance(advance) { }
 //TextRenderer::CharacterClass& TextRenderer::CharacterClass::operator=(const CharacterClass& copy) {
 //
@@ -141,15 +141,15 @@ void TextRenderer::LoadCharacters(const std::string& fontName, const wchar_t* ch
 
                 
                 font.Characters.InsertByConstructor(insertInd,
-                    TextureClass<TextureTypeEnum::Texture2D>{ Vector<2>((float)face->glyph->bitmap.width, (float)face->glyph->bitmap.rows) ,face->glyph->bitmap.buffer,
+                    TextureClass<TextureTypeEnum::Texture2D>{ Vector2U(face->glyph->bitmap.width, face->glyph->bitmap.rows) ,face->glyph->bitmap.buffer,
                     TextureSettingsClass{
                     TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
                     TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
                     TextureSettingsClass::DepthStencilReadModeEnum::Depth},
                     TextureDataSettingsClass{TextureDataSettingsClass::DataFormatOnGPU_Enum::Red,
                     TextureDataSettingsClass::DataFormatOnCPU_Enum::Red,TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte} }, unicodeInd,
-                    Vector<2>{ (float)face->glyph->bitmap.width, (float)face->glyph->bitmap.rows },
-                    Vector<2>{ (float)face->glyph->bitmap_left, (float)face->glyph->bitmap_top },
+                    Vector2I(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+                    Vector2I(face->glyph->bitmap_left, face->glyph->bitmap_top),
                     (unsigned int)face->glyph->advance.x / 64
                 );
             }
@@ -203,10 +203,10 @@ void TextRenderer::DrawText(
         chars.push_back(charData);
         
         totalXSize += charData->Advance;
-        float charYSize = charData->Bearing[1] + (ignoreBottomPartOfSymbol ? 0 : (charData->Size[1] - charData->Bearing[1]));
+        float charYSize = (float)(charData->Bearing[1] + (ignoreBottomPartOfSymbol ? 0 : (charData->Size[1] - charData->Bearing[1])));
         
-        if (not ignoreBottomPartOfSymbol and maxYDown < charData->Size[1] - charData->Bearing[1]) maxYDown = charData->Size[1] - charData->Bearing[1];
-        if (maxYUp < charData->Bearing[1]) maxYUp = charData->Bearing[1];
+        if (not ignoreBottomPartOfSymbol and maxYDown < charData->Size[1] - charData->Bearing[1]) maxYDown = (float)(charData->Size[1] - charData->Bearing[1]);
+        if (maxYUp < charData->Bearing[1]) maxYUp = (float)charData->Bearing[1];
 
     }
     float totalYSize = maxYUp + maxYDown;

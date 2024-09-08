@@ -15,10 +15,10 @@ public:
 	protected:
 		QuadsHandler& Handler;
 	public:
-		Vector<2> Position = Vector<2>(0, 0);
-		Vector<2> Size = Vector<2>(1, 1);
-		Vector<2> LocalOffset = Vector<2>(0, 0);
-		Vector<3> Color = Vector<3>(0, 0, 0);
+		Vector2F Position = Vector2F(0, 0);
+		Vector2F Size = Vector2F(1, 1);
+		Vector2F LocalOffset = Vector2F(0, 0);
+		Vector3F Color = Vector3F(0, 0, 0);
 		Quad(QuadsHandler& handler);
 		void Draw();
 	};
