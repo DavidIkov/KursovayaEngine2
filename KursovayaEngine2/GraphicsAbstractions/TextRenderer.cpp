@@ -10,7 +10,7 @@
 
 bool TextRenderer::First = false;
 
-TextRenderer::CharacterClass::CharacterClass(TextureClass<TextureTypeEnum::Texture2D>&& tex, unsigned int unicodeInd, Vector2I&& size, Vector2I&& bearing, unsigned int advance)
+TextRenderer::CharacterClass::CharacterClass(Texture2DClass&& tex, unsigned int unicodeInd, Vector2I&& size, Vector2I&& bearing, unsigned int advance)
     :Tex(&tex), UnicodeInd(unicodeInd), Size(std::move(size)), Bearing(std::move(bearing)), Advance(advance) { }
 //TextRenderer::CharacterClass& TextRenderer::CharacterClass::operator=(const CharacterClass& copy) {
 //
@@ -54,7 +54,7 @@ TextRenderer::TextRenderer(const wchar_t* vShaderDir, const wchar_t* fShaderDir)
         TEXT_SP.SetUniform1i("u_TextTexture", 0);
     }
 
-    TEXT_VB.ReserveData(6 * 4 * sizeof(float), VertexBuffer::BufferDataUsage::DynamicDraw);
+    TEXT_VB.SetData(6 * 4 * sizeof(float), nullptr, VertexBuffer::BufferDataUsage::DynamicDraw);
     TEXT_VB.SetLayout(VertexBuffer::BufferDataType::Float, { 2,2 });
 }
 TextRenderer::FontClass::FontClass() { }
@@ -96,7 +96,7 @@ std::string TextRenderer::LoadFont(const char* fontDir, unsigned int charsSize) 
         else font.FontName = dir.substr(lastSlash + 1, dot - lastSlash - 1);
     }
 
-    Fonts.InsertByCopy(Fonts.gLength(), font);
+    Fonts.InsertByResponsibilityConstructor(Fonts.gLength(), font);
 
     return font.FontName;
 }
@@ -141,7 +141,7 @@ void TextRenderer::LoadCharacters(const std::string& fontName, const wchar_t* ch
 
                 
                 font.Characters.InsertByConstructor(insertInd,
-                    TextureClass<TextureTypeEnum::Texture2D>{ Vector2U(face->glyph->bitmap.width, face->glyph->bitmap.rows) ,face->glyph->bitmap.buffer,
+                    Texture2DClass{ Vector2U(face->glyph->bitmap.width, face->glyph->bitmap.rows) ,face->glyph->bitmap.buffer,
                     TextureSettingsClass{
                     TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
                     TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,

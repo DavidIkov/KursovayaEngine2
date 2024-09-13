@@ -13,7 +13,7 @@ QuadsHandler::QuadsHandler(const wchar_t* vs, const wchar_t* fs) {
             1,-1,
             -1,-1
     };
-    VB.SetData(data, sizeof(data), VertexBuffer::BufferDataUsage::StaticDraw);
+    VB.SetData(sizeof(data), data, VertexBuffer::BufferDataUsage::StaticDraw);
     VB.SetLayout(VertexBuffer::BufferDataType::Float, { 2 });
 
     VA.Unbind();
@@ -42,7 +42,7 @@ void QuadsHandler::Quad::Draw() {
     Handler.VA.Unbind();
 }
 
-QuadsHandler::ImageQuad::ImageQuad(QuadsHandler& handler, TextureClass<TextureTypeEnum::Texture2D>&& tex) :Quad(handler), Tex(std::move(tex)) {};
+QuadsHandler::ImageQuad::ImageQuad(QuadsHandler& handler, Texture2DClass&& tex) :Quad(handler), Tex(std::move(tex)) {};
 void QuadsHandler::ImageQuad::Draw(unsigned int screenWidth, unsigned int screenHeight) {
     Handler.VA.Bind();
     Handler.SP.Bind();

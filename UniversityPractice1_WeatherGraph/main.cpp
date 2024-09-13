@@ -92,10 +92,10 @@ struct GraphicSettingsStruct {
     VertexBuffer VB_TEX;
     VertexArray VA_GRAPH;
     VertexBuffer VB_GRAPH;
-    TextureClass<TextureTypeEnum::Texture2D> FB_TEX;
+    Texture2DClass FB_TEX;
     FrameBuffer FB;
 
-    TextureClass<TextureTypeEnum::Texture1D> GRAPH_DATA_TEX;
+    Texture1DClass GRAPH_DATA_TEX;
 };
 std::vector<GraphicSettingsStruct*> GraphicsSettings;
 float GraphicsSettingsOffset = 0;
@@ -193,7 +193,7 @@ int main()
 
         QuadsHandler QIH(L"Shaders/Quad2dImage.vs", L"Shaders/Quad2dImage.fs");
 
-        QuadsHandler::ImageQuad AddGraphSettingPlus(QIH, TextureClass<TextureTypeEnum::Texture2D>{ "plus.png", TextureSettingsClass{
+        QuadsHandler::ImageQuad AddGraphSettingPlus(QIH, Texture2DClass{ "plus.png", TextureSettingsClass{
             TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
             TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
             TextureSettingsClass::DepthStencilReadModeEnum::Depth} });
@@ -338,7 +338,7 @@ int main()
                     }
 
 
-                    sets->GRAPH_DATA_TEX.SetData(Vector1U(datesAmount), nums, TextureDataSettingsClass{ TextureDataSettingsClass::DataFormatOnGPU_Enum::Red,
+                    sets->GRAPH_DATA_TEX.SetData(datesAmount, nums, TextureDataSettingsClass{ TextureDataSettingsClass::DataFormatOnGPU_Enum::Red,
                         TextureDataSettingsClass::DataFormatOnCPU_Enum::Red,TextureDataSettingsClass::DataTypeOnCPU_Enum::Float });
 
                     delete[] nums;
@@ -468,13 +468,13 @@ int main()
                         0,//date2
                         {QH},{&window},{QH},{&window},{QH},{&window},{QH},{&window},{QH},{&window},{QH},{&window},
                         {QH},{QH},{&window},{QH},{&window},
-                        true,{},{},{},{},TextureClass<TextureTypeEnum::Texture2D>{Vector2U(graphWidth,graphHeight),nullptr,
+                        true,{},{},{},{},Texture2DClass{Vector2U(graphWidth,graphHeight),nullptr,
                         TextureSettingsClass{TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
                         TextureSettingsClass::DownscalingFilterFuncEnum::Nearest,TextureSettingsClass::UpscalingFilterFuncEnum::Nearest,
                         TextureSettingsClass::DepthStencilReadModeEnum::Depth},
                         TextureDataSettingsClass{TextureDataSettingsClass::DataFormatOnGPU_Enum::RGBA,
                         TextureDataSettingsClass::DataFormatOnCPU_Enum::RGBA,TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte}},
-                        {graphWidth,graphHeight},TextureClass<TextureTypeEnum::Texture1D>{Vector1U((int)0),nullptr,
+                        {graphWidth,graphHeight},Texture1DClass{0,nullptr,
                         TextureSettingsClass{TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
                         TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
                         TextureSettingsClass::DepthStencilReadModeEnum::Depth},
@@ -498,7 +498,7 @@ int main()
                         };
                         sets->VA_TEX.Bind();
                         sets->VB_TEX.SetLayout(VertexBuffer::BufferDataType::Float, { 2,2 });
-                        sets->VB_TEX.SetData(data_tex, sizeof(data_tex), VertexBuffer::BufferDataUsage::StaticDraw);
+                        sets->VB_TEX.SetData(sizeof(data_tex), data_tex, VertexBuffer::BufferDataUsage::StaticDraw);
                         sets->VA_TEX.Unbind();
 
                         float data_graph[] = {
@@ -511,7 +511,7 @@ int main()
                         };
                         sets->VA_GRAPH.Bind();
                         sets->VB_GRAPH.SetLayout(VertexBuffer::BufferDataType::Float, { 2,2 });
-                        sets->VB_GRAPH.SetData(data_graph, sizeof(data_graph), VertexBuffer::BufferDataUsage::StaticDraw);
+                        sets->VB_GRAPH.SetData(sizeof(data_graph), data_graph, VertexBuffer::BufferDataUsage::StaticDraw);
                         sets->VA_GRAPH.Unbind();
 
                     }

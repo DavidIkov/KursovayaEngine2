@@ -84,13 +84,13 @@
     <ClCompile Include="GraphicsPrimitives\Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsAbstractions\TextRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="KursovayaEngine2Manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WinOS\FilesSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsAbstractions\TextRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -497,9 +497,6 @@
     <ClInclude Include="GraphicsPrimitives\Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsAbstractions\TextRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="KursovayaEngine2Manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -522,6 +519,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tools\UniversalLambda.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsAbstractions\TextRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

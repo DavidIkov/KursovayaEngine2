@@ -84,7 +84,7 @@ unsigned int VertexBuffer::_GetVBUsageForGL(BufferDataUsage usage) {
     }
     return 0;
 }
-void VertexBuffer::SetData(const void* data, unsigned int dataLength, const BufferDataUsage usage) {
+void VertexBuffer::SetData(unsigned int dataLength, const void* data, const BufferDataUsage usage) {
 #if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX BUFFER IS DELETED, YOU CANT CHANGE ITS DATA", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
     else 
@@ -96,17 +96,6 @@ void VertexBuffer::SetData(const void* data, unsigned int dataLength, const Buff
     }
 }
 
-void VertexBuffer::ReserveData(unsigned int dataLength, BufferDataUsage usage) {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX BUFFER IS DELETED, YOU CANT CHANGE ITS DATA", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-    else 
-#endif
-    {
-
-        glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));
-        glSC(glBufferData(GL_ARRAY_BUFFER, dataLength, 0, _GetVBUsageForGL(usage)));
-    }
-}
 void VertexBuffer::SetSubData(unsigned int offset, unsigned int dataLength, void* firstElement) {
 #if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX BUFFER IS DELETED, YOU CANT CHANGE ITS SUB DATA", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });

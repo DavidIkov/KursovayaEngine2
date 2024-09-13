@@ -29,9 +29,7 @@ public:
 	DLLTREATMENT unsigned int gID() const;
 	DLLTREATMENT void SetLayout(BufferDataType dataType, const std::vector<unsigned int>& layout);
 	//dataLength as length*sizeof(type)
-	DLLTREATMENT void ReserveData(unsigned int dataLength, BufferDataUsage usage);
-	//dataLength as length*sizeof(type)
-	DLLTREATMENT void SetData(const void* data, unsigned int dataLength, const BufferDataUsage usage);
+	DLLTREATMENT void SetData(unsigned int dataLength, const void* data, const BufferDataUsage usage);
 	//dataLength as length*sizeof(type)
 	DLLTREATMENT void SetSubData(unsigned int offset, unsigned int dataLength, void* firstElement);
 	DLLTREATMENT void Bind() const;

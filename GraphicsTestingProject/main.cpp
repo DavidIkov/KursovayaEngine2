@@ -37,7 +37,7 @@ int main()
             "`abcdefghijklmnopqrstuvwxyz{|}~");
 
         FrameBuffer FB(Width, Height);
-        TextureClass<TextureTypeEnum::Texture2D> FB_COLOR_TEX(Vector2U(Width, Height), nullptr,
+        Texture2DClass FB_COLOR_TEX(Vector2U(Width, Height), nullptr,
             TextureSettingsClass{ TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
             TextureSettingsClass::DownscalingFilterFuncEnum::Nearest,TextureSettingsClass::UpscalingFilterFuncEnum::Nearest,
             TextureSettingsClass::DepthStencilReadModeEnum::Depth },
@@ -85,7 +85,7 @@ int main()
         VertexArray VA1;
 
         VertexBuffer VB1;
-        VB1.SetData(&VB1_DATA[0],(unsigned int)(VB1_DATA.size()*sizeof(float)), VertexBuffer::BufferDataUsage::StaticDraw);
+        VB1.SetData((unsigned int)(VB1_DATA.size()*sizeof(float)), &VB1_DATA[0], VertexBuffer::BufferDataUsage::StaticDraw);
         VB1.SetLayout(VertexBuffer::BufferDataType::Float, { 3,3,3,2 });
 
         VA1.Unbind();
@@ -93,7 +93,7 @@ int main()
         VertexArray VA2;
 
         VertexBuffer VB2;
-        VB2.SetData(&VB2_DATA[0], (unsigned int)(VB2_DATA.size() * sizeof(float)), VertexBuffer::BufferDataUsage::StaticDraw);
+        VB2.SetData((unsigned int)(VB2_DATA.size() * sizeof(float)), &VB2_DATA[0], VertexBuffer::BufferDataUsage::StaticDraw);
         VB2.SetLayout(VertexBuffer::BufferDataType::Float, { 3,3,3,2 });
 
         VA2.Unbind();
@@ -103,7 +103,7 @@ int main()
         VertexArray QUAD_VA;
 
         VertexBuffer QUAD_VB;
-        QUAD_VB.SetData(&quadVBD[0], (unsigned int)(quadVBD.size()*sizeof(float)), VertexBuffer::BufferDataUsage::StaticDraw);
+        QUAD_VB.SetData((unsigned int)(quadVBD.size()*sizeof(float)), &quadVBD[0], VertexBuffer::BufferDataUsage::StaticDraw);
         QUAD_VB.SetLayout(VertexBuffer::BufferDataType::Float, { 2 });
 
         QUAD_VA.Unbind();
@@ -173,11 +173,11 @@ int main()
         SP.SetUniform1i("u_tex1", 0);
         SP.SetUniform1i("u_tex2", 1);
 
-        TextureClass<TextureTypeEnum::Texture2D> TEX0("Textures/blackFace.jpg",
+        Texture2DClass TEX0("Textures/blackFace.jpg",
             TextureSettingsClass{ TextureSettingsClass::WrapTypeEnum::Repeat,TextureSettingsClass::WrapTypeEnum::Repeat,
             TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
             TextureSettingsClass::DepthStencilReadModeEnum::Depth });
-        TextureClass<TextureTypeEnum::Texture2D> TEX1("Textures/simpleFace.png",
+        Texture2DClass TEX1("Textures/simpleFace.png",
             TextureSettingsClass{ TextureSettingsClass::WrapTypeEnum::Repeat,TextureSettingsClass::WrapTypeEnum::Repeat,
             TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
             TextureSettingsClass::DepthStencilReadModeEnum::Depth });
