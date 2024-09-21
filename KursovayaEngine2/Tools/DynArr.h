@@ -1,6 +1,72 @@
 #pragma once
-
+#include"DebuggingTools.h"
+#include"iostream"
 typedef unsigned char byte;
+
+template<typename>
+class DynArr;
+
+
+
+//might be a weird name but it makes sence... right?
+class Stalker {
+	template<typename>
+	friend class DynArr;
+
+	struct DynArrStalkersDataClass {
+		Stalker** StalkersArr = nullptr;
+		unsigned int StalkersArrLength = 0; unsigned int StalkersArrCapacity = 0;
+		//how much more space should be allocated of stalkers when there is no more space left, cant be 0
+		unsigned int StalkersArrLengthExpansionStep = 1;
+
+	};
+
+	bool Deleted = false;
+
+	DynArrStalkersDataClass* StalkersDataPtr;
+
+	byte* ArrayPtr;
+	unsigned int TypeSize;
+
+	unsigned int TargetInd;
+	unsigned int StalkerInd;
+public:
+	Stalker() = delete;
+	Stalker(const Stalker&) = delete;
+	Stalker(Stalker* toCopy) {
+		memcpy(this, toCopy, sizeof(Stalker));
+		toCopy->Deleted = true;
+		StalkersDataPtr->StalkersArr[StalkerInd] = this;
+	}
+	template<typename ArrType>
+	Stalker(DynArr<ArrType>* DynArrPtr, unsigned int targetInd) :
+		StalkersDataPtr(&DynArrPtr->StalkersData), ArrayPtr((byte*)DynArrPtr->Arr), TypeSize(sizeof(ArrType)), TargetInd(targetInd) {
+
+		if (StalkersDataPtr->StalkersArrLength == StalkersDataPtr->StalkersArrCapacity) {
+			StalkersDataPtr->StalkersArrCapacity += StalkersDataPtr->StalkersArrLengthExpansionStep;
+			Stalker** newMem = new Stalker*[StalkersDataPtr->StalkersArrCapacity];
+			if (StalkersDataPtr->StalkersArr != nullptr) {
+				memcpy(newMem, StalkersDataPtr->StalkersArr, sizeof(Stalker*) * StalkersDataPtr->StalkersArrLength);
+				delete[] StalkersDataPtr->StalkersArr;
+			}
+			StalkersDataPtr->StalkersArr = newMem;
+		}
+
+		StalkerInd = StalkersDataPtr->StalkersArrLength;
+		StalkersDataPtr->StalkersArrLength++;
+		StalkersDataPtr->StalkersArr[StalkerInd] = this;
+
+	}
+	~Stalker() {
+		if (not Deleted) {
+			Deleted = true;
+			for (unsigned int i = StalkerInd + 1; i < StalkersDataPtr->StalkersArrLength; i++) StalkersDataPtr->StalkersArr[i - 1] = StalkersDataPtr->StalkersArr[i];
+			StalkersDataPtr->StalkersArrLength--;
+		}
+	}
+	void* GetTarget() const { return Deleted ? nullptr : (ArrayPtr + TypeSize * TargetInd); }
+	bool gIsTargetDeleted() const { return Deleted; }
+};
 
 /*TODO have a "bug", if you for example have array of 3 elements and insert at index 0,
 and it will have to resize array then if will firstly resize array and copy everything from
@@ -14,59 +80,16 @@ this is using "responsibility constructor"
 */
 template<typename StoreType>
 class DynArr {
+
+	friend class Stalker;
+
 	unsigned int Length = 0;
 	unsigned int Capacity = 0;
 	StoreType* Arr = nullptr;
 
-
-public:
-
-	//might be a weird name but it makes sence... right?
-	class Stalker {
-		friend DynArr;
-		bool Deleted = false;
-		DynArr<StoreType>* DynArrPtr;
-		unsigned int TargetInd;
-		unsigned int StalkerInd;
-	public:
-		Stalker() = delete;
-		Stalker(const Stalker&) = delete;
-		Stalker(DynArr<StoreType>* dynArrPtr, unsigned int targetInd) :
-			DynArrPtr(dynArrPtr), TargetInd(targetInd) {
-
-			if (targetInd >= dynArrPtr->Length) {
-				//////////////////////////////////////MAKE DEBUGGING
-				throw 1;
-			}
-
-			if (DynArrPtr->StalkersArrLength == DynArrPtr->StalkersArrCapacity) {
-				DynArrPtr->StalkersArrCapacity += DynArrPtr->StalkersArrLengthExpansionStep;
-				Stalker** newMem = new Stalker*[DynArrPtr->StalkersArrCapacity];
-				if (DynArrPtr->StalkersArr != nullptr) {
-					memcpy(newMem, DynArrPtr->StalkersArr, sizeof(Stalker*) * DynArrPtr->StalkersArrLength);
-					delete[] DynArrPtr->StalkersArr;
-				}
-				DynArrPtr->StalkersArr = newMem;
-			}
-
-			StalkerInd = DynArrPtr->StalkersArrLength;
-			DynArrPtr->StalkersArrLength++;
-			*(DynArrPtr->StalkersArr + StalkerInd) = this;
-
-		}
-		~Stalker() {
-			if (not Deleted) {
-				Deleted = true;
-				for (unsigned int i = StalkerInd + 1; i < DynArrPtr->StalkersArrLength; i++) DynArrPtr->StalkersArr[i - 1] = DynArrPtr->StalkersArr[i];
-				DynArrPtr->StalkersArrLength--;
-			}
-		}
-		StoreType* GetTarget() { return Deleted ? nullptr : (DynArrPtr->Arr + TargetInd); }
-		bool gIsTargetDeleted() const { return Deleted; }
-	};
 private:
-	Stalker** StalkersArr = nullptr;
-	unsigned int StalkersArrLength = 0; unsigned int StalkersArrCapacity = 0;
+
+	Stalker::DynArrStalkersDataClass StalkersData;
 
 	void _ClearArr() {
 		if (Arr != nullptr) {
@@ -76,9 +99,9 @@ private:
 		}
 	}
 	void _DeleteStalkers() {
-		if (StalkersArr != nullptr) {
-			for (unsigned int i = 0; i < StalkersArrLength; i++) StalkersArr[i]->Deleted = true;
-			delete[] StalkersArr;
+		if (StalkersData.StalkersArr != nullptr) {
+			for (unsigned int i = 0; i < StalkersData.StalkersArrLength; i++) StalkersData.StalkersArr[i]->Deleted = true;
+			delete[] StalkersData.StalkersArr;
 		}
 
 	}
@@ -86,9 +109,9 @@ private:
 		for (unsigned int i = 0; i < len; i++) new(arrTO + i) StoreType(arrFROM + i);
 	}
 	void _RemoveStalker(unsigned int elemInd) {
-		for (int i = (int)StalkersArrLength - 1; i >= 0; i--) {
-			if (StalkersArr[i]->TargetInd > elemInd) StalkersArr[i]->TargetInd--;
-			else if (StalkersArr[i]->TargetInd == elemInd) StalkersArr[i]->~Stalker();
+		for (int i = (int)StalkersData.StalkersArrLength - 1; i >= 0; i--) {
+			if (StalkersData.StalkersArr[i]->TargetInd > elemInd) StalkersData.StalkersArr[i]->TargetInd--;
+			else if (StalkersData.StalkersArr[i]->TargetInd == elemInd) StalkersData.StalkersArr[i]->~Stalker();
 		}
 
 	}
@@ -99,8 +122,8 @@ private:
 				Capacity = 0;
 				Length = 0;
 				_DeleteStalkers();
-				StalkersArrLength = 0;
-				StalkersArrCapacity = 0;
+				StalkersData.StalkersArrLength = 0;
+				StalkersData.StalkersArrCapacity = 0;
 
 			}
 			else {
@@ -125,8 +148,6 @@ private:
 
 
 public:
-	//how much more space should be allocated of stalkers when there is no more space left, cant be 0
-	unsigned int StalkersArrLengthExpansionStep = 1;
 	
 	//how much more space should be allocated of "StoreType" when there is no more space left, cant be 0
 	unsigned int SizeExpansionStep = 1;
@@ -154,8 +175,8 @@ public:
 	}
 	void operator=(const DynArr<StoreType>& arrToCopy) {
 		_DeleteStalkers();
-		StalkersArrLength = 0;
-		StalkersArrCapacity = 0;
+		StalkersData.StalkersArrLength = 0;
+		StalkersData.StalkersArrCapacity = 0;
 		_ClearArr();
 		Length = arrToCopy.Length;
 		Capacity = arrToCopy.Capacity;
@@ -180,7 +201,7 @@ private:
 		if (Length == Capacity) _ResizeArray(Capacity + SizeExpansionStep);
 
 		if (moveInd < Length) {
-			for (unsigned int i = 0; i < StalkersArrLength; i++) if (StalkersArr[i]->TargetInd >= moveInd) StalkersArr[i]->TargetInd++;
+			for (unsigned int i = 0; i < StalkersData.StalkersArrLength; i++) if (StalkersData.StalkersArr[i]->TargetInd >= moveInd) StalkersData.StalkersArr[i]->TargetInd++;
 			for (int i = Length - 1; i >= (int)moveInd; i--) {
 				new(Arr + i + 1) StoreType(Arr + i);
 				Arr[i].~StoreType();

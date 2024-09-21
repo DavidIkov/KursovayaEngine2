@@ -122,13 +122,12 @@ int main()
 
         Window window(Width, Height, "kursavayaengine2 window...", false, 10);
 
-        TextRenderer TEXT_RENDERER(L"Shaders/text.vs", L"Shaders/text.fs");
-        std::string ArialFont = TEXT_RENDERER.LoadFont("arial.ttf", 48);
-        TEXT_RENDERER.LoadCharacters(ArialFont,
+        TextRendererClass TEXT_RENDERER(L"Shaders/text.vs", L"Shaders/text.fs");
+        Stalker ArialFont = TEXT_RENDERER.AddFont(50, "arial.ttf",
             L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
             "`abcdefghijklmnopqrstuvwxyz{|}~"\
             "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßÿþýüûúùø÷öõôóòñðïîíìëêéèçæ¸åäãâáà");
-
+            
         RenderingPreset Preset2D(
             false, RenderingPresetEnumArguments::FaceCulling::FaceToCull::Back, RenderingPresetEnumArguments::FaceCulling::FaceDetermination::Clockwise,
             false, true, RenderingPresetEnumArguments::DepthTest::TypeOfComparison::LessOrEqual,
@@ -214,22 +213,13 @@ int main()
 
             TopQuad.Draw();
 
-            TEXT_RENDERER.DrawText(ArialFont, L"File name:",
-                Width, Height,
-                1,
-                -1, 1 - Proportions::TopBarSize,
-                -1, 0,
-                Proportions::TopBarLeftTextSize, TextRenderer::ClampingFuncs::AlwaysScaleTillClamp,
-                Proportions::TopBarSize, false, TextRenderer::ClampingFuncs::AlwaysScaleTillClamp);
+            TEXT_RENDERER.RenderText(ArialFont, L"File name:",
+                Vector2F(-1, 1 - Proportions::TopBarSize),
+                Vector2F(-1, 0), Vector2U(Width, Height), Vector2F(Proportions::TopBarLeftTextSize, Proportions::TopBarSize), 1.f);
 
-            TEXT_RENDERER.DrawText(ArialFont, CurrentFileName,
-                Width, Height,
-                1,
-                -1 + Proportions::TopBarLeftTextSize * 2, 1 - Proportions::TopBarSize,
-                -1, 0,
-                1 - Proportions::TopBarLeftTextSize, TextRenderer::ClampingFuncs::AlwaysScaleTillClamp,
-                Proportions::TopBarSize, false, TextRenderer::ClampingFuncs::AlwaysScaleTillClamp);
-
+            TEXT_RENDERER.RenderText(ArialFont, CurrentFileName.c_str(),
+                Vector2F(-1 + Proportions::TopBarLeftTextSize * 2, 1 - Proportions::TopBarSize),
+                Vector2F(-1, 0), Vector2U(Width, Height), Vector2F(1 - Proportions::TopBarLeftTextSize, Proportions::TopBarSize), 1.f);
 
 
             LeftQuad.Draw();
@@ -243,38 +233,25 @@ int main()
 
                 auto& devNamQ = sets->DeviceNameQuad;
                 devNamQ.Draw();
-                TEXT_RENDERER.DrawText(ArialFont, csv_json::Devices[sets->DeviceInd].Name,
-                    Width, Height,
-                    1,
-                    devNamQ.Position[0], devNamQ.Position[1]- devNamQ.Size[1],
-                    devNamQ.LocalOffset[0], 0,
-                    devNamQ.Size[0], TextRenderer::ClampingFuncs::AlwaysScaleTillClamp,
-                    devNamQ.Size[1], false, TextRenderer::ClampingFuncs::AlwaysScaleTillClamp);
-
+                TEXT_RENDERER.RenderText(ArialFont, csv_json::Devices[sets->DeviceInd].Name.c_str(),
+                    Vector2F(devNamQ.Position[0], devNamQ.Position[1] - devNamQ.Size[1]),
+                    Vector2F(devNamQ.LocalOffset[0], 0), Vector2U(Width, Height), devNamQ.Size, 1.f);
 
                 auto& dataNamQ = sets->DataNameQuad;
                 dataNamQ.Draw();
                 std::wstring wDataName; char_to_wchar(1251, csv_json::Devices[sets->DeviceInd].DataNames[sets->DataNameInd].DataName, wDataName);
-                TEXT_RENDERER.DrawText(ArialFont, wDataName,
-                    Width, Height,
-                    1,
-                    dataNamQ.Position[0], dataNamQ.Position[1] - dataNamQ.Size[1],
-                    dataNamQ.LocalOffset[0], 0,
-                    dataNamQ.Size[0], TextRenderer::ClampingFuncs::AlwaysScaleTillClamp,
-                    dataNamQ.Size[1], false, TextRenderer::ClampingFuncs::AlwaysScaleTillClamp);
-                
+                TEXT_RENDERER.RenderText(ArialFont, wDataName.c_str(),
+                    Vector2F(dataNamQ.Position[0], dataNamQ.Position[1] - dataNamQ.Size[1]),
+                    Vector2F(dataNamQ.LocalOffset[0], 0), Vector2U(Width, Height), dataNamQ.Size, 1.f);
 #define dateDrawMacro(num,metric) {\
                 auto& dateQRef = sets->Date##num##metric##Quad;\
                 dateQRef.Draw();\
                 std::wstring wideDate; std::string strDate = std::to_string(csv_json::Devices[sets->DeviceInd].Dates[sets->Date##num##Ind].Date.metric); char_to_wchar(1251, strDate, wideDate);\
-                TEXT_RENDERER.DrawText(ArialFont, wideDate,\
-                    Width, Height,\
-                    1,\
-                    dateQRef.Position[0] - dateQRef.LocalOffset[0] * dateQRef.Size[0], dateQRef.Position[1] - dateQRef.Size[1],\
-                    0, 0,\
-                    dateQRef.Size[0], TextRenderer::ClampingFuncs::AlwaysScaleTillClamp,\
-                    dateQRef.Size[1], false, TextRenderer::ClampingFuncs::AlwaysScaleTillClamp);\
+                TEXT_RENDERER.RenderText(ArialFont, wideDate.c_str(),\
+                    Vector2F(dateQRef.Position[0] - dateQRef.LocalOffset[0] * dateQRef.Size[0], dateQRef.Position[1] - dateQRef.Size[1]),\
+                    Vector2F(0,0), Vector2U(Width,Height),dateQRef.Size,1.f);\
                 }
+			    
                 dateDrawMacro(1, Year);
                 dateDrawMacro(2, Year);
                 dateDrawMacro(1, Month);

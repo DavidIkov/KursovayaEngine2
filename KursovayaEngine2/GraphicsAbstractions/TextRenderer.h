@@ -1,63 +1,55 @@
 #pragma once
 #include"DLL.h"
-#include"GraphicsPrimitives/Texture.h"
 #include"Maths/Vector.h"
+#include"GraphicsPrimitives/Texture.h"
 #include"GraphicsPrimitives/ShaderProgram.h"
 #include"GraphicsPrimitives/RenderingPreset.h"
 #include"GraphicsPrimitives/VertexArray.h"
 #include"GraphicsPrimitives/VertexBuffer.h"
 #include"Tools/DynArr.h"
-#include<algorithm>
-#include<string>
 
-class TextRenderer {
-    static bool First; //false
-    struct CharacterClass {
-        Texture2DClass Tex;
-        unsigned int UnicodeInd;
-        Vector2I Size;       // Size of glyph
-        Vector2I Bearing;    // Offset from baseline to left/top of glyph
-        unsigned int Advance; // Offset to advance to next glyph
-        CharacterClass(Texture2DClass&& tex, unsigned int unicodeInd, Vector2I&& size, Vector2I&& bearing, unsigned int advance);
-        //CharacterClass& operator=(const CharacterClass& copy);
-        CharacterClass(const CharacterClass* toCopy);
-    };
-    struct FontClass {
-        mutable bool Deleted = false;
-        std::string FontName;
-        void* FreeTypeFace;//FT_Face
-        DynArr<CharacterClass> Characters;
-        FontClass();
-        FontClass(const FontClass* toCopy);
-        ~FontClass();
-    };
-    
-    void* FreeTypeLib;//FT_Library
-
-    DynArr<FontClass> Fonts;
+class TextRendererClass {
 
     ShaderProgram TEXT_SP;
     RenderingPreset TextPreset;
     VertexArray TEXT_VA;
     VertexBuffer TEXT_VB;
-public:
+
+    struct FontClass {
     
-    DLLTREATMENT TextRenderer(const wchar_t* vShaderDir, const wchar_t* fShaderDir);
-    DLLTREATMENT ~TextRenderer();
-
-    DLLTREATMENT std::string LoadFont(const char* fontDir, unsigned int charsSize);
-    DLLTREATMENT void LoadCharacters(const std::string& fontName, const wchar_t* chars);
-
-    enum class ClampingFuncs {
-        None, ClampIfBigger, AlwaysScaleTillClamp,
+		struct CharacterClass {
+			unsigned int UnicodeInd;
+			Vector2U Size;       // Size of glyph
+			Vector2I Bearing;    // Offset from baseline to left/top of glyph
+			unsigned int Advance; // Offset to advance to next glyph
+            Vector2F SizeInTexture;
+            float XOffsetInTexture;
+		};
+		mutable bool Deleted = false;
+        Texture2DClass Texture;
+        void* FreeTypeFace;//FT_Face
+        std::vector<CharacterClass> Characters;
+        int MaxCharacterUp = 0; int MaxCharacterDown = 0;
+		FontClass(unsigned int characterSize, const char* fontDir, const wchar_t* chars);
+        FontClass(FontClass* toCopy);
+        ~FontClass();
     };
-    DLLTREATMENT void DrawText(
-        const std::string& fontName, std::wstring text,
-        unsigned int screenWidth, unsigned int screenHeight,
-        float textScale,
-        float posX, float posY,
-        float localOffsetX, float localOffsetY,
-        float xSize, ClampingFuncs xClampFunc,
-        float ySize, bool ignoreBottomPartOfSymbol, ClampingFuncs yClampFunc
-    );
+    
+    static void* FreeTypeLib;//FT_Library, nullptr
+
+    DynArr<FontClass> Fonts;
+
+public:
+
+    DLLTREATMENT TextRendererClass(const wchar_t* vertexShaderDir, const wchar_t* fragmentShaderDir);
+    DLLTREATMENT ~TextRendererClass();
+    DLLTREATMENT Stalker AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters);
+
+	//pixelsInTexture is amount of pixels in the texture you are rendering this text to
+    //if scalingType is ByX/ByY you can keep y/x coordinate in size as 0
+    //TODO add functionality for "dividingSymbols" and make so text will be separated in a few lines if possible
+    DLLTREATMENT void RenderText(const Stalker& fontStaker, const wchar_t* text, Vector2F pos, Vector2F localOffset, Vector2U pixelsInTexture,
+        Vector2F boxSize, float lineSizeInBox, const wchar_t* dividingSymbols=nullptr);
+
+    
 };

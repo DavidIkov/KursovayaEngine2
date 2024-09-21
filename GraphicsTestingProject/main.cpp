@@ -20,7 +20,6 @@ int main()
     
     InitializeKursovayaEngine2();
     
-
     try {
 
         unsigned int Width = 900;
@@ -30,12 +29,10 @@ int main()
         Window window(Width, Height, "haiiiii", false, 1);
 
 
-        TextRenderer TEXT_RENDERER(L"Shaders/text.vs", L"Shaders/text.fs");
-        std::string ArialFont = TEXT_RENDERER.LoadFont("Fonts/arial.ttf", 48);
-        TEXT_RENDERER.LoadCharacters(ArialFont,
-            L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
+        TextRendererClass TEXT_RENDERER(L"Shaders/textNEW.vs", L"Shaders/textNEW.fs");
+        Stalker ArialFont = TEXT_RENDERER.AddFont(50, "Fonts/arial.ttf", L" !\"#שפ$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
             "`abcdefghijklmnopqrstuvwxyz{|}~");
-
+        
         FrameBuffer FB(Width, Height);
         Texture2DClass FB_COLOR_TEX(Vector2U(Width, Height), nullptr,
             TextureSettingsClass{ TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
@@ -217,8 +214,7 @@ int main()
 
         float time = 0;
 
-        while (!window.WindowWaitingToClose())
-        {
+        while (!window.WindowWaitingToClose()) {
             window.UpdateMouseData();
 
             time += 0.1f;
@@ -361,16 +357,17 @@ int main()
             QUAD_VA.Unbind();
 
             {//text
-                for (unsigned int i = 0; i < 5; i++) {
-                    TEXT_RENDERER.DrawText(ArialFont, L"abcds",
+                //for (unsigned int i = 0; i < 5; i++) {
+                    /*TEXT_RENDERER.DrawText(ArialFont, L"abcds",
                         Width, Height,
                         1,
                         -1.f + 2.f * ((float)i / 5), -1.f + 2.f * ((float)i / 5),
                         -1,-1,
                         0, TextRenderer::ClampingFuncs::None,
-                        0, true, TextRenderer::ClampingFuncs::None);
-                }
-                
+                        0, true, TextRenderer::ClampingFuncs::None);*/
+                TEXT_RENDERER.RenderText(ArialFont, L"abc@%אשפ", Vector2F(-1,0), Vector2F(-1,0), Vector2U(Width, Height),
+                    Vector2F(1, 0), 0.5f);
+                //}
             }
 
             window.SwapScreenBuffers();
@@ -383,5 +380,5 @@ int main()
     catch (KURSAVAYAENGINE2_CORE_ERRORS&) {
         UninitializeKursovayaEngine2();
         return 0;
-    }
+    }//todo console dont close when window is closed, need to fix this bug
 }

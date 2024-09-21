@@ -61,7 +61,7 @@
     <None Include="Shaders\Quad2dImage.fs" />
     <None Include="Shaders\Quad2d.vs" />
     <None Include="Shaders\Quad2d.fs" />
-    <None Include="Shaders\text.vs" />
     <None Include="Shaders\text.fs" />
+    <None Include="Shaders\text.vs" />
   </ItemGroup>
 </Project>

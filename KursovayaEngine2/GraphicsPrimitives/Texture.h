@@ -46,8 +46,6 @@ class Texture1DClass {
     mutable bool Deleted = false;
 
 
-private:
-
     void _Constructor(unsigned int pixelsAmount, const void* data, const TextureDataSettingsClass& dataSets);
 
     void _UpdSettings_WrapTypeByX(TextureSettingsClass::WrapTypeEnum wrapTyp);

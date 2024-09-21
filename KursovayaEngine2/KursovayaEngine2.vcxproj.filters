@@ -84,13 +84,13 @@
     <ClCompile Include="GraphicsPrimitives\Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GraphicsAbstractions\TextRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="KursovayaEngine2Manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WinOS\FilesSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsAbstractions\TextRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -129,6 +129,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsPrimitives\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Maths\Matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Input\Keyboard.h">
@@ -491,10 +494,10 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tools\SimpleLambda.h">
+    <ClInclude Include="GraphicsPrimitives\Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsPrimitives\Renderer.h">
+    <ClInclude Include="GraphicsAbstractions\TextRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="KursovayaEngine2Manager.h">
@@ -506,12 +509,6 @@
     <ClInclude Include="Maths\Vector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Maths\Matrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WinOS\FilesSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Tools\DynArr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -521,7 +518,10 @@
     <ClInclude Include="Tools\UniversalLambda.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsAbstractions\TextRenderer.h">
+    <ClInclude Include="WinOS\FilesSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\BinarySearch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
