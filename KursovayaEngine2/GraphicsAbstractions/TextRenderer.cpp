@@ -8,6 +8,7 @@
 #include FT_FREETYPE_H
 
 using namespace GraphicsPrimitives;
+using namespace GraphicsAbstractions;
 
 void* TextRendererClass::FreeTypeLib = nullptr;
 

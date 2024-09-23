@@ -16,6 +16,7 @@
 #include"Tools/FileTypesReaders/Obj.h"
 
 using namespace GraphicsPrimitives;
+using namespace GraphicsAbstractions;
 
 int main()
 {

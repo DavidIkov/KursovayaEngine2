@@ -18,7 +18,7 @@
 #include<iostream>
 #include"Tools/RandomNumber.h"
 
-
+using namespace GraphicsAbstractions;
 
 namespace Proportions {
     float TopBarSize = 0.1f;
