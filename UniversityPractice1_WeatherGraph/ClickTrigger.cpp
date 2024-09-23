@@ -2,11 +2,11 @@
 #include<iostream>
 
 
-ClickTrigger::ClickTrigger(Window* windPtr) {
+ClickTrigger::ClickTrigger(WindowClass* windPtr) {
 	WindPtr = windPtr;
 
 
-	EventsConsHandler.ConnectToEvent(&windPtr->gMouseHandle().gMouseInputKeyEvent(MouseInputKeys::Left), [&](void* data) {
+	EventsConsHandler.ConnectToEvent(&windPtr->gMouseHandle().gMousePressableKeyEvent(MouseClass::PressableKeysEnum::Left), [&](void* data) {
 		LeftMouseButtonEvent.FireEvent(data);
 		}, [&](void* pressedDown)->bool {
 			Vector2F mousePos; mousePos = (Vector2F)WindPtr->gCursorPosition() / WindPtr->gWindowSize() * 2;
@@ -16,7 +16,7 @@ ClickTrigger::ClickTrigger(Window* windPtr) {
 				return true;
 			return false;
 			});
-	EventsConsHandler.ConnectToEvent(&windPtr->gMouseHandle().gMouseInputKeyEvent(MouseInputKeys::Right), [&](void* data) {
+	EventsConsHandler.ConnectToEvent(&windPtr->gMouseHandle().gMousePressableKeyEvent(MouseClass::PressableKeysEnum::Right), [&](void* data) {
 		RightMouseButtonEvent.FireEvent(data);
 		}, [&](void* pressedDown)->bool {
 			Vector2F mousePos; mousePos = (Vector2F)WindPtr->gCursorPosition() / WindPtr->gWindowSize() * 2;

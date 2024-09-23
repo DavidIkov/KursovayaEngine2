@@ -1,7 +1,7 @@
 #pragma once
 #include"DLL.h"
 #include<chrono>
-namespace Time {
+namespace TimeNamespace {
 
 	typedef std::chrono::steady_clock::time_point TimePoint;
 
@@ -16,4 +16,3 @@ namespace Time {
 	DLLTREATMENT void Wait(float seconds);
 }
 
-#define MeasureTime(toAsign,code) TimePoint MeasureStartTime=Time::GetTimePoint(); code; toAsign=Time::GetDuration(MeasureStartTime,Time::GetTimePoint());}

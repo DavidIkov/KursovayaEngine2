@@ -50,7 +50,7 @@ void csv_json::ReadFromCSV(const wchar_t* filePath) {
 	Devices.clear();
 	Devices.resize(1);
 
-	FilesSystem::OpenedFile file(filePath);
+	FilesSystemNamespace::OpenedFile file(filePath);
 
 	std::string curLine;
 	std::wstring curWideLine;
@@ -159,7 +159,7 @@ static void GetNextNameAndValue(std::string& text, unsigned int start, std::stri
 void csv_json::ReadFromJSON(const wchar_t* filePath) {
 	Devices.clear();
 	
-	FilesSystem::OpenedFile file(filePath);
+	FilesSystemNamespace::OpenedFile file(filePath);
 
 
 	std::string text;

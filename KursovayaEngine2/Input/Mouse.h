@@ -2,26 +2,29 @@
 #include"DLL.h"
 #include"Tools/Event.h"
 
-enum class MouseInputKeys :unsigned short int {
-    Left, Right, Middle,
 
-	ENUMEND
-};
+class MouseClass {
 
-class Mouse {
+public:
+	enum class PressableKeysEnum :unsigned short int {
+		Left, Right, Middle,
 
-	bool MouseInputKeysStates[(unsigned short int)MouseInputKeys::ENUMEND];
+		ENUMEND
+	};
+private:
+
+	bool PressableKeysStates[(unsigned short int)PressableKeysEnum::ENUMEND];
 
 	//parameters: bool if it was pressed down or up:true=down,false=up
-	EventClass MouseInputKeysEvents[(unsigned short int)MouseInputKeys::ENUMEND];
+	EventClass PressableKeysEvents[(unsigned short int)PressableKeysEnum::ENUMEND];
 
 public:
 
-	DLLTREATMENT const EventClass& gMouseInputKeyEvent(MouseInputKeys key) const;
+	DLLTREATMENT const EventClass& gMousePressableKeyEvent(PressableKeysEnum key) const;
 
 	//not for user
 	void GLFW_KEYCALLBACK(int button, int action, int mods);
 
 
-	DLLTREATMENT bool gMouseInputKeyState(MouseInputKeys key) const;
+	DLLTREATMENT bool gMousePressableKeyState(PressableKeysEnum key) const;
 };

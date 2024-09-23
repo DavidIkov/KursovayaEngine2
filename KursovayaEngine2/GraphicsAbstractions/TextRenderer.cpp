@@ -10,11 +10,11 @@
 void* TextRendererClass::FreeTypeLib = nullptr;
 
 TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const wchar_t* fragmentShaderDir) :TextPreset(
-    false, RenderingPresetEnumArguments::FaceCulling::FaceToCull::Back, RenderingPresetEnumArguments::FaceCulling::FaceDetermination::Clockwise,
-    false, true, RenderingPresetEnumArguments::DepthTest::TypeOfComparison::LessOrEqual,
-    false, 0, RenderingPresetEnumArguments::StencilTest::TypeOfComparison::Equal, 1, 255, RenderingPresetEnumArguments::StencilTest::Actions::Keep,
-    RenderingPresetEnumArguments::StencilTest::Actions::Keep, RenderingPresetEnumArguments::StencilTest::Actions::Keep,
-    true, 0, 0, 0, 0, RenderingPresetEnumArguments::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArguments::Blending::FunctionForColor::OneMinusSrcAlpha,
+    false, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
+    false, true, RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual,
+    false, 0, RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Equal, 1, 255, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
+    RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
+    true, 0, 0, 0, 0, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
     0.f, 0.f, 0.f
 ) {
 
@@ -27,11 +27,11 @@ TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const wchar
     }
 
     {
-        Shader VS(vertexShaderDir, Shader::TypesEnum::Vertex);
+        ShaderClass VS(vertexShaderDir, ShaderClass::TypesEnum::Vertex);
         VS.Compile();
         TEXT_SP.AttachShader(VS);
 
-        Shader FS(fragmentShaderDir, Shader::TypesEnum::Fragment);
+        ShaderClass FS(fragmentShaderDir, ShaderClass::TypesEnum::Fragment);
         FS.Compile();
         TEXT_SP.AttachShader(FS);
 
@@ -41,8 +41,8 @@ TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const wchar
     }
 
     
-    TEXT_VB.SetData(6 * 4 * sizeof(float), nullptr, VertexBuffer::BufferDataUsage::DynamicDraw);
-    TEXT_VB.SetLayout(VertexBuffer::BufferDataType::Float, { 2,2 });
+    TEXT_VB.SetData(6 * 4 * sizeof(float), nullptr, VertexBufferClass::BufferDataUsageEnum::DynamicDraw);
+    TEXT_VB.SetLayout(VertexBufferClass::BufferDataTypeEnum::Float, { 2,2 });
 }
 
 TextRendererClass::~TextRendererClass() {
@@ -50,9 +50,9 @@ TextRendererClass::~TextRendererClass() {
     delete (FT_Library*)FreeTypeLib;
 }
 
-Stalker TextRendererClass::AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters) {
+StalkerClass TextRendererClass::AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters) {
     Fonts.InsertByConstructor(Fonts.gLength(), characterSize, fontDir, characters);
-    return Stalker(&Fonts, Fonts.gLength() - 1);
+    return StalkerClass(&Fonts, Fonts.gLength() - 1);
 }
 
 TextRendererClass::FontClass::FontClass(FontClass* toCopy) :
@@ -180,7 +180,7 @@ TextRendererClass::FontClass::FontClass(unsigned int characterSize, const char* 
 
 static constexpr unsigned int MAX_TEXT_LEN = 100000;
 
-void TextRendererClass::RenderText(const Stalker& fontStalker, const wchar_t* text, Vector2F pos, Vector2F localOffset, Vector2U pixelsInTexture,
+void TextRendererClass::RenderText(const StalkerClass& fontStalker, const wchar_t* text, Vector2F pos, Vector2F localOffset, Vector2U pixelsInTexture,
     Vector2F boxSize, float lineSizeInBox, const wchar_t* dividingSymbols) {
     
     if (boxSize[0] == 0 and boxSize[1] == 0) return;//theres nothing we can do
@@ -276,7 +276,7 @@ void TextRendererClass::RenderText(const Stalker& fontStalker, const wchar_t* te
         };
 
 		TEXT_VB.SetSubData(0, 6 * 4 * sizeof(float), data);
-        Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, 6);
+        RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, 6);
 
 
         xOffset += char_.Advance * localPixelsToTexScaleByX;

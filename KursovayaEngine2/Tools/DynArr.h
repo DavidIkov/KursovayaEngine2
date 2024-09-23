@@ -9,12 +9,12 @@ class DynArr;
 
 
 //might be a weird name but it makes sence... right?
-class Stalker {
+class StalkerClass {
 	template<typename>
 	friend class DynArr;
 
 	struct DynArrStalkersDataClass {
-		Stalker** StalkersArr = nullptr;
+		StalkerClass** StalkersArr = nullptr;
 		unsigned int StalkersArrLength = 0; unsigned int StalkersArrCapacity = 0;
 		//how much more space should be allocated of stalkers when there is no more space left, cant be 0
 		unsigned int StalkersArrLengthExpansionStep = 1;
@@ -31,22 +31,22 @@ class Stalker {
 	unsigned int TargetInd;
 	unsigned int StalkerInd;
 public:
-	Stalker() = delete;
-	Stalker(const Stalker&) = delete;
-	Stalker(Stalker* toCopy) {
-		memcpy(this, toCopy, sizeof(Stalker));
+	StalkerClass() = delete;
+	StalkerClass(const StalkerClass&) = delete;
+	StalkerClass(StalkerClass* toCopy) {
+		memcpy(this, toCopy, sizeof(StalkerClass));
 		toCopy->Deleted = true;
 		StalkersDataPtr->StalkersArr[StalkerInd] = this;
 	}
 	template<typename ArrType>
-	Stalker(DynArr<ArrType>* DynArrPtr, unsigned int targetInd) :
+	StalkerClass(DynArr<ArrType>* DynArrPtr, unsigned int targetInd) :
 		StalkersDataPtr(&DynArrPtr->StalkersData), ArrayPtr((byte*)DynArrPtr->Arr), TypeSize(sizeof(ArrType)), TargetInd(targetInd) {
 
 		if (StalkersDataPtr->StalkersArrLength == StalkersDataPtr->StalkersArrCapacity) {
 			StalkersDataPtr->StalkersArrCapacity += StalkersDataPtr->StalkersArrLengthExpansionStep;
-			Stalker** newMem = new Stalker*[StalkersDataPtr->StalkersArrCapacity];
+			StalkerClass** newMem = new StalkerClass*[StalkersDataPtr->StalkersArrCapacity];
 			if (StalkersDataPtr->StalkersArr != nullptr) {
-				memcpy(newMem, StalkersDataPtr->StalkersArr, sizeof(Stalker*) * StalkersDataPtr->StalkersArrLength);
+				memcpy(newMem, StalkersDataPtr->StalkersArr, sizeof(StalkerClass*) * StalkersDataPtr->StalkersArrLength);
 				delete[] StalkersDataPtr->StalkersArr;
 			}
 			StalkersDataPtr->StalkersArr = newMem;
@@ -57,7 +57,7 @@ public:
 		StalkersDataPtr->StalkersArr[StalkerInd] = this;
 
 	}
-	~Stalker() {
+	~StalkerClass() {
 		if (not Deleted) {
 			Deleted = true;
 			for (unsigned int i = StalkerInd + 1; i < StalkersDataPtr->StalkersArrLength; i++) StalkersDataPtr->StalkersArr[i - 1] = StalkersDataPtr->StalkersArr[i];
@@ -81,7 +81,7 @@ this is using "responsibility constructor"
 template<typename StoreType>
 class DynArr {
 
-	friend class Stalker;
+	friend class StalkerClass;
 
 	unsigned int Length = 0;
 	unsigned int Capacity = 0;
@@ -89,7 +89,7 @@ class DynArr {
 
 private:
 
-	Stalker::DynArrStalkersDataClass StalkersData;
+	StalkerClass::DynArrStalkersDataClass StalkersData;
 
 	void _ClearArr() {
 		if (Arr != nullptr) {
@@ -111,7 +111,7 @@ private:
 	void _RemoveStalker(unsigned int elemInd) {
 		for (int i = (int)StalkersData.StalkersArrLength - 1; i >= 0; i--) {
 			if (StalkersData.StalkersArr[i]->TargetInd > elemInd) StalkersData.StalkersArr[i]->TargetInd--;
-			else if (StalkersData.StalkersArr[i]->TargetInd == elemInd) StalkersData.StalkersArr[i]->~Stalker();
+			else if (StalkersData.StalkersArr[i]->TargetInd == elemInd) StalkersData.StalkersArr[i]->~StalkerClass();
 		}
 
 	}

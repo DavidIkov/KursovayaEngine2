@@ -1,7 +1,7 @@
 #pragma once
 #include"Shader.h"
 
-class ShaderProgram {
+class ShaderProgramClass {
 	unsigned int ID;
 #if defined Debug
 	mutable bool Linked = false;
@@ -9,13 +9,13 @@ class ShaderProgram {
 	mutable bool Deleted = false;
 public:
 	DLLTREATMENT unsigned int gID() const;
-	DLLTREATMENT ShaderProgram();
-	DLLTREATMENT ShaderProgram(const ShaderProgram* toCopy);
-	DLLTREATMENT ShaderProgram(const ShaderProgram&& toCopy);
-	DLLTREATMENT void operator=(const ShaderProgram&& toCopy);
-	DLLTREATMENT void AttachShader(const Shader& SH);
+	DLLTREATMENT ShaderProgramClass();
+	DLLTREATMENT ShaderProgramClass(const ShaderProgramClass* toCopy);
+	DLLTREATMENT ShaderProgramClass(const ShaderProgramClass&& toCopy);
+	DLLTREATMENT void operator=(const ShaderProgramClass&& toCopy);
+	DLLTREATMENT void AttachShader(const ShaderClass& SH);
 	DLLTREATMENT void LinkShaders();
-	DLLTREATMENT ~ShaderProgram();
+	DLLTREATMENT ~ShaderProgramClass();
 	DLLTREATMENT void Delete();
 	DLLTREATMENT void Bind() const;
 	DLLTREATMENT static void Unbind();

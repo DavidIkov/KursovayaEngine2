@@ -21,10 +21,12 @@ render....;
 SwapScreenBuffers();
 ProcessEvents();
 */
-class Window {
+class WindowClass {
 
     //GLFWwindow*
     void* GLFW_WindowPtr;
+
+    bool Deleted = false;
 
     mutable bool DontUpdateDeltaOnce = true;
     mutable Vector2I MousePosition;
@@ -32,13 +34,13 @@ class Window {
     static bool FirstWindow;//true
     CursorModes CursorMode = CursorModes::Free;
 
-    Keyboard KeyboardHandle;
-    Mouse MouseHandle;
+    KeyboardClass KeyboardHandle;
+    MouseClass MouseHandle;
 
 public:
     
-    DLLTREATMENT const Keyboard& gKeyboardHandle() const;
-    DLLTREATMENT const Mouse& gMouseHandle() const;
+    DLLTREATMENT const KeyboardClass& gKeyboardHandle() const;
+    DLLTREATMENT const MouseClass& gMouseHandle() const;
 
     DLLTREATMENT void ClearColorBuffer();
     DLLTREATMENT void ClearDepthBuffer();
@@ -46,7 +48,7 @@ public:
     //color,depth,stencil
     DLLTREATMENT void ClearAllBuffers();
 
-    DLLTREATMENT Window(unsigned int w, unsigned int h, const char* title, bool fullscreen, unsigned int swapInterval);
+    DLLTREATMENT WindowClass(unsigned int w, unsigned int h, const char* title, bool fullscreen, unsigned int swapInterval);
     DLLTREATMENT bool WindowWaitingToClose() const;
     DLLTREATMENT void UpdateMouseData();
     DLLTREATMENT void SwapScreenBuffers();
@@ -62,4 +64,7 @@ public:
     DLLTREATMENT const Vector2I& gCursorDelta() const;
     DLLTREATMENT void SetCursorMode(CursorModes mode);
     DLLTREATMENT CursorModes gCursorMode() const;
+
+    DLLTREATMENT void Destroy();
+    DLLTREATMENT ~WindowClass();
 };

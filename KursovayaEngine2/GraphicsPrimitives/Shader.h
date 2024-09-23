@@ -1,7 +1,7 @@
 #pragma once
 #include"DLL.h"
 
-class Shader {
+class ShaderClass {
 	unsigned int ID;
 	mutable bool Deleted = false;
 #if defined Debug
@@ -17,12 +17,12 @@ private:
 #endif
 public:
 	DLLTREATMENT unsigned int gID() const;
-	DLLTREATMENT Shader(const wchar_t* filePath, TypesEnum typ);
-	DLLTREATMENT Shader(TypesEnum typ, const char* code);
-	DLLTREATMENT Shader(const Shader* toCopy);
-	DLLTREATMENT Shader(const Shader&& toCopy);
-	DLLTREATMENT void operator=(const Shader&& toCopy);
+	DLLTREATMENT ShaderClass(const wchar_t* filePath, TypesEnum typ);
+	DLLTREATMENT ShaderClass(TypesEnum typ, const char* code);
+	DLLTREATMENT ShaderClass(const ShaderClass* toCopy);
+	DLLTREATMENT ShaderClass(const ShaderClass&& toCopy);
+	DLLTREATMENT void operator=(const ShaderClass&& toCopy);
 	DLLTREATMENT void Compile();
-	DLLTREATMENT ~Shader();
+	DLLTREATMENT ~ShaderClass();
 	DLLTREATMENT void Delete();
 };

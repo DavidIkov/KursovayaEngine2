@@ -7,36 +7,36 @@
 #include"Tools/GLDebug.h"
 #include<iostream>
 
-bool Window::FirstWindow = true;
+bool WindowClass::FirstWindow = true;
 
-void Window::ClearColorBuffer() {
+void WindowClass::ClearColorBuffer() {
     glSC(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     glSC(glClear(GL_COLOR_BUFFER_BIT));
 }
-void Window::ClearDepthBuffer() {
+void WindowClass::ClearDepthBuffer() {
     glSC(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     glSC(glClear(GL_DEPTH_BUFFER_BIT));
 }
-void Window::ClearStencilBuffer() {
+void WindowClass::ClearStencilBuffer() {
     glSC(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     glSC(glClear(GL_STENCIL_BUFFER_BIT));
 }
-void Window::ClearAllBuffers() {
+void WindowClass::ClearAllBuffers() {
     glSC(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     glSC(glClear(GL_COLOR_BUFFER_BIT));
     glSC(glClear(GL_DEPTH_BUFFER_BIT));
     glSC(glClear(GL_STENCIL_BUFFER_BIT));
 }
 
-const Keyboard& Window::gKeyboardHandle() const {
+const KeyboardClass& WindowClass::gKeyboardHandle() const {
     return KeyboardHandle;
 }
-const Mouse& Window::gMouseHandle() const {
+const MouseClass& WindowClass::gMouseHandle() const {
     return MouseHandle;
 }
 
-Window::Window(unsigned int w, unsigned int h, const char* title, bool fullscreen, unsigned int swapInterval) {
-
+WindowClass::WindowClass(unsigned int w, unsigned int h, const char* title, bool fullscreen, unsigned int swapInterval) {
+    
     WindowsManager::Windows.push_back(this);
 
     GLFW_WindowPtr = glfwCreateWindow(w, h, title, fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
@@ -54,11 +54,11 @@ Window::Window(unsigned int w, unsigned int h, const char* title, bool fullscree
     glfwSwapInterval(swapInterval);
 
     glfwSetMouseButtonCallback((GLFWwindow*)GLFW_WindowPtr, [](GLFWwindow* window, int button, int action, int mods) {
-        ((Window*)glfwGetWindowUserPointer(window))->MouseHandle.GLFW_KEYCALLBACK(button, action, mods);
+        ((WindowClass*)glfwGetWindowUserPointer(window))->MouseHandle.GLFW_KEYCALLBACK(button, action, mods);
         });
 
     glfwSetKeyCallback((GLFWwindow*)GLFW_WindowPtr, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-        ((Window*)glfwGetWindowUserPointer(window))->KeyboardHandle.GLFW_KEYCALLBACK(key, scancode, action, mods);
+        ((WindowClass*)glfwGetWindowUserPointer(window))->KeyboardHandle.GLFW_KEYCALLBACK(key, scancode, action, mods);
         });
 
     if (FirstWindow) {
@@ -69,7 +69,7 @@ Window::Window(unsigned int w, unsigned int h, const char* title, bool fullscree
 
     FirstWindow = false;
 }
-void Window::SetCursorMode(CursorModes mode) {
+void WindowClass::SetCursorMode(CursorModes mode) {
     unsigned int glfwMode = GLFW_CURSOR_NORMAL;
     switch (mode) {
     case CursorModes::Free: glfwMode = GLFW_CURSOR_NORMAL; break;
@@ -79,24 +79,24 @@ void Window::SetCursorMode(CursorModes mode) {
     glfwSetInputMode((GLFWwindow*)GLFW_WindowPtr, GLFW_CURSOR, glfwMode);
     CursorMode = mode;
 }
-CursorModes Window::gCursorMode() const {
+CursorModes WindowClass::gCursorMode() const {
     return CursorMode;
 }
-bool Window::WindowWaitingToClose() const {
+bool WindowClass::WindowWaitingToClose() const {
     return glfwWindowShouldClose((GLFWwindow*)GLFW_WindowPtr);
 }
-void Window::gWindowSize(unsigned int* width, unsigned  int* height) const {
+void WindowClass::gWindowSize(unsigned int* width, unsigned  int* height) const {
     int w, h;
     glfwGetWindowSize((GLFWwindow*)GLFW_WindowPtr, &w, &h);
     *width = w;
     *height = h;
 }
-Vector2U Window::gWindowSize() const {
+Vector2U WindowClass::gWindowSize() const {
     int w, h;
     glfwGetWindowSize((GLFWwindow*)GLFW_WindowPtr, &w, &h);
     return Vector2U(w, h);
 }
-void Window::UpdateMouseData() {
+void WindowClass::UpdateMouseData() {
 
     unsigned int width, height;
     gWindowSize(&width, &height);
@@ -114,24 +114,34 @@ void Window::UpdateMouseData() {
         DontUpdateDeltaOnce = false;
     } else MouseDelta = MousePosition - recordedPrevPos;
 }
-void Window::gCursorPosition(Vector2I* pos) const {
+void WindowClass::gCursorPosition(Vector2I* pos) const {
     *pos = MousePosition;
 }
-const Vector2I& Window::gCursorPosition() const {
+const Vector2I& WindowClass::gCursorPosition() const {
     return MousePosition;
 }
-void Window::gCursorDelta(Vector2I* delta) const {
+void WindowClass::gCursorDelta(Vector2I* delta) const {
     *delta = MouseDelta;
 }
-const Vector2I& Window::gCursorDelta() const {
+const Vector2I& WindowClass::gCursorDelta() const {
     return MouseDelta;
 }
-void Window::SwapScreenBuffers() {
+void WindowClass::SwapScreenBuffers() {
     glfwSwapBuffers((GLFWwindow*)GLFW_WindowPtr);
 }
-void Window::ProcessEvents() {
+void WindowClass::ProcessEvents() {
     glfwPollEvents();
 }
-void Window::WaitTillEvent() {
+void WindowClass::WaitTillEvent() {
     glfwWaitEvents();
+}
+
+void WindowClass::Destroy() {
+    this->~WindowClass();
+}
+WindowClass::~WindowClass() {
+    if (not Deleted) {
+        glfwDestroyWindow((GLFWwindow*)GLFW_WindowPtr);
+        Deleted = true;
+    }
 }

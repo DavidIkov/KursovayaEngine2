@@ -4,8 +4,8 @@
 #include"Tools/Time.h"
 
 
-std::string FilesSystem::SaveFileToString(const wchar_t* filePath) {
-	FilesSystem::OpenedFile file(filePath);
+std::string FilesSystemNamespace::SaveFileToString(const wchar_t* filePath) {
+	FilesSystemNamespace::OpenedFile file(filePath);
 	std::string retStr;
 	std::string	curStr;
 	while (file.GetNextLine(curStr)) {
@@ -13,8 +13,8 @@ std::string FilesSystem::SaveFileToString(const wchar_t* filePath) {
 	}
 	return retStr;
 }
-std::wstring FilesSystem::SaveFileToWString(const wchar_t* filePath) {
-	FilesSystem::OpenedFileW file(filePath);
+std::wstring FilesSystemNamespace::SaveFileToWString(const wchar_t* filePath) {
+	FilesSystemNamespace::OpenedFileW file(filePath);
 	std::wstring retStr;
 	std::wstring	curStr;
 	while (file.GetNextLine(curStr)) {
@@ -23,14 +23,14 @@ std::wstring FilesSystem::SaveFileToWString(const wchar_t* filePath) {
 	return retStr;
 }
 
-bool FilesSystem::OpenedFile::GetNextLine(std::string& str) {
+bool FilesSystemNamespace::OpenedFile::GetNextLine(std::string& str) {
 	return (bool)std::getline(FileStream, str);
 }
-void FilesSystem::OpenedFile::GoToStartOfStream() {
+void FilesSystemNamespace::OpenedFile::GoToStartOfStream() {
 	FileStream.clear();
 	FileStream.seekg(0, FileStream.beg);
 }
-FilesSystem::OpenedFile::OpenedFile(const wchar_t* filePath) :FilePath(filePath), StartTime(Time::GetTime()) {
+FilesSystemNamespace::OpenedFile::OpenedFile(const wchar_t* filePath) :FilePath(filePath), StartTime(TimeNamespace::GetTime()) {
 
 	FileStream.open(filePath);
 	if (FileStream.fail()) {
@@ -44,20 +44,20 @@ FilesSystem::OpenedFile::OpenedFile(const wchar_t* filePath) :FilePath(filePath)
 	std::wcout << L"Started reading file \"" << filePath << L"\"...\n";
 
 }
-FilesSystem::OpenedFile::~OpenedFile() {
-	std::wcout << L"Finished reading file \"" << FilePath << L"\" after " << Time::GetTime() - StartTime << L"s\n";
+FilesSystemNamespace::OpenedFile::~OpenedFile() {
+	std::wcout << L"Finished reading file \"" << FilePath << L"\" after " << TimeNamespace::GetTime() - StartTime << L"s\n";
 	FileStream.close();
 }
 
 
-bool FilesSystem::OpenedFileW::GetNextLine(std::wstring& str) {
+bool FilesSystemNamespace::OpenedFileW::GetNextLine(std::wstring& str) {
 	return (bool)std::getline(FileStream, str);
 }
-void FilesSystem::OpenedFileW::GoToStartOfStream() {
+void FilesSystemNamespace::OpenedFileW::GoToStartOfStream() {
 	FileStream.clear();
 	FileStream.seekg(0, FileStream.beg);
 }
-FilesSystem::OpenedFileW::OpenedFileW(const wchar_t* filePath) :FilePath(filePath), StartTime(Time::GetTime()) {
+FilesSystemNamespace::OpenedFileW::OpenedFileW(const wchar_t* filePath) :FilePath(filePath), StartTime(TimeNamespace::GetTime()) {
 
 	FileStream.open(filePath);
 	if (FileStream.fail()) {
@@ -71,7 +71,7 @@ FilesSystem::OpenedFileW::OpenedFileW(const wchar_t* filePath) :FilePath(filePat
 	std::wcout << L"Started reading file \"" << filePath << L"\"...\n";
 
 }
-FilesSystem::OpenedFileW::~OpenedFileW() {
-	std::wcout << L"Finished reading file \"" << FilePath << L"\" after " << Time::GetTime() - StartTime << L"s\n";
+FilesSystemNamespace::OpenedFileW::~OpenedFileW() {
+	std::wcout << L"Finished reading file \"" << FilePath << L"\" after " << TimeNamespace::GetTime() - StartTime << L"s\n";
 	FileStream.close();
 }

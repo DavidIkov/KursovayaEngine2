@@ -2,7 +2,7 @@
 #include"Tools/GLDebug.h"
 #include"glad/glad.h"
 
-void Renderer::DrawArrays(PrimitivesEnum primitive, unsigned int startingInd, unsigned int amountOfVertexesToRender) {
+void RendererNamespace::DrawArrays(PrimitivesEnum primitive, unsigned int startingInd, unsigned int amountOfVertexesToRender) {
 	unsigned int glPrimitive = 0;
 	switch (primitive) {
 #define switchCaseForPrimitiveEnumMacro(prim,primName) case PrimitivesEnum::prim: {glPrimitive=primName; break; }

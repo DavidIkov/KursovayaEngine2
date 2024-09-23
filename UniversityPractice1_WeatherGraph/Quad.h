@@ -6,9 +6,9 @@
 #include"Maths/Vector.h"
 class QuadsHandler {
 	friend class Quad;
-	VertexArray VA;
-	VertexBuffer VB;
-	ShaderProgram SP;
+	VertexArrayClass VA;
+	VertexBufferClass VB;
+	ShaderProgramClass SP;
 public:
 	QuadsHandler(const wchar_t* vs, const wchar_t* fs);
 	class Quad {

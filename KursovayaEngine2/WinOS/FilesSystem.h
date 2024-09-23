@@ -3,7 +3,7 @@
 #include<string>
 #include<fstream>
 
-namespace FilesSystem {
+namespace FilesSystemNamespace {
 	DLLTREATMENT std::string SaveFileToString(const wchar_t* filePath);
 	DLLTREATMENT std::wstring SaveFileToWString(const wchar_t* filePath);
 

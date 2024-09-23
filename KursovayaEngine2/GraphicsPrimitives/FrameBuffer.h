@@ -3,11 +3,11 @@
 #include"Texture.h"
 #include<vector>
 
-enum class FrameBufferTextureAttachment {
+enum class FrameBufferClassTextureAttachment {
 	Color,Depth,Stencil
 };
 
-class FrameBuffer {
+class FrameBufferClass {
 	unsigned int ID = 0;
 #if defined Debug
 	mutable bool Finished = false;
@@ -24,11 +24,11 @@ public:
 	//color,depth,stencil
 	DLLTREATMENT void ClearAllBuffers() const;
 
-	DLLTREATMENT FrameBuffer(unsigned int width, unsigned int height);
-	DLLTREATMENT FrameBuffer(const FrameBuffer* toCopy);
-	DLLTREATMENT FrameBuffer(const FrameBuffer&& toCopy);
-	DLLTREATMENT void operator=(const FrameBuffer&& toCopy);
-	DLLTREATMENT ~FrameBuffer();
+	DLLTREATMENT FrameBufferClass(unsigned int width, unsigned int height);
+	DLLTREATMENT FrameBufferClass(const FrameBufferClass* toCopy);
+	DLLTREATMENT FrameBufferClass(const FrameBufferClass&& toCopy);
+	DLLTREATMENT void operator=(const FrameBufferClass&& toCopy);
+	DLLTREATMENT ~FrameBufferClass();
 	DLLTREATMENT unsigned int gID() const;
 	DLLTREATMENT void Delete();
 	DLLTREATMENT void Finish();

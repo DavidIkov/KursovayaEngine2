@@ -1,7 +1,7 @@
 #pragma once
 #include"DLL.h"
 
-namespace Renderer {
+namespace RendererNamespace {
 	enum class PrimitivesEnum {
 		Points, LineStrip, LineLoop, Lines, LineStripAdjacency, LinesAdjacency, TriangleStrip,
 		TriangleFan, Triangles, TriangleStripAdjacency, TrianglesAdjacency, Patches

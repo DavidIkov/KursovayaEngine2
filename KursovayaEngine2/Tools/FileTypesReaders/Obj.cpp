@@ -30,7 +30,7 @@ static int mini(int a1, int a2) {
 //return packed data: Position,SmoothedNormal,FaceNormal,TextureCords
 std::vector<float> ReadObjFileType(const wchar_t* filePath) {
 
-	FilesSystem::OpenedFile file(filePath);
+	FilesSystemNamespace::OpenedFile file(filePath);
 	std::string curLine;
 
 

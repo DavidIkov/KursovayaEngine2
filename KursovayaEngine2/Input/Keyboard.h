@@ -3,27 +3,30 @@
 #include<vector>
 #include"Tools/Event.h"
 
-enum class PressableKeys :unsigned short int {
-	A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
 
-	ENUMEND
-};
+class KeyboardClass {
 
-class Keyboard {
+public:
+	enum class PressableKeysEnum :unsigned short int {
+		A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
 
-	bool PressableKeysStates[(unsigned short int)PressableKeys::ENUMEND];
+		ENUMEND
+	};
+private:
+
+	bool PressableKeysStates[(unsigned short int)PressableKeysEnum::ENUMEND];
 
 	//parameters: bool if it was pressed down or up:true=down,false=up
-	EventClass PressableKeysEvents[(unsigned short int)PressableKeys::ENUMEND];
+	EventClass PressableKeysEvents[(unsigned short int)PressableKeysEnum::ENUMEND];
 
 public:
 
-	DLLTREATMENT const EventClass& gPressableKeyEvent(PressableKeys key) const;
+	DLLTREATMENT const EventClass& gPressableKeyEvent(PressableKeysEnum key) const;
 
 	//not for user
 	void GLFW_KEYCALLBACK(int key, int scancode, int action, int mods);
 
 
-	DLLTREATMENT bool gPressableKeyState(PressableKeys key) const;
+	DLLTREATMENT bool gPressableKeyState(PressableKeysEnum key) const;
 
 };

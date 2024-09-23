@@ -5,55 +5,55 @@
 #include"Tools/ErrorCodes.h"
 
 
-void FrameBuffer::ClearColorBuffer() const {
+void FrameBufferClass::ClearColorBuffer() const {
 	Bind();
 	glSC(glClear(GL_COLOR_BUFFER_BIT));
 }
-void FrameBuffer::ClearDepthBuffer() const {
+void FrameBufferClass::ClearDepthBuffer() const {
 	Bind();
 	glSC(glClear(GL_DEPTH_BUFFER_BIT));
 }
-void FrameBuffer::ClearStencilBuffer() const {
+void FrameBufferClass::ClearStencilBuffer() const {
 	Bind();
 	glSC(glClear(GL_STENCIL_BUFFER_BIT));
 }
-void FrameBuffer::ClearAllBuffers() const {
+void FrameBufferClass::ClearAllBuffers() const {
 	Bind();
 	glSC(glClear(GL_COLOR_BUFFER_BIT));
 	glSC(glClear(GL_DEPTH_BUFFER_BIT));
 	glSC(glClear(GL_STENCIL_BUFFER_BIT));
 }
 
-FrameBuffer::FrameBuffer(unsigned int width, unsigned int height) :Width(width), Height(height) {
+FrameBufferClass::FrameBufferClass(unsigned int width, unsigned int height) :Width(width), Height(height) {
 	glSC(glGenFramebuffers(1, &ID));
 	glSC(glBindFramebuffer(GL_FRAMEBUFFER, ID));
 }
-FrameBuffer::FrameBuffer(const FrameBuffer* toCopy) {
-	memcpy(this, toCopy, sizeof(FrameBuffer));
+FrameBufferClass::FrameBufferClass(const FrameBufferClass* toCopy) {
+	memcpy(this, toCopy, sizeof(FrameBufferClass));
 	toCopy->Deleted = true;
 }
-FrameBuffer::FrameBuffer(const FrameBuffer&& toCopy) {
-	memcpy(this, &toCopy, sizeof(FrameBuffer));
+FrameBufferClass::FrameBufferClass(const FrameBufferClass&& toCopy) {
+	memcpy(this, &toCopy, sizeof(FrameBufferClass));
 	toCopy.Deleted = true;
 }
-void FrameBuffer::operator=(const FrameBuffer&& toCopy) {
-	this->~FrameBuffer();
-	memcpy(this, &toCopy, sizeof(FrameBuffer));
+void FrameBufferClass::operator=(const FrameBufferClass&& toCopy) {
+	this->~FrameBufferClass();
+	memcpy(this, &toCopy, sizeof(FrameBufferClass));
 	toCopy.Deleted = true;
 }
-FrameBuffer::~FrameBuffer() {
+FrameBufferClass::~FrameBufferClass() {
 	if (not Deleted) {
 		glSC(glDeleteFramebuffers(1, &ID));
 		Deleted = true;
 	}
 }
-unsigned int FrameBuffer::gID() const {
+unsigned int FrameBufferClass::gID() const {
 #if defined Debug
 	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "FRAME BUFFER IS DELETED, ACCESSING ITS ID MAY CAUSE PROBLEMS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
 #endif
 	return ID;
 }
-void FrameBuffer::AttachRenderBuffer(unsigned int renderBufferID, bool depthBufferEnabled, bool stencilBufferEnabled) {
+void FrameBufferClass::AttachRenderBuffer(unsigned int renderBufferID, bool depthBufferEnabled, bool stencilBufferEnabled) {
 	glSC(glBindFramebuffer(GL_FRAMEBUFFER, ID));
 	if (depthBufferEnabled and stencilBufferEnabled) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBufferID)); }
 	else if (depthBufferEnabled and not stencilBufferEnabled) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBufferID)); }
@@ -62,7 +62,7 @@ void FrameBuffer::AttachRenderBuffer(unsigned int renderBufferID, bool depthBuff
 	else DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "YOU CANT ATTACH TO FRAMEBUFFER A RENDER BUFFER WHICH DOESNT HAVE ANY BUFFERS ENABLED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
 #endif
 }
-void FrameBuffer::AttachTexture(unsigned int texID, TextureDataSettingsClass::DataFormatOnGPU_Enum dataFormat) {
+void FrameBufferClass::AttachTexture(unsigned int texID, TextureDataSettingsClass::DataFormatOnGPU_Enum dataFormat) {
 
 	int glAtt = 0;
 	switch (dataFormat) {
@@ -75,14 +75,14 @@ void FrameBuffer::AttachTexture(unsigned int texID, TextureDataSettingsClass::Da
 	}
 	glSC(glFramebufferTexture2D(GL_FRAMEBUFFER, glAtt, GL_TEXTURE_2D, texID, 0));
 }
-void FrameBuffer::Delete() {
+void FrameBufferClass::Delete() {
 #if defined Debug
 	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "FRAME BUFFER IS ALREADY DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
 	else 
 #endif
-		this->~FrameBuffer();
+		this->~FrameBufferClass();
 }
-void FrameBuffer::Finish() {
+void FrameBufferClass::Finish() {
 	glSC(glBindFramebuffer(GL_FRAMEBUFFER, ID));
 #if defined Debug
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -93,7 +93,7 @@ void FrameBuffer::Finish() {
 	}
 #endif
 }
-void FrameBuffer::Bind() const {
+void FrameBufferClass::Bind() const {
 #if defined Debug
 	if (not Finished) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "YOU CANT BIND BUFFER WHICH IS INCOMPLETE", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
 	else if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "YOU CANT BIND ALREADY DELETED BUFFER", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
@@ -104,7 +104,7 @@ void FrameBuffer::Bind() const {
 		glSC(glViewport(0, 0, Width, Height));
 	}
 }
-void FrameBuffer::Unbind(unsigned int width, unsigned int height) {
+void FrameBufferClass::Unbind(unsigned int width, unsigned int height) {
 	glSC(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 	glSC(glViewport(0, 0, width, height));
 }

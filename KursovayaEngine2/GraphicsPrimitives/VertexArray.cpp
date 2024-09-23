@@ -4,42 +4,42 @@
 #include"glad/glad.h"
 #include"Tools/ErrorCodes.h"
 
-VertexArray::VertexArray() {
+VertexArrayClass::VertexArrayClass() {
     glSC(glGenVertexArrays(1, &ID));
     glSC(glBindVertexArray(ID));
 }
-VertexArray::VertexArray(const VertexArray* toCopy) {
-    memcpy(this, toCopy, sizeof(VertexArray));
+VertexArrayClass::VertexArrayClass(const VertexArrayClass* toCopy) {
+    memcpy(this, toCopy, sizeof(VertexArrayClass));
     toCopy->Deleted = true;
 }
-VertexArray::VertexArray(const VertexArray&& toCopy) {
-    memcpy(this, &toCopy, sizeof(VertexArray));
+VertexArrayClass::VertexArrayClass(const VertexArrayClass&& toCopy) {
+    memcpy(this, &toCopy, sizeof(VertexArrayClass));
     toCopy.Deleted = true;
 }
-void VertexArray::operator=(const VertexArray&& toCopy) {
-    memcpy(this, &toCopy, sizeof(VertexArray));
+void VertexArrayClass::operator=(const VertexArrayClass&& toCopy) {
+    memcpy(this, &toCopy, sizeof(VertexArrayClass));
     toCopy.Deleted = true;
 }
-VertexArray::~VertexArray() {
+VertexArrayClass::~VertexArrayClass() {
     if (not Deleted) {
         glSC(glDeleteVertexArrays(1, &ID));
         Deleted = true;
     }
 }
-unsigned int VertexArray::gID() const {
+unsigned int VertexArrayClass::gID() const {
 #if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"KILL YOURSELF",KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
 #endif
     return ID;
 }
-void VertexArray::Delete() {
+void VertexArrayClass::Delete() {
 #if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"ATTEMPING TO DELETE ALREADY DELETED VERTEX ARRAY",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
     else 
 #endif
-        this->~VertexArray();
+        this->~VertexArrayClass();
 }
-void VertexArray::Bind() const {
+void VertexArrayClass::Bind() const {
 #if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX ARRAY IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
     else 
@@ -48,6 +48,6 @@ void VertexArray::Bind() const {
         glSC(glBindVertexArray(ID));
     }
 }
-void VertexArray::Unbind() {
+void VertexArrayClass::Unbind() {
     glSC(glBindVertexArray(0));
 }

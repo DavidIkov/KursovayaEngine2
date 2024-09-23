@@ -2,15 +2,15 @@
 #include"GLFW/glfw3.h"
 #include<iostream>
 
-bool Keyboard::gPressableKeyState(PressableKeys key) const {
+bool KeyboardClass::gPressableKeyState(PressableKeysEnum key) const {
 	return PressableKeysStates[(unsigned int)key];
 }
 
-const EventClass& Keyboard::gPressableKeyEvent(PressableKeys key) const {
+const EventClass& KeyboardClass::gPressableKeyEvent(PressableKeysEnum key) const {
 	return PressableKeysEvents[(unsigned int)key];
 }
 
-void Keyboard::GLFW_KEYCALLBACK(int key, int scancode, int action, int mods)
+void KeyboardClass::GLFW_KEYCALLBACK(int key, int scancode, int action, int mods)
 {
 	if (key >= GLFW_KEY_A and key <= GLFW_KEY_Z) {
 		unsigned int ind = key - GLFW_KEY_A;

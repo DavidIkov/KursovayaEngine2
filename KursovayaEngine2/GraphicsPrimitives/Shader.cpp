@@ -5,7 +5,7 @@
 #include"Tools/GLDebug.h"
 #include"WinOS/FilesSystem.h"
 
-unsigned int Shader::gID() const {
+unsigned int ShaderClass::gID() const {
 #if defined Debug
 	if (Deleted) {
 		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER IS ALREADY DELETED, ACCESSING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
@@ -14,35 +14,35 @@ unsigned int Shader::gID() const {
 #endif
 	return ID;
 }
-Shader::Shader(const wchar_t* filePath, TypesEnum typ) {
+ShaderClass::ShaderClass(const wchar_t* filePath, TypesEnum typ) {
 #if defined Debug
 	ShaderType = typ;
 #endif
 	glSC(ID = glCreateShader((typ == TypesEnum::Fragment) ? GL_FRAGMENT_SHADER : ((typ == TypesEnum::Vertex) ? GL_VERTEX_SHADER : GL_GEOMETRY_SHADER)));
-	std::string scode = FilesSystem::SaveFileToString(filePath);
+	std::string scode = FilesSystemNamespace::SaveFileToString(filePath);
 	const char* code = scode.c_str();
 	glSC(glShaderSource(ID, 1, &code, 0));
 }
-Shader::Shader(TypesEnum typ, const char* code) {
+ShaderClass::ShaderClass(TypesEnum typ, const char* code) {
 #if defined Debug
 	ShaderType = typ;
 #endif
 	glSC(ID = glCreateShader((typ == TypesEnum::Fragment) ? GL_FRAGMENT_SHADER : ((typ == TypesEnum::Vertex) ? GL_VERTEX_SHADER : GL_GEOMETRY_SHADER)));
 	glSC(glShaderSource(ID, 1, &code, 0));
 }
-Shader::Shader(const Shader* toCopy) {
-	memcpy(this, toCopy, sizeof(Shader));
+ShaderClass::ShaderClass(const ShaderClass* toCopy) {
+	memcpy(this, toCopy, sizeof(ShaderClass));
 	toCopy->Deleted = true;
 }
-Shader::Shader(const Shader&& toCopy) {
-	memcpy(this, &toCopy, sizeof(Shader));
+ShaderClass::ShaderClass(const ShaderClass&& toCopy) {
+	memcpy(this, &toCopy, sizeof(ShaderClass));
 	toCopy.Deleted = true;
 }
-void Shader::operator=(const Shader&& toCopy) {
-	memcpy(this, &toCopy, sizeof(Shader));
+void ShaderClass::operator=(const ShaderClass&& toCopy) {
+	memcpy(this, &toCopy, sizeof(ShaderClass));
 	toCopy.Deleted = true;
 }
-void Shader::Compile() {
+void ShaderClass::Compile() {
 #if defined Debug
 	if (Compiled) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER IS ALREADY COMPILED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
 	else 
@@ -66,16 +66,16 @@ void Shader::Compile() {
 #endif
 	}
 }
-Shader::~Shader() {
+ShaderClass::~ShaderClass() {
 	if (not Deleted) {// no need for warning becouse destructor will be called at end of scope anyway
 		glSC(glDeleteShader(ID));
 		Deleted = true;
 	}
 }
-void Shader::Delete() {
+void ShaderClass::Delete() {
 #if defined Debug
 	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER IS ALREADY DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
 	else 
 #endif
-		this->~Shader();
+		this->~ShaderClass();
 }

@@ -3,7 +3,7 @@
 #include"Windows/Window.h"
 #include"Maths/Vector.h"
 class ClickTrigger {
-	Window* WindPtr;
+	WindowClass* WindPtr;
 private:
 	EventClass LeftMouseButtonEvent;
 	EventClass RightMouseButtonEvent;
@@ -14,7 +14,7 @@ public:
 	Vector2F Size;
 	Vector2F LocalOffset;
 
-	ClickTrigger(Window* windPtr);
+	ClickTrigger(WindowClass* windPtr);
 	~ClickTrigger();
 	const EventClass& gLeftMouseButtonEvent();
 	const EventClass& gRightMouseButtonEvent();

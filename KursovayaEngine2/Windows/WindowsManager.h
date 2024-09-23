@@ -1,8 +1,8 @@
 #pragma once
 #include<vector>
-class Window;
+class WindowClass;
 
 namespace WindowsManager {
-	inline std::vector<Window*> Windows;
+	inline std::vector<WindowClass*> Windows;
 
 }

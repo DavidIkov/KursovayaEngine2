@@ -88,12 +88,12 @@ struct GraphicSettingsStruct {
 
 
     bool RequiresGraphUpdate;
-    VertexArray VA_TEX;
-    VertexBuffer VB_TEX;
-    VertexArray VA_GRAPH;
-    VertexBuffer VB_GRAPH;
+    VertexArrayClass VA_TEX;
+    VertexBufferClass VB_TEX;
+    VertexArrayClass VA_GRAPH;
+    VertexBufferClass VB_GRAPH;
     Texture2DClass FB_TEX;
-    FrameBuffer FB;
+    FrameBufferClass FB;
 
     Texture1DClass GRAPH_DATA_TEX;
 };
@@ -120,51 +120,51 @@ int main()
         unsigned int Height = 600;
 
 
-        Window window(Width, Height, "kursavayaengine2 window...", false, 10);
+        WindowClass window(Width, Height, "kursavayaengine2 window...", false, 10);
 
         TextRendererClass TEXT_RENDERER(L"Shaders/text.vs", L"Shaders/text.fs");
-        Stalker ArialFont = TEXT_RENDERER.AddFont(50, "arial.ttf",
+        StalkerClass ArialFont = TEXT_RENDERER.AddFont(50, "arial.ttf",
             L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
             "`abcdefghijklmnopqrstuvwxyz{|}~"\
             "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßÿþýüûúùø÷öõôóòñðïîíìëêéèçæ¸åäãâáà");
             
-        RenderingPreset Preset2D(
-            false, RenderingPresetEnumArguments::FaceCulling::FaceToCull::Back, RenderingPresetEnumArguments::FaceCulling::FaceDetermination::Clockwise,
-            false, true, RenderingPresetEnumArguments::DepthTest::TypeOfComparison::LessOrEqual,
-            false, 0xff, RenderingPresetEnumArguments::StencilTest::TypeOfComparison::AlwaysPass, 1, 0xff, RenderingPresetEnumArguments::StencilTest::Actions::Keep,
-            RenderingPresetEnumArguments::StencilTest::Actions::Keep, RenderingPresetEnumArguments::StencilTest::Actions::Replace,
-            true, 0, 0, 0, 0, RenderingPresetEnumArguments::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArguments::Blending::FunctionForColor::OneMinusSrcAlpha,
+        RenderingPresetClass Preset2D(
+            false, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
+            false, true, RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual,
+            false, 0xff, RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::AlwaysPass, 1, 0xff, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
+            RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Replace,
+            true, 0, 0, 0, 0, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
             0.1f, 0.2f, 0.3f
         );
-        RenderingPreset PresetGraphFB(
-            false, RenderingPresetEnumArguments::FaceCulling::FaceToCull::Back, RenderingPresetEnumArguments::FaceCulling::FaceDetermination::Clockwise,
-            false, true, RenderingPresetEnumArguments::DepthTest::TypeOfComparison::LessOrEqual,
-            false, 0xff, RenderingPresetEnumArguments::StencilTest::TypeOfComparison::AlwaysPass, 1, 0xff, RenderingPresetEnumArguments::StencilTest::Actions::Keep,
-            RenderingPresetEnumArguments::StencilTest::Actions::Keep, RenderingPresetEnumArguments::StencilTest::Actions::Replace,
-            false, 0, 0, 0, 0, RenderingPresetEnumArguments::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArguments::Blending::FunctionForColor::OneMinusSrcAlpha,
+        RenderingPresetClass PresetGraphFB(
+            false, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
+            false, true, RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual,
+            false, 0xff, RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::AlwaysPass, 1, 0xff, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
+            RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Replace,
+            false, 0, 0, 0, 0, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
             0.1f, 0.2f, 0.3f
         );
 
 
-        ShaderProgram GraphicsSP;
+        ShaderProgramClass GraphicsSP;
         {
-            Shader VS(L"Shaders/graphic.vs", Shader::TypesEnum::Vertex);
+            ShaderClass VS(L"Shaders/graphic.vs", ShaderClass::TypesEnum::Vertex);
             VS.Compile();
             GraphicsSP.AttachShader(VS);
 
-            Shader FS(L"Shaders/graphic.fs", Shader::TypesEnum::Fragment);
+            ShaderClass FS(L"Shaders/graphic.fs", ShaderClass::TypesEnum::Fragment);
             FS.Compile();
             GraphicsSP.AttachShader(FS);
 
             GraphicsSP.LinkShaders();
         }
-        ShaderProgram SimpleImageSP;
+        ShaderProgramClass SimpleImageSP;
         {
-            Shader VS(L"Shaders/simpleImage.vs", Shader::TypesEnum::Vertex);
+            ShaderClass VS(L"Shaders/simpleImage.vs", ShaderClass::TypesEnum::Vertex);
             VS.Compile();
             SimpleImageSP.AttachShader(VS);
 
-            Shader FS(L"Shaders/Quad2dImage.fs", Shader::TypesEnum::Fragment);
+            ShaderClass FS(L"Shaders/Quad2dImage.fs", ShaderClass::TypesEnum::Fragment);
             FS.Compile();
             SimpleImageSP.AttachShader(FS);
 
@@ -323,7 +323,7 @@ int main()
                     sets->FB.ClearColorBuffer();
                     sets->VA_GRAPH.Bind();
                     sets->GRAPH_DATA_TEX.Bind(0);
-                    Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, 6);
+                    RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, 6);
                     sets->VA_GRAPH.Unbind();
                     sets->FB.Unbind(Width, Height);
                 }
@@ -332,7 +332,7 @@ int main()
                 sets->VA_TEX.Bind();
                 SimpleImageSP.Bind();
                 sets->FB_TEX.Bind(0);
-                Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, 6);
+                RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, 6);
                 sets->VA_TEX.Unbind();
             }
 
@@ -474,8 +474,8 @@ int main()
                             -1 + Proportions::GraphicsSettingsBarSize * 2,-1,0,0
                         };
                         sets->VA_TEX.Bind();
-                        sets->VB_TEX.SetLayout(VertexBuffer::BufferDataType::Float, { 2,2 });
-                        sets->VB_TEX.SetData(sizeof(data_tex), data_tex, VertexBuffer::BufferDataUsage::StaticDraw);
+                        sets->VB_TEX.SetLayout(VertexBufferClass::BufferDataTypeEnum::Float, { 2,2 });
+                        sets->VB_TEX.SetData(sizeof(data_tex), data_tex, VertexBufferClass::BufferDataUsageEnum::StaticDraw);
                         sets->VA_TEX.Unbind();
 
                         float data_graph[] = {
@@ -487,8 +487,8 @@ int main()
                             -1,-1,0,0
                         };
                         sets->VA_GRAPH.Bind();
-                        sets->VB_GRAPH.SetLayout(VertexBuffer::BufferDataType::Float, { 2,2 });
-                        sets->VB_GRAPH.SetData(sizeof(data_graph), data_graph, VertexBuffer::BufferDataUsage::StaticDraw);
+                        sets->VB_GRAPH.SetLayout(VertexBufferClass::BufferDataTypeEnum::Float, { 2,2 });
+                        sets->VB_GRAPH.SetData(sizeof(data_graph), data_graph, VertexBufferClass::BufferDataUsageEnum::StaticDraw);
                         sets->VA_GRAPH.Unbind();
 
                     }

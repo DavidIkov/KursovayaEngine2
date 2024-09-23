@@ -26,14 +26,14 @@ int main()
         unsigned int Height = 600;
 
 
-        Window window(Width, Height, "haiiiii", false, 1);
+        WindowClass window(Width, Height, "haiiiii", false, 1);
 
 
         TextRendererClass TEXT_RENDERER(L"Shaders/textNEW.vs", L"Shaders/textNEW.fs");
-        Stalker ArialFont = TEXT_RENDERER.AddFont(50, "Fonts/arial.ttf", L" !\"#שפ$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
+        StalkerClass ArialFont = TEXT_RENDERER.AddFont(50, "Fonts/arial.ttf", L" !\"#שפ$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
             "`abcdefghijklmnopqrstuvwxyz{|}~");
         
-        FrameBuffer FB(Width, Height);
+        FrameBufferClass FB(Width, Height);
         Texture2DClass FB_COLOR_TEX(Vector2U(Width, Height), nullptr,
             TextureSettingsClass{ TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
             TextureSettingsClass::DownscalingFilterFuncEnum::Nearest,TextureSettingsClass::UpscalingFilterFuncEnum::Nearest,
@@ -49,25 +49,25 @@ int main()
             TextureClass::DataSettingsClass{ TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil,
             TextureClass::DataSettingsClass::DataFormatOnCPU_Enum::DepthStencil, TextureClass::DataSettingsClass::DataTypeOnCPU_Enum::UnsignedInt_24_8 });
         FB.AttachTexture(FB_DEPTH_STENCIL_TEX.gID(), TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil);*/
-        RenderBuffer RB(Width, Height, true, true);
+        RenderBufferClass RB(Width, Height, true, true);
         FB.AttachRenderBuffer(RB.gID(), true, true);
         FB.Finish();
         FB.Unbind(Width, Height);
 
-        RenderingPreset Preset3D(
-            true, RenderingPresetEnumArguments::FaceCulling::FaceToCull::Back, RenderingPresetEnumArguments::FaceCulling::FaceDetermination::Clockwise,
-            true, true, RenderingPresetEnumArguments::DepthTest::TypeOfComparison::LessOrEqual,
-            true,0xff, RenderingPresetEnumArguments::StencilTest::TypeOfComparison::AlwaysPass,1,0xff, RenderingPresetEnumArguments::StencilTest::Actions::Keep,
-            RenderingPresetEnumArguments::StencilTest::Actions::Keep, RenderingPresetEnumArguments::StencilTest::Actions::Replace,
-            true, 0,0,0,0, RenderingPresetEnumArguments::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArguments::Blending::FunctionForColor::OneMinusSrcAlpha,
+        RenderingPresetClass Preset3D(
+            true, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
+            true, true, RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual,
+            true,0xff, RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::AlwaysPass,1,0xff, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
+            RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Replace,
+            true, 0,0,0,0, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
             0.1f,0.2f,0.3f
         );
-        RenderingPreset QuadPreset(
-            false, RenderingPresetEnumArguments::FaceCulling::FaceToCull::Back, RenderingPresetEnumArguments::FaceCulling::FaceDetermination::Clockwise,
-            false, true, RenderingPresetEnumArguments::DepthTest::TypeOfComparison::LessOrEqual,
-            false, 0, RenderingPresetEnumArguments::StencilTest::TypeOfComparison::Equal, 1, 255, RenderingPresetEnumArguments::StencilTest::Actions::Keep,
-            RenderingPresetEnumArguments::StencilTest::Actions::Keep, RenderingPresetEnumArguments::StencilTest::Actions::Keep,
-            false, 0, 0, 0, 0, RenderingPresetEnumArguments::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArguments::Blending::FunctionForColor::OneMinusSrcAlpha,
+        RenderingPresetClass QuadPreset(
+            false, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
+            false, true, RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual,
+            false, 0, RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Equal, 1, 255, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
+            RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
+            false, 0, 0, 0, 0, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
             0.f,0.f,0.f
         );
         
@@ -79,69 +79,69 @@ int main()
 
 
 
-        VertexArray VA1;
+        VertexArrayClass VA1;
 
-        VertexBuffer VB1;
-        VB1.SetData((unsigned int)(VB1_DATA.size()*sizeof(float)), &VB1_DATA[0], VertexBuffer::BufferDataUsage::StaticDraw);
-        VB1.SetLayout(VertexBuffer::BufferDataType::Float, { 3,3,3,2 });
+        VertexBufferClass VB1;
+        VB1.SetData((unsigned int)(VB1_DATA.size()*sizeof(float)), &VB1_DATA[0], VertexBufferClass::BufferDataUsageEnum::StaticDraw);
+        VB1.SetLayout(VertexBufferClass::BufferDataTypeEnum::Float, { 3,3,3,2 });
 
         VA1.Unbind();
 
-        VertexArray VA2;
+        VertexArrayClass VA2;
 
-        VertexBuffer VB2;
-        VB2.SetData((unsigned int)(VB2_DATA.size() * sizeof(float)), &VB2_DATA[0], VertexBuffer::BufferDataUsage::StaticDraw);
-        VB2.SetLayout(VertexBuffer::BufferDataType::Float, { 3,3,3,2 });
+        VertexBufferClass VB2;
+        VB2.SetData((unsigned int)(VB2_DATA.size() * sizeof(float)), &VB2_DATA[0], VertexBufferClass::BufferDataUsageEnum::StaticDraw);
+        VB2.SetLayout(VertexBufferClass::BufferDataTypeEnum::Float, { 3,3,3,2 });
 
         VA2.Unbind();
 
         std::vector<float> quadVBD({ 1,-1,1,1,-1,1,1,-1,-1,-1,-1,1 });
 
-        VertexArray QUAD_VA;
+        VertexArrayClass QUAD_VA;
 
-        VertexBuffer QUAD_VB;
-        QUAD_VB.SetData((unsigned int)(quadVBD.size()*sizeof(float)), &quadVBD[0], VertexBuffer::BufferDataUsage::StaticDraw);
-        QUAD_VB.SetLayout(VertexBuffer::BufferDataType::Float, { 2 });
+        VertexBufferClass QUAD_VB;
+        QUAD_VB.SetData((unsigned int)(quadVBD.size()*sizeof(float)), &quadVBD[0], VertexBufferClass::BufferDataUsageEnum::StaticDraw);
+        QUAD_VB.SetLayout(VertexBufferClass::BufferDataTypeEnum::Float, { 2 });
 
         QUAD_VA.Unbind();
 
-        ShaderProgram SP;
+        ShaderProgramClass SP;
         {
-            Shader VS(L"Shaders/full3d.vs", Shader::TypesEnum::Vertex);
+            ShaderClass VS(L"Shaders/full3d.vs", ShaderClass::TypesEnum::Vertex);
             VS.Compile();
             SP.AttachShader(VS);
 
-            Shader FS(L"Shaders/full3d.fs", Shader::TypesEnum::Fragment);
+            ShaderClass FS(L"Shaders/full3d.fs", ShaderClass::TypesEnum::Fragment);
             FS.Compile();
             SP.AttachShader(FS);
 
             SP.LinkShaders();
         }
 
-        ShaderProgram SP_OUTLINE;
+        ShaderProgramClass SP_OUTLINE;
         {
-            Shader VS(L"Shaders/outline.vs", Shader::TypesEnum::Vertex);
+            ShaderClass VS(L"Shaders/outline.vs", ShaderClass::TypesEnum::Vertex);
             VS.Compile();
             SP_OUTLINE.AttachShader(VS);
 
-            Shader FS(L"Shaders/outline.fs", Shader::TypesEnum::Fragment);
+            ShaderClass FS(L"Shaders/outline.fs", ShaderClass::TypesEnum::Fragment);
             FS.Compile();
             SP_OUTLINE.AttachShader(FS);
 
             SP_OUTLINE.LinkShaders();
         }
 
-        ShaderProgram SP_NORMAL;
+        ShaderProgramClass SP_NORMAL;
         {
-            Shader VS(L"Shaders/normal.vs", Shader::TypesEnum::Vertex);
+            ShaderClass VS(L"Shaders/normal.vs", ShaderClass::TypesEnum::Vertex);
             VS.Compile();
             SP_NORMAL.AttachShader(VS);
 
-            Shader FS(L"Shaders/normal.fs", Shader::TypesEnum::Fragment);
+            ShaderClass FS(L"Shaders/normal.fs", ShaderClass::TypesEnum::Fragment);
             FS.Compile();
             SP_NORMAL.AttachShader(FS);
 
-            Shader GS(L"Shaders/normal.gs", Shader::TypesEnum::Geometry);
+            ShaderClass GS(L"Shaders/normal.gs", ShaderClass::TypesEnum::Geometry);
             GS.Compile();
             SP_NORMAL.AttachShader(GS);
 
@@ -149,13 +149,13 @@ int main()
         }
 
 
-        ShaderProgram QUAD_SP;
+        ShaderProgramClass QUAD_SP;
         {
-            Shader VS(L"Shaders/quad.vs", Shader::TypesEnum::Vertex);
+            ShaderClass VS(L"Shaders/quad.vs", ShaderClass::TypesEnum::Vertex);
             VS.Compile();
             QUAD_SP.AttachShader(VS);
 
-            Shader FS(L"Shaders/quad.fs", Shader::TypesEnum::Fragment);
+            ShaderClass FS(L"Shaders/quad.fs", ShaderClass::TypesEnum::Fragment);
             FS.Compile();
             QUAD_SP.AttachShader(FS);
 
@@ -204,7 +204,7 @@ int main()
 
         EventConnectionsHandlerClass EventsHandler;
 
-        EventsHandler.ConnectToEvent(&window.gKeyboardHandle().gPressableKeyEvent(PressableKeys::L), [&window](void* pressedDown) {
+        EventsHandler.ConnectToEvent(&window.gKeyboardHandle().gPressableKeyEvent(KeyboardClass::PressableKeysEnum::L), [&window](void* pressedDown) {
             if (*(bool*)pressedDown) {
                 if (window.gCursorMode() == CursorModes::Free) window.SetCursorMode(CursorModes::LockedAndInvisible);
                 else window.SetCursorMode(CursorModes::Free);
@@ -226,12 +226,12 @@ int main()
 
 
             float cameraSpeed = 0.04f;
-            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::W)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, 0, cameraSpeed);
-            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::S)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, 0, -cameraSpeed);
-            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::A)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(-cameraSpeed, 0, 0);
-            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::D)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(cameraSpeed, 0, 0);
-            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::Q)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, -cameraSpeed, 0);
-            if (window.gKeyboardHandle().gPressableKeyState(PressableKeys::E)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, cameraSpeed, 0);
+            if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::W)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, 0, cameraSpeed);
+            if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::S)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, 0, -cameraSpeed);
+            if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::A)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(-cameraSpeed, 0, 0);
+            if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::D)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(cameraSpeed, 0, 0);
+            if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::Q)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, -cameraSpeed, 0);
+            if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::E)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, cameraSpeed, 0);
 
 
             {
@@ -277,17 +277,17 @@ int main()
             SP.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
             SP.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
             SP.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
-            Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
+            RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
             VA2.Bind();
 
             SP.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
             SP.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
             SP.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
-            Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
+            RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
 
             Preset3D.sStencilTest_BaseMask(0);
-            Preset3D.sStencilTest_ComparisonType(RenderingPresetEnumArguments::StencilTest::TypeOfComparison::NotEqual);
+            Preset3D.sStencilTest_ComparisonType(RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::NotEqual);
             Preset3D.sDepthTest_Enabled(false);
 
             {//outline
@@ -304,18 +304,18 @@ int main()
                 SP_OUTLINE.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
                 SP_OUTLINE.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
                 SP_OUTLINE.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
-                Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
+                RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
                 VA2.Bind();
 
                 SP_OUTLINE.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
                 SP_OUTLINE.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
                 SP_OUTLINE.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
-                Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
+                RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
             }
 
             Preset3D.sStencilTest_BaseMask(0xff);
-            Preset3D.sStencilTest_ComparisonType(RenderingPresetEnumArguments::StencilTest::TypeOfComparison::AlwaysPass);
+            Preset3D.sStencilTest_ComparisonType(RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::AlwaysPass);
             Preset3D.sDepthTest_Enabled(true);
 
             //////
@@ -330,14 +330,14 @@ int main()
             SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
             SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
             SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
-            Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
+            RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
             VA2.Bind();
 
             SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
             SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
             SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
-            Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
+            RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
 
 
             FB.Unbind(Width,Height);
@@ -352,7 +352,7 @@ int main()
 
             QUAD_VA.Bind();
 
-            Renderer::DrawArrays(Renderer::PrimitivesEnum::Triangles, 0, (int)quadVBD.size() / 2);
+            RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, (int)quadVBD.size() / 2);
 
             QUAD_VA.Unbind();
 
@@ -363,8 +363,8 @@ int main()
                         1,
                         -1.f + 2.f * ((float)i / 5), -1.f + 2.f * ((float)i / 5),
                         -1,-1,
-                        0, TextRenderer::ClampingFuncs::None,
-                        0, true, TextRenderer::ClampingFuncs::None);*/
+                        0, TextRendererNamespace::ClampingFuncs::None,
+                        0, true, TextRendererNamespace::ClampingFuncs::None);*/
                 TEXT_RENDERER.RenderText(ArialFont, L"abc@%אשפ", Vector2F(-1,0), Vector2F(-1,0), Vector2U(Width, Height),
                     Vector2F(1, 0), 0.5f);
                 //}
@@ -373,6 +373,8 @@ int main()
             window.SwapScreenBuffers();
             window.ProcessEvents();
         }
+
+        window.Destroy();
 
         UninitializeKursovayaEngine2();
         return 0;

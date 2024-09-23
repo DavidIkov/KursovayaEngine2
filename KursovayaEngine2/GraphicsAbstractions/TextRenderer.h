@@ -10,10 +10,10 @@
 
 class TextRendererClass {
 
-    ShaderProgram TEXT_SP;
-    RenderingPreset TextPreset;
-    VertexArray TEXT_VA;
-    VertexBuffer TEXT_VB;
+    ShaderProgramClass TEXT_SP;
+    RenderingPresetClass TextPreset;
+    VertexArrayClass TEXT_VA;
+    VertexBufferClass TEXT_VB;
 
     struct FontClass {
     
@@ -43,12 +43,12 @@ public:
 
     DLLTREATMENT TextRendererClass(const wchar_t* vertexShaderDir, const wchar_t* fragmentShaderDir);
     DLLTREATMENT ~TextRendererClass();
-    DLLTREATMENT Stalker AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters);
+    DLLTREATMENT StalkerClass AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters);
 
 	//pixelsInTexture is amount of pixels in the texture you are rendering this text to
     //if scalingType is ByX/ByY you can keep y/x coordinate in size as 0
     //TODO add functionality for "dividingSymbols" and make so text will be separated in a few lines if possible
-    DLLTREATMENT void RenderText(const Stalker& fontStaker, const wchar_t* text, Vector2F pos, Vector2F localOffset, Vector2U pixelsInTexture,
+    DLLTREATMENT void RenderText(const StalkerClass& fontStaker, const wchar_t* text, Vector2F pos, Vector2F localOffset, Vector2U pixelsInTexture,
         Vector2F boxSize, float lineSizeInBox, const wchar_t* dividingSymbols=nullptr);
 
     
