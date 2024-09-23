@@ -1,6 +1,7 @@
 #pragma once
 #include"DLL.h"
 #include<vector>
+#include"Tools/DynArr.h"
 
 namespace GraphicsPrimitives {
 
@@ -22,7 +23,7 @@ namespace GraphicsPrimitives {
 		unsigned int _GetVBUsageForGL(BufferDataUsageEnum usage);
 	public:
 		DLLTREATMENT VertexBufferClass();
-		DLLTREATMENT VertexBufferClass(const VertexBufferClass* toCopy);
+		DLLTREATMENT VertexBufferClass(RespConstrFlag, const VertexBufferClass& toCopy);
 		DLLTREATMENT VertexBufferClass(const VertexBufferClass&& toCopy);
 		DLLTREATMENT void operator=(const VertexBufferClass&& toCopy);
 		DLLTREATMENT ~VertexBufferClass();

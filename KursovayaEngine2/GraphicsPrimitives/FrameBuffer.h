@@ -1,6 +1,7 @@
 #pragma once
 #include"DLL.h"
 #include"Texture.h"
+#include"Tools/DynArr.h"
 #include<vector>
 
 namespace GraphicsPrimitives {
@@ -27,7 +28,7 @@ namespace GraphicsPrimitives {
 		DLLTREATMENT void ClearAllBuffers() const;
 
 		DLLTREATMENT FrameBufferClass(unsigned int width, unsigned int height);
-		DLLTREATMENT FrameBufferClass(const FrameBufferClass* toCopy);
+		DLLTREATMENT FrameBufferClass(RespConstrFlag, const FrameBufferClass& toCopy);
 		DLLTREATMENT FrameBufferClass(const FrameBufferClass&& toCopy);
 		DLLTREATMENT void operator=(const FrameBufferClass&& toCopy);
 		DLLTREATMENT ~FrameBufferClass();

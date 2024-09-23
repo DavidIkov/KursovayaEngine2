@@ -1,6 +1,7 @@
 #pragma once
 #include"DLL.h"
 #include"Maths/Vector.h"
+#include"Tools/DynArr.h"
 
 namespace GraphicsPrimitives {
 
@@ -83,7 +84,7 @@ namespace GraphicsPrimitives {
         //if dataExportPtr is not nullptr, then data allocated to read image will not be freed
         DLLTREATMENT Texture1DClass(const char* filePath, const TextureSettingsClass& sets, CPU_DataData_Struct* dataExportPtr = nullptr);
         DLLTREATMENT Texture1DClass(unsigned int pixelsAmount, const void* data, const TextureSettingsClass& sets, const TextureDataSettingsClass& dataSets);
-        DLLTREATMENT Texture1DClass(const Texture1DClass* toCopy);
+        DLLTREATMENT Texture1DClass(RespConstrFlag, const Texture1DClass& toCopy);
         DLLTREATMENT Texture1DClass(const Texture1DClass&& toCopy);
         DLLTREATMENT void operator=(const Texture1DClass&& toCopy);
         DLLTREATMENT ~Texture1DClass();
@@ -146,9 +147,9 @@ namespace GraphicsPrimitives {
             DLLTREATMENT ~CPU_DataData_Struct();
         };
 
-        DLLTREATMENT Texture2DClass(const char* filePath, const TextureSettingsClass& sets);
+        DLLTREATMENT Texture2DClass(const char* filePath, const TextureSettingsClass& sets, CPU_DataData_Struct* dataExportPtr = nullptr);
         DLLTREATMENT Texture2DClass(Vector2U pixelsAmount, const void* data, const TextureSettingsClass& sets, const TextureDataSettingsClass& dataSets);
-        DLLTREATMENT Texture2DClass(const Texture2DClass* toCopy);
+        DLLTREATMENT Texture2DClass(RespConstrFlag, const Texture2DClass& toCopy);
         DLLTREATMENT Texture2DClass(const Texture2DClass&& toCopy);
         DLLTREATMENT void operator=(const Texture2DClass&& toCopy);
         DLLTREATMENT ~Texture2DClass();

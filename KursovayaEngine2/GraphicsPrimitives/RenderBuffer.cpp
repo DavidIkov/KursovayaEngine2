@@ -16,9 +16,9 @@ RenderBufferClass::RenderBufferClass(unsigned int width, unsigned int height, bo
     else DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"YOU CANT CREATE RENDER BUFFER WITHOUT ANY BUFFERS",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
 #endif
 }
-RenderBufferClass::RenderBufferClass(const RenderBufferClass* toCopy) {
-    memcpy(this, toCopy, sizeof(RenderBufferClass));
-    toCopy->Deleted = true;
+RenderBufferClass::RenderBufferClass(RespConstrFlag, const RenderBufferClass& toCopy) {
+    memcpy(this, &toCopy, sizeof(RenderBufferClass));
+    toCopy.Deleted = true;
 }
 RenderBufferClass::RenderBufferClass(const RenderBufferClass&& toCopy) {
     memcpy(this, &toCopy, sizeof(RenderBufferClass));

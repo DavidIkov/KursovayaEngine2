@@ -12,7 +12,7 @@ namespace GraphicsPrimitives {
 	public:
 		DLLTREATMENT unsigned int gID() const;
 		DLLTREATMENT ShaderProgramClass();
-		DLLTREATMENT ShaderProgramClass(const ShaderProgramClass* toCopy);
+		DLLTREATMENT ShaderProgramClass(RespConstrFlag, const ShaderProgramClass& toCopy);
 		DLLTREATMENT ShaderProgramClass(const ShaderProgramClass&& toCopy);
 		DLLTREATMENT void operator=(const ShaderProgramClass&& toCopy);
 		DLLTREATMENT void AttachShader(const ShaderClass& SH);

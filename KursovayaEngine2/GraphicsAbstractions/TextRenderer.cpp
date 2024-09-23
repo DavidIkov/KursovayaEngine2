@@ -58,9 +58,9 @@ StalkerClass TextRendererClass::AddFont(unsigned int characterSize, const char* 
     return StalkerClass(&Fonts, Fonts.gLength() - 1);
 }
 
-TextRendererClass::FontClass::FontClass(FontClass* toCopy) :
-    Texture(&toCopy->Texture), FreeTypeFace(toCopy->FreeTypeFace), Characters(toCopy->Characters) {
-    toCopy->Deleted = true;
+TextRendererClass::FontClass::FontClass(RespConstrFlag, const FontClass& toCopy) :
+    Texture(RespConstrFlag(), toCopy.Texture), FreeTypeFace(toCopy.FreeTypeFace), Characters(toCopy.Characters) {
+    toCopy.Deleted = true;
 }
 
 TextRendererClass::FontClass::~FontClass() {
@@ -192,7 +192,7 @@ void TextRendererClass::RenderText(const StalkerClass& fontStalker, const wchar_
     TEXT_SP.Bind();
     TEXT_VA.Bind();
 
-    FontClass& font = *(FontClass*)fontStalker.GetTarget();
+    FontClass& font = fontStalker.GetTarget<FontClass>();
 
     font.Texture.Bind(0);
 

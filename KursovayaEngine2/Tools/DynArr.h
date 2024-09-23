@@ -3,9 +3,15 @@
 #include"iostream"
 typedef unsigned char byte;
 
+/*
+used to mark constructor as NON COPY constructor 
+but instead a responsiblity taking constructor
+*/
+class RespConstrFlag {};
+
+
 template<typename>
 class DynArr;
-
 
 
 //might be a weird name but it makes sence... right?
@@ -21,7 +27,7 @@ class StalkerClass {
 
 	};
 
-	bool Deleted = false;
+	mutable bool Deleted = false;
 
 	DynArrStalkersDataClass* StalkersDataPtr;
 
@@ -33,9 +39,9 @@ class StalkerClass {
 public:
 	StalkerClass() = delete;
 	StalkerClass(const StalkerClass&) = delete;
-	StalkerClass(StalkerClass* toCopy) {
-		memcpy(this, toCopy, sizeof(StalkerClass));
-		toCopy->Deleted = true;
+	StalkerClass(RespConstrFlag, const StalkerClass& toCopy) {
+		memcpy(this, &toCopy, sizeof(StalkerClass));
+		toCopy.Deleted = true;
 		StalkersDataPtr->StalkersArr[StalkerInd] = this;
 	}
 	template<typename ArrType>
@@ -64,7 +70,8 @@ public:
 			StalkersDataPtr->StalkersArrLength--;
 		}
 	}
-	void* GetTarget() const { return Deleted ? nullptr : (ArrayPtr + TypeSize * TargetInd); }
+	template<typename Type>
+	Type& GetTarget() const { return *(Type*)(Deleted ? nullptr : (ArrayPtr + TypeSize * TargetInd)); }
 	bool gIsTargetDeleted() const { return Deleted; }
 };
 
@@ -75,8 +82,7 @@ so 3 unnecesary "responsibility constructors" will be called
 */
 
 /*
-this is using "responsibility constructor"
-"responsibility constructor" have (type*) parameter only
+this is using "responsibility constructor" for moving stuff in memory
 */
 template<typename StoreType>
 class DynArr {
@@ -106,7 +112,7 @@ private:
 
 	}
 	void _CopyArrayToArray(unsigned int len, StoreType* arrFROM, StoreType* arrTO) {
-		for (unsigned int i = 0; i < len; i++) new(arrTO + i) StoreType(arrFROM + i);
+		for (unsigned int i = 0; i < len; i++) new(arrTO + i) StoreType(RespConstrFlag(),*(arrFROM + i));
 	}
 	void _RemoveStalker(unsigned int elemInd) {
 		for (int i = (int)StalkersData.StalkersArrLength - 1; i >= 0; i--) {
@@ -158,7 +164,7 @@ public:
 		Length = len;
 		Capacity = len;
 		//this type of constructor is special for DynArr, from where and to where
-		for (unsigned int i = 0; i < len; i++) new(Arr + i) StoreType(&val);
+		for (unsigned int i = 0; i < len; i++) new(Arr + i) StoreType(RespConstrFlag(), val);
 	}
 	template<typename...ConstructorParametersTyp>
 	DynArr(const unsigned int len, ConstructorParametersTyp&&...params) {
@@ -203,7 +209,7 @@ private:
 		if (moveInd < Length) {
 			for (unsigned int i = 0; i < StalkersData.StalkersArrLength; i++) if (StalkersData.StalkersArr[i]->TargetInd >= moveInd) StalkersData.StalkersArr[i]->TargetInd++;
 			for (int i = Length - 1; i >= (int)moveInd; i--) {
-				new(Arr + i + 1) StoreType(Arr + i);
+				new(Arr + i + 1) StoreType(RespConstrFlag(), *(Arr + i));
 				Arr[i].~StoreType();
 			};
 		}
@@ -219,7 +225,7 @@ public:
 	//the (const type*) constructor
 	void InsertByResponsibilityConstructor(unsigned int ind, const StoreType& val) {
 		_MoveElements(ind);
-		new(Arr + ind) StoreType(&val);
+		new(Arr + ind) StoreType(RespConstrFlag(), val);
 		Length++;
 	}
 
@@ -229,7 +235,7 @@ public:
 		
 		Arr[ind].~StoreType();
 		for (unsigned int i = ind + 1; i < Length; i++) {
-			new(Arr + i - 1) StoreType(Arr + i);
+			new(Arr + i - 1) StoreType(RespConstrFlag(), *(Arr + i));
 			Arr[i].~StoreType();
 		}
 		Length--;

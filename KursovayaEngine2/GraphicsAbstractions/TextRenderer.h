@@ -33,7 +33,7 @@ namespace GraphicsAbstractions {
             std::vector<CharacterClass> Characters;
             int MaxCharacterUp = 0; int MaxCharacterDown = 0;
             FontClass(unsigned int characterSize, const char* fontDir, const wchar_t* chars);
-            FontClass(FontClass* toCopy);
+            FontClass(RespConstrFlag, const FontClass& toCopy);
             ~FontClass();
         };
 

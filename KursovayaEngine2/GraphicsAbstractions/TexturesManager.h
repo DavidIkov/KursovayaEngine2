@@ -1,4 +1,5 @@
 #pragma once
+#include"DLL.h"
 #include"Tools/DynArr.h"
 #include"GraphicsPrimitives/Texture.h"
 #include"Maths/Vector.h"
@@ -8,6 +9,10 @@ namespace GraphicsAbstractions {
 
 		typedef GraphicsPrimitives::Texture1DClass::CPU_DataData_Struct Texture1DData;
 		typedef GraphicsPrimitives::Texture2DClass::CPU_DataData_Struct Texture2DData;
+		
+	public:
+		typedef GraphicsPrimitives::TextureSettingsClass TextureSettingsClass;
+	private:
 
 		class Texture2DClass {
 			GraphicsPrimitives::Texture2DClass Texture;//graphical representation
@@ -20,6 +25,16 @@ namespace GraphicsAbstractions {
 
 		DynArr<Texture1DClass> Textures1D;
 		DynArr<Texture2DClass> Textures2D;
+
+	public:
+
+		DLLTREATMENT TexturesManagerClass();
+		DLLTREATMENT StalkerClass CreateTexture1D(bool modifiableStorage, const wchar_t* fileName, TextureSettingsClass settings);
+		DLLTREATMENT StalkerClass CreateTexture1D(bool modifiableStorage, Texture1DData& texData);
+		DLLTREATMENT StalkerClass CreateTexture2D(bool modifiableStorage, const wchar_t* fileName, TextureSettingsClass settings);
+		DLLTREATMENT StalkerClass CreateTexture2D(bool modifiableStorage, Texture2DData& texData);
+		DLLTREATMENT void DeleteTexture1D(const StalkerClass& texStalker);
+		DLLTREATMENT void DeleteTexture2D(const StalkerClass& texStalker);
 
 	};
 }

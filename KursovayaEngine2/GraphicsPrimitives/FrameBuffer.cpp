@@ -29,9 +29,9 @@ FrameBufferClass::FrameBufferClass(unsigned int width, unsigned int height) :Wid
 	glSC(glGenFramebuffers(1, &ID));
 	glSC(glBindFramebuffer(GL_FRAMEBUFFER, ID));
 }
-FrameBufferClass::FrameBufferClass(const FrameBufferClass* toCopy) {
-	memcpy(this, toCopy, sizeof(FrameBufferClass));
-	toCopy->Deleted = true;
+FrameBufferClass::FrameBufferClass(RespConstrFlag, const FrameBufferClass& toCopy) {
+	memcpy(this, &toCopy, sizeof(FrameBufferClass));
+	toCopy.Deleted = true;
 }
 FrameBufferClass::FrameBufferClass(const FrameBufferClass&& toCopy) {
 	memcpy(this, &toCopy, sizeof(FrameBufferClass));

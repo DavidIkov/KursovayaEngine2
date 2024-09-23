@@ -155,9 +155,9 @@ Texture1DClass::Texture1DClass(unsigned int pixelsAmount, const void* data, cons
     _Constructor(pixelsAmount, data, dataSets);
     _UpdateSettings(sets);
 }
-Texture1DClass::Texture1DClass(const Texture1DClass* toCopy) {
-    memcpy(this, toCopy, sizeof(Texture1DClass));
-    toCopy->Deleted = true;
+Texture1DClass::Texture1DClass(RespConstrFlag, const Texture1DClass& toCopy) {
+    memcpy(this, &toCopy, sizeof(Texture1DClass));
+    toCopy.Deleted = true;
 }
 Texture1DClass::Texture1DClass(const Texture1DClass&& toCopy) {
     memcpy(this, &toCopy, sizeof(Texture1DClass));
@@ -281,7 +281,7 @@ void Texture2DClass::_UpdateSettings(const TextureSettingsClass& sets) {
     _UpdSettings_DepthStencilReadMode(sets.DepthStencilReadMode);
 }
 
-Texture2DClass::Texture2DClass(const char* filePath, const TextureSettingsClass& sets) {
+Texture2DClass::Texture2DClass(const char* filePath, const TextureSettingsClass& sets, CPU_DataData_Struct* dataExportPtr) {
 
     int width, height, textureChannelsAmount;
     unsigned char* textureData = stbi_load(filePath, &width, &height, &textureChannelsAmount, 0);
@@ -302,9 +302,9 @@ Texture2DClass::Texture2DClass(Vector2U pixelsAmount, const void* data, const Te
     _Constructor(pixelsAmount, data, dataSets);
     _UpdateSettings(sets);
 }
-Texture2DClass::Texture2DClass(const Texture2DClass* toCopy) {
-    memcpy(this, toCopy, sizeof(Texture2DClass));
-    toCopy->Deleted = true;
+Texture2DClass::Texture2DClass(RespConstrFlag, const Texture2DClass& toCopy) {
+    memcpy(this, &toCopy, sizeof(Texture2DClass));
+    toCopy.Deleted = true;
 }
 Texture2DClass::Texture2DClass(const Texture2DClass&& toCopy) {
     memcpy(this, &toCopy, sizeof(Texture2DClass));

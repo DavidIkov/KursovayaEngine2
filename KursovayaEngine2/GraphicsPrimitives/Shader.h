@@ -1,5 +1,6 @@
 #pragma once
 #include"DLL.h"
+#include"Tools/DynArr.h"
 
 namespace GraphicsPrimitives {
 
@@ -21,7 +22,7 @@ namespace GraphicsPrimitives {
 		DLLTREATMENT unsigned int gID() const;
 		DLLTREATMENT ShaderClass(const wchar_t* filePath, TypesEnum typ);
 		DLLTREATMENT ShaderClass(TypesEnum typ, const char* code);
-		DLLTREATMENT ShaderClass(const ShaderClass* toCopy);
+		DLLTREATMENT ShaderClass(RespConstrFlag, const ShaderClass& toCopy);
 		DLLTREATMENT ShaderClass(const ShaderClass&& toCopy);
 		DLLTREATMENT void operator=(const ShaderClass&& toCopy);
 		DLLTREATMENT void Compile();

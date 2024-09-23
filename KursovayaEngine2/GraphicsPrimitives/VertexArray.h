@@ -1,5 +1,6 @@
 #pragma once
 #include"DLL.h"
+#include"Tools/DynArr.h"
 
 namespace GraphicsPrimitives {
 
@@ -8,7 +9,7 @@ namespace GraphicsPrimitives {
 		mutable bool Deleted = false;
 	public:
 		DLLTREATMENT VertexArrayClass();
-		DLLTREATMENT VertexArrayClass(const VertexArrayClass* toCopy);
+		DLLTREATMENT VertexArrayClass(RespConstrFlag, const VertexArrayClass& toCopy);
 		DLLTREATMENT VertexArrayClass(const VertexArrayClass&& toCopy);
 		DLLTREATMENT void operator=(const VertexArrayClass&& toCopy);
 		DLLTREATMENT ~VertexArrayClass();

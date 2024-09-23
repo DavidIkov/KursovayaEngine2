@@ -19,9 +19,9 @@ unsigned int ShaderProgramClass::gID() const {
 ShaderProgramClass::ShaderProgramClass() {
 	glSC(ID = glCreateProgram());
 }
-ShaderProgramClass::ShaderProgramClass(const ShaderProgramClass* toCopy) {
-	memcpy(this, toCopy, sizeof(ShaderProgramClass));
-	toCopy->Deleted = true;
+ShaderProgramClass::ShaderProgramClass(RespConstrFlag, const ShaderProgramClass& toCopy) {
+	memcpy(this, &toCopy, sizeof(ShaderProgramClass));
+	toCopy.Deleted = true;
 }
 ShaderProgramClass::ShaderProgramClass(const ShaderProgramClass&& toCopy) {
 	memcpy(this, &toCopy, sizeof(ShaderProgramClass));

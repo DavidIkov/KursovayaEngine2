@@ -10,9 +10,9 @@ VertexBufferClass::VertexBufferClass() {
     glSC(glGenBuffers(1, &ID));
     glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));
 }
-VertexBufferClass::VertexBufferClass(const VertexBufferClass* toCopy) {
-    memcpy(this, toCopy, sizeof(VertexBufferClass));
-    toCopy->Deleted = true;
+VertexBufferClass::VertexBufferClass(RespConstrFlag, const VertexBufferClass& toCopy) {
+    memcpy(this, &toCopy, sizeof(VertexBufferClass));
+    toCopy.Deleted = true;
 }
 VertexBufferClass::VertexBufferClass(const VertexBufferClass&& toCopy) {
     memcpy(this, &toCopy, sizeof(VertexBufferClass));
