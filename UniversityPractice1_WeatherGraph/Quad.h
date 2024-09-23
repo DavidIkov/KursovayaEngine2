@@ -4,6 +4,9 @@
 #include"GraphicsPrimitives/ShaderProgram.h"
 #include"GraphicsPrimitives/Texture.h"
 #include"Maths/Vector.h"
+
+using namespace GraphicsPrimitives;
+
 class QuadsHandler {
 	friend class Quad;
 	VertexArrayClass VA;

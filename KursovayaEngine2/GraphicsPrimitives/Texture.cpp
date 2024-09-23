@@ -5,6 +5,8 @@
 #include"glad/glad.h"
 #include"Tools/DebuggingTools.h"
 
+using namespace GraphicsPrimitives;
+
 static unsigned int _DataFormatOnGPU_SwitchCase(TextureDataSettingsClass::DataFormatOnGPU_Enum format) {
     switch (format) {
     case TextureDataSettingsClass::DataFormatOnGPU_Enum::DepthComponent: return GL_DEPTH_COMPONENT24;
@@ -46,6 +48,16 @@ static unsigned int _DataTypeOnCPU_SwitchCase(TextureDataSettingsClass::DataType
     case TextureDataSettingsClass::DataTypeOnCPU_Enum::Int: return GL_INT;
     case TextureDataSettingsClass::DataTypeOnCPU_Enum::Float: return GL_FLOAT;
     case TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedInt_24_8: return GL_UNSIGNED_INT_24_8;
+    default: return 0;
+    }
+}
+static unsigned int _DataTypeOnCPU_Sizeof_SwitchCase(TextureDataSettingsClass::DataTypeOnCPU_Enum type) {
+    switch (type) {
+    case TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte: return sizeof(unsigned char);
+    case TextureDataSettingsClass::DataTypeOnCPU_Enum::Byte: return sizeof(unsigned char);
+    case TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedInt: return sizeof(unsigned int);
+    case TextureDataSettingsClass::DataTypeOnCPU_Enum::Int: return sizeof(int);
+    case TextureDataSettingsClass::DataTypeOnCPU_Enum::Float: return sizeof(float);
     default: return 0;
     }
 }
@@ -122,7 +134,7 @@ void Texture1DClass::_UpdateSettings(const TextureSettingsClass& sets) {
     _UpdSettings_DepthStencilReadMode(sets.DepthStencilReadMode);
 }
 
-Texture1DClass::Texture1DClass(const char* filePath, const TextureSettingsClass& sets) {
+Texture1DClass::Texture1DClass(const char* filePath, const TextureSettingsClass& sets, CPU_DataData_Struct* dataExportPtr) {
 
     int width, height, textureChannelsAmount;
     unsigned char* textureData = stbi_load(filePath, &width, &height, &textureChannelsAmount, 0);
@@ -213,6 +225,19 @@ void Texture1DClass::Bind(unsigned int textureInd) const {
 void Texture1DClass::Unbind() {
     glSC(glBindTexture(GL_TEXTURE_1D, 0));
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -346,4 +371,87 @@ void Texture2DClass::Bind(unsigned int textureInd) const {
 }
 void Texture2DClass::Unbind() {
     glSC(glBindTexture(GL_TEXTURE_2D, 0));
+}
+
+
+
+
+
+
+
+
+
+
+Texture1DClass::CPU_DataData_Struct::CPU_DataData_Struct(Vector1U size, void* data, TextureSettingsClass settings, TextureDataSettingsClass dataSettings) :
+    Size(size), Data(data), Settings(settings), DataSettings(dataSettings), Empty(false) {
+    
+}
+Texture1DClass::CPU_DataData_Struct::CPU_DataData_Struct() {}
+Texture1DClass::CPU_DataData_Struct::CPU_DataData_Struct(const CPU_DataData_Struct& toCopy) {
+    memcpy(this, &toCopy, sizeof(CPU_DataData_Struct));
+    if (not toCopy.Empty) {
+        unsigned int dataSize = _DataTypeOnCPU_Sizeof_SwitchCase(DataSettings.DataTypeOnCPU);
+        Data = new unsigned char[dataSize * Size[0]];
+        memcpy(Data, toCopy.Data, _DataTypeOnCPU_Sizeof_SwitchCase(toCopy.DataSettings.DataTypeOnCPU) * Size[0]);
+    }
+}
+Texture1DClass::CPU_DataData_Struct::CPU_DataData_Struct(const CPU_DataData_Struct* toCopy) {
+	memcpy(this, toCopy, sizeof(CPU_DataData_Struct));
+    toCopy->Empty = true;
+}
+void Texture1DClass::CPU_DataData_Struct::operator=(const CPU_DataData_Struct& toCopy) {
+    if (not Empty) delete[] Data;
+	memcpy(this, &toCopy, sizeof(CPU_DataData_Struct));
+    if (not toCopy.Empty) {
+        unsigned int dataSize = _DataTypeOnCPU_Sizeof_SwitchCase(DataSettings.DataTypeOnCPU);
+        Data = new unsigned char[dataSize * Size[0]];
+        memcpy(Data, toCopy.Data, _DataTypeOnCPU_Sizeof_SwitchCase(toCopy.DataSettings.DataTypeOnCPU) * Size[0]);
+    }
+}
+void Texture1DClass::CPU_DataData_Struct::Delete() {
+    this->~CPU_DataData_Struct();
+}
+Texture1DClass::CPU_DataData_Struct::~CPU_DataData_Struct() {
+    if (not Empty) {
+        delete[] Data;
+        Empty = true;
+    }
+}
+
+
+
+Texture2DClass::CPU_DataData_Struct::CPU_DataData_Struct(Vector2U size, void* data, TextureSettingsClass settings, TextureDataSettingsClass dataSettings) :
+    Size(size), Data(data), Settings(settings), DataSettings(dataSettings), Empty(false) {
+    
+}
+Texture2DClass::CPU_DataData_Struct::CPU_DataData_Struct() {}
+Texture2DClass::CPU_DataData_Struct::CPU_DataData_Struct(const CPU_DataData_Struct& toCopy) {
+    memcpy(this, &toCopy, sizeof(CPU_DataData_Struct));
+    if (not toCopy.Empty) {
+        unsigned int dataSize = _DataTypeOnCPU_Sizeof_SwitchCase(DataSettings.DataTypeOnCPU);
+        Data = new unsigned char[dataSize * Size[0]];
+        memcpy(Data, toCopy.Data, _DataTypeOnCPU_Sizeof_SwitchCase(toCopy.DataSettings.DataTypeOnCPU) * Size[0]);
+    }
+}
+Texture2DClass::CPU_DataData_Struct::CPU_DataData_Struct(const CPU_DataData_Struct* toCopy) {
+	memcpy(this, toCopy, sizeof(CPU_DataData_Struct));
+    toCopy->Empty = true;
+}
+void Texture2DClass::CPU_DataData_Struct::operator=(const CPU_DataData_Struct& toCopy) {
+    if (not Empty) delete[] Data;
+	memcpy(this, &toCopy, sizeof(CPU_DataData_Struct));
+    if (not toCopy.Empty) {
+        unsigned int dataSize = _DataTypeOnCPU_Sizeof_SwitchCase(DataSettings.DataTypeOnCPU);
+        Data = new unsigned char[dataSize * Size[0]];
+        memcpy(Data, toCopy.Data, _DataTypeOnCPU_Sizeof_SwitchCase(toCopy.DataSettings.DataTypeOnCPU) * Size[0]);
+    }
+}
+void Texture2DClass::CPU_DataData_Struct::Delete() {
+    this->~CPU_DataData_Struct();
+}
+Texture2DClass::CPU_DataData_Struct::~CPU_DataData_Struct() {
+    if (not Empty) {
+        delete[] Data;
+        Empty = true;
+    }
 }

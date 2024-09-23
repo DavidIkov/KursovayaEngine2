@@ -7,6 +7,8 @@
 #include"Tools/BinarySearch.h"
 #include FT_FREETYPE_H
 
+using namespace GraphicsPrimitives;
+
 void* TextRendererClass::FreeTypeLib = nullptr;
 
 TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const wchar_t* fragmentShaderDir) :TextPreset(

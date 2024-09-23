@@ -15,6 +15,8 @@
 #include"Maths/Matrix.h"
 #include"Tools/FileTypesReaders/Obj.h"
 
+using namespace GraphicsPrimitives;
+
 int main()
 {
     
@@ -30,7 +32,7 @@ int main()
 
 
         TextRendererClass TEXT_RENDERER(L"Shaders/textNEW.vs", L"Shaders/textNEW.fs");
-        StalkerClass ArialFont = TEXT_RENDERER.AddFont(50, "Fonts/arial.ttf", L" !\"#ωτ$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
+        StalkerClass ArialFont = TEXT_RENDERER.AddFont(50, "Fonts/arial.ttf", L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
             "`abcdefghijklmnopqrstuvwxyz{|}~");
         
         FrameBufferClass FB(Width, Height);
@@ -88,7 +90,7 @@ int main()
         VA1.Unbind();
 
         VertexArrayClass VA2;
-
+        
         VertexBufferClass VB2;
         VB2.SetData((unsigned int)(VB2_DATA.size() * sizeof(float)), &VB2_DATA[0], VertexBufferClass::BufferDataUsageEnum::StaticDraw);
         VB2.SetLayout(VertexBufferClass::BufferDataTypeEnum::Float, { 3,3,3,2 });

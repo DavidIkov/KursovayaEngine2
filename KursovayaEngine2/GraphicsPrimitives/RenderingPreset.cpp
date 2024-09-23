@@ -2,6 +2,8 @@
 #include"glad/glad.h"
 #include"Tools/GLDebug.h"
 
+using namespace GraphicsPrimitives;
+
 RenderingPresetClass::RenderingPresetClass(
 	bool f_FaceCullingEnabled,
 	RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull f_FaceCulling_FaceToCull,

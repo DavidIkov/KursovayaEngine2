@@ -5,6 +5,8 @@
 #include<string>
 #include"Tools/GLDebug.h"
 
+using namespace GraphicsPrimitives;
+
 unsigned int ShaderProgramClass::gID() const {
 #if defined Debug
 	if (Deleted) {

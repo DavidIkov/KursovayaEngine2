@@ -4,6 +4,8 @@
 #include"Tools/DebuggingTools.h"
 #include"Tools/ErrorCodes.h"
 
+using namespace GraphicsPrimitives;
+
 RenderBufferClass::RenderBufferClass(unsigned int width, unsigned int height, bool createDepthBuffer, bool createStencilBuffer) {
     glSC(glGenRenderbuffers(1, &ID));
     glSC(glBindRenderbuffer(GL_RENDERBUFFER, ID));

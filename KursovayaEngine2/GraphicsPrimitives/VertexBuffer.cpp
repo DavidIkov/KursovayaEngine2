@@ -4,6 +4,8 @@
 #include"glad/glad.h"
 #include"Tools/ErrorCodes.h"
 
+using namespace GraphicsPrimitives;
+
 VertexBufferClass::VertexBufferClass() {
     glSC(glGenBuffers(1, &ID));
     glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));

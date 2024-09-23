@@ -4,6 +4,8 @@
 #include"glad/glad.h"
 #include"Tools/ErrorCodes.h"
 
+using namespace GraphicsPrimitives;
+
 VertexArrayClass::VertexArrayClass() {
     glSC(glGenVertexArrays(1, &ID));
     glSC(glBindVertexArray(ID));

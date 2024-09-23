@@ -10,10 +10,10 @@
 
 class TextRendererClass {
 
-    ShaderProgramClass TEXT_SP;
-    RenderingPresetClass TextPreset;
-    VertexArrayClass TEXT_VA;
-    VertexBufferClass TEXT_VB;
+    GraphicsPrimitives::ShaderProgramClass TEXT_SP;
+    GraphicsPrimitives::RenderingPresetClass TextPreset;
+    GraphicsPrimitives::VertexArrayClass TEXT_VA;
+    GraphicsPrimitives::VertexBufferClass TEXT_VB;
 
     struct FontClass {
     
@@ -26,7 +26,7 @@ class TextRendererClass {
             float XOffsetInTexture;
 		};
 		mutable bool Deleted = false;
-        Texture2DClass Texture;
+        GraphicsPrimitives::Texture2DClass Texture;
         void* FreeTypeFace;//FT_Face
         std::vector<CharacterClass> Characters;
         int MaxCharacterUp = 0; int MaxCharacterDown = 0;
