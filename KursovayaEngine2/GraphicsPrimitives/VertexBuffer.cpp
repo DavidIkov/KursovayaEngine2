@@ -35,7 +35,7 @@ void VertexBufferClass::Delete() {
 #endif
         this->~VertexBufferClass();
 }
-unsigned int VertexBufferClass::gID() const {
+unsigned int VertexBufferClass::gID() {
 #if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX BUFFER IS DELETED, ACCESING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
 #endif
@@ -108,7 +108,7 @@ void VertexBufferClass::SetSubData(unsigned int offset, unsigned int dataLength,
         glSC(glBufferSubData(GL_ARRAY_BUFFER, offset, dataLength, firstElement));
     }
 }
-void VertexBufferClass::Bind() const {
+void VertexBufferClass::Bind() {
 #if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX BUFFER IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
     else 

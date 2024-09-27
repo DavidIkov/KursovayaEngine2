@@ -7,7 +7,7 @@
 
 using namespace GraphicsPrimitives;
 
-unsigned int ShaderProgramClass::gID() const {
+unsigned int ShaderProgramClass::gID() {
 #if defined Debug
 	if (Deleted) {
 		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER PROGRAM IS ALREADY DELETED, ACCESSING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
@@ -31,13 +31,13 @@ void ShaderProgramClass::operator=(const ShaderProgramClass&& toCopy) {
 	memcpy(this, &toCopy, sizeof(ShaderProgramClass));
 	toCopy.Deleted = true;
 }
-void ShaderProgramClass::AttachShader(const ShaderClass& SH) {
+void ShaderProgramClass::AttachShader(ShaderClass::CFAC_FullAccess_Class shaderCFAC) {
 #if defined Debug
 	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "YOU CANT ATTACH SHADER TO SHADER PROGRAM WHEN ITS DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
 	else if (Linked) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "YOU CANT ATTACH SHADER TO SHADER PROGRAM WHEN ITS ALREADY LINKED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-	else 
+	else
 #endif
-		glSC(glAttachShader(ID, SH.gID()));
+		glSC(glAttachShader(ID, shaderCFAC(shaderCFAC.FuncPtrs.gID)));
 }
 void ShaderProgramClass::LinkShaders() {
 #if defined Debug
@@ -76,7 +76,7 @@ void ShaderProgramClass::Delete() {
 		this->~ShaderProgramClass();
 }
 
-void ShaderProgramClass::Bind() const {
+void ShaderProgramClass::Bind() {
 #if defined Debug
 	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER PROGRAM IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
 	else if (not Linked) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER PROGRAM IS NOT LINKED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION }  );

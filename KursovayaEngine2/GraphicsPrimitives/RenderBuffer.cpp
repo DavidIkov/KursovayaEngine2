@@ -42,7 +42,7 @@ void RenderBufferClass::Delete() {
 #endif
         this->~RenderBufferClass();
 }
-unsigned int RenderBufferClass::gID() const {
+unsigned int RenderBufferClass::gID() {
 #ifdef Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"RENDER BUFFER IS ALREADY DELETED, ACCESSING ITS ID MAY CAUSE PROBLEMS",KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
 #endif

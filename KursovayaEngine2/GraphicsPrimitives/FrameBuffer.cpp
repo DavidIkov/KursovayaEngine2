@@ -6,19 +6,19 @@
 
 using namespace GraphicsPrimitives;
 
-void FrameBufferClass::ClearColorBuffer() const {
+void FrameBufferClass::ClearColorBuffer() {
 	Bind();
 	glSC(glClear(GL_COLOR_BUFFER_BIT));
 }
-void FrameBufferClass::ClearDepthBuffer() const {
+void FrameBufferClass::ClearDepthBuffer() {
 	Bind();
 	glSC(glClear(GL_DEPTH_BUFFER_BIT));
 }
-void FrameBufferClass::ClearStencilBuffer() const {
+void FrameBufferClass::ClearStencilBuffer() {
 	Bind();
 	glSC(glClear(GL_STENCIL_BUFFER_BIT));
 }
-void FrameBufferClass::ClearAllBuffers() const {
+void FrameBufferClass::ClearAllBuffers() {
 	Bind();
 	glSC(glClear(GL_COLOR_BUFFER_BIT));
 	glSC(glClear(GL_DEPTH_BUFFER_BIT));
@@ -48,7 +48,7 @@ FrameBufferClass::~FrameBufferClass() {
 		Deleted = true;
 	}
 }
-unsigned int FrameBufferClass::gID() const {
+unsigned int FrameBufferClass::gID() {
 #if defined Debug
 	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "FRAME BUFFER IS DELETED, ACCESSING ITS ID MAY CAUSE PROBLEMS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
 #endif
@@ -94,7 +94,7 @@ void FrameBufferClass::Finish() {
 	}
 #endif
 }
-void FrameBufferClass::Bind() const {
+void FrameBufferClass::Bind() {
 #if defined Debug
 	if (not Finished) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "YOU CANT BIND BUFFER WHICH IS INCOMPLETE", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
 	else if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "YOU CANT BIND ALREADY DELETED BUFFER", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });

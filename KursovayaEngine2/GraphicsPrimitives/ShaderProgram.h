@@ -10,16 +10,16 @@ namespace GraphicsPrimitives {
 #endif
 		mutable bool Deleted = false;
 	public:
-		DLLTREATMENT unsigned int gID() const;
+		DLLTREATMENT unsigned int gID();
 		DLLTREATMENT ShaderProgramClass();
 		DLLTREATMENT ShaderProgramClass(RespConstrFlag, const ShaderProgramClass& toCopy);
 		DLLTREATMENT ShaderProgramClass(const ShaderProgramClass&& toCopy);
 		DLLTREATMENT void operator=(const ShaderProgramClass&& toCopy);
-		DLLTREATMENT void AttachShader(const ShaderClass& SH);
+		DLLTREATMENT void AttachShader(ShaderClass::CFAC_FullAccess_Class shaderCFAC);
 		DLLTREATMENT void LinkShaders();
 		DLLTREATMENT ~ShaderProgramClass();
 		DLLTREATMENT void Delete();
-		DLLTREATMENT void Bind() const;
+		DLLTREATMENT void Bind();
 		DLLTREATMENT static void Unbind();
 
 		DLLTREATMENT void SetUniform1f(const char* name, float v0);
@@ -56,5 +56,23 @@ namespace GraphicsPrimitives {
 		DLLTREATMENT void SetUniformMatrix3x4fv(const char* name, unsigned int count, bool transpose, const float* value);
 		DLLTREATMENT void SetUniformMatrix4x3fv(const char* name, unsigned int count, bool transpose, const float* value);
 
+#define CFAC_ClassName ShaderProgramClass
+		CFAC_ClassConstructor(FullAccess,
+			CFAC_FuncPtrConstr(gID)
+			CFAC_FuncPtrConstr(Bind)
+			CFAC_FuncPtrConstr(Unbind)
+			CFAC_FuncPtrConstr(AttachShader)
+			CFAC_FuncPtrConstr(LinkShaders)
+			CFAC_FuncPtrConstr(SetUniform1f) CFAC_FuncPtrConstr(SetUniform2f) CFAC_FuncPtrConstr(SetUniform3f) CFAC_FuncPtrConstr(SetUniform4f)
+			CFAC_FuncPtrConstr(SetUniform1i) CFAC_FuncPtrConstr(SetUniform2i) CFAC_FuncPtrConstr(SetUniform3i) CFAC_FuncPtrConstr(SetUniform4i)
+			CFAC_FuncPtrConstr(SetUniform1ui) CFAC_FuncPtrConstr(SetUniform2ui) CFAC_FuncPtrConstr(SetUniform3ui) CFAC_FuncPtrConstr(SetUniform4ui)
+			CFAC_FuncPtrConstr(SetUniform1fv) CFAC_FuncPtrConstr(SetUniform2fv) CFAC_FuncPtrConstr(SetUniform3fv) CFAC_FuncPtrConstr(SetUniform4fv)
+			CFAC_FuncPtrConstr(SetUniform1iv) CFAC_FuncPtrConstr(SetUniform2iv) CFAC_FuncPtrConstr(SetUniform3iv) CFAC_FuncPtrConstr(SetUniform4iv)
+			CFAC_FuncPtrConstr(SetUniform1uiv) CFAC_FuncPtrConstr(SetUniform2uiv) CFAC_FuncPtrConstr(SetUniform3uiv) CFAC_FuncPtrConstr(SetUniform4uiv)
+			CFAC_FuncPtrConstr(SetUniformMatrix2fv) CFAC_FuncPtrConstr(SetUniformMatrix3fv) CFAC_FuncPtrConstr(SetUniformMatrix4fv)
+			CFAC_FuncPtrConstr(SetUniformMatrix2x3fv) CFAC_FuncPtrConstr(SetUniformMatrix3x2fv) CFAC_FuncPtrConstr(SetUniformMatrix2x4fv)
+			CFAC_FuncPtrConstr(SetUniformMatrix4x2fv) CFAC_FuncPtrConstr(SetUniformMatrix3x4fv) CFAC_FuncPtrConstr(SetUniformMatrix4x3fv)
+		);
+#undef CFAC_ClassName
 	};
 }

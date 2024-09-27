@@ -49,6 +49,7 @@ TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const wchar
 }
 
 TextRendererClass::~TextRendererClass() {
+    Fonts.Resize(0);
     FT_Done_FreeType(*(FT_Library*)FreeTypeLib);
     delete (FT_Library*)FreeTypeLib;
 }

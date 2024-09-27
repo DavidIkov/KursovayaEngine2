@@ -163,7 +163,7 @@ Texture1DClass::Texture1DClass(const Texture1DClass&& toCopy) {
     memcpy(this, &toCopy, sizeof(Texture1DClass));
     toCopy.Deleted = true;
 }
-void Texture1DClass::operator=(const Texture1DClass&& toCopy) {
+void Texture1DClass::operator=(const Texture1DClass&& toCopy){
     this->~Texture1DClass();
     memcpy(this, &toCopy, sizeof(Texture1DClass));
     toCopy.Deleted = true;
@@ -198,7 +198,7 @@ void Texture1DClass::sSettings_DownscalingFilt(TextureSettingsClass::Downscaling
 void Texture1DClass::sSettings_UpscalingFilt(TextureSettingsClass::UpscalingFilterFuncEnum upscalingFilt) { _UpdSettings_UpscalingFilt(upscalingFilt); }
 void Texture1DClass::sSettings_DepthStencilReadMode(TextureSettingsClass::DepthStencilReadModeEnum depthStencilReadMode) { _UpdSettings_DepthStencilReadMode(depthStencilReadMode); }
 
-unsigned int Texture1DClass::gID() const {
+unsigned int Texture1DClass::gID() {
 #if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, ACCESING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
 #endif
@@ -212,7 +212,7 @@ void Texture1DClass::Delete() {
         this->~Texture1DClass();
 }
 
-void Texture1DClass::Bind(unsigned int textureInd) const {
+void Texture1DClass::Bind(unsigned int textureInd) {
 #if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
     else 
@@ -345,7 +345,7 @@ void Texture2DClass::sSettings_DownscalingFilt(TextureSettingsClass::Downscaling
 void Texture2DClass::sSettings_UpscalingFilt(TextureSettingsClass::UpscalingFilterFuncEnum upscalingFilt) { _UpdSettings_UpscalingFilt(upscalingFilt); }
 void Texture2DClass::sSettings_DepthStencilReadMode(TextureSettingsClass::DepthStencilReadModeEnum depthStencilReadMode) { _UpdSettings_DepthStencilReadMode(depthStencilReadMode); }
 
-unsigned int Texture2DClass::gID() const {
+unsigned int Texture2DClass::gID()  {
 #if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, ACCESING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
 #endif
@@ -359,7 +359,7 @@ void Texture2DClass::Delete() {
         this->~Texture2DClass();
 }
 
-void Texture2DClass::Bind(unsigned int textureInd) const {
+void Texture2DClass::Bind(unsigned int textureInd){
 #if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
     else

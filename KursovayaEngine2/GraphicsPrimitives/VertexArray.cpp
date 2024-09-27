@@ -28,7 +28,7 @@ VertexArrayClass::~VertexArrayClass() {
         Deleted = true;
     }
 }
-unsigned int VertexArrayClass::gID() const {
+unsigned int VertexArrayClass::gID() {
 #if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"KILL YOURSELF",KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
 #endif
@@ -41,7 +41,7 @@ void VertexArrayClass::Delete() {
 #endif
         this->~VertexArrayClass();
 }
-void VertexArrayClass::Bind() const {
+void VertexArrayClass::Bind() {
 #if defined Debug
     if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX ARRAY IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
     else 

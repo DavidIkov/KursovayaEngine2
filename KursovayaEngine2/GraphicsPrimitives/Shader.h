@@ -1,6 +1,7 @@
 #pragma once
 #include"DLL.h"
 #include"Tools/DynArr.h"
+#include"Tools/ClassFunctionsAccessController.h"
 
 namespace GraphicsPrimitives {
 
@@ -19,7 +20,7 @@ namespace GraphicsPrimitives {
 		TypesEnum ShaderType;
 #endif
 	public:
-		DLLTREATMENT unsigned int gID() const;
+		DLLTREATMENT unsigned int gID();
 		DLLTREATMENT ShaderClass(const wchar_t* filePath, TypesEnum typ);
 		DLLTREATMENT ShaderClass(TypesEnum typ, const char* code);
 		DLLTREATMENT ShaderClass(RespConstrFlag, const ShaderClass& toCopy);
@@ -28,5 +29,12 @@ namespace GraphicsPrimitives {
 		DLLTREATMENT void Compile();
 		DLLTREATMENT ~ShaderClass();
 		DLLTREATMENT void Delete();
+		
+#define CFAC_ClassName ShaderClass
+		CFAC_ClassConstructor(FullAccess,
+			CFAC_FuncPtrConstr(gID)
+			CFAC_FuncPtrConstr(Compile)
+		);
+#undef CFAC_ClassName
 	};
 }

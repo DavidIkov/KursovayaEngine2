@@ -2,6 +2,7 @@
 #include"DLL.h"
 #include"Maths/Vector.h"
 #include"Tools/DynArr.h"
+#include"Tools/ClassFunctionsAccessController.h"
 
 namespace GraphicsPrimitives {
 
@@ -101,11 +102,27 @@ namespace GraphicsPrimitives {
         DLLTREATMENT void sSettings_UpscalingFilt(TextureSettingsClass::UpscalingFilterFuncEnum upscalingFilt);
         DLLTREATMENT void sSettings_DepthStencilReadMode(TextureSettingsClass::DepthStencilReadModeEnum depthStencilReadMode);
 
-        DLLTREATMENT unsigned int gID() const;
+        DLLTREATMENT unsigned int gID();
         DLLTREATMENT void Delete();
-        DLLTREATMENT void Bind(unsigned int textureInd = 0) const;
+        DLLTREATMENT void Bind(unsigned int textureInd = 0);
         DLLTREATMENT void Unbind();
+
+#define CFAC_ClassName Texture1DClass
+        CFAC_ClassConstructor(FullAccess,
+            CFAC_FuncPtrConstr(SetData)
+            CFAC_FuncPtrConstr(SetSubData)
+            CFAC_FuncPtrConstr(GenerateMipmaps)
+            CFAC_FuncPtrConstr(sSettings_WrapTypeByX)
+            CFAC_FuncPtrConstr(sSettings_WrapTypeByY)
+            CFAC_FuncPtrConstr(sSettings_DownscalingFilt)
+            CFAC_FuncPtrConstr(sSettings_UpscalingFilt)
+            CFAC_FuncPtrConstr(sSettings_DepthStencilReadMode)
+            CFAC_FuncPtrConstr(gID)
+            CFAC_FuncPtrConstr(Bind)
+            CFAC_FuncPtrConstr(Unbind)
+        );
     };
+#undef CFAC_ClassName
 
 
     class Texture2DClass {
@@ -166,9 +183,25 @@ namespace GraphicsPrimitives {
         DLLTREATMENT void sSettings_UpscalingFilt(TextureSettingsClass::UpscalingFilterFuncEnum upscalingFilt);
         DLLTREATMENT void sSettings_DepthStencilReadMode(TextureSettingsClass::DepthStencilReadModeEnum depthStencilReadMode);
 
-        DLLTREATMENT unsigned int gID() const;
+        DLLTREATMENT unsigned int gID();
         DLLTREATMENT void Delete();
-        DLLTREATMENT void Bind(unsigned int textureInd = 0) const;
+        DLLTREATMENT void Bind(unsigned int textureInd = 0);
         DLLTREATMENT void Unbind();
+
+#define CFAC_ClassName Texture2DClass
+        CFAC_ClassConstructor(FullAccess,
+            CFAC_FuncPtrConstr(SetData)
+            CFAC_FuncPtrConstr(SetSubData)
+            CFAC_FuncPtrConstr(GenerateMipmaps)
+            CFAC_FuncPtrConstr(sSettings_WrapTypeByX)
+            CFAC_FuncPtrConstr(sSettings_WrapTypeByY)
+            CFAC_FuncPtrConstr(sSettings_DownscalingFilt)
+            CFAC_FuncPtrConstr(sSettings_UpscalingFilt)
+            CFAC_FuncPtrConstr(sSettings_DepthStencilReadMode)
+            CFAC_FuncPtrConstr(gID)
+            CFAC_FuncPtrConstr(Bind)
+            CFAC_FuncPtrConstr(Unbind)
+        );
+#undef CFAC_ClassName
     };
 }

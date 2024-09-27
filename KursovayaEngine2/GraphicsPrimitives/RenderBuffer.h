@@ -1,6 +1,7 @@
 #pragma once
 #include"DLL.h"
 #include"Tools/DynArr.h"
+#include"Tools/ClassFunctionsAccessController.h"
 
 namespace GraphicsPrimitives {
 	class RenderBufferClass {
@@ -12,7 +13,13 @@ namespace GraphicsPrimitives {
 		DLLTREATMENT RenderBufferClass(const RenderBufferClass&& toCopy);
 		DLLTREATMENT void operator=(const RenderBufferClass&& toCopy);
 		DLLTREATMENT ~RenderBufferClass();
-		DLLTREATMENT unsigned int gID() const;
+		DLLTREATMENT unsigned int gID();
 		DLLTREATMENT void Delete();
+
+#define CFAC_ClassName RenderBufferClass
+		CFAC_ClassConstructor(FullAccess,
+			CFAC_FuncPtrConstr(gID)
+		);
+#undef CFAC_ClassName
 	};
 }

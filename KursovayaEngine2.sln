@@ -37,8 +37,8 @@ Global
 		{5D3557C2-BD85-464C-B3E8-C0F8945A1BA1}.Debug|Win32.Build.0 = Debug|Win32
 		{5D3557C2-BD85-464C-B3E8-C0F8945A1BA1}.Debug|x64.ActiveCfg = Debug|x64
 		{5D3557C2-BD85-464C-B3E8-C0F8945A1BA1}.Debug|x64.Build.0 = Debug|x64
-		{5D3557C2-BD85-464C-B3E8-C0F8945A1BA1}.Efficiency|Win32.ActiveCfg = Debug|Win32
-		{5D3557C2-BD85-464C-B3E8-C0F8945A1BA1}.Efficiency|Win32.Build.0 = Debug|Win32
+		{5D3557C2-BD85-464C-B3E8-C0F8945A1BA1}.Efficiency|Win32.ActiveCfg = Efficiency|Win32
+		{5D3557C2-BD85-464C-B3E8-C0F8945A1BA1}.Efficiency|Win32.Build.0 = Efficiency|Win32
 		{5D3557C2-BD85-464C-B3E8-C0F8945A1BA1}.Efficiency|x64.ActiveCfg = Efficiency|x64
 		{5D3557C2-BD85-464C-B3E8-C0F8945A1BA1}.Efficiency|x64.Build.0 = Efficiency|x64
 	EndGlobalSection

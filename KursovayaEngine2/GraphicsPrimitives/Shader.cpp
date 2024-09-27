@@ -7,7 +7,7 @@
 
 using namespace GraphicsPrimitives;
 
-unsigned int ShaderClass::gID() const {
+unsigned int ShaderClass::gID() {
 #if defined Debug
 	if (Deleted) {
 		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER IS ALREADY DELETED, ACCESSING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });

@@ -306,6 +306,7 @@
     <ClInclude Include="Maths\Vector.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Tools\BinarySearch.h" />
+    <ClInclude Include="Tools\ClassFunctionsAccessController.h" />
     <ClInclude Include="Tools\DynArr.h" />
     <ClInclude Include="Tools\StaticLambda.h" />
     <ClInclude Include="Tools\UniversalLambda.h" />

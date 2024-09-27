@@ -34,7 +34,8 @@ int main()
 
         TextRendererClass TEXT_RENDERER(L"Shaders/textNEW.vs", L"Shaders/textNEW.fs");
         StalkerClass ArialFont = TEXT_RENDERER.AddFont(50, "Fonts/arial.ttf", L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
-            "`abcdefghijklmnopqrstuvwxyz{|}~");
+            "`abcdefghijklmnopqrstuvwxyz{|}~"\
+            "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßÿşıüûúùø÷öõôóòñğïîíìëêéèçæ¸åäãâáà");
         
         FrameBufferClass FB(Width, Height);
         Texture2DClass FB_COLOR_TEX(Vector2U(Width, Height), nullptr,
@@ -76,7 +77,7 @@ int main()
         
 
         unsigned int floatsAmountPerVertex = 3 + 3 + 3 + 2;
-        std::vector<float> VB1_DATA = ReadObjFileType(L"Models3D/xyu.obj");
+        std::vector<float> VB1_DATA = ReadObjFileType(L"Models3D/koleso.obj");
         std::vector<float> VB2_DATA = ReadObjFileType(L"Models3D/sphere.obj");
 
 
@@ -187,7 +188,7 @@ int main()
         
         Vector3F Object1Position(0, 0, 2);
         Matrix33F Object1RotationMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
-        Vector3F Object1Scale(1,1,1);
+        Vector3F Object1Scale(0.5,0.5,0.5);
         Vector3F Object2Position(2, 0, 3);
         Matrix33F Object2RotationMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
         Vector3F Object2Scale(2,2,2);
@@ -368,7 +369,7 @@ int main()
                         -1,-1,
                         0, TextRendererNamespace::ClampingFuncs::None,
                         0, true, TextRendererNamespace::ClampingFuncs::None);*/
-                TEXT_RENDERER.RenderText(ArialFont, L"abc@%àùô", Vector2F(-1,0), Vector2F(-1,0), Vector2U(Width, Height),
+                TEXT_RENDERER.RenderText(ArialFont, L"english ğóññêèé ÉÆ¨!:(|&", Vector2F(-1,0), Vector2F(-1,0), Vector2U(Width, Height),
                     Vector2F(1, 0), 0.5f);
                 //}
             }
