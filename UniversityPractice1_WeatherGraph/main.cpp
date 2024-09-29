@@ -92,10 +92,10 @@ struct GraphicSettingsStruct {
     VertexBufferClass VB_TEX;
     VertexArrayClass VA_GRAPH;
     VertexBufferClass VB_GRAPH;
-    Texture2DClass FB_TEX;
+    TextureClass FB_TEX;
     FrameBufferClass FB;
 
-    Texture1DClass GRAPH_DATA_TEX;
+    TextureClass GRAPH_DATA_TEX;
 };
 std::vector<GraphicSettingsStruct*> GraphicsSettings;
 float GraphicsSettingsOffset = 0;
@@ -192,7 +192,7 @@ int main()
 
         QuadsHandler QIH(L"Shaders/Quad2dImage.vs", L"Shaders/Quad2dImage.fs");
 
-        QuadsHandler::ImageQuad AddGraphSettingPlus(QIH, Texture2DClass{ "plus.png", TextureSettingsClass{
+        QuadsHandler::ImageQuad AddGraphSettingPlus(QIH, TextureClass{TextureClass::DimensionsEnum::Two, "plus.png", TextureSettingsClass{
             TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
             TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
             TextureSettingsClass::DepthStencilReadModeEnum::Depth} });
@@ -445,13 +445,13 @@ int main()
                         0,//date2
                         {QH},{&window},{QH},{&window},{QH},{&window},{QH},{&window},{QH},{&window},{QH},{&window},
                         {QH},{QH},{&window},{QH},{&window},
-                        true,{},{},{},{},Texture2DClass{Vector2U(graphWidth,graphHeight),nullptr,
+                        true,{},{},{},{},TextureClass{TextureClass::DimensionsEnum::Two, Vector3U(graphWidth,graphHeight,0),nullptr,
                         TextureSettingsClass{TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
                         TextureSettingsClass::DownscalingFilterFuncEnum::Nearest,TextureSettingsClass::UpscalingFilterFuncEnum::Nearest,
                         TextureSettingsClass::DepthStencilReadModeEnum::Depth},
                         TextureDataSettingsClass{TextureDataSettingsClass::DataFormatOnGPU_Enum::RGBA,
                         TextureDataSettingsClass::DataFormatOnCPU_Enum::RGBA,TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte}},
-                        {graphWidth,graphHeight},Texture1DClass{0,nullptr,
+                        {graphWidth,graphHeight},TextureClass{TextureClass::DimensionsEnum::One, Vector3U(0,0,0),nullptr,
                         TextureSettingsClass{TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
                         TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
                         TextureSettingsClass::DepthStencilReadModeEnum::Depth},

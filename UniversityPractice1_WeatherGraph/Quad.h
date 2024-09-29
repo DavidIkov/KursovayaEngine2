@@ -26,13 +26,13 @@ public:
 		void Draw();
 	};
 	class ImageQuad: public Quad {
-		Texture2DClass Tex;
+		TextureClass Tex;
 	public:
 		enum class TextureClampingType {
 			FullScale,SquareByX,SquareByY,SquareByXY
 		};
 		TextureClampingType TexClampingType = TextureClampingType::FullScale;
-		ImageQuad(QuadsHandler& handler, Texture2DClass&& tex);
+		ImageQuad(QuadsHandler& handler, TextureClass&& tex);
 		void Draw(unsigned int screenWidth, unsigned int screenHeight);
 	};
 };

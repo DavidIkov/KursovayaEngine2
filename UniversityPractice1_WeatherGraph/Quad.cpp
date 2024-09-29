@@ -42,7 +42,7 @@ void QuadsHandler::Quad::Draw() {
     Handler.VA.Unbind();
 }
 
-QuadsHandler::ImageQuad::ImageQuad(QuadsHandler& handler, Texture2DClass&& tex) :Quad(handler), Tex(std::move(tex)) {};
+QuadsHandler::ImageQuad::ImageQuad(QuadsHandler& handler, TextureClass&& tex) :Quad(handler), Tex(std::move(tex)) {};
 void QuadsHandler::ImageQuad::Draw(unsigned int screenWidth, unsigned int screenHeight) {
     Handler.VA.Bind();
     Handler.SP.Bind();

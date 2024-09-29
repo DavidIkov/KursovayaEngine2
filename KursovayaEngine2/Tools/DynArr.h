@@ -1,6 +1,6 @@
 #pragma once
-#include"DebuggingTools.h"
-#include"iostream"
+#include<utility>
+#include<cstring>
 typedef unsigned char byte;
 
 /*
@@ -108,6 +108,7 @@ private:
 		if (StalkersData.StalkersArr != nullptr) {
 			for (unsigned int i = 0; i < StalkersData.StalkersArrLength; i++) StalkersData.StalkersArr[i]->Deleted = true;
 			delete[] StalkersData.StalkersArr;
+			StalkersData.StalkersArr = nullptr;
 		}
 
 	}

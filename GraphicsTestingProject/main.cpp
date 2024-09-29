@@ -4,6 +4,7 @@
 #include"KursovayaEngine2Manager.h"
 #include"Windows/Window.h"
 #include"GraphicsAbstractions/TextRenderer.h"
+#include"GraphicsAbstractions/Texture.h"
 #include"GraphicsPrimitives/FrameBuffer.h"
 #include"GraphicsPrimitives/VertexArray.h"
 #include"GraphicsPrimitives/VertexBuffer.h"
@@ -15,8 +16,10 @@
 #include"Maths/Matrix.h"
 #include"Tools/FileTypesReaders/Obj.h"
 
-using namespace GraphicsPrimitives;
-using namespace GraphicsAbstractions;
+namespace GP = GraphicsPrimitives;
+namespace GA = GraphicsAbstractions;
+
+unsigned int ProgramExitCode = 0;
 
 int main()
 {
@@ -32,46 +35,46 @@ int main()
         WindowClass window(Width, Height, "haiiiii", false, 1);
 
 
-        TextRendererClass TEXT_RENDERER(L"Shaders/textNEW.vs", L"Shaders/textNEW.fs");
+        GraphicsAbstractions::TextRendererClass TEXT_RENDERER(L"Shaders/textNEW.vs", L"Shaders/textNEW.fs");
         StalkerClass ArialFont = TEXT_RENDERER.AddFont(50, "Fonts/arial.ttf", L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
             "`abcdefghijklmnopqrstuvwxyz{|}~"\
             "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßÿþýüûúùø÷öõôóòñðïîíìëêéèçæ¸åäãâáà");
         
-        FrameBufferClass FB(Width, Height);
-        Texture2DClass FB_COLOR_TEX(Vector2U(Width, Height), nullptr,
-            TextureSettingsClass{ TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
-            TextureSettingsClass::DownscalingFilterFuncEnum::Nearest,TextureSettingsClass::UpscalingFilterFuncEnum::Nearest,
-            TextureSettingsClass::DepthStencilReadModeEnum::Depth },
-            TextureDataSettingsClass{ TextureDataSettingsClass::DataFormatOnGPU_Enum::RGB,
-            TextureDataSettingsClass::DataFormatOnCPU_Enum::RGB, TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte }
+        GP::FrameBufferClass FB(Width, Height);
+        GP::TextureClass FB_COLOR_TEX(GP::TextureClass::DimensionsEnum::Two, Vector3U(Width, Height, 0), nullptr,
+            GP::TextureSettingsClass{ GP::TextureSettingsClass::WrapTypeEnum::ClampToEdge,GP::TextureSettingsClass::WrapTypeEnum::ClampToEdge,
+            GP::TextureSettingsClass::DownscalingFilterFuncEnum::Nearest,GP::TextureSettingsClass::UpscalingFilterFuncEnum::Nearest,
+            GP::TextureSettingsClass::DepthStencilReadModeEnum::Depth },
+            GP::TextureDataSettingsClass{ GP::TextureDataSettingsClass::DataFormatOnGPU_Enum::RGB,
+            GP::TextureDataSettingsClass::DataFormatOnCPU_Enum::RGB, GP::TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte }
         );
-        FB.AttachTexture(FB_COLOR_TEX.gID(), TextureDataSettingsClass::DataFormatOnGPU_Enum::RGB);
+        FB.AttachTexture(FB_COLOR_TEX.gID(), GP::TextureDataSettingsClass::DataFormatOnGPU_Enum::RGB);
         /*TextureClass FB_DEPTH_STENCIL_TEX(Width, Height, nullptr, TextureClass::TypeEnum::Texture2D,
-            TextureSettingsClass{ TextureSettingsClass::WrapTypeEnum::ClampToEdge,TextureSettingsClass::WrapTypeEnum::ClampToEdge,
-            TextureSettingsClass::DownscalingFilterFuncEnum::Nearest,TextureSettingsClass::UpscalingFilterFuncEnum::Nearest,
-            TextureSettingsClass::DepthStencilReadModeEnum::Stencil },
+            GP::TextureSettingsClass{ GP::TextureSettingsClass::WrapTypeEnum::ClampToEdge,GP::TextureSettingsClass::WrapTypeEnum::ClampToEdge,
+            GP::TextureSettingsClass::DownscalingFilterFuncEnum::Nearest,GP::TextureSettingsClass::UpscalingFilterFuncEnum::Nearest,
+            GP::TextureSettingsClass::DepthStencilReadModeEnum::Stencil },
             TextureClass::DataSettingsClass{ TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil,
             TextureClass::DataSettingsClass::DataFormatOnCPU_Enum::DepthStencil, TextureClass::DataSettingsClass::DataTypeOnCPU_Enum::UnsignedInt_24_8 });
         FB.AttachTexture(FB_DEPTH_STENCIL_TEX.gID(), TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil);*/
-        RenderBufferClass RB(Width, Height, true, true);
+        GP::RenderBufferClass RB(Width, Height, true, true);
         FB.AttachRenderBuffer(RB.gID(), true, true);
         FB.Finish();
         FB.Unbind(Width, Height);
 
-        RenderingPresetClass Preset3D(
-            true, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
-            true, true, RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual,
-            true,0xff, RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::AlwaysPass,1,0xff, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
-            RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Replace,
-            true, 0,0,0,0, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
+        GP::RenderingPresetClass Preset3D(
+            true, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
+            true, true, GP::RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual,
+            true,0xff, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::AlwaysPass,1,0xff, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
+            GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Replace,
+            true, 0,0,0,0, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
             0.1f,0.2f,0.3f
         );
-        RenderingPresetClass QuadPreset(
-            false, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
-            false, true, RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual,
-            false, 0, RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Equal, 1, 255, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
-            RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
-            false, 0, 0, 0, 0, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
+        GP::RenderingPresetClass QuadPreset(
+            false, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
+            false, true, GP::RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual,
+            false, 0, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Equal, 1, 255, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
+            GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
+            false, 0, 0, 0, 0, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
             0.f,0.f,0.f
         );
         
@@ -83,69 +86,69 @@ int main()
 
 
 
-        VertexArrayClass VA1;
+        GP::VertexArrayClass VA1;
 
-        VertexBufferClass VB1;
-        VB1.SetData((unsigned int)(VB1_DATA.size()*sizeof(float)), &VB1_DATA[0], VertexBufferClass::BufferDataUsageEnum::StaticDraw);
-        VB1.SetLayout(VertexBufferClass::BufferDataTypeEnum::Float, { 3,3,3,2 });
+        GP::VertexBufferClass VB1;
+        VB1.SetData((unsigned int)(VB1_DATA.size()*sizeof(float)), &VB1_DATA[0], GP::VertexBufferClass::BufferDataUsageEnum::StaticDraw);
+        VB1.SetLayout(GP::VertexBufferClass::BufferDataTypeEnum::Float, { 3,3,3,2 });
 
         VA1.Unbind();
 
-        VertexArrayClass VA2;
+        GP::VertexArrayClass VA2;
         
-        VertexBufferClass VB2;
-        VB2.SetData((unsigned int)(VB2_DATA.size() * sizeof(float)), &VB2_DATA[0], VertexBufferClass::BufferDataUsageEnum::StaticDraw);
-        VB2.SetLayout(VertexBufferClass::BufferDataTypeEnum::Float, { 3,3,3,2 });
+        GP::VertexBufferClass VB2;
+        VB2.SetData((unsigned int)(VB2_DATA.size() * sizeof(float)), &VB2_DATA[0], GP::VertexBufferClass::BufferDataUsageEnum::StaticDraw);
+        VB2.SetLayout(GP::VertexBufferClass::BufferDataTypeEnum::Float, { 3,3,3,2 });
 
         VA2.Unbind();
 
         std::vector<float> quadVBD({ 1,-1,1,1,-1,1,1,-1,-1,-1,-1,1 });
 
-        VertexArrayClass QUAD_VA;
+        GP::VertexArrayClass QUAD_VA;
 
-        VertexBufferClass QUAD_VB;
-        QUAD_VB.SetData((unsigned int)(quadVBD.size()*sizeof(float)), &quadVBD[0], VertexBufferClass::BufferDataUsageEnum::StaticDraw);
-        QUAD_VB.SetLayout(VertexBufferClass::BufferDataTypeEnum::Float, { 2 });
+        GP::VertexBufferClass QUAD_VB;
+        QUAD_VB.SetData((unsigned int)(quadVBD.size()*sizeof(float)), &quadVBD[0], GP::VertexBufferClass::BufferDataUsageEnum::StaticDraw);
+        QUAD_VB.SetLayout(GP::VertexBufferClass::BufferDataTypeEnum::Float, { 2 });
 
         QUAD_VA.Unbind();
 
-        ShaderProgramClass SP;
+        GP::ShaderProgramClass SP;
         {
-            ShaderClass VS(L"Shaders/full3d.vs", ShaderClass::TypesEnum::Vertex);
+            GP::ShaderClass VS(L"Shaders/full3d.vs", GP::ShaderClass::TypesEnum::Vertex);
             VS.Compile();
             SP.AttachShader(VS);
 
-            ShaderClass FS(L"Shaders/full3d.fs", ShaderClass::TypesEnum::Fragment);
+            GP::ShaderClass FS(L"Shaders/full3d.fs", GP::ShaderClass::TypesEnum::Fragment);
             FS.Compile();
             SP.AttachShader(FS);
 
             SP.LinkShaders();
         }
 
-        ShaderProgramClass SP_OUTLINE;
+        GP::ShaderProgramClass SP_OUTLINE;
         {
-            ShaderClass VS(L"Shaders/outline.vs", ShaderClass::TypesEnum::Vertex);
+            GP::ShaderClass VS(L"Shaders/outline.vs", GP::ShaderClass::TypesEnum::Vertex);
             VS.Compile();
             SP_OUTLINE.AttachShader(VS);
 
-            ShaderClass FS(L"Shaders/outline.fs", ShaderClass::TypesEnum::Fragment);
+            GP::ShaderClass FS(L"Shaders/outline.fs", GP::ShaderClass::TypesEnum::Fragment);
             FS.Compile();
             SP_OUTLINE.AttachShader(FS);
 
             SP_OUTLINE.LinkShaders();
         }
 
-        ShaderProgramClass SP_NORMAL;
+        GP::ShaderProgramClass SP_NORMAL;
         {
-            ShaderClass VS(L"Shaders/normal.vs", ShaderClass::TypesEnum::Vertex);
+            GP::ShaderClass VS(L"Shaders/normal.vs", GP::ShaderClass::TypesEnum::Vertex);
             VS.Compile();
             SP_NORMAL.AttachShader(VS);
 
-            ShaderClass FS(L"Shaders/normal.fs", ShaderClass::TypesEnum::Fragment);
+            GP::ShaderClass FS(L"Shaders/normal.fs", GP::ShaderClass::TypesEnum::Fragment);
             FS.Compile();
             SP_NORMAL.AttachShader(FS);
 
-            ShaderClass GS(L"Shaders/normal.gs", ShaderClass::TypesEnum::Geometry);
+            GP::ShaderClass GS(L"Shaders/normal.gs", GP::ShaderClass::TypesEnum::Geometry);
             GS.Compile();
             SP_NORMAL.AttachShader(GS);
 
@@ -153,13 +156,13 @@ int main()
         }
 
 
-        ShaderProgramClass QUAD_SP;
+        GP::ShaderProgramClass QUAD_SP;
         {
-            ShaderClass VS(L"Shaders/quad.vs", ShaderClass::TypesEnum::Vertex);
+            GP::ShaderClass VS(L"Shaders/quad.vs", GP::ShaderClass::TypesEnum::Vertex);
             VS.Compile();
             QUAD_SP.AttachShader(VS);
 
-            ShaderClass FS(L"Shaders/quad.fs", ShaderClass::TypesEnum::Fragment);
+            GP::ShaderClass FS(L"Shaders/quad.fs", GP::ShaderClass::TypesEnum::Fragment);
             FS.Compile();
             QUAD_SP.AttachShader(FS);
 
@@ -174,14 +177,14 @@ int main()
         SP.SetUniform1i("u_tex1", 0);
         SP.SetUniform1i("u_tex2", 1);
 
-        Texture2DClass TEX0("Textures/blackFace.jpg",
-            TextureSettingsClass{ TextureSettingsClass::WrapTypeEnum::Repeat,TextureSettingsClass::WrapTypeEnum::Repeat,
-            TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
-            TextureSettingsClass::DepthStencilReadModeEnum::Depth });
-        Texture2DClass TEX1("Textures/simpleFace.png",
-            TextureSettingsClass{ TextureSettingsClass::WrapTypeEnum::Repeat,TextureSettingsClass::WrapTypeEnum::Repeat,
-            TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
-            TextureSettingsClass::DepthStencilReadModeEnum::Depth });
+        GP::TextureClass TEX0(GP::TextureClass::DimensionsEnum::Two, "Textures/blackFace.jpg",
+            GP::TextureSettingsClass{ GP::TextureSettingsClass::WrapTypeEnum::Repeat,GP::TextureSettingsClass::WrapTypeEnum::Repeat,
+            GP::TextureSettingsClass::DownscalingFilterFuncEnum::Linear,GP::TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
+            GP::TextureSettingsClass::DepthStencilReadModeEnum::Depth });
+        GP::TextureClass TEX1(GP::TextureClass::DimensionsEnum::Two, "Textures/simpleFace.png",
+            GP::TextureSettingsClass{ GP::TextureSettingsClass::WrapTypeEnum::Repeat,GP::TextureSettingsClass::WrapTypeEnum::Repeat,
+            GP::TextureSettingsClass::DownscalingFilterFuncEnum::Linear,GP::TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
+            GP::TextureSettingsClass::DepthStencilReadModeEnum::Depth });
         
 
         
@@ -281,17 +284,17 @@ int main()
             SP.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
             SP.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
             SP.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
-            RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
+            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
             VA2.Bind();
 
             SP.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
             SP.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
             SP.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
-            RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
+            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
 
             Preset3D.sStencilTest_BaseMask(0);
-            Preset3D.sStencilTest_ComparisonType(RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::NotEqual);
+            Preset3D.sStencilTest_ComparisonType(GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::NotEqual);
             Preset3D.sDepthTest_Enabled(false);
 
             {//outline
@@ -308,18 +311,18 @@ int main()
                 SP_OUTLINE.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
                 SP_OUTLINE.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
                 SP_OUTLINE.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
-                RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
+                GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
                 VA2.Bind();
 
                 SP_OUTLINE.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
                 SP_OUTLINE.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
                 SP_OUTLINE.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
-                RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
+                GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
             }
 
             Preset3D.sStencilTest_BaseMask(0xff);
-            Preset3D.sStencilTest_ComparisonType(RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::AlwaysPass);
+            Preset3D.sStencilTest_ComparisonType(GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::AlwaysPass);
             Preset3D.sDepthTest_Enabled(true);
 
             //////
@@ -334,14 +337,14 @@ int main()
             SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
             SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
             SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
-            RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
+            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
             VA2.Bind();
 
             SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
             SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
             SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
-            RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
+            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
 
 
             FB.Unbind(Width,Height);
@@ -356,7 +359,7 @@ int main()
 
             QUAD_VA.Bind();
 
-            RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, (int)quadVBD.size() / 2);
+            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)quadVBD.size() / 2);
 
             QUAD_VA.Unbind();
 
@@ -367,8 +370,8 @@ int main()
                         1,
                         -1.f + 2.f * ((float)i / 5), -1.f + 2.f * ((float)i / 5),
                         -1,-1,
-                        0, TextRendererNamespace::ClampingFuncs::None,
-                        0, true, TextRendererNamespace::ClampingFuncs::None);*/
+                        0, TextGP::RendererNamespace::ClampingFuncs::None,
+                        0, true, TextGP::RendererNamespace::ClampingFuncs::None);*/
                 TEXT_RENDERER.RenderText(ArialFont, L"english ðóññêèé ÉÆ¨!:(|&", Vector2F(-1,0), Vector2F(-1,0), Vector2U(Width, Height),
                     Vector2F(1, 0), 0.5f);
                 //}
@@ -378,13 +381,9 @@ int main()
             window.ProcessEvents();
         }
 
-        window.Destroy();
-
-        UninitializeKursovayaEngine2();
-        return 0;
     }
-    catch (KURSAVAYAENGINE2_CORE_ERRORS&) {
-        UninitializeKursovayaEngine2();
-        return 0;
-    }//todo console dont close when window is closed, need to fix this bug
+    catch (KURSAVAYAENGINE2_CORE_ERRORS& err) { ProgramExitCode = (unsigned int)err; }
+
+	UninitializeKursovayaEngine2();
+    return ProgramExitCode;
 }

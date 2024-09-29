@@ -296,7 +296,7 @@
     <ClInclude Include="Dependencies\stb_image\stb_image.h" />
     <ClInclude Include="DLL.h" />
     <ClInclude Include="GraphicsAbstractions\TextRenderer.h" />
-    <ClInclude Include="GraphicsAbstractions\TexturesManager.h" />
+    <ClInclude Include="GraphicsAbstractions\Texture.h" />
     <ClInclude Include="GraphicsPrimitives\Renderer.h" />
     <ClInclude Include="GraphicsPrimitives\VertexArray.h" />
     <ClInclude Include="GraphicsPrimitives\VertexBuffer.h" />

@@ -28,7 +28,7 @@ namespace GraphicsAbstractions {
                 float XOffsetInTexture;
             };
             mutable bool Deleted = false;
-            GraphicsPrimitives::Texture2DClass Texture;
+            GraphicsPrimitives::TextureClass Texture;
             void* FreeTypeFace;//FT_Face
             std::vector<CharacterClass> Characters;
             int MaxCharacterUp = 0; int MaxCharacterDown = 0;

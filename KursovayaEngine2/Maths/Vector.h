@@ -28,7 +28,7 @@ public:
 	}
 	template<typename...NumsTyp>
 	Vector(const Type num, const NumsTyp...nums) {
-		static_assert(sizeof...(nums) == (AxesAmount - 1), "Too many numbers");
+		static_assert(sizeof...(nums) == (AxesAmount - 1), "Too many or not enough numbers");
 		ConstructFromTemplate(num, nums...);
 	}
 	Vector() {

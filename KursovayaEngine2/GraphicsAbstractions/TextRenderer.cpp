@@ -73,7 +73,7 @@ TextRendererClass::FontClass::~FontClass() {
 
 
 TextRendererClass::FontClass::FontClass(unsigned int characterSize, const char* fontDir, const wchar_t* chars) :
-    Texture(Vector2U(0, 0), nullptr, TextureSettingsClass{
+    Texture(TextureClass::DimensionsEnum::Two, Vector3U(0, 0, 0), nullptr, TextureSettingsClass{
                     TextureSettingsClass::WrapTypeEnum::ClampToBorder,TextureSettingsClass::WrapTypeEnum::ClampToBorder,
                     TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
                     TextureSettingsClass::DepthStencilReadModeEnum::Depth },
@@ -169,7 +169,7 @@ TextRendererClass::FontClass::FontClass(unsigned int characterSize, const char* 
 
 	glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); // disable byte-alignment restriction
 
-	Texture.SetData(Vector2U(totalXSize, maxHeight), textureBuffer, 
+	Texture.SetData(Vector3U(totalXSize, maxHeight, 0), textureBuffer, 
         TextureDataSettingsClass{ TextureDataSettingsClass::DataFormatOnGPU_Enum::Red,
         TextureDataSettingsClass::DataFormatOnCPU_Enum::Red,TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte });
 

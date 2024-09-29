@@ -524,10 +524,10 @@
     <ClInclude Include="Tools\BinarySearch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsAbstractions\TexturesManager.h">
+    <ClInclude Include="Tools\ClassFunctionsAccessController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tools\ClassFunctionsAccessController.h">
+    <ClInclude Include="GraphicsAbstractions\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
