@@ -4,7 +4,7 @@
 #include"Tools/DynArr.h"
 #include"Tools/ClassFunctionsAccessController.h"
 
-namespace GraphicsPrimitives {
+namespace Graphics::Primitives {
 
 	class VertexBufferClass {
 		unsigned int ID = 0;

@@ -1,7 +1,7 @@
 #pragma once
 #include"Shader.h"
 
-namespace GraphicsPrimitives {
+namespace Graphics::Primitives {
 
 	class ShaderProgramClass {
 		unsigned int ID;

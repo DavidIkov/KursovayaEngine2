@@ -5,7 +5,7 @@
 #include<vector>
 #include"Tools/ClassFunctionsAccessController.h"
 
-namespace GraphicsPrimitives {
+namespace Graphics::Primitives {
 
 	enum class FrameBufferClassTextureAttachment {
 		Color, Depth, Stencil

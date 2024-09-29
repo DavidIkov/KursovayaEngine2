@@ -3,21 +3,21 @@
 #include"Tools/DebuggingTools.h"
 #include"KursovayaEngine2Manager.h"
 #include"Windows/Window.h"
-#include"GraphicsAbstractions/TextRenderer.h"
-#include"GraphicsAbstractions/Texture.h"
-#include"GraphicsPrimitives/FrameBuffer.h"
-#include"GraphicsPrimitives/VertexArray.h"
-#include"GraphicsPrimitives/VertexBuffer.h"
-#include"GraphicsPrimitives/RenderBuffer.h"
-#include"GraphicsPrimitives/ShaderProgram.h"
-#include"GraphicsPrimitives/Texture.h"
-#include"GraphicsPrimitives/Renderer.h"
+#include"Graphics/Abstractions/TextRenderer.h"
+#include"Graphics/Abstractions/Texture.h"
+#include"Graphics/Primitives/FrameBuffer.h"
+#include"Graphics/Primitives/VertexArray.h"
+#include"Graphics/Primitives/VertexBuffer.h"
+#include"Graphics/Primitives/RenderBuffer.h"
+#include"Graphics/Primitives/ShaderProgram.h"
+#include"Graphics/Primitives/Texture.h"
+#include"Graphics/Primitives/Renderer.h"
 #include"Maths/Vector.h"
 #include"Maths/Matrix.h"
 #include"Tools/FileTypesReaders/Obj.h"
 
-namespace GP = GraphicsPrimitives;
-namespace GA = GraphicsAbstractions;
+namespace GP = Graphics::Primitives;
+namespace GA = Graphics::Abstractions;
 
 unsigned int ProgramExitCode = 0;
 
@@ -35,7 +35,7 @@ int main()
         WindowClass window(Width, Height, "haiiiii", false, 1);
 
 
-        GraphicsAbstractions::TextRendererClass TEXT_RENDERER(L"Shaders/textNEW.vs", L"Shaders/textNEW.fs");
+        GA::TextRendererClass TEXT_RENDERER(L"Shaders/textNEW.vs", L"Shaders/textNEW.fs");
         StalkerClass ArialFont = TEXT_RENDERER.AddFont(50, "Fonts/arial.ttf", L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
             "`abcdefghijklmnopqrstuvwxyz{|}~"\
             "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßÿşıüûúùø÷öõôóòñğïîíìëêéèçæ¸åäãâáà");

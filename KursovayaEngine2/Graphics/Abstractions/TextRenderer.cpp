@@ -1,14 +1,14 @@
 
 #include"TextRenderer.h"
 #include"Tools/DebuggingTools.h"
-#include"GraphicsPrimitives/Renderer.h"
+#include"Graphics/Primitives/Renderer.h"
 #include"Tools/GLDebug.h"
 #include"FreeType/ft2build.h"
 #include"Tools/BinarySearch.h"
 #include FT_FREETYPE_H
 
-using namespace GraphicsPrimitives;
-using namespace GraphicsAbstractions;
+using namespace Graphics::Primitives;
+using namespace Graphics::Abstractions;
 
 void* TextRendererClass::FreeTypeLib = nullptr;
 

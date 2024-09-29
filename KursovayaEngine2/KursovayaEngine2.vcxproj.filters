@@ -21,16 +21,16 @@
     <ClCompile Include="Tools\DebuggingTools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsPrimitives\ShaderProgram.cpp">
+    <ClCompile Include="Graphics\Primitives\ShaderProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsPrimitives\Shader.cpp">
+    <ClCompile Include="Graphics\Primitives\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Dependencies\stb_image\stb_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsPrimitives\Texture.cpp">
+    <ClCompile Include="Graphics\Primitives\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Input\Keyboard.cpp">
@@ -48,13 +48,13 @@
     <ClCompile Include="Windows\WindowsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsPrimitives\FrameBuffer.cpp">
+    <ClCompile Include="Graphics\Primitives\FrameBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsPrimitives\RenderBuffer.cpp">
+    <ClCompile Include="Graphics\Primitives\RenderBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsPrimitives\RenderingPreset.cpp">
+    <ClCompile Include="Graphics\Primitives\RenderingPreset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tools\FileTypesReaders\Obj.cpp">
@@ -66,10 +66,10 @@
     <ClCompile Include="Tools\Time.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsPrimitives\VertexBuffer.cpp">
+    <ClCompile Include="Graphics\Primitives\VertexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsPrimitives\VertexArray.cpp">
+    <ClCompile Include="Graphics\Primitives\VertexArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WinOS\FileExplorerDialog.cpp">
@@ -81,10 +81,10 @@
     <ClCompile Include="Input\Mouse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsPrimitives\Renderer.cpp">
+    <ClCompile Include="Graphics\Primitives\Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsAbstractions\TextRenderer.cpp">
+    <ClCompile Include="Graphics\Abstractions\TextRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KursovayaEngine2Manager.cpp">
@@ -116,10 +116,10 @@
     <ClInclude Include="Tools\DebuggingTools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsPrimitives\ShaderProgram.h">
+    <ClInclude Include="Graphics\Primitives\ShaderProgram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsPrimitives\Shader.h">
+    <ClInclude Include="Graphics\Primitives\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Dependencies\stb_image\stb_image.h">
@@ -128,7 +128,7 @@
     <ClInclude Include="Tools\GLDebug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsPrimitives\Texture.h">
+    <ClInclude Include="Graphics\Primitives\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Maths\Matrix.h">
@@ -152,13 +152,13 @@
     <ClInclude Include="Windows\WindowsManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsPrimitives\FrameBuffer.h">
+    <ClInclude Include="Graphics\Primitives\FrameBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsPrimitives\RenderBuffer.h">
+    <ClInclude Include="Graphics\Primitives\RenderBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsPrimitives\RenderingPreset.h">
+    <ClInclude Include="Graphics\Primitives\RenderingPreset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tools\FileTypesReaders\Obj.h">
@@ -170,10 +170,10 @@
     <ClInclude Include="Tools\Time.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsPrimitives\VertexBuffer.h">
+    <ClInclude Include="Graphics\Primitives\VertexBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsPrimitives\VertexArray.h">
+    <ClInclude Include="Graphics\Primitives\VertexArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Dependencies\FreeType\dlg\dlg.h">
@@ -494,10 +494,10 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsPrimitives\Renderer.h">
+    <ClInclude Include="Graphics\Primitives\Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsAbstractions\TextRenderer.h">
+    <ClInclude Include="Graphics\Abstractions\TextRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="KursovayaEngine2Manager.h">
@@ -527,7 +527,7 @@
     <ClInclude Include="Tools\ClassFunctionsAccessController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsAbstractions\Texture.h">
+    <ClInclude Include="Graphics\Abstractions\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

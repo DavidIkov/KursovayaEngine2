@@ -2,7 +2,7 @@
 #include"Tools/GLDebug.h"
 #include"glad/glad.h"
 
-using namespace GraphicsPrimitives;
+using namespace Graphics::Primitives;
 
 void RendererNamespace::DrawArrays(PrimitivesEnum primitive, unsigned int startingInd, unsigned int amountOfVertexesToRender) {
 	unsigned int glPrimitive = 0;

@@ -1,11 +1,11 @@
 #pragma once
-#include"GraphicsPrimitives/VertexArray.h"
-#include"GraphicsPrimitives/VertexBuffer.h"
-#include"GraphicsPrimitives/ShaderProgram.h"
-#include"GraphicsPrimitives/Texture.h"
+#include"Graphics/Primitives/VertexArray.h"
+#include"Graphics/Primitives/VertexBuffer.h"
+#include"Graphics/Primitives/ShaderProgram.h"
+#include"Graphics/Primitives/Texture.h"
 #include"Maths/Vector.h"
 
-using namespace GraphicsPrimitives;
+using namespace Graphics::Primitives;
 
 class QuadsHandler {
 	friend class Quad;

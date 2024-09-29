@@ -3,7 +3,7 @@
 #include"Tools/DynArr.h"
 #include"Tools/ClassFunctionsAccessController.h"
 
-namespace GraphicsPrimitives {
+namespace Graphics::Primitives {
 
 	class VertexArrayClass {
 		unsigned int ID = 0;

@@ -1,5 +1,5 @@
 #include"Quad.h"
-#include"GraphicsPrimitives/Renderer.h"
+#include"Graphics/Primitives/Renderer.h"
 
 QuadsHandler::QuadsHandler(const wchar_t* vs, const wchar_t* fs) {
 

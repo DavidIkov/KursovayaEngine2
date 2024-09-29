@@ -2,23 +2,23 @@
 #include<string>
 #include"Quad.h"
 #include"ClickTrigger.h"
-#include"GraphicsPrimitives/FrameBuffer.h"
-#include"GraphicsPrimitives/VertexBuffer.h"
-#include"GraphicsPrimitives/VertexBuffer.h"
+#include"Graphics/Primitives/FrameBuffer.h"
+#include"Graphics/Primitives/VertexBuffer.h"
+#include"Graphics/Primitives/VertexBuffer.h"
 #include"RussianConsole.h"
 #include"KursovayaEngine2Manager.h"
-#include"GraphicsPrimitives/RenderingPreset.h"
-#include"GraphicsAbstractions/TextRenderer.h"
+#include"Graphics/Primitives/RenderingPreset.h"
+#include"Graphics/Abstractions/TextRenderer.h"
 #include"csv_json.h"
 #include"WinOS/FileExplorerDialog.h"
 #include"WinOS/wchar_t_Operations.h"
-#include"GraphicsPrimitives/Renderer.h"
+#include"Graphics/Primitives/Renderer.h"
 #include"Tools/DebuggingTools.h"
 #include"Tools/DynArr.h"
 #include<iostream>
 #include"Tools/RandomNumber.h"
 
-using namespace GraphicsAbstractions;
+using namespace Graphics::Abstractions;
 
 namespace Proportions {
     float TopBarSize = 0.1f;

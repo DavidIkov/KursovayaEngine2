@@ -1,7 +1,7 @@
 #pragma once
 #include"DLL.h"
 
-namespace GraphicsPrimitives {
+namespace Graphics::Primitives {
 
 	namespace RendererNamespace {
 		enum class PrimitivesEnum {

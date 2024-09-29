@@ -4,7 +4,7 @@
 #include"Tools/DebuggingTools.h"
 #include"Tools/ErrorCodes.h"
 
-using namespace GraphicsPrimitives;
+using namespace Graphics::Primitives;
 
 void FrameBufferClass::ClearColorBuffer() {
 	Bind();

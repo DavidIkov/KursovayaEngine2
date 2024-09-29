@@ -4,7 +4,7 @@
 #include"Tools/DebuggingTools.h"
 #include"Tools/ErrorCodes.h"
 
-using namespace GraphicsPrimitives;
+using namespace Graphics::Primitives;
 
 RenderBufferClass::RenderBufferClass(unsigned int width, unsigned int height, bool createDepthBuffer, bool createStencilBuffer) {
     glSC(glGenRenderbuffers(1, &ID));

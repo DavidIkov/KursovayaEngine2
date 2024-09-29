@@ -5,7 +5,7 @@
 #include"Tools/GLDebug.h"
 #include"WinOS/FilesSystem.h"
 
-using namespace GraphicsPrimitives;
+using namespace Graphics::Primitives;
 
 unsigned int ShaderClass::gID() {
 #if defined Debug

@@ -2,7 +2,7 @@
 #include"glad/glad.h"
 #include"Tools/GLDebug.h"
 
-using namespace GraphicsPrimitives;
+using namespace Graphics::Primitives;
 
 RenderingPresetClass::RenderingPresetClass(
 	bool f_FaceCullingEnabled,

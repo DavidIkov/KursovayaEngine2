@@ -5,7 +5,7 @@
 #include"glad/glad.h"
 #include"Tools/DebuggingTools.h"
 
-using namespace GraphicsPrimitives;
+using namespace Graphics::Primitives;
 
 static unsigned int _DataFormatOnGPU_SwitchCase(TextureDataSettingsClass::DataFormatOnGPU_Enum format) {
     switch (format) {
