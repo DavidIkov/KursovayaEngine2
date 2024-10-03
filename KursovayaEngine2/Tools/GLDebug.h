@@ -1,7 +1,7 @@
 #pragma once
 #include<iostream>
 #include"glad/glad.h"
-#if defined Debug
+#if defined KE2_Debug
 #define glSC(func)  while (glGetError() != GL_NO_ERROR);\
 func;\
 {int error = glGetError();\

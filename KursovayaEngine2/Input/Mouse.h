@@ -23,7 +23,7 @@ public:
 	DLLTREATMENT const EventClass& gMousePressableKeyEvent(PressableKeysEnum key) const;
 
 	//not for user
-	void GLFW_KEYCALLBACK(int button, int action, int mods);
+	void _GLFW_KEYCALLBACK(int button, int action, int mods);
 
 
 	DLLTREATMENT bool gMousePressableKeyState(PressableKeysEnum key) const;

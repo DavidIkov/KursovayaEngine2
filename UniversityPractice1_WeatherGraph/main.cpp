@@ -108,8 +108,8 @@ void ClearGraphicsSettings() {
 int main()
 {
 
-    InitializeKursovayaEngine2();
-
+    InitializeKE2();
+    
     EnableRussianConsole();
 
     try {
@@ -315,11 +315,13 @@ int main()
                     }
 
 
+                    sets->GRAPH_DATA_TEX.Bind();
                     sets->GRAPH_DATA_TEX.SetData(datesAmount, nums, TextureDataSettingsClass{ TextureDataSettingsClass::DataFormatOnGPU_Enum::Red,
                         TextureDataSettingsClass::DataFormatOnCPU_Enum::Red,TextureDataSettingsClass::DataTypeOnCPU_Enum::Float });
 
                     delete[] nums;
 
+                    sets->FB.Bind();
                     sets->FB.ClearColorBuffer();
                     sets->VA_GRAPH.Bind();
                     sets->GRAPH_DATA_TEX.Bind(0);
@@ -331,7 +333,7 @@ int main()
                 Preset2D.Bind();
                 sets->VA_TEX.Bind();
                 SimpleImageSP.Bind();
-                sets->FB_TEX.Bind(0);
+                sets->FB_TEX.Bind();
                 RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, 6);
                 sets->VA_TEX.Unbind();
             }
@@ -474,6 +476,7 @@ int main()
                             -1 + Proportions::GraphicsSettingsBarSize * 2,-1,0,0
                         };
                         sets->VA_TEX.Bind();
+                        sets->VB_TEX.Bind();
                         sets->VB_TEX.SetLayout(VertexBufferClass::BufferDataTypeEnum::Float, { 2,2 });
                         sets->VB_TEX.SetData(sizeof(data_tex), data_tex, VertexBufferClass::BufferDataUsageEnum::StaticDraw);
                         sets->VA_TEX.Unbind();
@@ -487,6 +490,7 @@ int main()
                             -1,-1,0,0
                         };
                         sets->VA_GRAPH.Bind();
+                        sets->VB_GRAPH.Bind();
                         sets->VB_GRAPH.SetLayout(VertexBufferClass::BufferDataTypeEnum::Float, { 2,2 });
                         sets->VB_GRAPH.SetData(sizeof(data_graph), data_graph, VertexBufferClass::BufferDataUsageEnum::StaticDraw);
                         sets->VA_GRAPH.Unbind();
@@ -746,14 +750,10 @@ int main()
             window.WaitTillEvent();
         }
 
+    }
+    catch (KURSAVAYAENGINE2_CORE_ERRORS&) {}
 
-        ClearGraphicsSettings();
-        UninitializeKursovayaEngine2();
-        return 0;
-    }
-    catch (KURSAVAYAENGINE2_CORE_ERRORS&) {
-        ClearGraphicsSettings();
-        UninitializeKursovayaEngine2();
-        return 0;
-    }
+    ClearGraphicsSettings();
+    UninitializeKE2();
+    return 0;
 }

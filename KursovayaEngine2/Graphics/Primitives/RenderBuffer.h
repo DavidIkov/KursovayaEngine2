@@ -13,11 +13,13 @@ namespace Graphics::Primitives {
 		DLLTREATMENT RenderBufferClass(const RenderBufferClass&& toCopy);
 		DLLTREATMENT void operator=(const RenderBufferClass&& toCopy);
 		DLLTREATMENT ~RenderBufferClass();
+		DLLTREATMENT void Bind();
 		DLLTREATMENT unsigned int gID();
 		DLLTREATMENT void Delete();
 
 #define CFAC_ClassName RenderBufferClass
 		CFAC_ClassConstructor(FullAccess,
+			CFAC_FuncPtrConstr(Bind)
 			CFAC_FuncPtrConstr(gID)
 		);
 #undef CFAC_ClassName

@@ -3,12 +3,16 @@
 #include"Tools/DebuggingTools.h"
 #include"glad/glad.h"
 #include"Tools/ErrorCodes.h"
+#include"Tools/DebugRuntimeAssert.h"
+#include"Graphics/Globals.h"
 
 using namespace Graphics::Primitives;
 
+#define Assert_NotDeleted_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Deleted, "VertexArray is deleted", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+
 VertexArrayClass::VertexArrayClass() {
     glSC(glGenVertexArrays(1, &ID));
-    glSC(glBindVertexArray(ID));
+    Bind();
 }
 VertexArrayClass::VertexArrayClass(RespConstrFlag, const VertexArrayClass& toCopy) {
     memcpy(this, &toCopy, sizeof(VertexArrayClass));
@@ -29,26 +33,19 @@ VertexArrayClass::~VertexArrayClass() {
     }
 }
 unsigned int VertexArrayClass::gID() {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"KILL YOURSELF",KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
-#endif
+    Assert_NotDeleted_Macro;
     return ID;
 }
 void VertexArrayClass::Delete() {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"ATTEMPING TO DELETE ALREADY DELETED VERTEX ARRAY",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
-    else 
-#endif
-        this->~VertexArrayClass();
+    Assert_NotDeleted_Macro;
+	this->~VertexArrayClass();
 }
 void VertexArrayClass::Bind() {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX ARRAY IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-    else 
+    Assert_NotDeleted_Macro;
+#if defined KE2_Debug
+    BindedInstances.sVertexArray_ID_And_Ptr(ID, this);
 #endif
-    {
-        glSC(glBindVertexArray(ID));
-    }
+	glSC(glBindVertexArray(ID));
 }
 void VertexArrayClass::Unbind() {
     glSC(glBindVertexArray(0));

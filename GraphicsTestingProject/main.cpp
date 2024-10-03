@@ -21,24 +21,27 @@ namespace GA = Graphics::Abstractions;
 
 unsigned int ProgramExitCode = 0;
 
+struct Dummy {
+    alignas(GA::TextRendererClass) unsigned char data[sizeof(GA::TextRendererClass)];
+    Dummy() { for (unsigned int i = 0; i < (sizeof(data) / sizeof(unsigned char)); i++) data[i] = i; }
+};
+
 int main()
 {
-    
-    InitializeKursovayaEngine2();
+
+    InitializeKE2();
     
     try {
 
         unsigned int Width = 900;
         unsigned int Height = 600;
 
-
         WindowClass window(Width, Height, "haiiiii", false, 1);
-
-
         GA::TextRendererClass TEXT_RENDERER(L"Shaders/textNEW.vs", L"Shaders/textNEW.fs");
         StalkerClass ArialFont = TEXT_RENDERER.AddFont(50, "Fonts/arial.ttf", L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
             "`abcdefghijklmnopqrstuvwxyz{|}~"\
             "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßÿşıüûúùø÷öõôóòñğïîíìëêéèçæ¸åäãâáà");
+
         
         GP::FrameBufferClass FB(Width, Height);
         GP::TextureClass FB_COLOR_TEX(GP::TextureClass::DimensionsEnum::Two, Vector3U(Width, Height, 0), nullptr,
@@ -60,6 +63,7 @@ int main()
         FB.AttachRenderBuffer(RB.gID(), true, true);
         FB.Finish();
         FB.Unbind(Width, Height);
+
 
         GP::RenderingPresetClass Preset3D(
             true, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
@@ -384,6 +388,6 @@ int main()
     }
     catch (KURSAVAYAENGINE2_CORE_ERRORS& err) { ProgramExitCode = (unsigned int)err; }
 
-	UninitializeKursovayaEngine2();
+	UninitializeKE2();
     return ProgramExitCode;
 }

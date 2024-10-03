@@ -13,12 +13,11 @@ namespace Graphics::Primitives {
 
 	class FrameBufferClass {
 		unsigned int ID = 0;
-#if defined Debug
+#if defined KE2_Debug
 		mutable bool Finished = false;
 #endif
 		mutable bool Deleted = false;
 		unsigned int Width, Height;
-
 
 	public:
 

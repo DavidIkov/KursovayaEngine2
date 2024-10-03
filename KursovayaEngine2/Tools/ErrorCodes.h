@@ -49,4 +49,6 @@ enum class KURSAVAYAENGINE2_CORE_ERRORS : unsigned int {
 	*/
 	UNKNOWN = 7,
 
+	
+
 };

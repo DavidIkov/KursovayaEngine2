@@ -10,7 +10,7 @@ const EventClass& KeyboardClass::gPressableKeyEvent(PressableKeysEnum key) const
 	return PressableKeysEvents[(unsigned int)key];
 }
 
-void KeyboardClass::GLFW_KEYCALLBACK(int key, int scancode, int action, int mods)
+void KeyboardClass::_GLFW_KEYCALLBACK(int key, int scancode, int action, int mods)
 {
 	if (key >= GLFW_KEY_A and key <= GLFW_KEY_Z) {
 		unsigned int ind = key - GLFW_KEY_A;

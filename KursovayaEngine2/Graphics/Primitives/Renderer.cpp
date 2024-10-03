@@ -6,21 +6,20 @@ using namespace Graphics::Primitives;
 
 void RendererNamespace::DrawArrays(PrimitivesEnum primitive, unsigned int startingInd, unsigned int amountOfVertexesToRender) {
 	unsigned int glPrimitive = 0;
+	
 	switch (primitive) {
-#define switchCaseForPrimitiveEnumMacro(prim,primName) case PrimitivesEnum::prim: {glPrimitive=primName; break; }
-		switchCaseForPrimitiveEnumMacro(Points, GL_POINTS);
-		switchCaseForPrimitiveEnumMacro(LineStrip, GL_LINE_STRIP);
-		switchCaseForPrimitiveEnumMacro(LineLoop, GL_LINE_LOOP);
-		switchCaseForPrimitiveEnumMacro(Lines, GL_LINES);
-		switchCaseForPrimitiveEnumMacro(LineStripAdjacency, GL_LINE_STRIP_ADJACENCY);
-		switchCaseForPrimitiveEnumMacro(LinesAdjacency, GL_LINES_ADJACENCY);
-		switchCaseForPrimitiveEnumMacro(TriangleStrip, GL_TRIANGLE_STRIP);
-		switchCaseForPrimitiveEnumMacro(TriangleFan, GL_TRIANGLE_FAN);
-		switchCaseForPrimitiveEnumMacro(Triangles, GL_TRIANGLES);
-		switchCaseForPrimitiveEnumMacro(TriangleStripAdjacency, GL_TRIANGLE_STRIP_ADJACENCY);
-		switchCaseForPrimitiveEnumMacro(TrianglesAdjacency, GL_TRIANGLES_ADJACENCY);
-		switchCaseForPrimitiveEnumMacro(Patches, GL_PATCHES);
-#undef switchCaseForPrimitiveEnumMacro
+	case PrimitivesEnum::Points: glPrimitive = GL_POINTS; break;
+	case PrimitivesEnum::LineStrip: glPrimitive = GL_LINE_STRIP; break;
+	case PrimitivesEnum::LineLoop: glPrimitive = GL_LINE_LOOP; break;
+	case PrimitivesEnum::Lines: glPrimitive = GL_LINES; break;
+	case PrimitivesEnum::LineStripAdjacency: glPrimitive = GL_LINE_STRIP_ADJACENCY; break;
+	case PrimitivesEnum::LinesAdjacency: glPrimitive = GL_LINES_ADJACENCY; break;
+	case PrimitivesEnum::TriangleStrip: glPrimitive = GL_TRIANGLE_STRIP; break;
+	case PrimitivesEnum::TriangleFan: glPrimitive = GL_TRIANGLE_FAN; break;
+	case PrimitivesEnum::Triangles: glPrimitive = GL_TRIANGLES; break;
+	case PrimitivesEnum::TriangleStripAdjacency: glPrimitive = GL_TRIANGLE_STRIP_ADJACENCY; break;
+	case PrimitivesEnum::TrianglesAdjacency: glPrimitive = GL_TRIANGLES_ADJACENCY; break;
+	case PrimitivesEnum::Patches: glPrimitive = GL_PATCHES; break;
 	}
 	glSC(glDrawArrays(glPrimitive, startingInd, amountOfVertexesToRender));
 }

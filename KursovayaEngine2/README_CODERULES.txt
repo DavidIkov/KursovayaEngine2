@@ -1,9 +1,6 @@
 
-!!!!!CONST FUNCTIONS IN CLASSES
-for example you want to return some const Event& from some class with a function so other program will be able to connect to this event
-but when program is connecting to event its modifying the actual event(its connections vector) so functions that are supposed to be possible
-to call when variable returned and const reference should have modifier "const" in them, and so mutable variables will become a thing too
-
+!!!!!MUTABLE VARIABLES
+mutable should mark variables that are responsible for class to work properly, like "Deleted" or stuff like that, that can also be usefull for debugging
 
 !!!!!NAMING CLASSES
 when you have some class that have a name for example "Shader" you should name it "ShaderClass" instead becouse naming it just "Shader" will take away

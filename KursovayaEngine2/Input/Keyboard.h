@@ -24,7 +24,7 @@ public:
 	DLLTREATMENT const EventClass& gPressableKeyEvent(PressableKeysEnum key) const;
 
 	//not for user
-	void GLFW_KEYCALLBACK(int key, int scancode, int action, int mods);
+	void _GLFW_KEYCALLBACK(int key, int scancode, int action, int mods);
 
 
 	DLLTREATMENT bool gPressableKeyState(PressableKeysEnum key) const;

@@ -4,8 +4,16 @@
 #include"Tools/ReadFromFile.h"
 #include"glad/glad.h"
 #include"Tools/DebuggingTools.h"
+#include"Tools/DebugRuntimeAssert.h"
+#include"Graphics/Globals.h"
 
 using namespace Graphics::Primitives;
+#define Assert_NotDeleted_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Deleted, "TextureClass is deleted", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#if defined KE2_Debug
+#define Assert_Binded_Macro //if (DebugRuntimeAssert(DebuggingTools::ErrorTypes::Warning, BindedInstances.gTextureID() == ID, "Texture is not binded", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION)) Bind();
+#else
+#define Assert_Binded_Macro
+#endif
 
 static unsigned int _DataFormatOnGPU_SwitchCase(TextureDataSettingsClass::DataFormatOnGPU_Enum format) {
     switch (format) {
@@ -108,29 +116,34 @@ void TextureClass::_Constructor(Vector3U pixelsAmount, const void* data, const T
     }
 
     glSC(glGenTextures(1, &ID));
-    glSC(glBindTexture(GL_TexEnum, ID));
+    Bind();
 
     SetData(pixelsAmount, data, dataSets);
 }
 
 void TextureClass::_UpdSettings_WrapTypeByX(TextureSettingsClass::WrapTypeEnum wrapTyp) {
-    Bind();
+    Assert_NotDeleted_Macro;
+    Assert_Binded_Macro;
     glSC(glTexParameteri(GL_TexEnum, GL_TEXTURE_WRAP_S, _WrapType_SwitchCase(wrapTyp)));
 }
 void TextureClass::_UpdSettings_WrapTypeByY(TextureSettingsClass::WrapTypeEnum wrapTyp) {
-    Bind();
+    Assert_NotDeleted_Macro;
+    Assert_Binded_Macro;
     glSC(glTexParameteri(GL_TexEnum, GL_TEXTURE_WRAP_T, _WrapType_SwitchCase(wrapTyp)));
 }
 void TextureClass::_UpdSettings_DownscalingFilt(TextureSettingsClass::DownscalingFilterFuncEnum filt) {
-    Bind();
+    Assert_NotDeleted_Macro;
+    Assert_Binded_Macro;
     glSC(glTexParameteri(GL_TexEnum, GL_TEXTURE_MIN_FILTER, _DownscalingFilterFunc_SwitchCase(filt)));
 }
 void TextureClass::_UpdSettings_UpscalingFilt(TextureSettingsClass::UpscalingFilterFuncEnum filt) {
-    Bind();
+    Assert_NotDeleted_Macro;
+    Assert_Binded_Macro; 
     glSC(glTexParameteri(GL_TexEnum, GL_TEXTURE_MAG_FILTER, _UpscalingFilterFunc_SwitchCase(filt)));
 }
 void TextureClass::_UpdSettings_DepthStencilReadMode(TextureSettingsClass::DepthStencilReadModeEnum readMode) {
-    Bind();
+    Assert_NotDeleted_Macro;
+    Assert_Binded_Macro;
     glSC(glTexParameteri(GL_TexEnum, GL_DEPTH_STENCIL_TEXTURE_MODE, _DepthStencilReadMode_SwitchCase(readMode)));
 }
 
@@ -147,7 +160,7 @@ TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, cons
     int width, height, textureChannelsAmount;
     unsigned char* textureData = stbi_load(filePath, &width, &height, &textureChannelsAmount, 0);
     if (textureData == nullptr) {
-        DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO LOAD IMAGE", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
+        DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "failed to load image", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
     }
     TextureDataSettingsClass dataSettings;
     dataSettings.DataFormatOnGPU = TextureDataSettingsClass::DataFormatOnGPU_Enum::RGBA;
@@ -184,7 +197,9 @@ TextureClass::~TextureClass() {
 }
 
 void TextureClass::SetData(Vector3U pixelsAmount, const void* data, const TextureDataSettingsClass& dataSets) {
-    Bind();
+    Assert_NotDeleted_Macro;
+    Assert_Binded_Macro;
+
     unsigned int gl_dataFormatOnGPU = _DataFormatOnGPU_SwitchCase(dataSets.DataFormatOnGPU);
     unsigned int gl_dataFormatOnCPU = _DataFormatOnCPU_SwitchCase(dataSets.DataFormatOnCPU);
     unsigned int gl_dataTypeOnCPU = _DataTypeOnCPU_SwitchCase(dataSets.DataTypeOnCPU);
@@ -196,7 +211,9 @@ void TextureClass::SetData(Vector3U pixelsAmount, const void* data, const Textur
 }
 void TextureClass::SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data,
     TextureDataSettingsClass::DataFormatOnCPU_Enum dataFormatOnCPU, TextureDataSettingsClass::DataTypeOnCPU_Enum dataTypeOnCPU) {
-    Bind();
+    Assert_NotDeleted_Macro;
+    Assert_Binded_Macro;
+
     glSC(glTexSubImage2D(GL_TEXTURE_2D, 0, pixelsOffset[0], pixelsOffset[1], pixelsAmount[0], pixelsAmount[1],
         _DataFormatOnCPU_SwitchCase(dataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataTypeOnCPU), data));
     unsigned int gl_dataFormatOnCPU = _DataFormatOnCPU_SwitchCase(dataFormatOnCPU);
@@ -209,12 +226,15 @@ void TextureClass::SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, cons
 }
 
 void TextureClass::GenerateMipmaps() {
-    glBindTexture(GL_TexEnum, ID);
+    Assert_NotDeleted_Macro;
+    Assert_Binded_Macro;
     glSC(glGenerateMipmap(GL_TexEnum));
 }
 
 void TextureClass::GetData(TextureDataSettingsClass::DataFormatOnCPU_Enum dataFormat, TextureDataSettingsClass::DataTypeOnCPU_Enum dataType, void* buffer) {
-#if defined Debug
+    Assert_NotDeleted_Macro;
+    Assert_Binded_Macro;
+#if defined KE2_Debug
     if (buffer == nullptr) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"buffer shouldnt be nullptr",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
 #endif
     glSC(glGetTexImage(GL_TexEnum, 0, _DataFormatOnCPU_SwitchCase(dataFormat), _DataTypeOnCPU_SwitchCase(dataType), buffer));
@@ -227,406 +247,23 @@ void TextureClass::sSettings_UpscalingFilt(TextureSettingsClass::UpscalingFilter
 void TextureClass::sSettings_DepthStencilReadMode(TextureSettingsClass::DepthStencilReadModeEnum depthStencilReadMode) { _UpdSettings_DepthStencilReadMode(depthStencilReadMode); }
 
 unsigned int TextureClass::gID()  {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, ACCESING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
-#endif
+    Assert_NotDeleted_Macro;
     return ID;
 }
 void TextureClass::Delete() {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS ALREADY DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
-    else
-#endif
-        this->~TextureClass();
+    Assert_NotDeleted_Macro;
+    this->~TextureClass();
 }
 
 void TextureClass::Bind(unsigned int textureInd){
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-    else
+    Assert_NotDeleted_Macro;
+	glSC(glActiveTexture(GL_TEXTURE0 + textureInd));
+#if defined KE2_Debug
+    BindedInstances.sTexture_ID(ID);
 #endif
-    {
-        glSC(glActiveTexture(GL_TEXTURE0 + textureInd));
-        glSC(glBindTexture(GL_TexEnum, ID));
-    }
+	glSC(glBindTexture(GL_TexEnum, ID));
 }
 void TextureClass::Unbind() {
     glSC(glBindTexture(GL_TexEnum, 0));
 }
 
-
-
-
-
-
-/*void Texture1DClass::_Constructor(unsigned int pixelsAmount, const void* data, const TextureDataSettingsClass& dataSets) {
-    glSC(glGenTextures(1, &ID));
-    glSC(glBindTexture(GL_TEXTURE_1D, ID));
-
-    glSC(glTexImage1D(GL_TEXTURE_1D, 0, _DataFormatOnGPU_SwitchCase(dataSets.DataFormatOnGPU), pixelsAmount, 0,
-        _DataFormatOnCPU_SwitchCase(dataSets.DataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataSets.DataTypeOnCPU), data));
-}
-
-void Texture1DClass::_UpdSettings_WrapTypeByX(TextureSettingsClass::WrapTypeEnum wrapTyp) {
-    Bind();
-    glSC(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, _WrapType_SwitchCase(wrapTyp)));
-}
-void Texture1DClass::_UpdSettings_WrapTypeByY(TextureSettingsClass::WrapTypeEnum wrapTyp) {
-    Bind();
-    glSC(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, _WrapType_SwitchCase(wrapTyp)));
-}
-void Texture1DClass::_UpdSettings_DownscalingFilt(TextureSettingsClass::DownscalingFilterFuncEnum filt) {
-    Bind();
-    glSC(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, _DownscalingFilterFunc_SwitchCase(filt)));
-}
-void Texture1DClass::_UpdSettings_UpscalingFilt(TextureSettingsClass::UpscalingFilterFuncEnum filt) {
-    Bind();
-    glSC(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, _UpscalingFilterFunc_SwitchCase(filt)));
-}
-void Texture1DClass::_UpdSettings_DepthStencilReadMode(TextureSettingsClass::DepthStencilReadModeEnum readMode) {
-    Bind();
-    glSC(glTexParameteri(GL_TEXTURE_1D, GL_DEPTH_STENCIL_TEXTURE_MODE, _DepthStencilReadMode_SwitchCase(readMode)));
-}
-
-void Texture1DClass::_UpdateSettings(const TextureSettingsClass& sets) {
-    _UpdSettings_WrapTypeByX(sets.WrapTypeByX);
-    _UpdSettings_WrapTypeByY(sets.WrapTypeByY);
-    _UpdSettings_DownscalingFilt(sets.DownscalingFilt);
-    _UpdSettings_UpscalingFilt(sets.UpscalingFilt);
-    _UpdSettings_DepthStencilReadMode(sets.DepthStencilReadMode);
-}
-
-Texture1DClass::Texture1DClass(const char* filePath, const TextureSettingsClass& sets, CPU_DataData_Struct* dataExportPtr) {
-
-    int width, height, textureChannelsAmount;
-    unsigned char* textureData = stbi_load(filePath, &width, &height, &textureChannelsAmount, 0);
-    if (textureData == nullptr) {
-        DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO LOAD IMAGE", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-    }
-    TextureDataSettingsClass dataSettings;
-    dataSettings.DataFormatOnGPU = TextureDataSettingsClass::DataFormatOnGPU_Enum::RGBA;
-    dataSettings.DataFormatOnCPU = (textureChannelsAmount == 4) ? TextureDataSettingsClass::DataFormatOnCPU_Enum::RGBA : TextureDataSettingsClass::DataFormatOnCPU_Enum::RGB;
-    dataSettings.DataTypeOnCPU = TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte;
-
-    _Constructor(width * height , textureData, dataSettings);
-    _UpdateSettings(sets);
-
-    stbi_image_free(textureData);
-}
-Texture1DClass::Texture1DClass(unsigned int pixelsAmount, const void* data, const TextureSettingsClass& sets, const TextureDataSettingsClass& dataSets) {
-    _Constructor(pixelsAmount, data, dataSets);
-    _UpdateSettings(sets);
-}
-Texture1DClass::Texture1DClass(RespConstrFlag, const Texture1DClass& toCopy) {
-    memcpy(this, &toCopy, sizeof(Texture1DClass));
-    toCopy.Deleted = true;
-}
-Texture1DClass::Texture1DClass(const Texture1DClass&& toCopy) {
-    memcpy(this, &toCopy, sizeof(Texture1DClass));
-    toCopy.Deleted = true;
-}
-void Texture1DClass::operator=(const Texture1DClass&& toCopy){
-    this->~Texture1DClass();
-    memcpy(this, &toCopy, sizeof(Texture1DClass));
-    toCopy.Deleted = true;
-}
-Texture1DClass::~Texture1DClass() {
-    if (not Deleted) {
-        glSC(glDeleteTextures(1, &ID));
-        Deleted = true;
-    }
-}
-
-void Texture1DClass::SetData(unsigned int pixelsAmount, const void* data, const TextureDataSettingsClass& dataSets) {
-    Bind();
-    glSC(glTexImage1D(GL_TEXTURE_1D, 0, _DataFormatOnGPU_SwitchCase(dataSets.DataFormatOnGPU), pixelsAmount, 0,
-        _DataFormatOnCPU_SwitchCase(dataSets.DataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataSets.DataTypeOnCPU), data));
-}
-void Texture1DClass::SetSubData(unsigned int pixelsOffset, unsigned int pixelsAmount, const void* data,
-    TextureDataSettingsClass::DataFormatOnCPU_Enum dataFormatOnCPU, TextureDataSettingsClass::DataTypeOnCPU_Enum dataTypeOnCPU) {
-    Bind();
-    glSC(glTexSubImage1D(GL_TEXTURE_1D, 0, pixelsOffset, pixelsAmount,
-        _DataFormatOnCPU_SwitchCase(dataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataTypeOnCPU), data));
-}
-
-void Texture1DClass::GenerateMipmaps() {
-    glBindTexture(GL_TEXTURE_1D, ID);
-    glSC(glGenerateMipmap(GL_TEXTURE_1D));
-}
-void Texture1DClass::GetData(TextureDataSettingsClass::DataFormatOnCPU_Enum dataFormat, TextureDataSettingsClass::DataTypeOnCPU_Enum dataType, void* buffer) {
-#if defined Debug
-    if (buffer == nullptr) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"buffer shouldnt be nullptr",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
-#endif
-    glSC(glGetTexImage(GL_TEXTURE_1D, 0, _DataFormatOnCPU_SwitchCase(dataFormat), _DataTypeOnCPU_SwitchCase(dataType), buffer));
-}
-
-void Texture1DClass::sSettings_WrapTypeByX(TextureSettingsClass::WrapTypeEnum wrapTypeByX) { _UpdSettings_WrapTypeByX(wrapTypeByX); }
-void Texture1DClass::sSettings_WrapTypeByY(TextureSettingsClass::WrapTypeEnum wrapTypeByY) { _UpdSettings_WrapTypeByY(wrapTypeByY); }
-void Texture1DClass::sSettings_DownscalingFilt(TextureSettingsClass::DownscalingFilterFuncEnum downscalingFilt) { _UpdSettings_DownscalingFilt(downscalingFilt); }
-void Texture1DClass::sSettings_UpscalingFilt(TextureSettingsClass::UpscalingFilterFuncEnum upscalingFilt) { _UpdSettings_UpscalingFilt(upscalingFilt); }
-void Texture1DClass::sSettings_DepthStencilReadMode(TextureSettingsClass::DepthStencilReadModeEnum depthStencilReadMode) { _UpdSettings_DepthStencilReadMode(depthStencilReadMode); }
-
-unsigned int Texture1DClass::gID() {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, ACCESING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
-#endif
-    return ID;
-}
-void Texture1DClass::Delete() {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS ALREADY DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
-    else
-#endif
-        this->~Texture1DClass();
-}
-
-void Texture1DClass::Bind(unsigned int textureInd) {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-    else 
-#endif
-    {
-        glSC(glActiveTexture(GL_TEXTURE0 + textureInd));
-        glSC(glBindTexture(GL_TEXTURE_1D, ID));
-    }
-}
-void Texture1DClass::Unbind() {
-    glSC(glBindTexture(GL_TEXTURE_1D, 0));
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void Texture2DClass::_Constructor(Vector2U pixelsAmount, const void* data, const TextureDataSettingsClass& dataSets) {
-    glSC(glGenTextures(1, &ID));
-    glSC(glBindTexture(GL_TEXTURE_2D, ID));
-
-    glSC(glTexImage2D(GL_TEXTURE_2D, 0, _DataFormatOnGPU_SwitchCase(dataSets.DataFormatOnGPU), pixelsAmount[0], pixelsAmount[1], 0,
-        _DataFormatOnCPU_SwitchCase(dataSets.DataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataSets.DataTypeOnCPU), data));
-}
-
-void Texture2DClass::_UpdSettings_WrapTypeByX(TextureSettingsClass::WrapTypeEnum wrapTyp) {
-    Bind();
-    glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _WrapType_SwitchCase(wrapTyp)));
-}
-void Texture2DClass::_UpdSettings_WrapTypeByY(TextureSettingsClass::WrapTypeEnum wrapTyp) {
-    Bind();
-    glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _WrapType_SwitchCase(wrapTyp)));
-}
-void Texture2DClass::_UpdSettings_DownscalingFilt(TextureSettingsClass::DownscalingFilterFuncEnum filt) {
-    Bind();
-    glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _DownscalingFilterFunc_SwitchCase(filt)));
-}
-void Texture2DClass::_UpdSettings_UpscalingFilt(TextureSettingsClass::UpscalingFilterFuncEnum filt) {
-    Bind();
-    glSC(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _UpscalingFilterFunc_SwitchCase(filt)));
-}
-void Texture2DClass::_UpdSettings_DepthStencilReadMode(TextureSettingsClass::DepthStencilReadModeEnum readMode) {
-    Bind();
-    glSC(glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_STENCIL_TEXTURE_MODE, _DepthStencilReadMode_SwitchCase(readMode)));
-}
-
-void Texture2DClass::_UpdateSettings(const TextureSettingsClass& sets) {
-    _UpdSettings_WrapTypeByX(sets.WrapTypeByX);
-    _UpdSettings_WrapTypeByY(sets.WrapTypeByY);
-    _UpdSettings_DownscalingFilt(sets.DownscalingFilt);
-    _UpdSettings_UpscalingFilt(sets.UpscalingFilt);
-    _UpdSettings_DepthStencilReadMode(sets.DepthStencilReadMode);
-}
-
-Texture2DClass::Texture2DClass(const char* filePath, const TextureSettingsClass& sets, CPU_DataData_Struct* dataExportPtr) {
-
-    int width, height, textureChannelsAmount;
-    unsigned char* textureData = stbi_load(filePath, &width, &height, &textureChannelsAmount, 0);
-    if (textureData == nullptr) {
-        DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO LOAD IMAGE", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-    }
-    TextureDataSettingsClass dataSettings;
-    dataSettings.DataFormatOnGPU = TextureDataSettingsClass::DataFormatOnGPU_Enum::RGBA;
-    dataSettings.DataFormatOnCPU = (textureChannelsAmount == 4) ? TextureDataSettingsClass::DataFormatOnCPU_Enum::RGBA : TextureDataSettingsClass::DataFormatOnCPU_Enum::RGB;
-    dataSettings.DataTypeOnCPU = TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte;
-
-    _Constructor(Vector2U(width, height), textureData, dataSettings);
-    _UpdateSettings(sets);
-    
-    stbi_image_free(textureData);
-}
-Texture2DClass::Texture2DClass(Vector2U pixelsAmount, const void* data, const TextureSettingsClass& sets, const TextureDataSettingsClass& dataSets) {
-    _Constructor(pixelsAmount, data, dataSets);
-    _UpdateSettings(sets);
-}
-Texture2DClass::Texture2DClass(RespConstrFlag, const Texture2DClass& toCopy) {
-    memcpy(this, &toCopy, sizeof(Texture2DClass));
-    toCopy.Deleted = true;
-}
-Texture2DClass::Texture2DClass(const Texture2DClass&& toCopy) {
-    memcpy(this, &toCopy, sizeof(Texture2DClass));
-    toCopy.Deleted = true;
-}
-void Texture2DClass::operator=(const Texture2DClass&& toCopy) {
-    this->~Texture2DClass();
-    memcpy(this, &toCopy, sizeof(Texture2DClass));
-    toCopy.Deleted = true;
-}
-Texture2DClass::~Texture2DClass() {
-    if (not Deleted) {
-        glSC(glDeleteTextures(1, &ID));
-        Deleted = true;
-    }
-}
-
-void Texture2DClass::SetData(Vector2U pixelsAmount, const void* data, const TextureDataSettingsClass& dataSets) {
-    Bind();
-    glSC(glTexImage2D(GL_TEXTURE_2D, 0, _DataFormatOnGPU_SwitchCase(dataSets.DataFormatOnGPU), pixelsAmount[0], pixelsAmount[1], 0,
-        _DataFormatOnCPU_SwitchCase(dataSets.DataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataSets.DataTypeOnCPU), data));
-}
-void Texture2DClass::SetSubData(Vector2U pixelsOffset, Vector2U pixelsAmount, const void* data,
-    TextureDataSettingsClass::DataFormatOnCPU_Enum dataFormatOnCPU, TextureDataSettingsClass::DataTypeOnCPU_Enum dataTypeOnCPU) {
-    Bind();
-    glSC(glTexSubImage2D(GL_TEXTURE_2D, 0, pixelsOffset[0], pixelsOffset[1], pixelsAmount[0], pixelsAmount[1],
-        _DataFormatOnCPU_SwitchCase(dataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataTypeOnCPU), data));
-}
-
-void Texture2DClass::GenerateMipmaps() {
-    glBindTexture(GL_TEXTURE_2D, ID);
-    glSC(glGenerateMipmap(GL_TEXTURE_2D));
-}
-
-void Texture2DClass::GetData(TextureDataSettingsClass::DataFormatOnCPU_Enum dataFormat, TextureDataSettingsClass::DataTypeOnCPU_Enum dataType, void* buffer) {
-#if defined Debug
-    if (buffer == nullptr) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"buffer shouldnt be nullptr",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
-#endif
-    glSC(glGetTexImage(GL_TEXTURE_2D, 0, _DataFormatOnCPU_SwitchCase(dataFormat), _DataTypeOnCPU_SwitchCase(dataType), buffer));
-}
-
-void Texture2DClass::sSettings_WrapTypeByX(TextureSettingsClass::WrapTypeEnum wrapTypeByX) { _UpdSettings_WrapTypeByX(wrapTypeByX); }
-void Texture2DClass::sSettings_WrapTypeByY(TextureSettingsClass::WrapTypeEnum wrapTypeByY) { _UpdSettings_WrapTypeByY(wrapTypeByY); }
-void Texture2DClass::sSettings_DownscalingFilt(TextureSettingsClass::DownscalingFilterFuncEnum downscalingFilt) { _UpdSettings_DownscalingFilt(downscalingFilt); }
-void Texture2DClass::sSettings_UpscalingFilt(TextureSettingsClass::UpscalingFilterFuncEnum upscalingFilt) { _UpdSettings_UpscalingFilt(upscalingFilt); }
-void Texture2DClass::sSettings_DepthStencilReadMode(TextureSettingsClass::DepthStencilReadModeEnum depthStencilReadMode) { _UpdSettings_DepthStencilReadMode(depthStencilReadMode); }
-
-unsigned int Texture2DClass::gID()  {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, ACCESING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
-#endif
-    return ID;
-}
-void Texture2DClass::Delete() {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS ALREADY DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
-    else
-#endif
-        this->~Texture2DClass();
-}
-
-void Texture2DClass::Bind(unsigned int textureInd){
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "TEXTURE IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-    else
-#endif
-    {
-        glSC(glActiveTexture(GL_TEXTURE0 + textureInd));
-        glSC(glBindTexture(GL_TEXTURE_2D, ID));
-    }
-}
-void Texture2DClass::Unbind() {
-    glSC(glBindTexture(GL_TEXTURE_2D, 0));
-}
-
-
-
-
-
-
-
-
-
-
-Texture1DClass::CPU_DataData_Struct::CPU_DataData_Struct(Vector1U size, void* data, TextureSettingsClass settings, TextureDataSettingsClass dataSettings) :
-    Size(size), Data(data), Settings(settings), DataSettings(dataSettings), Empty(false) {
-    
-}
-Texture1DClass::CPU_DataData_Struct::CPU_DataData_Struct() {}
-Texture1DClass::CPU_DataData_Struct::CPU_DataData_Struct(const CPU_DataData_Struct& toCopy) {
-    memcpy(this, &toCopy, sizeof(CPU_DataData_Struct));
-    if (not toCopy.Empty) {
-        unsigned int dataSize = _DataTypeOnCPU_Sizeof_SwitchCase(DataSettings.DataTypeOnCPU);
-        Data = new unsigned char[dataSize * Size[0]];
-        memcpy(Data, toCopy.Data, _DataTypeOnCPU_Sizeof_SwitchCase(toCopy.DataSettings.DataTypeOnCPU) * Size[0]);
-    }
-}
-Texture1DClass::CPU_DataData_Struct::CPU_DataData_Struct(const CPU_DataData_Struct* toCopy) {
-	memcpy(this, toCopy, sizeof(CPU_DataData_Struct));
-    toCopy->Empty = true;
-}
-void Texture1DClass::CPU_DataData_Struct::operator=(const CPU_DataData_Struct& toCopy) {
-    if (not Empty) delete[] Data;
-	memcpy(this, &toCopy, sizeof(CPU_DataData_Struct));
-    if (not toCopy.Empty) {
-        unsigned int dataSize = _DataTypeOnCPU_Sizeof_SwitchCase(DataSettings.DataTypeOnCPU);
-        Data = new unsigned char[dataSize * Size[0]];
-        memcpy(Data, toCopy.Data, _DataTypeOnCPU_Sizeof_SwitchCase(toCopy.DataSettings.DataTypeOnCPU) * Size[0]);
-    }
-}
-void Texture1DClass::CPU_DataData_Struct::Delete() {
-    this->~CPU_DataData_Struct();
-}
-Texture1DClass::CPU_DataData_Struct::~CPU_DataData_Struct() {
-    if (not Empty) {
-        delete[] Data;
-        Empty = true;
-    }
-}
-
-
-
-Texture2DClass::CPU_DataData_Struct::CPU_DataData_Struct(Vector2U size, void* data, TextureSettingsClass settings, TextureDataSettingsClass dataSettings) :
-    Size(size), Data(data), Settings(settings), DataSettings(dataSettings), Empty(false) {
-    
-}
-Texture2DClass::CPU_DataData_Struct::CPU_DataData_Struct() {}
-Texture2DClass::CPU_DataData_Struct::CPU_DataData_Struct(const CPU_DataData_Struct& toCopy) {
-    memcpy(this, &toCopy, sizeof(CPU_DataData_Struct));
-    if (not toCopy.Empty) {
-        unsigned int dataSize = _DataTypeOnCPU_Sizeof_SwitchCase(DataSettings.DataTypeOnCPU);
-        Data = new unsigned char[dataSize * Size[0]];
-        memcpy(Data, toCopy.Data, _DataTypeOnCPU_Sizeof_SwitchCase(toCopy.DataSettings.DataTypeOnCPU) * Size[0]);
-    }
-}
-Texture2DClass::CPU_DataData_Struct::CPU_DataData_Struct(const CPU_DataData_Struct* toCopy) {
-	memcpy(this, toCopy, sizeof(CPU_DataData_Struct));
-    toCopy->Empty = true;
-}
-void Texture2DClass::CPU_DataData_Struct::operator=(const CPU_DataData_Struct& toCopy) {
-    if (not Empty) delete[] Data;
-	memcpy(this, &toCopy, sizeof(CPU_DataData_Struct));
-    if (not toCopy.Empty) {
-        unsigned int dataSize = _DataTypeOnCPU_Sizeof_SwitchCase(DataSettings.DataTypeOnCPU);
-        Data = new unsigned char[dataSize * Size[0]];
-        memcpy(Data, toCopy.Data, _DataTypeOnCPU_Sizeof_SwitchCase(toCopy.DataSettings.DataTypeOnCPU) * Size[0]);
-    }
-}
-void Texture2DClass::CPU_DataData_Struct::Delete() {
-    this->~CPU_DataData_Struct();
-}
-Texture2DClass::CPU_DataData_Struct::~CPU_DataData_Struct() {
-    if (not Empty) {
-        delete[] Data;
-        Empty = true;
-    }
-}*/

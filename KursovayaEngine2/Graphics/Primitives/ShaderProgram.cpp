@@ -4,16 +4,21 @@
 #include<vector>
 #include<string>
 #include"Tools/GLDebug.h"
+#include"Tools/DebugRuntimeAssert.h"
+#include"Graphics/Globals.h"
 
 using namespace Graphics::Primitives;
+#define Assert_NotDeleted_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Deleted, "ShaderProgram is deleted", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#if defined KE2_Debug
+#define Assert_Linked_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, Linked, "ShaderProgram is already not linked", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#define Assert_NotLinked_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Linked, "ShaderProgram is already linked", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#else
+#define Assert_Linked_Macro
+#define Assert_NotLinked_Macro
+#endif
 
 unsigned int ShaderProgramClass::gID() {
-#if defined Debug
-	if (Deleted) {
-		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER PROGRAM IS ALREADY DELETED, ACCESSING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
-		return 0;
-	}
-#endif
+	Assert_NotDeleted_Macro;
 	return ID;
 }
 ShaderProgramClass::ShaderProgramClass() {
@@ -32,35 +37,30 @@ void ShaderProgramClass::operator=(const ShaderProgramClass&& toCopy) {
 	toCopy.Deleted = true;
 }
 void ShaderProgramClass::AttachShader(ShaderClass::CFAC_FullAccess_Class shaderCFAC) {
-#if defined Debug
-	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "YOU CANT ATTACH SHADER TO SHADER PROGRAM WHEN ITS DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-	else if (Linked) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "YOU CANT ATTACH SHADER TO SHADER PROGRAM WHEN ITS ALREADY LINKED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-	else
-#endif
-		glSC(glAttachShader(ID, shaderCFAC(shaderCFAC.FuncPtrs.gID)));
+	Assert_NotDeleted_Macro;
+	Assert_NotLinked_Macro;
+	
+	glSC(glAttachShader(ID, shaderCFAC(shaderCFAC.FuncPtrs.gID)));
 }
 void ShaderProgramClass::LinkShaders() {
-#if defined Debug
-	if (Linked) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER PROGRAM IS ALREADY LINKED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
-	else 
-#endif
-	{
-		glSC(glLinkProgram(ID));
-#if defined Debug
-		Linked = true;
-		{//check for linking
-			int success;
-			char info[512];
-			glSC(glGetProgramiv(ID, GL_LINK_STATUS, &success));
-			if (!success) {
-				glSC(glGetProgramInfoLog(ID, 512, 0, info));
-				std::string msg = "SHADERS LINKING ERROR: ";
-				msg += info;
-				DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, msg.c_str(), KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-			}
+	Assert_NotDeleted_Macro;
+	Assert_NotLinked_Macro;
+	
+	glSC(glLinkProgram(ID));
+#if defined KE2_Debug
+	Linked = true;
+	{//check for linking
+		int success;
+		char info[512];
+		glSC(glGetProgramiv(ID, GL_LINK_STATUS, &success));
+		if (!success) {
+			glSC(glGetProgramInfoLog(ID, 512, 0, info));
+			std::string msg = "SHADERS LINKING ERROR: ";
+			msg += info;
+			DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, msg.c_str(), KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
 		}
-#endif
 	}
+#endif
 }
 ShaderProgramClass::~ShaderProgramClass() {
 	if (not Deleted) {// no need for warning becouse destructor will be called at end of scope anyway
@@ -69,20 +69,17 @@ ShaderProgramClass::~ShaderProgramClass() {
 	}
 }
 void ShaderProgramClass::Delete() {
-#if defined Debug
-	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER PROGRAM IS ALREADY DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
-	else 
-#endif
-		this->~ShaderProgramClass();
+	Assert_NotDeleted_Macro;
+	this->~ShaderProgramClass();
 }
 
 void ShaderProgramClass::Bind() {
-#if defined Debug
-	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER PROGRAM IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-	else if (not Linked) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "SHADER PROGRAM IS NOT LINKED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION }  );
-	else 
+	Assert_NotDeleted_Macro;
+	Assert_Linked_Macro;
+#if defined KE2_Debug
+	BindedInstances.sShaderProgram_ID(ID);
 #endif
-		glSC(glUseProgram(ID));
+	glSC(glUseProgram(ID));
 }
 void ShaderProgramClass::Unbind() {
 	glSC(glUseProgram(0));
@@ -92,11 +89,9 @@ void ShaderProgramClass::Unbind() {
 
 
 
-#if defined Debug
+#if defined KE2_Debug
 #define uniformCOPYPASTE(funcName, ...)\
-if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"SHADER PROGRAM IS DELETED, YOU CANT CHANGE ITS UNIFORM",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });\
-if (not Linked) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"SHADER PROGRAM IS NOT LINKED, YOU CANT CHANGE ITS UNIFORM",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });\
-else {\
+Assert_NotDeleted_Macro; Assert_Linked_Macro; {\
 	glSC(glUseProgram(ID));\
 	int location = glGetUniformLocation(ID, name);\
 	if (location == -1) {\
@@ -143,5 +138,3 @@ void ShaderProgramClass::SetUniformMatrix4x2fv(const char* name, unsigned int co
 void ShaderProgramClass::SetUniformMatrix3x4fv(const char* name, unsigned int count, bool transpose, const float* value) { uniformCOPYPASTE(glUniformMatrix3x4fv, count, transpose, value); }
 void ShaderProgramClass::SetUniformMatrix4x3fv(const char* name, unsigned int count, bool transpose, const float* value) { uniformCOPYPASTE(glUniformMatrix4x3fv, count, transpose, value); }
 
-
-#undef uniformCOPYPASTE

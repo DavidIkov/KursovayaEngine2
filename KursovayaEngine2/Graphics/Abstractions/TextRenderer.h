@@ -11,10 +11,6 @@
 namespace Graphics::Abstractions {
 	class TextRendererClass {
 
-		Graphics::Primitives::ShaderProgramClass TEXT_SP;
-		Graphics::Primitives::RenderingPresetClass TextPreset;
-		Graphics::Primitives::VertexArrayClass TEXT_VA;
-		Graphics::Primitives::VertexBufferClass TEXT_VB;
 
 		struct FontClass {
 
@@ -35,10 +31,14 @@ namespace Graphics::Abstractions {
 			FontClass(RespConstrFlag, const FontClass& toCopy);
 			~FontClass();
 		};
+		DynArr<FontClass> Fonts;
+
+		Graphics::Primitives::ShaderProgramClass TEXT_SP;
+		Graphics::Primitives::RenderingPresetClass TextPreset;
+		Graphics::Primitives::VertexArrayClass TEXT_VA;
+		Graphics::Primitives::VertexBufferClass TEXT_VB;
 
 		static void* FreeTypeLib;//FT_Library, nullptr
-
-		DynArr<FontClass> Fonts;
 
 	public:
 

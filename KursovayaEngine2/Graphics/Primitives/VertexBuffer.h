@@ -3,8 +3,11 @@
 #include<vector>
 #include"Tools/DynArr.h"
 #include"Tools/ClassFunctionsAccessController.h"
+#include<vector>
 
 namespace Graphics::Primitives {
+
+	class VertexArrayClass;
 
 	class VertexBufferClass {
 		unsigned int ID = 0;
@@ -20,10 +23,9 @@ namespace Graphics::Primitives {
 		enum class BufferDataTypeEnum :unsigned short int {
 			Byte, UnsignedByte, Float, Int, UnsignedInt
 		};
-	private:
-		unsigned int _GetVBUsageForGL(BufferDataUsageEnum usage);
 	public:
 		DLLTREATMENT VertexBufferClass();
+		DLLTREATMENT VertexBufferClass(const VertexBufferClass&) = delete;
 		DLLTREATMENT VertexBufferClass(RespConstrFlag, const VertexBufferClass& toCopy);
 		DLLTREATMENT VertexBufferClass(const VertexBufferClass&& toCopy);
 		DLLTREATMENT void operator=(const VertexBufferClass&& toCopy);

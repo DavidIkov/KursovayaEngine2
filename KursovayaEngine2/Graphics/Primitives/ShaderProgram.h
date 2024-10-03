@@ -5,12 +5,11 @@ namespace Graphics::Primitives {
 
 	class ShaderProgramClass {
 		unsigned int ID;
-#if defined Debug
+#if defined KE2_Debug
 		mutable bool Linked = false;
 #endif
 		mutable bool Deleted = false;
 	public:
-		DLLTREATMENT unsigned int gID();
 		DLLTREATMENT ShaderProgramClass();
 		DLLTREATMENT ShaderProgramClass(RespConstrFlag, const ShaderProgramClass& toCopy);
 		DLLTREATMENT ShaderProgramClass(const ShaderProgramClass&& toCopy);
@@ -18,6 +17,7 @@ namespace Graphics::Primitives {
 		DLLTREATMENT void AttachShader(ShaderClass::CFAC_FullAccess_Class shaderCFAC);
 		DLLTREATMENT void LinkShaders();
 		DLLTREATMENT ~ShaderProgramClass();
+		DLLTREATMENT unsigned int gID();
 		DLLTREATMENT void Delete();
 		DLLTREATMENT void Bind();
 		DLLTREATMENT static void Unbind();
@@ -58,11 +58,11 @@ namespace Graphics::Primitives {
 
 #define CFAC_ClassName ShaderProgramClass
 		CFAC_ClassConstructor(FullAccess,
-			CFAC_FuncPtrConstr(gID)
 			CFAC_FuncPtrConstr(Bind)
 			CFAC_FuncPtrConstr(Unbind)
 			CFAC_FuncPtrConstr(AttachShader)
 			CFAC_FuncPtrConstr(LinkShaders)
+			CFAC_FuncPtrConstr(gID)
 			CFAC_FuncPtrConstr(SetUniform1f) CFAC_FuncPtrConstr(SetUniform2f) CFAC_FuncPtrConstr(SetUniform3f) CFAC_FuncPtrConstr(SetUniform4f)
 			CFAC_FuncPtrConstr(SetUniform1i) CFAC_FuncPtrConstr(SetUniform2i) CFAC_FuncPtrConstr(SetUniform3i) CFAC_FuncPtrConstr(SetUniform4i)
 			CFAC_FuncPtrConstr(SetUniform1ui) CFAC_FuncPtrConstr(SetUniform2ui) CFAC_FuncPtrConstr(SetUniform3ui) CFAC_FuncPtrConstr(SetUniform4ui)

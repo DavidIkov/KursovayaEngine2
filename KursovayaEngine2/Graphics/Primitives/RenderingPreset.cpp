@@ -82,133 +82,52 @@ void RenderingPresetClass::sClearB(float newVal) { ClearB = newVal; UpdClearRGB(
 
 void RenderingPresetClass::UpdFaceCulling_Enabled() {
 	switch (FaceCulling_Enabled) {
-	case true:
-	{
-		glSC(glEnable(GL_CULL_FACE));
-		break;
-	}
-	case false:
-	{
-		glSC(glDisable(GL_CULL_FACE));
-		break;
-	}
+	case true: glSC(glEnable(GL_CULL_FACE)); break;
+	case false: glSC(glDisable(GL_CULL_FACE)); break;
 	}
 }
 void RenderingPresetClass::UpdFaceCulling_FaceToCull() {
 	switch (FaceCulling_FaceToCull) {
-	case RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back:
-	{
-		glSC(glCullFace(GL_BACK));
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Front:
-	{
-		glSC(glCullFace(GL_FRONT));
-		break;
-	}
+	case RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back: glSC(glCullFace(GL_BACK)); break;
+	case RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Front: glSC(glCullFace(GL_FRONT)); break;
 	}
 }
 void RenderingPresetClass::UpdFaceCulling_FaceDetermination() {
 	switch (FaceCulling_FaceDetermination) {
-	case RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise:
-	{
-		glSC(glFrontFace(GL_CW));
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::AntiClockwise:
-	{
-		//counter clockwise
-		glSC(glFrontFace(GL_CCW));
-		break;
-	}
+	case RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise: glSC(glFrontFace(GL_CW)); break;
+	case RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::AntiClockwise:  glSC(glFrontFace(GL_CCW)); break;
 	}
 }
 
 void RenderingPresetClass::UpdDepthTest_Enabled() {
 	switch (DepthTest_Enabled) {
-	case true:
-	{
-		glSC(glEnable(GL_DEPTH_TEST));
-		break;
-	}
-	case false:
-	{
-		glSC(glDisable(GL_DEPTH_TEST));
-		break;
-	}
+	case true: glSC(glEnable(GL_DEPTH_TEST)); break;
+	case false: glSC(glDisable(GL_DEPTH_TEST)); break;
 	}
 }
 void RenderingPresetClass::UpdDepthTest_WriteInBufferEnabled() {
 	switch (DepthTest_WriteInBufferEnabled) {
-	case true:
-	{
-		glSC(glDepthMask(GL_TRUE));
-		break;
-	}
-	case false:
-	{
-		glSC(glDepthMask(GL_FALSE));
-		break;
-	}
+	case true: glSC(glDepthMask(GL_TRUE)); break;
+	case false: glSC(glDepthMask(GL_FALSE)); break;
 	}
 }
 void RenderingPresetClass::UpdDepthTest_TypeOfComparison() {
 	switch (DepthTest_TypeOfComparison) {
-	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::Never:
-	{
-		glSC(glDepthFunc(GL_NEVER));
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::Less:
-	{
-		glSC(glDepthFunc(GL_LESS));
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual:
-	{
-		glSC(glDepthFunc(GL_LEQUAL));
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::Greater:
-	{
-		glSC(glDepthFunc(GL_GREATER));
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::GreaterOrEqual:
-	{
-		glSC(glDepthFunc(GL_GEQUAL));
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::Equal:
-	{
-		glSC(glDepthFunc(GL_EQUAL));
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::NotEqual:
-	{
-		glSC(glDepthFunc(GL_NOTEQUAL));
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::AlwaysPass:
-	{
-		glSC(glDepthFunc(GL_ALWAYS));
-		break;
-	}
+	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::Never: glSC(glDepthFunc(GL_NEVER)); break;
+	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::Less: glSC(glDepthFunc(GL_LESS)); break;
+	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual: glSC(glDepthFunc(GL_LEQUAL)); break;
+	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::Greater: glSC(glDepthFunc(GL_GREATER)); break;
+	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::GreaterOrEqual: glSC(glDepthFunc(GL_GEQUAL)); break;
+	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::Equal: glSC(glDepthFunc(GL_EQUAL)); break;
+	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::NotEqual: glSC(glDepthFunc(GL_NOTEQUAL)); break;
+	case RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::AlwaysPass: glSC(glDepthFunc(GL_ALWAYS)); break;
 	}
 }
 
 void RenderingPresetClass::UpdStencilTest_Enabled() {
 	switch (StencilTest_Enabled) {
-	case true:
-	{
-		glSC(glEnable(GL_STENCIL_TEST));
-		break;
-	}
-	case false:
-	{
-		glSC(glDisable(GL_STENCIL_TEST));
-		break;
-	}
+	case true: glSC(glEnable(GL_STENCIL_TEST)); break;
+	case false: glSC(glDisable(GL_STENCIL_TEST)); break;
 	}
 }
 void RenderingPresetClass::UpdStencilTest_BaseMask() {
@@ -217,46 +136,14 @@ void RenderingPresetClass::UpdStencilTest_BaseMask() {
 void RenderingPresetClass::UpdStencilTest_StencilFunc() {
 	int func = 0;
 	switch (StencilTest_ComparisonType) {
-	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Never:
-	{
-		func = GL_NEVER;
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Less:
-	{
-		func = GL_LESS;
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::LessOrEqual:
-	{
-		func = GL_LEQUAL;
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Greater:
-	{
-		func = GL_GREATER;
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::GreaterOrEqual:
-	{
-		func = GL_GEQUAL;
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Equal:
-	{
-		func = GL_EQUAL;
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::NotEqual:
-	{
-		func = GL_NOTEQUAL;
-		break;
-	}
-	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::AlwaysPass:
-	{
-		func = GL_ALWAYS;
-		break;
-	}
+	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Never: func = GL_NEVER; break;
+	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Less: func = GL_LESS; break;
+	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::LessOrEqual: func = GL_LEQUAL; break;
+	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Greater: func = GL_GREATER; break;
+	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::GreaterOrEqual: func = GL_GEQUAL; break;
+	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Equal: func = GL_EQUAL; break;
+	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::NotEqual: func = GL_NOTEQUAL; break;
+	case RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::AlwaysPass: func = GL_ALWAYS; break;
 	}
 	glSC(glStencilFunc(func, StencilTest_ReferenceValue, StencilTest_Mask));
 
@@ -266,63 +153,22 @@ void RenderingPresetClass::UpdStencilTest_StencilOpFunc() {
 	int checkVal[3] = { (int)StencilTest_ActionOnSF,(int)StencilTest_ActionOnSPDF,(int)StencilTest_ActionOnSPDP };
 	for (unsigned int i = 0; i < 3; i++) {
 		switch (checkVal[i]) {
-		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep:
-		{
-			args[i] = GL_KEEP;
-			break;
+		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep: args[i] = GL_KEEP; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Zero: args[i] = GL_ZERO; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Replace: args[i] = GL_REPLACE; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Increase: args[i] = GL_INCR; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::IncreaseWrap: args[i] = GL_INCR_WRAP; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Decrease: args[i] = GL_DECR; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::DecreaseWrap: args[i] = GL_DECR_WRAP; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Invert: args[i] = GL_INVERT; break;
 		}
-		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Zero:
-		{
-			args[i] = GL_ZERO;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Replace:
-		{
-			args[i] = GL_REPLACE;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Increase:
-		{
-			args[i] = GL_INCR;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::IncreaseWrap:
-		{
-			args[i] = GL_INCR_WRAP;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Decrease:
-		{
-			args[i] = GL_DECR;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::DecreaseWrap:
-		{
-			args[i] = GL_DECR_WRAP;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Invert:
-		{
-			args[i] = GL_INVERT;
-			break;
-		}
-		}
-	}
-	glSC(glStencilOp(args[0], args[1], args[2]));
+	} glSC(glStencilOp(args[0], args[1], args[2]));
 }
 
 void RenderingPresetClass::UpdBlending_Enabled() {
 	switch (Blending_Enabled) {
-	case true:
-	{
-		glSC(glEnable(GL_BLEND));
-		break;
-	}
-	case false:
-	{
-		glSC(glDisable(GL_BLEND));
-		break;
-	}
+	case true: glSC(glEnable(GL_BLEND)); break;
+	case false: glSC(glDisable(GL_BLEND)); break;
 	}
 }
 void RenderingPresetClass::UpdBlending_ConstRGBA() {
@@ -333,81 +179,21 @@ void RenderingPresetClass::UpdBlending_FuncForColor() {
 	int checkVal[2] = { (int)Blending_FuncForColor1,(int)Blending_FuncForColor2 };
 	for (unsigned int i = 0; i < 2; i++) {
 		switch (checkVal[i]) {
-		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::Zero:
-		{
-			args[i] = GL_ZERO;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::One:
-		{
-			args[i] = GL_ONE;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcColor:
-		{
-			args[i] = GL_SRC_COLOR;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcColor:
-		{
-			args[i] = GL_ONE_MINUS_SRC_COLOR;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::DstColor:
-		{
-			args[i] = GL_DST_COLOR;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusDstColor:
-		{
-			args[i] = GL_ONE_MINUS_DST_COLOR;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha:
-		{
-			args[i] = GL_SRC_ALPHA;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha:
-		{
-			args[i] = GL_ONE_MINUS_SRC_ALPHA;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::DstAlpha:
-		{
-			args[i] = GL_DST_ALPHA;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusDstAlpha:
-		{
-			args[i] = GL_ONE_MINUS_DST_ALPHA;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::ConstColor:
-		{
-			args[i] = GL_CONSTANT_COLOR;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusConstColor:
-		{
-			args[i] = GL_ONE_MINUS_CONSTANT_COLOR;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::ConstAlpha:
-		{
-			args[i] = GL_CONSTANT_ALPHA;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusConstAlpha:
-		{
-			args[i] = GL_ONE_MINUS_CONSTANT_ALPHA;
-			break;
-		}
-		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlphaSaturate:
-		{
-			args[i] = GL_SRC_ALPHA_SATURATE;
-			break;
-		}
+		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::Zero: args[i] = GL_ZERO; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::One: args[i] = GL_ONE; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcColor: args[i] = GL_SRC_COLOR; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcColor: args[i] = GL_ONE_MINUS_SRC_COLOR; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::DstColor: args[i] = GL_DST_COLOR; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusDstColor: args[i] = GL_ONE_MINUS_DST_COLOR; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha: args[i] = GL_SRC_ALPHA; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha: args[i] = GL_ONE_MINUS_SRC_ALPHA; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::DstAlpha: args[i] = GL_DST_ALPHA; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusDstAlpha: args[i] = GL_ONE_MINUS_DST_ALPHA; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::ConstColor: args[i] = GL_CONSTANT_COLOR; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusConstColor: args[i] = GL_ONE_MINUS_CONSTANT_COLOR; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::ConstAlpha: args[i] = GL_CONSTANT_ALPHA; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusConstAlpha: args[i] = GL_ONE_MINUS_CONSTANT_ALPHA; break;
+		case (int)RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlphaSaturate: args[i] = GL_SRC_ALPHA_SATURATE; break;
 		}
 	}
 	glSC(glBlendFunc(args[0], args[1]));

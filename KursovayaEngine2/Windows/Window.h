@@ -23,8 +23,10 @@ ProcessEvents();
 */
 class WindowClass {
 
+public:
     //GLFWwindow*
     void* GLFW_WindowPtr;
+private:
 
     bool Deleted = false;
 

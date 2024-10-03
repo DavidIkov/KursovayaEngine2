@@ -20,12 +20,11 @@ TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const wchar
     true, 0, 0, 0, 0, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
     0.f, 0.f, 0.f
 ) {
-
     if (FreeTypeLib == nullptr) {
         FreeTypeLib = (void*)(new FT_Library);
 
         if (FT_Init_FreeType((FT_Library*)FreeTypeLib)) {
-            DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"FAILED TO INITIALIZE FreeType LIBRARY",KURSAVAYAENGINE2_CORE_ERRORS::FAILED_TO_INITIALIZE_LIBRARY });
+            DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"failed to initialize FreeType library",KURSAVAYAENGINE2_CORE_ERRORS::FAILED_TO_INITIALIZE_LIBRARY });
         }
     }
 
@@ -43,9 +42,11 @@ TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const wchar
         TEXT_SP.SetUniform1i("u_TextTexture", 0);
     }
 
-    
+    TEXT_VA.Bind();
+    TEXT_VB.Bind();
     TEXT_VB.SetData(6 * 4 * sizeof(float), nullptr, VertexBufferClass::BufferDataUsageEnum::DynamicDraw);
     TEXT_VB.SetLayout(VertexBufferClass::BufferDataTypeEnum::Float, { 2,2 });
+    TEXT_VA.Unbind();
 }
 
 TextRendererClass::~TextRendererClass() {
@@ -60,7 +61,8 @@ StalkerClass TextRendererClass::AddFont(unsigned int characterSize, const char* 
 }
 
 TextRendererClass::FontClass::FontClass(RespConstrFlag, const FontClass& toCopy) :
-    Texture(RespConstrFlag(), toCopy.Texture), FreeTypeFace(toCopy.FreeTypeFace), Characters(toCopy.Characters) {
+    Texture(RespConstrFlag(), toCopy.Texture), FreeTypeFace(toCopy.FreeTypeFace), Characters(toCopy.Characters),
+    MaxCharacterUp(toCopy.MaxCharacterUp),MaxCharacterDown(toCopy.MaxCharacterDown) {
     toCopy.Deleted = true;
 }
 
@@ -79,12 +81,12 @@ TextRendererClass::FontClass::FontClass(unsigned int characterSize, const char* 
                     TextureSettingsClass::DepthStencilReadModeEnum::Depth },
                     TextureDataSettingsClass{ TextureDataSettingsClass::DataFormatOnGPU_Enum::Red,
                     TextureDataSettingsClass::DataFormatOnCPU_Enum::Red,TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte })
-{
+{ 
     FreeTypeFace = new FT_Face;
 
     if (FT_New_Face(*(FT_Library*)FreeTypeLib, fontDir, 0, (FT_Face*)FreeTypeFace)) {
         std::string errMsg;
-        errMsg += "FreeType ERROR: FAILED TO OPEN FONT \"";
+        errMsg += "FreeType error: failed to open font \"";
         errMsg += fontDir;
         errMsg += "\"";
         DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,errMsg.c_str(),KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
@@ -192,8 +194,9 @@ void TextRendererClass::RenderText(const StalkerClass& fontStalker, const wchar_
 	TextPreset.Bind();
     TEXT_SP.Bind();
     TEXT_VA.Bind();
+    TEXT_VB.Bind();
 
-    FontClass& font = fontStalker.GetTarget<FontClass>();
+	FontClass& font = fontStalker.GetTarget<FontClass>();
 
     font.Texture.Bind(0);
 
@@ -286,6 +289,8 @@ void TextRendererClass::RenderText(const StalkerClass& fontStalker, const wchar_
         xOffset += char_.Advance * localPixelsToTexScaleByX;
    
     }
+
+    TEXT_VA.Unbind();
 }
 
 

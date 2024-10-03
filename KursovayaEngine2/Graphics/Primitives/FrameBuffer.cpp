@@ -3,31 +3,48 @@
 #include"Tools/GLDebug.h"
 #include"Tools/DebuggingTools.h"
 #include"Tools/ErrorCodes.h"
+#include"Graphics/Globals.h"
+#include"Tools/DebugRuntimeAssert.h"
 
 using namespace Graphics::Primitives;
+#define Assert_NotDeleted_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Deleted, "FrameBuffer is deleted", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#if defined KE2_Debug
+#define Assert_Finished_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, Finished, "FrameBuffer is not finished", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#define Assert_NotFinished_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Finished, "FrameBuffer is not finished", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#define Assert_Binded_Macro if (DebugRuntimeAssert(DebuggingTools::ErrorTypes::Warning, BindedInstances.gFrameBufferID() == ID, "FrameBuffer is not binded", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION)) Bind();
+#else
+#define Assert_Finished_Macro
+#define Assert_NotFinished_Macro
+#define Assert_Binded_Macro
+#endif
 
 void FrameBufferClass::ClearColorBuffer() {
-	Bind();
+	Assert_NotDeleted_Macro;
+	Assert_Finished_Macro;
+	Assert_Binded_Macro;
 	glSC(glClear(GL_COLOR_BUFFER_BIT));
 }
 void FrameBufferClass::ClearDepthBuffer() {
-	Bind();
+	Assert_NotDeleted_Macro;
+	Assert_Finished_Macro;
+	Assert_Binded_Macro;
 	glSC(glClear(GL_DEPTH_BUFFER_BIT));
 }
 void FrameBufferClass::ClearStencilBuffer() {
-	Bind();
+	Assert_NotDeleted_Macro;
+	Assert_Finished_Macro;
+	Assert_Binded_Macro;
 	glSC(glClear(GL_STENCIL_BUFFER_BIT));
 }
 void FrameBufferClass::ClearAllBuffers() {
-	Bind();
-	glSC(glClear(GL_COLOR_BUFFER_BIT));
-	glSC(glClear(GL_DEPTH_BUFFER_BIT));
-	glSC(glClear(GL_STENCIL_BUFFER_BIT));
+	ClearColorBuffer();
+	ClearDepthBuffer();
+	ClearStencilBuffer();
 }
 
 FrameBufferClass::FrameBufferClass(unsigned int width, unsigned int height) :Width(width), Height(height) {
 	glSC(glGenFramebuffers(1, &ID));
-	glSC(glBindFramebuffer(GL_FRAMEBUFFER, ID));
+	Bind();
 }
 FrameBufferClass::FrameBufferClass(RespConstrFlag, const FrameBufferClass& toCopy) {
 	memcpy(this, &toCopy, sizeof(FrameBufferClass));
@@ -49,21 +66,25 @@ FrameBufferClass::~FrameBufferClass() {
 	}
 }
 unsigned int FrameBufferClass::gID() {
-#if defined Debug
-	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "FRAME BUFFER IS DELETED, ACCESSING ITS ID MAY CAUSE PROBLEMS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
-#endif
+	Assert_NotDeleted_Macro;
 	return ID;
 }
 void FrameBufferClass::AttachRenderBuffer(unsigned int renderBufferID, bool depthBufferEnabled, bool stencilBufferEnabled) {
-	glSC(glBindFramebuffer(GL_FRAMEBUFFER, ID));
+	Assert_NotDeleted_Macro;
+	Assert_Binded_Macro;
+	Assert_NotFinished_Macro;
+
 	if (depthBufferEnabled and stencilBufferEnabled) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBufferID)); }
 	else if (depthBufferEnabled and not stencilBufferEnabled) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBufferID)); }
-#if defined Debug
-	else if (not depthBufferEnabled and stencilBufferEnabled) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "YOU CANT ATTACH TO FRAMEBUFFER A RENDER BUFFER WHICH HAVE STENCIL BUFFER BUT HAVENT GOT DEPTH BUFFER", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
-	else DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "YOU CANT ATTACH TO FRAMEBUFFER A RENDER BUFFER WHICH DOESNT HAVE ANY BUFFERS ENABLED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
+#if defined KE2_Debug
+	else if (not depthBufferEnabled and stencilBufferEnabled) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "cant attach RenderBuffer to a FrameBuffer, RenderBuffer have stencil buffer and no depth buffer", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
+	else DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "cant attach RenderBuffer to a FrameBuffer, RenderBuffer have no buffers", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
 #endif
 }
 void FrameBufferClass::AttachTexture(unsigned int texID, TextureDataSettingsClass::DataFormatOnGPU_Enum dataFormat) {
+	Assert_NotDeleted_Macro;
+	Assert_Binded_Macro;
+	Assert_NotFinished_Macro;
 
 	int glAtt = 0;
 	switch (dataFormat) {
@@ -77,33 +98,28 @@ void FrameBufferClass::AttachTexture(unsigned int texID, TextureDataSettingsClas
 	glSC(glFramebufferTexture2D(GL_FRAMEBUFFER, glAtt, GL_TEXTURE_2D, texID, 0));
 }
 void FrameBufferClass::Delete() {
-#if defined Debug
-	if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "FRAME BUFFER IS ALREADY DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
-	else 
-#endif
-		this->~FrameBufferClass();
+	Assert_NotDeleted_Macro;
+	this->~FrameBufferClass();
 }
 void FrameBufferClass::Finish() {
-	glSC(glBindFramebuffer(GL_FRAMEBUFFER, ID));
-#if defined Debug
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FRAMEBUFFER IS NOT COMPLETE", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-	}
-	else {
-		Finished = true;
-	}
+	Assert_NotDeleted_Macro;
+	Assert_Binded_Macro;
+	Assert_NotFinished_Macro;
+
+#if defined KE2_Debug
+	Finished = true;
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FrameBuffer is not complete", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
 #endif
 }
 void FrameBufferClass::Bind() {
-#if defined Debug
-	if (not Finished) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "YOU CANT BIND BUFFER WHICH IS INCOMPLETE", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-	else if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "YOU CANT BIND ALREADY DELETED BUFFER", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-	else 
+	Assert_NotDeleted_Macro;
+
+#if defined KE2_Debug
+	BindedInstances.sFrameBuffer_ID(ID);
 #endif
-	{
-		glSC(glBindFramebuffer(GL_FRAMEBUFFER, ID));
-		glSC(glViewport(0, 0, Width, Height));
-	}
+	glSC(glBindFramebuffer(GL_FRAMEBUFFER, ID));
+	glSC(glViewport(0, 0, Width, Height));
 }
 void FrameBufferClass::Unbind(unsigned int width, unsigned int height) {
 	glSC(glBindFramebuffer(GL_FRAMEBUFFER, 0));

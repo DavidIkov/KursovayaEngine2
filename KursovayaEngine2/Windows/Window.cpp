@@ -54,11 +54,11 @@ WindowClass::WindowClass(unsigned int w, unsigned int h, const char* title, bool
     glfwSwapInterval(swapInterval);
 
     glfwSetMouseButtonCallback((GLFWwindow*)GLFW_WindowPtr, [](GLFWwindow* window, int button, int action, int mods) {
-        ((WindowClass*)glfwGetWindowUserPointer(window))->MouseHandle.GLFW_KEYCALLBACK(button, action, mods);
+        ((WindowClass*)glfwGetWindowUserPointer(window))->MouseHandle._GLFW_KEYCALLBACK(button, action, mods);
         });
 
     glfwSetKeyCallback((GLFWwindow*)GLFW_WindowPtr, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-        ((WindowClass*)glfwGetWindowUserPointer(window))->KeyboardHandle.GLFW_KEYCALLBACK(key, scancode, action, mods);
+        ((WindowClass*)glfwGetWindowUserPointer(window))->KeyboardHandle._GLFW_KEYCALLBACK(key, scancode, action, mods);
         });
 
     if (FirstWindow) {

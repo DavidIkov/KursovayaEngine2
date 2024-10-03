@@ -9,7 +9,7 @@ const EventClass& MouseClass::gMousePressableKeyEvent(PressableKeysEnum key) con
 }
 
 //not for user
-void MouseClass::GLFW_KEYCALLBACK(int button, int action, int mods) {
+void MouseClass::_GLFW_KEYCALLBACK(int button, int action, int mods) {
 	if (button >= GLFW_MOUSE_BUTTON_LEFT and button <= GLFW_MOUSE_BUTTON_MIDDLE) {
 		unsigned int ind = button - GLFW_MOUSE_BUTTON_LEFT;
 		PressableKeysStates[ind] = action != GLFW_RELEASE;

@@ -90,7 +90,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_CONSOLE;%(PreprocessorDefinitions);$(Platform);$(Configuration);_DEBUG;DLL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>KE2_Debug;KE2_x86;WIN32;_CONSOLE;%(PreprocessorDefinitions);_DEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -109,7 +109,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_CONSOLE;%(PreprocessorDefinitions);$(Platform);$(Configuration);NDEBUG;DLL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>KE2_Efficiency;KE2_x86;WIN32;_CONSOLE;%(PreprocessorDefinitions);NDEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -128,7 +128,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions);$(Platform);$(Configuration);_DEBUG;DLL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>KE2_Debug;KE2_x64;_CONSOLE;%(PreprocessorDefinitions);_DEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -147,7 +147,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions);$(Platform);$(Configuration);NDEBUG;DLL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>KE2_Efficiency;KE2_x64;_CONSOLE;%(PreprocessorDefinitions);NDEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -166,11 +166,13 @@
     <ClCompile Include="Dependencies\glad\src\glad.c" />
     <ClCompile Include="Dependencies\stb_image\stb_image.cpp" />
     <ClCompile Include="Graphics\Abstractions\TextRenderer.cpp" />
+    <ClCompile Include="Graphics\Globals.cpp" />
     <ClCompile Include="Graphics\Primitives\Renderer.cpp" />
     <ClCompile Include="Graphics\Primitives\VertexArray.cpp" />
     <ClCompile Include="Graphics\Primitives\VertexBuffer.cpp" />
     <ClCompile Include="KursovayaEngine2Manager.cpp" />
     <ClCompile Include="Input\Mouse.cpp" />
+    <ClCompile Include="Tools\DebugRuntimeAssert.cpp" />
     <ClCompile Include="Tools\FileTypesReaders\Obj.cpp" />
     <ClCompile Include="Graphics\Primitives\FrameBuffer.cpp" />
     <ClCompile Include="Graphics\Primitives\RenderBuffer.cpp" />
@@ -297,6 +299,7 @@
     <ClInclude Include="DLL.h" />
     <ClInclude Include="Graphics\Abstractions\TextRenderer.h" />
     <ClInclude Include="Graphics\Abstractions\Texture.h" />
+    <ClInclude Include="Graphics\Globals.h" />
     <ClInclude Include="Graphics\Primitives\Renderer.h" />
     <ClInclude Include="Graphics\Primitives\VertexArray.h" />
     <ClInclude Include="Graphics\Primitives\VertexBuffer.h" />
@@ -307,6 +310,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Tools\BinarySearch.h" />
     <ClInclude Include="Tools\ClassFunctionsAccessController.h" />
+    <ClInclude Include="Tools\DebugRuntimeAssert.h" />
     <ClInclude Include="Tools\DynArr.h" />
     <ClInclude Include="Tools\StaticLambda.h" />
     <ClInclude Include="Tools\UniversalLambda.h" />

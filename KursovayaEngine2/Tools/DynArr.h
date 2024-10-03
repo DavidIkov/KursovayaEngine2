@@ -100,7 +100,7 @@ private:
 	void _ClearArr() {
 		if (Arr != nullptr) {
 			for (unsigned int i = 0; i < Length; i++) Arr[i].~StoreType();
-			delete[](byte*)Arr;
+			delete[] (void*)Arr;
 			Arr = nullptr;
 		}
 	}
@@ -157,7 +157,7 @@ private:
 public:
 	
 	//how much more space should be allocated of "StoreType" when there is no more space left, cant be 0
-	unsigned int SizeExpansionStep = 1;
+	unsigned int SizeExpansionStep = 5;
 
 	DynArr() { }
 	DynArr(const unsigned int len, const StoreType& val) {

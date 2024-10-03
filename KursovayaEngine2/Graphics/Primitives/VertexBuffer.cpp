@@ -3,12 +3,20 @@
 #include"Tools/DebuggingTools.h"
 #include"glad/glad.h"
 #include"Tools/ErrorCodes.h"
+#include"Graphics/Globals.h"
+#include"Tools/DebugRuntimeAssert.h"
 
 using namespace Graphics::Primitives;
+#define Assert_NotDeleted_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Deleted, "VertexBuffer is deleted", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#if defined KE2_Debug
+#define Assert_Binded_Macro if (DebugRuntimeAssert(DebuggingTools::ErrorTypes::Warning, BindedInstances.gVertexBufferID() == ID, "VertexBuffer is not binded", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION)) Bind();
+#else
+#define Assert_Binded_Macro
+#endif
 
 VertexBufferClass::VertexBufferClass() {
     glSC(glGenBuffers(1, &ID));
-    glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));
+    Bind();
 }
 VertexBufferClass::VertexBufferClass(RespConstrFlag, const VertexBufferClass& toCopy) {
     memcpy(this, &toCopy, sizeof(VertexBufferClass));
@@ -29,93 +37,72 @@ VertexBufferClass::~VertexBufferClass() {
     }
 }
 void VertexBufferClass::Delete() {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX BUFFER IS ALREADY DELETED", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION });
-    else 
-#endif
-        this->~VertexBufferClass();
+    Assert_NotDeleted_Macro;
+    this->~VertexBufferClass();
 }
 unsigned int VertexBufferClass::gID() {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX BUFFER IS DELETED, ACCESING ITS ID MAY CAUSE ERRORS", KURSAVAYAENGINE2_CORE_ERRORS::ACCESSING_IMPOSSIBLE_TO_ACCESS_INSTANCE_DATA });
-#endif
+    Assert_NotDeleted_Macro;
     return ID;
 }
 void VertexBufferClass::SetLayout(BufferDataTypeEnum dataType, const std::vector<unsigned int>& layout) {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX BUFFER IS DELETED, YOU CANT CHANGE ITS LAYOUT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-    else 
-#endif
-    {
-        glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));
+    Assert_NotDeleted_Macro;
+    Assert_Binded_Macro;
 
-        for (unsigned int i = 0; i < EnabledAttributesAmount; i++) { glSC(glDisableVertexAttribArray(i)); }
-        EnabledAttributesAmount = (unsigned short int)layout.size();
+	for (unsigned int i = 0; i < EnabledAttributesAmount; i++) { glSC(glDisableVertexAttribArray(i)); }
+	EnabledAttributesAmount = (unsigned short int)layout.size();
 
-        unsigned int sumOfLayout = 0; for (unsigned int i = 0; i < layout.size(); i++) sumOfLayout += layout[i];
+	unsigned int sumOfLayout = 0; for (unsigned int i = 0; i < layout.size(); i++) sumOfLayout += layout[i];
 
-        unsigned int gl_dataType = 0;
-        switch (dataType) {
-        case BufferDataTypeEnum::Byte: gl_dataType = GL_BYTE; break;
-        case BufferDataTypeEnum::UnsignedByte: gl_dataType = GL_UNSIGNED_BYTE; break;
-        case BufferDataTypeEnum::Float: gl_dataType = GL_FLOAT; break;
-        case BufferDataTypeEnum::Int: gl_dataType = GL_INT; break;
-        case BufferDataTypeEnum::UnsignedInt: gl_dataType = GL_UNSIGNED_INT; break;
-        }
+	unsigned int gl_dataType = 0;
+	switch (dataType) {
+	case BufferDataTypeEnum::Byte: gl_dataType = GL_BYTE; break;
+	case BufferDataTypeEnum::UnsignedByte: gl_dataType = GL_UNSIGNED_BYTE; break;
+	case BufferDataTypeEnum::Float: gl_dataType = GL_FLOAT; break;
+	case BufferDataTypeEnum::Int: gl_dataType = GL_INT; break;
+	case BufferDataTypeEnum::UnsignedInt: gl_dataType = GL_UNSIGNED_INT; break;
+	}
 
-        float* off = 0;
-        for (unsigned int i = 0; i < layout.size(); i++) {
-            glSC(glVertexAttribPointer(i, layout[i], GL_FLOAT, GL_FALSE, sumOfLayout * sizeof(float), (void*)off));
-            glSC(glEnableVertexAttribArray(i));
-            off += layout[i];
-        }
-    }
+	float* off = 0;
+	for (unsigned int i = 0; i < layout.size(); i++) {
+		glSC(glVertexAttribPointer(i, layout[i], GL_FLOAT, GL_FALSE, sumOfLayout * sizeof(float), (void*)off));
+		glSC(glEnableVertexAttribArray(i));
+		off += layout[i];
+	}
 }
 
-unsigned int VertexBufferClass::_GetVBUsageForGL(BufferDataUsageEnum usage) {
+static unsigned int _GetVBUsageForGL(VertexBufferClass::BufferDataUsageEnum usage) {
     switch (usage) {
-    case BufferDataUsageEnum::StreamDraw: return GL_STREAM_DRAW;
-    case BufferDataUsageEnum::StreamRead: return GL_STREAM_READ;
-    case BufferDataUsageEnum::StreamCopy: return GL_STREAM_COPY;
-    case BufferDataUsageEnum::StaticDraw: return GL_STATIC_DRAW;
-    case BufferDataUsageEnum::StaticRead: return GL_STATIC_READ;
-    case BufferDataUsageEnum::StaticCopy: return GL_STATIC_COPY;
-    case BufferDataUsageEnum::DynamicDraw: return GL_DYNAMIC_DRAW;
-    case BufferDataUsageEnum::DynamicRead: return GL_DYNAMIC_READ;
-    case BufferDataUsageEnum::DynamicCopy: return GL_DYNAMIC_COPY;
+    case VertexBufferClass::BufferDataUsageEnum::StreamDraw: return GL_STREAM_DRAW;
+    case VertexBufferClass::BufferDataUsageEnum::StreamRead: return GL_STREAM_READ;
+    case VertexBufferClass::BufferDataUsageEnum::StreamCopy: return GL_STREAM_COPY;
+    case VertexBufferClass::BufferDataUsageEnum::StaticDraw: return GL_STATIC_DRAW;
+    case VertexBufferClass::BufferDataUsageEnum::StaticRead: return GL_STATIC_READ;
+    case VertexBufferClass::BufferDataUsageEnum::StaticCopy: return GL_STATIC_COPY;
+    case VertexBufferClass::BufferDataUsageEnum::DynamicDraw: return GL_DYNAMIC_DRAW;
+    case VertexBufferClass::BufferDataUsageEnum::DynamicRead: return GL_DYNAMIC_READ;
+    case VertexBufferClass::BufferDataUsageEnum::DynamicCopy: return GL_DYNAMIC_COPY;
     }
     return 0;
 }
 void VertexBufferClass::SetData(unsigned int dataLength, const void* data, const BufferDataUsageEnum usage) {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX BUFFER IS DELETED, YOU CANT CHANGE ITS DATA", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-    else 
-#endif
-    {
+    Assert_NotDeleted_Macro;
+    Assert_Binded_Macro;
 
-        glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));
-        glSC(glBufferData(GL_ARRAY_BUFFER, dataLength, data, _GetVBUsageForGL(usage)));
-    }
+	glSC(glBufferData(GL_ARRAY_BUFFER, dataLength, data, _GetVBUsageForGL(usage)));
 }
 
 void VertexBufferClass::SetSubData(unsigned int offset, unsigned int dataLength, void* firstElement) {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX BUFFER IS DELETED, YOU CANT CHANGE ITS SUB DATA", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-    else 
-#endif
-    {
-        glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));
-        glSC(glBufferSubData(GL_ARRAY_BUFFER, offset, dataLength, firstElement));
-    }
+    Assert_NotDeleted_Macro;
+    Assert_Binded_Macro;
+
+	glSC(glBufferSubData(GL_ARRAY_BUFFER, offset, dataLength, firstElement));
 }
 void VertexBufferClass::Bind() {
-#if defined Debug
-    if (Deleted) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "VERTEX BUFFER IS DELETED, YOU CANT BIND IT", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
-    else 
+    Assert_NotDeleted_Macro;
+#if defined KE2_Debug
+    BindedInstances.sVertexBuffer_ID(ID);
 #endif
-    {
-        glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));
-    }
+	glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));
 }
 void VertexBufferClass::Unbind() {
     glSC(glBindBuffer(GL_ARRAY_BUFFER, 0));
