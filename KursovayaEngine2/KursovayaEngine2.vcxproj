@@ -170,7 +170,7 @@
     <ClCompile Include="Graphics\Primitives\Renderer.cpp" />
     <ClCompile Include="Graphics\Primitives\VertexArray.cpp" />
     <ClCompile Include="Graphics\Primitives\VertexBuffer.cpp" />
-    <ClCompile Include="KursovayaEngine2Manager.cpp" />
+    <ClCompile Include="KE2_Manager.cpp" />
     <ClCompile Include="Input\Mouse.cpp" />
     <ClCompile Include="Tools\DebugRuntimeAssert.cpp" />
     <ClCompile Include="Tools\FileTypesReaders\Obj.cpp" />
@@ -303,7 +303,7 @@
     <ClInclude Include="Graphics\Primitives\Renderer.h" />
     <ClInclude Include="Graphics\Primitives\VertexArray.h" />
     <ClInclude Include="Graphics\Primitives\VertexBuffer.h" />
-    <ClInclude Include="KursovayaEngine2Manager.h" />
+    <ClInclude Include="KE2_Manager.h" />
     <ClInclude Include="Input\Mouse.h" />
     <ClInclude Include="Maths\Matrix.h" />
     <ClInclude Include="Maths\Vector.h" />

@@ -47,6 +47,9 @@ unsigned int VertexBufferClass::gID() {
 void VertexBufferClass::SetLayout(BufferDataTypeEnum dataType, const std::vector<unsigned int>& layout) {
     Assert_NotDeleted_Macro;
     Assert_Binded_Macro;
+#if defined KE2_Debug
+    DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, BindedInstances.gVertexArrayID() != 0, "changing layout of VertexBuffer without any VertexArray binded dosent make any sence", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION);
+#endif
 
 	for (unsigned int i = 0; i < EnabledAttributesAmount; i++) { glSC(glDisableVertexAttribArray(i)); }
 	EnabledAttributesAmount = (unsigned short int)layout.size();

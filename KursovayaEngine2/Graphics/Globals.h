@@ -36,8 +36,7 @@ namespace Graphics {
 		void* VertexArrayPtr=nullptr;
 	public:
 		unsigned int gVertexArrayID();
-		void* gVertexArrayPtr();
-		void sVertexArray_ID_And_Ptr(unsigned int newID, void* newPtr);
+		void sVertexArray_ID(unsigned int newID);
 
 	private:
 		unsigned int VertexBufferID = 0;

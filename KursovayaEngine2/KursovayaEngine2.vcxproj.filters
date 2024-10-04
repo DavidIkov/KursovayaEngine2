@@ -87,7 +87,7 @@
     <ClCompile Include="Graphics\Abstractions\TextRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KursovayaEngine2Manager.cpp">
+    <ClCompile Include="KE2_Manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WinOS\FilesSystem.cpp">
@@ -506,7 +506,7 @@
     <ClInclude Include="Graphics\Abstractions\TextRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KursovayaEngine2Manager.h">
+    <ClInclude Include="KE2_Manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DLL.h">

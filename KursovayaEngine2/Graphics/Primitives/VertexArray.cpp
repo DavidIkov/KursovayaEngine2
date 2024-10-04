@@ -43,7 +43,7 @@ void VertexArrayClass::Delete() {
 void VertexArrayClass::Bind() {
     Assert_NotDeleted_Macro;
 #if defined KE2_Debug
-    BindedInstances.sVertexArray_ID_And_Ptr(ID, this);
+    BindedInstances.sVertexArray_ID(ID);
 #endif
 	glSC(glBindVertexArray(ID));
 }

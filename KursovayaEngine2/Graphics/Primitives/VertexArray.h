@@ -10,9 +10,6 @@ namespace Graphics::Primitives {
 	class VertexArrayClass {
 		unsigned int ID = 0;
 		mutable bool Deleted = false;
-#if defined KE2_Debug
-		VertexBufferClass* BindedVertexBuffer = nullptr;
-#endif
 	public:
 		DLLTREATMENT VertexArrayClass();
 		DLLTREATMENT VertexArrayClass(RespConstrFlag, const VertexArrayClass& toCopy);

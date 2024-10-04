@@ -1,7 +1,7 @@
 
 #include<iostream>
 #include"Tools/DebuggingTools.h"
-#include"KursovayaEngine2Manager.h"
+#include"KE2_Manager.h"
 #include"Windows/Window.h"
 #include"Graphics/Abstractions/TextRenderer.h"
 #include"Graphics/Abstractions/Texture.h"

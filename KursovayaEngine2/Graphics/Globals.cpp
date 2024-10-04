@@ -14,13 +14,11 @@ unsigned int _BindedInstancesClass::gTextureID() { return TextureID; }
 unsigned int _BindedInstancesClass::gVertexArrayID() { return VertexArrayID; }
 unsigned int _BindedInstancesClass::gVertexBufferID() { return VertexBufferID; }
 
-void* _BindedInstancesClass::gVertexArrayPtr() { return VertexArrayPtr; }
-
 void _BindedInstancesClass::sFrameBuffer_ID(unsigned int newID) { FrameBufferID = newID; }
 void _BindedInstancesClass::sRenderBuffer_ID(unsigned int newID) { RenderBufferID = newID; }
 void _BindedInstancesClass::sShaderProgram_ID(unsigned int newID) { ShaderProgramID = newID; }
 void _BindedInstancesClass::sTexture_ID(unsigned int newID) { TextureID=newID; }
-void _BindedInstancesClass::sVertexArray_ID_And_Ptr(unsigned int newID, void* newPtr) { VertexArrayID=newID; VertexArrayPtr=newPtr; }
+void _BindedInstancesClass::sVertexArray_ID(unsigned int newID) { VertexArrayID=newID; }
 void _BindedInstancesClass::sVertexBuffer_ID(unsigned int newID) { VertexBufferID=newID; }
 
 #endif
