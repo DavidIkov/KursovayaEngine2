@@ -81,19 +81,19 @@ void FrameBufferClass::AttachRenderBuffer(unsigned int renderBufferID, bool dept
 	else DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "cant attach RenderBuffer to a FrameBuffer, RenderBuffer have no buffers", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
 #endif
 }
-void FrameBufferClass::AttachTexture(unsigned int texID, TextureDataSettingsClass::DataFormatOnGPU_Enum dataFormat) {
+void FrameBufferClass::AttachTexture(unsigned int texID, TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum dataFormat) {
 	Assert_NotDeleted_Macro;
 	Assert_Binded_Macro;
 	Assert_NotFinished_Macro;
 
 	int glAtt = 0;
 	switch (dataFormat) {
-	case TextureDataSettingsClass::DataFormatOnGPU_Enum::DepthComponent: glAtt = GL_DEPTH_ATTACHMENT; break;
-	case TextureDataSettingsClass::DataFormatOnGPU_Enum::DepthStencil: glAtt = GL_DEPTH_STENCIL_ATTACHMENT; break;
-	case TextureDataSettingsClass::DataFormatOnGPU_Enum::Red: glAtt = GL_COLOR_ATTACHMENT0; break;
-	case TextureDataSettingsClass::DataFormatOnGPU_Enum::RG: glAtt = GL_COLOR_ATTACHMENT0; break;
-	case TextureDataSettingsClass::DataFormatOnGPU_Enum::RGB: glAtt = GL_COLOR_ATTACHMENT0; break;
-	case TextureDataSettingsClass::DataFormatOnGPU_Enum::RGBA: glAtt = GL_COLOR_ATTACHMENT0; break;
+	case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthComponent: glAtt = GL_DEPTH_ATTACHMENT; break;
+	case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthStencil: glAtt = GL_DEPTH_STENCIL_ATTACHMENT; break;
+	case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Red: glAtt = GL_COLOR_ATTACHMENT0; break;
+	case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RG: glAtt = GL_COLOR_ATTACHMENT0; break;
+	case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGB: glAtt = GL_COLOR_ATTACHMENT0; break;
+	case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA: glAtt = GL_COLOR_ATTACHMENT0; break;
 	}
 	glSC(glFramebufferTexture2D(GL_FRAMEBUFFER, glAtt, GL_TEXTURE_2D, texID, 0));
 }

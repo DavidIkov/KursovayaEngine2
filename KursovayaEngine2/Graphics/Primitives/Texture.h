@@ -6,42 +6,6 @@
 
 namespace Graphics::Primitives {
 
-    struct TextureSettingsClass {
-        enum class WrapTypeEnum :unsigned short int {
-            ClampToEdge, ClampToBorder, MirroredRepeat, Repeat, MirrorClampToEdge
-        };
-        enum class DownscalingFilterFuncEnum :unsigned short int {
-            Nearest, Linear, NearestMipmapNearest, NearestMipmapLinear, LinearMipmapLinear, LinearMipmapNearest
-        };
-        enum class UpscalingFilterFuncEnum :unsigned short int {
-            Nearest, Linear
-        };
-        enum class DepthStencilReadModeEnum :unsigned short int {
-            Depth, Stencil
-        };
-
-        WrapTypeEnum WrapTypeByX;
-        WrapTypeEnum WrapTypeByY;
-        DownscalingFilterFuncEnum DownscalingFilt;
-        UpscalingFilterFuncEnum UpscalingFilt;
-        DepthStencilReadModeEnum DepthStencilReadMode;
-    };
-    struct TextureDataSettingsClass {
-        enum class DataFormatOnGPU_Enum :unsigned short int {
-            DepthComponent, DepthStencil, Red, RG, RGB, RGBA
-        };
-        enum class DataFormatOnCPU_Enum :unsigned short int {
-            Red, RG, RGB, BGR, RGBA, BGRA, RedInteger, RG_Integer, RGB_Integer, BGR_Integer, RGBA_Integer, BGRA_Integer, StencilIndex,
-            DepthComponent, DepthStencil
-        };
-        enum class DataTypeOnCPU_Enum :unsigned short int {
-            UnsignedByte, Byte, UnsignedShort, Short, UnsignedInt, Int, Float, UnsignedInt_24_8
-        };
-
-        DataFormatOnGPU_Enum DataFormatOnGPU;
-        DataFormatOnCPU_Enum DataFormatOnCPU;
-        DataTypeOnCPU_Enum DataTypeOnCPU;
-    };
 
     class TextureClass {
         
@@ -49,6 +13,45 @@ namespace Graphics::Primitives {
         mutable bool Deleted = false;
 
     public:
+		struct SettingsStruct {
+			enum class WrapTypeEnum :unsigned short int {
+				ClampToEdge, ClampToBorder, MirroredRepeat, Repeat, MirrorClampToEdge
+			};
+			enum class DownscalingFilterFuncEnum :unsigned short int {
+				Nearest, Linear, NearestMipmapNearest, NearestMipmapLinear, LinearMipmapLinear, LinearMipmapNearest
+			};
+			enum class UpscalingFilterFuncEnum :unsigned short int {
+				Nearest, Linear
+			};
+			enum class DepthStencilReadModeEnum :unsigned short int {
+				Depth, Stencil, 
+				/*you cant technically select mode as None but in here but its used to just dont mention depth mode texture when they have nothing to do with depth*/
+				None
+			};
+
+			WrapTypeEnum WrapTypeByX;
+			WrapTypeEnum WrapTypeByY;
+			DownscalingFilterFuncEnum DownscalingFilt;
+			UpscalingFilterFuncEnum UpscalingFilt;
+			DepthStencilReadModeEnum DepthStencilReadMode;
+		};
+		struct DataSettingsStruct {
+			enum class DataFormatOnGPU_Enum :unsigned short int {
+				DepthComponent, DepthStencil, Red, RG, RGB, RGBA
+			};
+			enum class DataFormatOnCPU_Enum :unsigned short int {
+				Red, RG, RGB, BGR, RGBA, BGRA, RedInteger, RG_Integer, RGB_Integer, BGR_Integer, RGBA_Integer, BGRA_Integer, StencilIndex,
+				DepthComponent, DepthStencil
+			};
+			enum class DataTypeOnCPU_Enum :unsigned short int {
+				UnsignedByte, Byte, UnsignedShort, Short, UnsignedInt, Int, Float, UnsignedInt_24_8
+			};
+
+			DataFormatOnGPU_Enum DataFormatOnGPU;
+			DataFormatOnCPU_Enum DataFormatOnCPU;
+			DataTypeOnCPU_Enum DataTypeOnCPU;
+		};
+
         enum class DimensionsEnum :unsigned short int {
             One, Two, Three
         };
@@ -56,39 +59,39 @@ namespace Graphics::Primitives {
         DimensionsEnum Dimensions;
         unsigned int GL_TexEnum;
 
-        void _Constructor(Vector3U pixelsAmount, const void* data, const TextureDataSettingsClass& dataSets);
+        void _Constructor(Vector3U pixelsAmount, const void* data, const DataSettingsStruct& dataSets);
 
-        void _UpdSettings_WrapTypeByX(TextureSettingsClass::WrapTypeEnum wrapTyp);
-        void _UpdSettings_WrapTypeByY(TextureSettingsClass::WrapTypeEnum wrapTyp);
-        void _UpdSettings_DownscalingFilt(TextureSettingsClass::DownscalingFilterFuncEnum filt);
-        void _UpdSettings_UpscalingFilt(TextureSettingsClass::UpscalingFilterFuncEnum filt);
-        void _UpdSettings_DepthStencilReadMode(TextureSettingsClass::DepthStencilReadModeEnum readMode);
+        void _UpdSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTyp);
+        void _UpdSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTyp);
+        void _UpdSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum filt);
+        void _UpdSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum filt);
+        void _UpdSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum readMode);
 
-        void _UpdateSettings(const TextureSettingsClass& sets);
+        void _UpdateSettings(const SettingsStruct& sets);
     public:
 
-        DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, const TextureSettingsClass& sets);
-        DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const TextureSettingsClass& sets, const TextureDataSettingsClass& dataSets);
+        DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, void** writeDataPtr, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
+        DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
         DLLTREATMENT TextureClass(RespConstrFlag, const TextureClass& toCopy);
         DLLTREATMENT TextureClass(const TextureClass&& toCopy);
         DLLTREATMENT void operator=(const TextureClass&& toCopy);
         DLLTREATMENT ~TextureClass();
 
-        DLLTREATMENT void SetData(Vector3U pixelsAmount, const void* data, const TextureDataSettingsClass& dataSets);
+        DLLTREATMENT void SetData(Vector3U pixelsAmount, const void* data, const DataSettingsStruct& dataSets);
         DLLTREATMENT void SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data,
-            TextureDataSettingsClass::DataFormatOnCPU_Enum dataFormatOnCPU, TextureDataSettingsClass::DataTypeOnCPU_Enum dataTypeOnCPU);
+            DataSettingsStruct::DataFormatOnCPU_Enum dataFormatOnCPU, DataSettingsStruct::DataTypeOnCPU_Enum dataTypeOnCPU);
 
         DLLTREATMENT void GenerateMipmaps();
 
 		//this function is slow since it will get data from gpu to cpu
         //buffer should be not be nullptr, it should point to already allocated memory
-        DLLTREATMENT void GetData(TextureDataSettingsClass::DataFormatOnCPU_Enum dataFormat, TextureDataSettingsClass::DataTypeOnCPU_Enum dataType, void* buffer);
+        DLLTREATMENT void GetData(DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType, void* buffer);
 
-        DLLTREATMENT void sSettings_WrapTypeByX(TextureSettingsClass::WrapTypeEnum wrapTypeByX);
-        DLLTREATMENT void sSettings_WrapTypeByY(TextureSettingsClass::WrapTypeEnum wrapTypeByY);
-        DLLTREATMENT void sSettings_DownscalingFilt(TextureSettingsClass::DownscalingFilterFuncEnum downscalingFilt);
-        DLLTREATMENT void sSettings_UpscalingFilt(TextureSettingsClass::UpscalingFilterFuncEnum upscalingFilt);
-        DLLTREATMENT void sSettings_DepthStencilReadMode(TextureSettingsClass::DepthStencilReadModeEnum depthStencilReadMode);
+        DLLTREATMENT void sSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX);
+        DLLTREATMENT void sSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY);
+        DLLTREATMENT void sSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt);
+        DLLTREATMENT void sSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt);
+        DLLTREATMENT void sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode);
 
         DLLTREATMENT unsigned int gID();
         DLLTREATMENT void Delete();

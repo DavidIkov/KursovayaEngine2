@@ -32,7 +32,8 @@ RenderingPresetClass::RenderingPresetClass(
 
 	float f_ClearR,
 	float f_ClearG,
-	float f_ClearB
+	float f_ClearB,
+	float f_ClearA
 ) :
 FaceCulling_Enabled(f_FaceCullingEnabled), FaceCulling_FaceToCull(f_FaceCulling_FaceToCull), FaceCulling_FaceDetermination(f_FaceCulling_FaceDetermination),
 DepthTest_Enabled(f_DepthTest_Enabled), DepthTest_WriteInBufferEnabled(f_DepthTest_WriteInBufferEnabled), DepthTest_TypeOfComparison(f_DepthTest_TypeOfComparison),
@@ -41,7 +42,7 @@ StencilTest_ReferenceValue(f_StencilTest_ReferenceValue), StencilTest_Mask(f_Ste
 StencilTest_ActionOnSPDF(f_StencilTest_ActionOnSPDF), StencilTest_ActionOnSPDP(f_StencilTest_ActionOnSPDP),
 Blending_Enabled(f_Blending_Enabled), Blending_ConstR(f_Blending_ConstR), Blending_ConstG(f_Blending_ConstG), Blending_ConstB(f_Blending_ConstG), Blending_ConstA(f_Blending_ConstA),
 Blending_FuncForColor1(f_Blending_FuncForColor1), Blending_FuncForColor2(f_Blending_FuncForColor2),
-ClearR(f_ClearR), ClearG(f_ClearG), ClearB(f_ClearB)
+ClearR(f_ClearR), ClearG(f_ClearG), ClearB(f_ClearB), ClearA(f_ClearA)
 {
 
 }
@@ -75,9 +76,10 @@ void RenderingPresetClass::sBlending_ConstB(float newVal) { Blending_ConstB = ne
 void RenderingPresetClass::sBlending_ConstA(float newVal) { Blending_ConstA = newVal; UpdBlending_ConstRGBA(); }
 void RenderingPresetClass::sBlending_FuncForColor1(RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor newVal) { Blending_FuncForColor1 = newVal; UpdBlending_FuncForColor(); }
 void RenderingPresetClass::sBlending_FuncForColor2(RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor newVal) { Blending_FuncForColor2 = newVal; UpdBlending_FuncForColor(); }
-void RenderingPresetClass::sClearR(float newVal) { ClearR = newVal; UpdClearRGB(); }
-void RenderingPresetClass::sClearG(float newVal) { ClearG = newVal; UpdClearRGB(); }
-void RenderingPresetClass::sClearB(float newVal) { ClearB = newVal; UpdClearRGB(); }
+void RenderingPresetClass::sClearR(float newVal) { ClearR = newVal; UpdClearRGBA(); }
+void RenderingPresetClass::sClearG(float newVal) { ClearG = newVal; UpdClearRGBA(); }
+void RenderingPresetClass::sClearB(float newVal) { ClearB = newVal; UpdClearRGBA(); }
+void RenderingPresetClass::sClearA(float newVal) { ClearA = newVal; UpdClearRGBA(); }
 
 
 void RenderingPresetClass::UpdFaceCulling_Enabled() {
@@ -199,8 +201,8 @@ void RenderingPresetClass::UpdBlending_FuncForColor() {
 	glSC(glBlendFunc(args[0], args[1]));
 }
 
-void RenderingPresetClass::UpdClearRGB() {
-	glSC(glClearColor(ClearR, ClearG, ClearB, 1.f));
+void RenderingPresetClass::UpdClearRGBA() {
+	glSC(glClearColor(ClearR, ClearG, ClearB, ClearA));
 }
 
 void RenderingPresetClass::Bind() {
@@ -222,7 +224,7 @@ void RenderingPresetClass::Bind() {
 	UpdBlending_ConstRGBA();
 	UpdBlending_FuncForColor();
 
-	UpdClearRGB();
+	UpdClearRGBA();
 
 }
 void RenderingPresetClass::Unbind() {

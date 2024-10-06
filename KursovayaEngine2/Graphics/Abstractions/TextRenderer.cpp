@@ -7,18 +7,18 @@
 #include"Tools/BinarySearch.h"
 #include FT_FREETYPE_H
 
-using namespace Graphics::Primitives;
-using namespace Graphics::Abstractions;
+namespace GP = Graphics::Primitives;
+namespace GA = Graphics::Abstractions;
 
-void* TextRendererClass::FreeTypeLib = nullptr;
+void* GA::TextRendererClass::FreeTypeLib = nullptr;
 
-TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const wchar_t* fragmentShaderDir) :TextPreset(
-    false, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
-    false, true, RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual,
-    false, 0, RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Equal, 1, 255, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
-    RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
-    true, 0, 0, 0, 0, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
-    0.f, 0.f, 0.f
+GA::TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const wchar_t* fragmentShaderDir) :TextPreset(
+    false, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
+    false, true, GP::RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual,
+    false, 0, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Equal, 1, 255, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
+    GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
+    true, 0, 0, 0, 0, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
+    0.f, 0.f, 0.f, 1.f
 ) {
     if (FreeTypeLib == nullptr) {
         FreeTypeLib = (void*)(new FT_Library);
@@ -29,11 +29,11 @@ TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const wchar
     }
 
     {
-        ShaderClass VS(vertexShaderDir, ShaderClass::TypesEnum::Vertex);
+        GP::ShaderClass VS(vertexShaderDir, GP::ShaderClass::TypesEnum::Vertex);
         VS.Compile();
         TEXT_SP.AttachShader(VS);
 
-        ShaderClass FS(fragmentShaderDir, ShaderClass::TypesEnum::Fragment);
+        GP::ShaderClass FS(fragmentShaderDir, GP::ShaderClass::TypesEnum::Fragment);
         FS.Compile();
         TEXT_SP.AttachShader(FS);
 
@@ -44,29 +44,29 @@ TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const wchar
 
     TEXT_VA.Bind();
     TEXT_VB.Bind();
-    TEXT_VB.SetData(6 * 4 * sizeof(float), nullptr, VertexBufferClass::BufferDataUsageEnum::DynamicDraw);
-    TEXT_VB.SetLayout(VertexBufferClass::BufferDataTypeEnum::Float, { 2,2 });
+    TEXT_VB.SetData(6 * 4 * sizeof(float), nullptr, GP::VertexBufferClass::BufferDataUsageEnum::DynamicDraw);
+    TEXT_VB.SetLayout(GP::VertexBufferClass::BufferDataTypeEnum::Float, { 2,2 });
     TEXT_VA.Unbind();
 }
 
-TextRendererClass::~TextRendererClass() {
-    Fonts.Resize(0);
+GA::TextRendererClass::~TextRendererClass() {
+    Fonts.Clear();
     FT_Done_FreeType(*(FT_Library*)FreeTypeLib);
     delete (FT_Library*)FreeTypeLib;
 }
 
-StalkerClass TextRendererClass::AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters) {
+StalkerClass GA::TextRendererClass::AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters) {
     Fonts.InsertByConstructor(Fonts.gLength(), characterSize, fontDir, characters);
     return StalkerClass(&Fonts, Fonts.gLength() - 1);
 }
 
-TextRendererClass::FontClass::FontClass(RespConstrFlag, const FontClass& toCopy) :
+GA::TextRendererClass::FontClass::FontClass(RespConstrFlag, const FontClass& toCopy) :
     Texture(RespConstrFlag(), toCopy.Texture), FreeTypeFace(toCopy.FreeTypeFace), Characters(toCopy.Characters),
     MaxCharacterUp(toCopy.MaxCharacterUp),MaxCharacterDown(toCopy.MaxCharacterDown) {
     toCopy.Deleted = true;
 }
 
-TextRendererClass::FontClass::~FontClass() {
+GA::TextRendererClass::FontClass::~FontClass() {
     if (not Deleted) {
         Deleted = true;
         FT_Done_Face(*(FT_Face*)FreeTypeFace);
@@ -74,13 +74,13 @@ TextRendererClass::FontClass::~FontClass() {
 }
 
 
-TextRendererClass::FontClass::FontClass(unsigned int characterSize, const char* fontDir, const wchar_t* chars) :
-    Texture(TextureClass::DimensionsEnum::Two, Vector3U(0, 0, 0), nullptr, TextureSettingsClass{
-                    TextureSettingsClass::WrapTypeEnum::ClampToBorder,TextureSettingsClass::WrapTypeEnum::ClampToBorder,
-                    TextureSettingsClass::DownscalingFilterFuncEnum::Linear,TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
-                    TextureSettingsClass::DepthStencilReadModeEnum::Depth },
-                    TextureDataSettingsClass{ TextureDataSettingsClass::DataFormatOnGPU_Enum::Red,
-                    TextureDataSettingsClass::DataFormatOnCPU_Enum::Red,TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte })
+GA::TextRendererClass::FontClass::FontClass(unsigned int characterSize, const char* fontDir, const wchar_t* chars) :
+    Texture(GP::TextureClass::DimensionsEnum::Two, Vector3U(0, 0, 0), nullptr, GP::TextureClass::SettingsStruct{
+                    GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,
+                    GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
+                    GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth },
+                    GP::TextureClass::DataSettingsStruct{ GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Red,
+                    GP::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::Red,GP::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte })
 { 
     FreeTypeFace = new FT_Face;
 
@@ -97,7 +97,7 @@ TextRendererClass::FontClass::FontClass(unsigned int characterSize, const char* 
 
     unsigned int charsAmount = 0; while (chars[charsAmount] != L'\0') charsAmount++;
 
-    Characters.reserve(charsAmount);
+    Characters.Reserve(charsAmount);
     std::vector<unsigned char*> buffers; buffers.reserve(charsAmount);
 
 
@@ -109,11 +109,11 @@ TextRendererClass::FontClass::FontClass(unsigned int characterSize, const char* 
         unsigned int unicodeInd = (unsigned int)chars[chi];
 
 
-        unsigned int insertInd = (Characters.size() == 0) ? 0 : BinarySearch<CharacterClass, unsigned int>(&Characters[0], Characters.size(), unicodeInd,
+        unsigned int insertInd = (Characters.gLength() == 0) ? 0 : BinarySearch<CharacterClass, unsigned int>(&Characters[0], Characters.gLength(), unicodeInd,
             [](unsigned int v1, const CharacterClass& v2)->bool {return v2.UnicodeInd > v1; },
             [](unsigned int v1, const CharacterClass& v2)->bool {return v1 == v2.UnicodeInd; });
 
-        if (insertInd<Characters.size() and Characters[insertInd].UnicodeInd == unicodeInd) continue;
+        if (insertInd<Characters.gLength() and Characters[insertInd].UnicodeInd == unicodeInd) continue;
 
         if (FT_Load_Char(*(FT_Face*)FreeTypeFace, unicodeInd, FT_LOAD_RENDER))
         {
@@ -134,7 +134,7 @@ TextRendererClass::FontClass::FontClass(unsigned int characterSize, const char* 
 
         totalXSize += face->glyph->bitmap.width;
 
-        Characters.insert(Characters.begin() + insertInd, CharacterClass{
+        Characters.InsertByConstructor(insertInd, CharacterClass{
             unicodeInd,
             Vector2U(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             Vector2I(face->glyph->bitmap_left, face->glyph->bitmap_top),
@@ -149,7 +149,7 @@ TextRendererClass::FontClass::FontClass(unsigned int characterSize, const char* 
     
     {
         unsigned int xOffset = 1;
-        for (unsigned int ci = 0; ci < Characters.size(); ci++) {
+        for (unsigned int ci = 0; ci < Characters.gLength(); ci++) {
             CharacterClass& char_ = Characters[ci];
             char_.XOffsetInTexture = xOffset / (float)totalXSize;
             char_.SizeInTexture = Vector2F(char_.Size[0] / (float)totalXSize, char_.Size[1] / (float)maxHeight);
@@ -159,7 +159,7 @@ TextRendererClass::FontClass::FontClass(unsigned int characterSize, const char* 
 
     {
         unsigned int xOffset = 0;
-        for (unsigned int ci = 0; ci < Characters.size(); ci++) {
+        for (unsigned int ci = 0; ci < Characters.gLength(); ci++) {
             CharacterClass& char_ = Characters[ci];
             for (unsigned int x = 0; x < char_.Size[0]; x++) for (unsigned int y = 0; y < char_.Size[1]; y++) {
                 textureBuffer[ci + 1 + y * totalXSize + xOffset + x] = buffers[ci][(char_.Size[1] - y - 1) * char_.Size[0] + x];
@@ -172,8 +172,8 @@ TextRendererClass::FontClass::FontClass(unsigned int characterSize, const char* 
 	glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); // disable byte-alignment restriction
 
 	Texture.SetData(Vector3U(totalXSize, maxHeight, 0), textureBuffer, 
-        TextureDataSettingsClass{ TextureDataSettingsClass::DataFormatOnGPU_Enum::Red,
-        TextureDataSettingsClass::DataFormatOnCPU_Enum::Red,TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte });
+        GP::TextureClass::DataSettingsStruct{ GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Red,
+        GP::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::Red,GP::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte });
 
 	glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 4)); // enable byte-alignment back
     
@@ -186,7 +186,7 @@ TextRendererClass::FontClass::FontClass(unsigned int characterSize, const char* 
 
 static constexpr unsigned int MAX_TEXT_LEN = 100000;
 
-void TextRendererClass::RenderText(const StalkerClass& fontStalker, const wchar_t* text, Vector2F pos, Vector2F localOffset, Vector2U pixelsInTexture,
+void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wchar_t* text, Vector2F pos, Vector2F localOffset, Vector2U pixelsInTexture,
     Vector2F boxSize, float lineSizeInBox, const wchar_t* dividingSymbols) {
     
     if (boxSize[0] == 0 and boxSize[1] == 0) return;//theres nothing we can do
@@ -207,10 +207,10 @@ void TextRendererClass::RenderText(const StalkerClass& fontStalker, const wchar_
     std::vector<unsigned int> charsInds; charsInds.resize(textLen);//adding +1 to mark unexisting characters, ind=0 will mean that character not found
     for (unsigned int ci = 0; ci < textLen; ci++) {
         charsInds[ci] = BinarySearch<FontClass::CharacterClass, unsigned int>(
-            &font.Characters[0], font.Characters.size(), (unsigned int)text[ci],
+            &font.Characters[0], font.Characters.gLength(), (unsigned int)text[ci],
             [](unsigned int num, const FontClass::CharacterClass& ch)->bool {return num < ch.UnicodeInd; },
             [](unsigned int num, const FontClass::CharacterClass& ch)->bool {return num == ch.UnicodeInd; });
-        if (charsInds[ci] >= font.Characters.size() or font.Characters[charsInds[ci]].UnicodeInd != (unsigned int)text[ci]) charsInds[ci] = 0;
+        if (charsInds[ci] >= font.Characters.gLength() or font.Characters[charsInds[ci]].UnicodeInd != (unsigned int)text[ci]) charsInds[ci] = 0;
 		else charsInds[ci]++;
     }
 
@@ -283,7 +283,7 @@ void TextRendererClass::RenderText(const StalkerClass& fontStalker, const wchar_
         };
 
 		TEXT_VB.SetSubData(0, 6 * 4 * sizeof(float), data);
-        RendererNamespace::DrawArrays(RendererNamespace::PrimitivesEnum::Triangles, 0, 6);
+        GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, 6);
 
 
         xOffset += char_.Advance * localPixelsToTexScaleByX;

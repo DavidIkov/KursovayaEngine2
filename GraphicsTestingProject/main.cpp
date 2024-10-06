@@ -21,11 +21,6 @@ namespace GA = Graphics::Abstractions;
 
 unsigned int ProgramExitCode = 0;
 
-struct Dummy {
-    alignas(GA::TextRendererClass) unsigned char data[sizeof(GA::TextRendererClass)];
-    Dummy() { for (unsigned int i = 0; i < (sizeof(data) / sizeof(unsigned char)); i++) data[i] = i; }
-};
-
 int main()
 {
 
@@ -45,17 +40,17 @@ int main()
         
         GP::FrameBufferClass FB(Width, Height);
         GP::TextureClass FB_COLOR_TEX(GP::TextureClass::DimensionsEnum::Two, Vector3U(Width, Height, 0), nullptr,
-            GP::TextureSettingsClass{ GP::TextureSettingsClass::WrapTypeEnum::ClampToEdge,GP::TextureSettingsClass::WrapTypeEnum::ClampToEdge,
-            GP::TextureSettingsClass::DownscalingFilterFuncEnum::Nearest,GP::TextureSettingsClass::UpscalingFilterFuncEnum::Nearest,
-            GP::TextureSettingsClass::DepthStencilReadModeEnum::Depth },
-            GP::TextureDataSettingsClass{ GP::TextureDataSettingsClass::DataFormatOnGPU_Enum::RGB,
-            GP::TextureDataSettingsClass::DataFormatOnCPU_Enum::RGB, GP::TextureDataSettingsClass::DataTypeOnCPU_Enum::UnsignedByte }
+            GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,
+            GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Nearest,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Nearest,
+            GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth },
+            GP::TextureClass::DataSettingsStruct{ GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
+            GP::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RGBA, GP::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte }
         );
-        FB.AttachTexture(FB_COLOR_TEX.gID(), GP::TextureDataSettingsClass::DataFormatOnGPU_Enum::RGB);
+        FB.AttachTexture(FB_COLOR_TEX.gID(), GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA);
         /*TextureClass FB_DEPTH_STENCIL_TEX(Width, Height, nullptr, TextureClass::TypeEnum::Texture2D,
-            GP::TextureSettingsClass{ GP::TextureSettingsClass::WrapTypeEnum::ClampToEdge,GP::TextureSettingsClass::WrapTypeEnum::ClampToEdge,
-            GP::TextureSettingsClass::DownscalingFilterFuncEnum::Nearest,GP::TextureSettingsClass::UpscalingFilterFuncEnum::Nearest,
-            GP::TextureSettingsClass::DepthStencilReadModeEnum::Stencil },
+            GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,
+            GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Nearest,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Nearest,
+            GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Stencil },
             TextureClass::DataSettingsClass{ TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil,
             TextureClass::DataSettingsClass::DataFormatOnCPU_Enum::DepthStencil, TextureClass::DataSettingsClass::DataTypeOnCPU_Enum::UnsignedInt_24_8 });
         FB.AttachTexture(FB_DEPTH_STENCIL_TEX.gID(), TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil);*/
@@ -71,7 +66,7 @@ int main()
             true,0xff, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::AlwaysPass,1,0xff, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
             GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Replace,
             true, 0,0,0,0, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
-            0.1f,0.2f,0.3f
+            0.1f,0.2f,0.3f,0.f
         );
         GP::RenderingPresetClass QuadPreset(
             false, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
@@ -79,7 +74,7 @@ int main()
             false, 0, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Equal, 1, 255, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
             GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
             false, 0, 0, 0, 0, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
-            0.f,0.f,0.f
+            0.f,0.f,0.f,1.f
         );
         
 
@@ -181,14 +176,16 @@ int main()
         SP.SetUniform1i("u_tex1", 0);
         SP.SetUniform1i("u_tex2", 1);
 
-        GP::TextureClass TEX0(GP::TextureClass::DimensionsEnum::Two, "Textures/blackFace.jpg",
-            GP::TextureSettingsClass{ GP::TextureSettingsClass::WrapTypeEnum::Repeat,GP::TextureSettingsClass::WrapTypeEnum::Repeat,
-            GP::TextureSettingsClass::DownscalingFilterFuncEnum::Linear,GP::TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
-            GP::TextureSettingsClass::DepthStencilReadModeEnum::Depth });
-        GP::TextureClass TEX1(GP::TextureClass::DimensionsEnum::Two, "Textures/simpleFace.png",
-            GP::TextureSettingsClass{ GP::TextureSettingsClass::WrapTypeEnum::Repeat,GP::TextureSettingsClass::WrapTypeEnum::Repeat,
-            GP::TextureSettingsClass::DownscalingFilterFuncEnum::Linear,GP::TextureSettingsClass::UpscalingFilterFuncEnum::Linear,
-            GP::TextureSettingsClass::DepthStencilReadModeEnum::Depth });
+        GP::TextureClass TEX0(GP::TextureClass::DimensionsEnum::Two, "Textures/blackFace.jpg", nullptr, nullptr,
+            GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
+            GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
+            GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GP::TextureClass::DataSettingsStruct{GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
+            GP::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RGB,GP::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte});
+        GP::TextureClass TEX1(GP::TextureClass::DimensionsEnum::Two, "Textures/simpleFace.png",nullptr,nullptr,
+            GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
+            GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
+            GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GP::TextureClass::DataSettingsStruct{GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
+            GP::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RGBA,GP::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte});
         
 
         
@@ -224,6 +221,23 @@ int main()
             });
 
         float time = 0;
+        float effectMult = 1;
+        bool fullHD_Render = false;
+		EventsHandler.ConnectToEvent(&window.gKeyboardHandle().gPressableKeyEvent(KeyboardClass::PressableKeysEnum::K), [&](void* pressedDown) {
+            if (*(bool*)pressedDown) fullHD_Render = not fullHD_Render;
+            });
+
+
+        EventsHandler.ConnectToEvent(&window.gKeyboardHandle().gPressableKeyEvent(KeyboardClass::PressableKeysEnum::M), [&](void* pressedDown) {
+            if (*(bool*)pressedDown) effectMult += 0.2f;
+            });
+		EventsHandler.ConnectToEvent(&window.gKeyboardHandle().gPressableKeyEvent(KeyboardClass::PressableKeysEnum::N), [&](void* pressedDown) {
+            if (*(bool*)pressedDown) effectMult -= 0.2f;
+            if (effectMult < 0) effectMult = 0;
+            });
+
+        
+
 
         while (!window.WindowWaitingToClose()) {
             window.UpdateMouseData();
@@ -237,13 +251,25 @@ int main()
 
 
             float cameraSpeed = 0.04f;
-            if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::W)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, 0, cameraSpeed);
-            if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::S)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, 0, -cameraSpeed);
-            if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::A)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(-cameraSpeed, 0, 0);
-            if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::D)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(cameraSpeed, 0, 0);
-            if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::Q)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, -cameraSpeed, 0);
-            if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::E)) CameraPosition = CameraPosition + CameraRotationMatrix * Vector3F(0, cameraSpeed, 0);
 
+
+            {
+				bool shiftEnabled = window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::LeftShift);
+				bool altEnabled = window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::LeftAlt);
+                Vector3F localCamVelocity;
+
+                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::W)) localCamVelocity += Vector3F(0, 0, cameraSpeed);
+                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::S)) localCamVelocity += Vector3F(0, 0, -cameraSpeed);
+                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::A)) localCamVelocity += Vector3F(-cameraSpeed, 0, 0);
+                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::D)) localCamVelocity += Vector3F(cameraSpeed, 0, 0);
+                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::Q)) localCamVelocity += Vector3F(0, -cameraSpeed, 0);
+                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::E)) localCamVelocity += Vector3F(0, cameraSpeed, 0);
+
+                float speedMult = 1;
+                if (shiftEnabled) speedMult = 10;
+                else if (altEnabled) speedMult = 1000;
+                CameraPosition += CameraRotationMatrix * (localCamVelocity * speedMult);
+            }
 
             {
                 Vector2F CameraRotationByDelta = (Vector2F)MouseDelta / Vector2F((float)Width, (float)Height) / ResolutionLength;
@@ -358,6 +384,11 @@ int main()
             QUAD_SP.Bind();
 
             QUAD_SP.SetUniform1i("u_Texture", 0);
+            QUAD_SP.SetUniformMatrix3fv("u_CameraRotation", 1, false, &CameraRotationMatrix[0]);
+            QUAD_SP.SetUniform3fv("u_CameraPosition", 1, &CameraPosition[0]);
+            QUAD_SP.SetUniform2fv("u_CameraResolutionSize", 1, &ResolutionLength[0]);
+            QUAD_SP.SetUniform1f("u_EffectMult", effectMult);// (sinf(time) + 1) / 2 * 10 + 5);
+            QUAD_SP.SetUniform1f("u_Time", time);
 
             FB_COLOR_TEX.Bind(0);
 
@@ -367,19 +398,10 @@ int main()
 
             QUAD_VA.Unbind();
 
-            {//text
-                //for (unsigned int i = 0; i < 5; i++) {
-                    /*TEXT_RENDERER.DrawText(ArialFont, L"abcds",
-                        Width, Height,
-                        1,
-                        -1.f + 2.f * ((float)i / 5), -1.f + 2.f * ((float)i / 5),
-                        -1,-1,
-                        0, TextGP::RendererNamespace::ClampingFuncs::None,
-                        0, true, TextGP::RendererNamespace::ClampingFuncs::None);*/
-                TEXT_RENDERER.RenderText(ArialFont, L"english русский ЙЖЁ!:(|&", Vector2F(-1,0), Vector2F(-1,0), Vector2U(Width, Height),
-                    Vector2F(1, 0), 0.5f);
-                //}
-            }
+			//TEXT_RENDERER.RenderText(ArialFont, L"english русский ЙЖЁ!:(|&", Vector2F(-1,0), Vector2F(-1,0), Vector2U(Width, Height), Vector2F(1, 0), 0.5f);
+            
+            std::wstring camPosText = std::to_wstring(CameraPosition[0]) + L',' + std::to_wstring(CameraPosition[1]) + L',' + std::to_wstring(CameraPosition[2]);
+            TEXT_RENDERER.RenderText(ArialFont, camPosText.c_str(), Vector2F(1, 1), Vector2F(1, 1), Vector2U(Width, Height), Vector2F(0, 0.05f), 1);
 
             window.SwapScreenBuffers();
             window.ProcessEvents();

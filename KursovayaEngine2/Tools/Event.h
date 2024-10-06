@@ -1,5 +1,6 @@
 #pragma once
 #include"DLL.h"
+#include"DynArr.h"
 #include"functional"
 
 class EventConnectionsHandlerClass;
@@ -20,7 +21,7 @@ class EventClass {
 
 		ConnectionDataInFrontBufferClass(std::function<void(void*)>& func, std::function<bool(void*)>& checkFunc);
 	};
-	mutable std::vector<ConnectionDataInFrontBufferClass> ConnectionsFrontBuffer;
+	mutable DynArr<ConnectionDataInFrontBufferClass, false> ConnectionsFrontBuffer;
 	struct ConnectionDataInBackBufferClass {
 		std::function<void(void*)> Func;
 		std::function<bool(void*)> CheckFunc;
@@ -34,7 +35,7 @@ class EventClass {
 
 		ConnectionDataInBackBufferClass(std::function<void(void*)>&& func, std::function<bool(void*)>&& checkFunc, float priority, const EventConnectionsHandlerClass* handler, unsigned int conInd);
 	};
-	mutable std::vector<ConnectionDataInBackBufferClass> ConnectionsBackBuffer;
+	mutable DynArr<ConnectionDataInBackBufferClass, false> ConnectionsBackBuffer;
 public:
 	DLLTREATMENT void FireEvent(void* data);
 
@@ -58,7 +59,7 @@ private:
 
 		ConnectionDataClass(ConnectionID id, const EventClass* ev, unsigned int conInd);
 	};
-	mutable std::vector<ConnectionDataClass> Connections;
+	mutable DynArr<ConnectionDataClass, false> Connections;
 
 private: ConnectionID _ConnectToEvent(const EventClass* ev, float priority, unsigned int priorityInsertInd, std::function<void(void*)>&& func, std::function<bool(void*)>&& checkFunc) const;
 public:

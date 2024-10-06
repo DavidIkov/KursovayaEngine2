@@ -39,6 +39,7 @@ WindowClass::WindowClass(unsigned int w, unsigned int h, const char* title, bool
     
     WindowsManager::Windows.push_back(this);
 
+    //const GLFWvidmode* vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     GLFW_WindowPtr = glfwCreateWindow(w, h, title, fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
     if (!GLFW_WindowPtr) {
         DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO CREATE WINDOW", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });

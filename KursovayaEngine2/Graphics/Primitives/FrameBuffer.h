@@ -37,7 +37,7 @@ namespace Graphics::Primitives {
 		DLLTREATMENT void Finish();
 		DLLTREATMENT void Bind();
 		DLLTREATMENT void AttachRenderBuffer(unsigned int renderBufferID, bool depthBufferEnabled, bool stencilBufferEnabled);
-		DLLTREATMENT void AttachTexture(unsigned int texID, TextureDataSettingsClass::DataFormatOnGPU_Enum dataFormat);
+		DLLTREATMENT void AttachTexture(unsigned int texID, TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum dataFormat);
 		DLLTREATMENT static void Unbind(unsigned int width, unsigned int height);
 
 #define CFAC_ClassName FrameBufferClass

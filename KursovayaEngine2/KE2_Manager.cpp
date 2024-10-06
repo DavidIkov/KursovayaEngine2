@@ -1,4 +1,4 @@
-#include"KursovayaEngine2Manager.h"
+#include"KE2_Manager.h"
 #include"Tools/DebuggingTools.h"
 #include"stb_image/stb_image.h"
 #include"GLFW/glfw3.h"

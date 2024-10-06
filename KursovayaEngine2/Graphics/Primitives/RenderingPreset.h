@@ -87,6 +87,7 @@ namespace Graphics::Primitives {
 		float ClearR;
 		float ClearG;
 		float ClearB;
+		float ClearA;
 
 		void UpdFaceCulling_Enabled();
 		void UpdFaceCulling_FaceToCull();
@@ -105,7 +106,7 @@ namespace Graphics::Primitives {
 		void UpdBlending_ConstRGBA();
 		void UpdBlending_FuncForColor();
 
-		void UpdClearRGB();
+		void UpdClearRGBA();
 
 	public:
 
@@ -137,6 +138,7 @@ namespace Graphics::Primitives {
 		DLLTREATMENT void sClearR(float newVal);
 		DLLTREATMENT void sClearG(float newVal);
 		DLLTREATMENT void sClearB(float newVal);
+		DLLTREATMENT void sClearA(float newVal);
 
 
 
@@ -169,7 +171,8 @@ namespace Graphics::Primitives {
 
 			float f_ClearR,
 			float f_ClearG,
-			float f_ClearB
+			float f_ClearB,
+			float f_ClearA
 		);
 		DLLTREATMENT RenderingPresetClass(const RenderingPresetClass& toCopy);
 		DLLTREATMENT void operator=(const RenderingPresetClass& toCopy);

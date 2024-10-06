@@ -10,13 +10,13 @@ but instead a responsiblity taking constructor
 class RespConstrFlag {};
 
 
-template<typename>
+template<typename, bool>
 class DynArr;
 
 
 //might be a weird name but it makes sence... right?
 class StalkerClass {
-	template<typename>
+	template<typename, bool>
 	friend class DynArr;
 
 	struct DynArrStalkersDataClass {
@@ -44,8 +44,8 @@ public:
 		toCopy.Deleted = true;
 		StalkersDataPtr->StalkersArr[StalkerInd] = this;
 	}
-	template<typename ArrType>
-	StalkerClass(DynArr<ArrType>* DynArrPtr, unsigned int targetInd) :
+	template<typename ArrType, bool UseRespConstr>
+	StalkerClass(DynArr<ArrType, UseRespConstr>* DynArrPtr, unsigned int targetInd) :
 		StalkersDataPtr(&DynArrPtr->StalkersData), ArrayPtr((byte*)DynArrPtr->Arr), TypeSize(sizeof(ArrType)), TargetInd(targetInd) {
 
 		if (StalkersDataPtr->StalkersArrLength == StalkersDataPtr->StalkersArrCapacity) {
@@ -84,8 +84,11 @@ so 3 unnecesary "responsibility constructors" will be called
 /*
 this is using "responsibility constructor" for moving stuff in memory
 */
-template<typename StoreType>
+template<typename StoreType, bool UseRespConstr>
 class DynArr {
+
+	static_assert(UseRespConstr or std::is_constructible_v<StoreType, StoreType&>, "copy constructor is not defined in current type, but its required");
+	static_assert(not UseRespConstr or std::is_constructible_v<StoreType, RespConstrFlag, StoreType&>, "responsibility constructor is not defined in current type, but its required");
 
 	friend class StalkerClass;
 
@@ -95,7 +98,17 @@ class DynArr {
 
 private:
 
+	struct alignas(StoreType) StoreTypeDummyStruct { unsigned char _[sizeof(StoreType)]; };
+
 	StalkerClass::DynArrStalkersDataClass StalkersData;
+
+	
+
+	void _MoveInstance(StoreType* from, StoreType* to) {
+		if constexpr (UseRespConstr)
+			new(to) StoreType(RespConstrFlag(), *from);
+		else new(to) StoreType(*from);
+	}
 
 	void _ClearArr() {
 		if (Arr != nullptr) {
@@ -110,10 +123,9 @@ private:
 			delete[] StalkersData.StalkersArr;
 			StalkersData.StalkersArr = nullptr;
 		}
-
 	}
 	void _CopyArrayToArray(unsigned int len, StoreType* arrFROM, StoreType* arrTO) {
-		for (unsigned int i = 0; i < len; i++) new(arrTO + i) StoreType(RespConstrFlag(),*(arrFROM + i));
+		for (unsigned int i = 0; i < len; i++) _MoveInstance(arrFROM + i, arrTO + i);
 	}
 	void _RemoveStalker(unsigned int elemInd) {
 		for (int i = (int)StalkersData.StalkersArrLength - 1; i >= 0; i--) {
@@ -122,7 +134,7 @@ private:
 		}
 
 	}
-	void _ResizeArray(unsigned int newSize) {
+	void _ResizeArrayMemory(unsigned int newSize) {
 		if (newSize != Capacity) {
 			if (newSize == 0) {
 				_ClearArr();
@@ -135,7 +147,7 @@ private:
 			}
 			else {
 				Capacity = newSize;
-				StoreType* newArr = (StoreType*)(new byte[sizeof(StoreType) * Capacity]);
+				StoreType* newArr = (StoreType*)(new StoreTypeDummyStruct[Capacity]);
 				if (Capacity < Length) {
 
 					//disconnect some stalkers
@@ -161,33 +173,33 @@ public:
 
 	DynArr() { }
 	DynArr(const unsigned int len, const StoreType& val) {
-		Arr = (StoreType*)(new byte[sizeof(StoreType) * len]);
+		Arr = (StoreType*)(new StoreTypeDummyStruct[len]);
 		Length = len;
 		Capacity = len;
 		//this type of constructor is special for DynArr, from where and to where
-		for (unsigned int i = 0; i < len; i++) new(Arr + i) StoreType(RespConstrFlag(), val);
+		for (unsigned int i = 0; i < len; i++) _MoveInstance(&val, Arr + i);
 	}
 	template<typename...ConstructorParametersTyp>
 	DynArr(const unsigned int len, ConstructorParametersTyp&&...params) {
-		Arr = (StoreType*)(new byte[sizeof(StoreType) * len]);
+		Arr = (StoreType*)(new StoreTypeDummyStruct[len]);
 		Length = len;
 		Capacity = len;
 		for (unsigned int i = 0; i < len; i++) new(Arr + i) StoreType(std::forward<ConstructorParametersTyp>(params)...);
 	}
-	DynArr(const DynArr<StoreType>& arrToCopy) {
+	DynArr(const DynArr<StoreType, UseRespConstr>& arrToCopy) {
 		Length = arrToCopy.Length;
 		Capacity = arrToCopy.Capacity;
-		Arr = (StoreType*)(new byte[sizeof(StoreType) * Capacity]);
+		Arr = (StoreType*)(new StoreTypeDummyStruct[Capacity]);
 		_CopyArrayToArray(Length, arrToCopy.Arr, Arr);
 	}
-	void operator=(const DynArr<StoreType>& arrToCopy) {
+	void operator=(const DynArr<StoreType, UseRespConstr>& arrToCopy) {
 		_DeleteStalkers();
 		StalkersData.StalkersArrLength = 0;
 		StalkersData.StalkersArrCapacity = 0;
 		_ClearArr();
 		Length = arrToCopy.Length;
 		Capacity = arrToCopy.Capacity;
-		Arr = (StoreType*)(new byte[sizeof(StoreType) * Capacity]);
+		Arr = (StoreType*)(new StoreTypeDummyStruct[Capacity]);
 		_CopyArrayToArray(Length, arrToCopy.Arr, Arr);
 	}
 	~DynArr() {
@@ -205,15 +217,17 @@ public:
 
 private:
 	void _MoveElements(unsigned int moveInd) {
-		if (Length == Capacity) _ResizeArray(Capacity + SizeExpansionStep);
+		if (Length == Capacity) _ResizeArrayMemory(Capacity + SizeExpansionStep);
 
 		if (moveInd < Length) {
 			for (unsigned int i = 0; i < StalkersData.StalkersArrLength; i++) if (StalkersData.StalkersArr[i]->TargetInd >= moveInd) StalkersData.StalkersArr[i]->TargetInd++;
 			for (int i = Length - 1; i >= (int)moveInd; i--) {
-				new(Arr + i + 1) StoreType(RespConstrFlag(), *(Arr + i));
+				_MoveInstance(Arr + i, Arr + i + 1);
 				Arr[i].~StoreType();
 			};
 		}
+
+		Length++;
 	}
 public:
 
@@ -221,14 +235,12 @@ public:
 	void InsertByConstructor(unsigned int ind, ConstructorParametersTyp&&...params) {
 		_MoveElements(ind);
 		new(Arr + ind) StoreType(std::forward<ConstructorParametersTyp>(params)...);
-		Length++;
 	}
-	//the (const type*) constructor
-	void InsertByResponsibilityConstructor(unsigned int ind, const StoreType& val) {
+	/*void InsertByResponsibilityConstructor(unsigned int ind, const StoreType& val) {
 		_MoveElements(ind);
-		new(Arr + ind) StoreType(RespConstrFlag(), val);
+		_MoveInstance(&val, Arr + ind);
 		Length++;
-	}
+	}*/
 
 	void Remove(unsigned int ind) {
 
@@ -236,18 +248,25 @@ public:
 		
 		Arr[ind].~StoreType();
 		for (unsigned int i = ind + 1; i < Length; i++) {
-			new(Arr + i - 1) StoreType(RespConstrFlag(), *(Arr + i));
+			_MoveInstance(Arr + i, Arr + i - 1);
 			Arr[i].~StoreType();
 		}
 		Length--;
 	}
 
 	void Reserve(const unsigned int capacityAdd) {
-		_ResizeArray(Capacity + capacityAdd);
+		_ResizeArrayMemory(Capacity + capacityAdd);
 	}
 
-	void Resize(const unsigned int newSize) {
-		_ResizeArray(newSize);
+	/*template<typename...ConstructorParametersTyp>
+	void Resize(const unsigned int newSize, ConstructorParametersTyp&&...params) {
+		unsigned int oldLen = Length;
+		_ResizeArrayMemory(newSize);
+		if (newSize > oldLen) for (unsigned int i=oldLen;i<newSize;i++) new(Arr + i) StoreType(std::forward<ConstructorParametersTyp>(params)...);
+		Length = newSize;
+	}*/
+	void Clear() {
+		_ResizeArrayMemory(0);
 	}
 
 
