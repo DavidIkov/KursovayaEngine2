@@ -69,4 +69,11 @@ public:
 
     DLLTREATMENT void Destroy();
     DLLTREATMENT ~WindowClass();
+
+    struct MonitorDataStruct {
+        Vector2U Size;
+        Vector3U ColorDepth;
+        unsigned int RefreshRate;//in Hz
+    };
+    static DLLTREATMENT MonitorDataStruct gPrimaryMonitorData();
 };

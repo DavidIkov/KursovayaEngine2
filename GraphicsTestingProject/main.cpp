@@ -28,8 +28,11 @@ int main()
     
     try {
 
-        unsigned int Width = 900;
-        unsigned int Height = 600;
+
+        WindowClass::MonitorDataStruct MonitorData = WindowClass::gPrimaryMonitorData();
+
+        unsigned int Width = MonitorData.Size[0] / 2;
+        unsigned int Height = MonitorData.Size[1] / 2;
 
         WindowClass window(Width, Height, "haiiiii", false, 1);
         GA::TextRendererClass TEXT_RENDERER(L"Shaders/textNEW.vs", L"Shaders/textNEW.fs");
@@ -176,12 +179,12 @@ int main()
         SP.SetUniform1i("u_tex1", 0);
         SP.SetUniform1i("u_tex2", 1);
 
-        GP::TextureClass TEX0(GP::TextureClass::DimensionsEnum::Two, "Textures/blackFace.jpg", nullptr, nullptr,
+        GA::TextureClass TEX0(GP::TextureClass::DimensionsEnum::Two, false, "Textures/blackFace.jpg",
             GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
             GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
             GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GP::TextureClass::DataSettingsStruct{GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
             GP::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RGB,GP::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte});
-        GP::TextureClass TEX1(GP::TextureClass::DimensionsEnum::Two, "Textures/simpleFace.png",nullptr,nullptr,
+        GA::TextureClass TEX1(GP::TextureClass::DimensionsEnum::Two, false, "Textures/simpleFace.png",
             GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
             GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
             GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GP::TextureClass::DataSettingsStruct{GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,

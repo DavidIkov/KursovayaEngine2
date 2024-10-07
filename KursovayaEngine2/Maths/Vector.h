@@ -116,7 +116,8 @@ public:
 
 	template<typename Type2>
 	constexpr operator Vector<AxesAmount, Type2>() const { Vector<AxesAmount, Type2> vec; for (unsigned int i = 0; i < AxesAmount; i++) vec.Axes[i] = (Type2)Axes[i]; return vec; }
-
+	
+	bool operator==(const Vector<AxesAmount, Type>& vec) { for (unsigned int i = 0; i < AxesAmount; i++) if (Axes[i] != vec.Axes[i]) return false; return true; }
 };
 
 

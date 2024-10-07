@@ -70,7 +70,7 @@ namespace Graphics::Primitives {
         void _UpdateSettings(const SettingsStruct& sets);
     public:
 
-        DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, void** writeDataPtr, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
+        DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, void** writeDataPtr, unsigned int* writeDataSizeInBitsPtr, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
         DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
         DLLTREATMENT TextureClass(RespConstrFlag, const TextureClass& toCopy);
         DLLTREATMENT TextureClass(const TextureClass&& toCopy);

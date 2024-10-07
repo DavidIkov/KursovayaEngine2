@@ -156,7 +156,7 @@ void TextureClass::_UpdateSettings(const SettingsStruct& sets) {
     _UpdSettings_DepthStencilReadMode(sets.DepthStencilReadMode);
 }
 
-TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, void** writeDataPtr, const SettingsStruct& sets, const DataSettingsStruct& dataSets) :Dimensions(dimensions) {
+TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, void** writeDataPtr, unsigned int* writeDataSizeInBitsPtr, const SettingsStruct& sets, const DataSettingsStruct& dataSets) :Dimensions(dimensions) {
 
     int width, height, textureChannelsAmount;
     unsigned char* textureData = stbi_load(filePath, &width, &height, &textureChannelsAmount, 0);
@@ -166,6 +166,7 @@ TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vect
 
     if (writeSizePtr != nullptr) *writeSizePtr = Vector3U(width, height, 0);
     if (writeDataPtr != nullptr) *writeDataPtr = textureData;
+    if (writeDataSizeInBitsPtr != nullptr) *writeDataSizeInBitsPtr = sizeof(unsigned char) * width * height;
 
     _Constructor(Vector3U(width, height, 0), textureData, dataSets);
     _UpdateSettings(sets);
@@ -214,8 +215,8 @@ void TextureClass::SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, cons
     Assert_NotDeleted_Macro;
     Assert_Binded_Macro;
 
-    glSC(glTexSubImage2D(GL_TEXTURE_2D, 0, pixelsOffset[0], pixelsOffset[1], pixelsAmount[0], pixelsAmount[1],
-        _DataFormatOnCPU_SwitchCase(dataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataTypeOnCPU), data));
+    //glSC(glTexSubImage2D(GL_TEXTURE_2D, 0, pixelsOffset[0], pixelsOffset[1], pixelsAmount[0], pixelsAmount[1],
+    //    _DataFormatOnCPU_SwitchCase(dataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataTypeOnCPU), data));
     unsigned int gl_dataFormatOnCPU = _DataFormatOnCPU_SwitchCase(dataFormatOnCPU);
     unsigned int gl_dataTypeOnCPU = _DataTypeOnCPU_SwitchCase(dataTypeOnCPU);
     switch (Dimensions) {
@@ -264,6 +265,7 @@ void TextureClass::Bind(unsigned int textureInd){
 	glSC(glBindTexture(GL_TexEnum, ID));
 }
 void TextureClass::Unbind() {
+    Assert_NotDeleted_Macro;
     glSC(glBindTexture(GL_TexEnum, 0));
 }
 

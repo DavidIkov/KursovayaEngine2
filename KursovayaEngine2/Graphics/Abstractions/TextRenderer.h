@@ -6,6 +6,7 @@
 #include"Graphics/Primitives/RenderingPreset.h"
 #include"Graphics/Primitives/VertexArray.h"
 #include"Graphics/Primitives/VertexBuffer.h"
+#include"Texture.h"
 #include"Tools/DynArr.h"
 
 namespace Graphics::Abstractions {
@@ -23,7 +24,7 @@ namespace Graphics::Abstractions {
 				float XOffsetInTexture;
 			};
 			mutable bool Deleted = false;
-			Graphics::Primitives::TextureClass Texture;
+			TextureClass Texture;
 			void* FreeTypeFace;//FT_Face
 			DynArr<CharacterClass, false> Characters;
 			int MaxCharacterUp = 0; int MaxCharacterDown = 0;
