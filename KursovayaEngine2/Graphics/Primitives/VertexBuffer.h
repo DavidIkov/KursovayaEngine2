@@ -1,7 +1,6 @@
 #pragma once
 #include"DLL.h"
 #include<vector>
-#include"Tools/DynArr.h"
 #include"Tools/ClassFunctionsAccessController.h"
 #include<vector>
 
@@ -26,7 +25,6 @@ namespace Graphics::Primitives {
 	public:
 		DLLTREATMENT VertexBufferClass();
 		DLLTREATMENT VertexBufferClass(const VertexBufferClass&) = delete;
-		DLLTREATMENT VertexBufferClass(RespConstrFlag, const VertexBufferClass& toCopy);
 		DLLTREATMENT VertexBufferClass(const VertexBufferClass&& toCopy);
 		DLLTREATMENT void operator=(const VertexBufferClass&& toCopy);
 		DLLTREATMENT ~VertexBufferClass();

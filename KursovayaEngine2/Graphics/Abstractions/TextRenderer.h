@@ -1,7 +1,6 @@
 #pragma once
 #include"DLL.h"
 #include"Maths/Vector.h"
-#include"Graphics/Primitives/Texture.h"
 #include"Graphics/Primitives/ShaderProgram.h"
 #include"Graphics/Primitives/RenderingPreset.h"
 #include"Graphics/Primitives/VertexArray.h"
@@ -11,11 +10,9 @@
 
 namespace Graphics::Abstractions {
 	class TextRendererClass {
+		struct FontStruct {
 
-
-		struct FontClass {
-
-			struct CharacterClass {
+			struct CharacterStruct {
 				unsigned int UnicodeInd;
 				Vector2U Size;       // Size of glyph
 				Vector2I Bearing;    // Offset from baseline to left/top of glyph
@@ -26,13 +23,15 @@ namespace Graphics::Abstractions {
 			mutable bool Deleted = false;
 			TextureClass Texture;
 			void* FreeTypeFace;//FT_Face
-			DynArr<CharacterClass, false> Characters;
+			DynArr<CharacterStruct> Characters;
 			int MaxCharacterUp = 0; int MaxCharacterDown = 0;
-			FontClass(unsigned int characterSize, const char* fontDir, const wchar_t* chars);
-			FontClass(RespConstrFlag, const FontClass& toCopy);
-			~FontClass();
+
+			FontStruct(unsigned int characterSize, const char* fontDir, const wchar_t* chars);
+			FontStruct(const FontStruct&& toCopy);
+			~FontStruct();
 		};
-		DynArr<FontClass, true> Fonts;
+
+		DynArr<FontStruct> Fonts;
 
 		Graphics::Primitives::ShaderProgramClass TEXT_SP;
 		Graphics::Primitives::RenderingPresetClass TextPreset;

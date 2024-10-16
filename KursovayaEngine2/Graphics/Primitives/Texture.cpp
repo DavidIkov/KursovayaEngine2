@@ -177,10 +177,6 @@ TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, con
     _Constructor(pixelsAmount, data, dataSets);
     _UpdateSettings(sets);
 }
-TextureClass::TextureClass(RespConstrFlag, const TextureClass& toCopy) {
-    memcpy(this, &toCopy, sizeof(TextureClass));
-    toCopy.Deleted = true;
-}
 TextureClass::TextureClass(const TextureClass&& toCopy) {
     memcpy(this, &toCopy, sizeof(TextureClass));
     toCopy.Deleted = true;

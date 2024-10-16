@@ -1,6 +1,5 @@
 #pragma once
 #include"DLL.h"
-#include"Tools/DynArr.h"
 #include"Tools/ClassFunctionsAccessController.h"
 
 namespace Graphics::Primitives {
@@ -22,7 +21,6 @@ namespace Graphics::Primitives {
 	public:
 		DLLTREATMENT ShaderClass(const wchar_t* filePath, TypesEnum typ);
 		DLLTREATMENT ShaderClass(TypesEnum typ, const char* code);
-		DLLTREATMENT ShaderClass(RespConstrFlag, const ShaderClass& toCopy);
 		DLLTREATMENT ShaderClass(const ShaderClass&& toCopy);
 		DLLTREATMENT void operator=(const ShaderClass&& toCopy);
 		DLLTREATMENT void Compile();

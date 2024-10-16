@@ -46,10 +46,6 @@ FrameBufferClass::FrameBufferClass(unsigned int width, unsigned int height) :Wid
 	glSC(glGenFramebuffers(1, &ID));
 	Bind();
 }
-FrameBufferClass::FrameBufferClass(RespConstrFlag, const FrameBufferClass& toCopy) {
-	memcpy(this, &toCopy, sizeof(FrameBufferClass));
-	toCopy.Deleted = true;
-}
 FrameBufferClass::FrameBufferClass(const FrameBufferClass&& toCopy) {
 	memcpy(this, &toCopy, sizeof(FrameBufferClass));
 	toCopy.Deleted = true;

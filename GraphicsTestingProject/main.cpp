@@ -5,6 +5,7 @@
 #include"Windows/Window.h"
 #include"Graphics/Abstractions/TextRenderer.h"
 #include"Graphics/Abstractions/Texture.h"
+#include"Graphics/Abstractions/Shader.h"
 #include"Graphics/Primitives/FrameBuffer.h"
 #include"Graphics/Primitives/VertexArray.h"
 #include"Graphics/Primitives/VertexBuffer.h"
@@ -15,6 +16,7 @@
 #include"Maths/Vector.h"
 #include"Maths/Matrix.h"
 #include"Tools/FileTypesReaders/Obj.h"
+#include"Tools/Time.h"
 
 namespace GP = Graphics::Primitives;
 namespace GA = Graphics::Abstractions;
@@ -34,7 +36,7 @@ int main()
         unsigned int Width = MonitorData.Size[0] / 2;
         unsigned int Height = MonitorData.Size[1] / 2;
 
-        WindowClass window(Width, Height, "haiiiii", false, 1);
+        WindowClass window(&Width, &Height, "haiiiii", false, 0);
         GA::TextRendererClass TEXT_RENDERER(L"Shaders/textNEW.vs", L"Shaders/textNEW.fs");
         StalkerClass ArialFont = TEXT_RENDERER.AddFont(50, "Fonts/arial.ttf", L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
             "`abcdefghijklmnopqrstuvwxyz{|}~"\
@@ -114,70 +116,20 @@ int main()
 
         QUAD_VA.Unbind();
 
-        GP::ShaderProgramClass SP;
-        {
-            GP::ShaderClass VS(L"Shaders/full3d.vs", GP::ShaderClass::TypesEnum::Vertex);
-            VS.Compile();
-            SP.AttachShader(VS);
+		GA::ShaderClass SP(L"Shaders/full3d.vs", L"Shaders/full3d.fs", nullptr, nullptr);
+                
+        GA::ShaderClass SP_OUTLINE(L"Shaders/outline.vs", L"Shaders/outline.fs", nullptr, nullptr);
 
-            GP::ShaderClass FS(L"Shaders/full3d.fs", GP::ShaderClass::TypesEnum::Fragment);
-            FS.Compile();
-            SP.AttachShader(FS);
+        GA::ShaderClass SP_NORMAL(L"Shaders/normal.vs", L"Shaders/normal.gs", L"Shaders/normal.fs", nullptr, nullptr);
 
-            SP.LinkShaders();
-        }
+        GA::ShaderClass QUAD_SP(L"Shaders/quad.vs", L"Shaders/quad.fs", nullptr, nullptr);
 
-        GP::ShaderProgramClass SP_OUTLINE;
-        {
-            GP::ShaderClass VS(L"Shaders/outline.vs", GP::ShaderClass::TypesEnum::Vertex);
-            VS.Compile();
-            SP_OUTLINE.AttachShader(VS);
+        QUAD_SP.Bind();
+        QUAD_SP.g_CFAC_UniformFuncs()(QUAD_SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1i, QUAD_SP.GetUniformIDByName("u_Texture"), 0);
 
-            GP::ShaderClass FS(L"Shaders/outline.fs", GP::ShaderClass::TypesEnum::Fragment);
-            FS.Compile();
-            SP_OUTLINE.AttachShader(FS);
-
-            SP_OUTLINE.LinkShaders();
-        }
-
-        GP::ShaderProgramClass SP_NORMAL;
-        {
-            GP::ShaderClass VS(L"Shaders/normal.vs", GP::ShaderClass::TypesEnum::Vertex);
-            VS.Compile();
-            SP_NORMAL.AttachShader(VS);
-
-            GP::ShaderClass FS(L"Shaders/normal.fs", GP::ShaderClass::TypesEnum::Fragment);
-            FS.Compile();
-            SP_NORMAL.AttachShader(FS);
-
-            GP::ShaderClass GS(L"Shaders/normal.gs", GP::ShaderClass::TypesEnum::Geometry);
-            GS.Compile();
-            SP_NORMAL.AttachShader(GS);
-
-            SP_NORMAL.LinkShaders();
-        }
-
-
-        GP::ShaderProgramClass QUAD_SP;
-        {
-            GP::ShaderClass VS(L"Shaders/quad.vs", GP::ShaderClass::TypesEnum::Vertex);
-            VS.Compile();
-            QUAD_SP.AttachShader(VS);
-
-            GP::ShaderClass FS(L"Shaders/quad.fs", GP::ShaderClass::TypesEnum::Fragment);
-            FS.Compile();
-            QUAD_SP.AttachShader(FS);
-
-            QUAD_SP.LinkShaders();
-        }
-
-        
-
-
-        QUAD_SP.SetUniform1i("u_Texture", 0);
-
-        SP.SetUniform1i("u_tex1", 0);
-        SP.SetUniform1i("u_tex2", 1);
+        SP.Bind();
+        SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1i,SP.GetUniformIDByName("u_tex1"), 0);
+        SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1i, SP.GetUniformIDByName("u_tex2"), 1);
 
         GA::TextureClass TEX0(GP::TextureClass::DimensionsEnum::Two, false, "Textures/blackFace.jpg",
             GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
@@ -223,7 +175,7 @@ int main()
             
             });
 
-        float time = 0;
+        float TimeCounter = 0;
         float effectMult = 1;
         bool fullHD_Render = false;
 		EventsHandler.ConnectToEvent(&window.gKeyboardHandle().gPressableKeyEvent(KeyboardClass::PressableKeysEnum::K), [&](void* pressedDown) {
@@ -239,15 +191,18 @@ int main()
             if (effectMult < 0) effectMult = 0;
             });
 
-        
+        unsigned int CurrentFPS_Counter = 0;
+        unsigned int LastFPS_Counter = 0;
 
 
         while (!window.WindowWaitingToClose()) {
+            
+            CurrentFPS_Counter++;
             window.UpdateMouseData();
 
-            time += 0.1f;
-
-            Object2Scale = Vector3F(sinf(time)+1);
+            float FrameStartTime = TimeNamespace::GetTime();
+            
+            Object2Scale = Vector3F(sinf(TimeCounter)+1);
 
             Vector2I MouseDelta;
             window.gCursorDelta(&MouseDelta);
@@ -299,13 +254,13 @@ int main()
 
             Object1RotationMatrix = Object1RotationMatrix.RotateIn3DByAnglesC<0, 1, 2>(0.01f, 0.01f, 0);
 
-            SP.SetUniform3fv("u_LightPos", 1, &LightPosition[0]);
-            SP.SetUniform3fv("u_CameraPosition", 1, &CameraPosition[0]);
-            SP.SetUniformMatrix3fv("u_InversedCameraRotationMatrix", 1, false, &InversedCameraRotationMatrix[0]);
-            SP.SetUniformMatrix4fv("u_ProjectionMatrix", 1, false, &ProjectionMatrix[0]);
-            SP.SetUniform1f("u_VisualData.Shininess", 4.f);
-            SP.SetUniform1f("u_VisualData.LightSourceReflectionMaxAngle", 40.f / 180.f * 3.14f);
-            SP.SetUniform1f("u_VisualData.MinColorMultiplierForSurfaceLighting", 0.05f);
+            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP.GetUniformIDByName("u_LightPos"), 1, &LightPosition[0]);
+            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
+            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP.GetUniformIDByName("u_InversedCameraRotationMatrix"), 1, false, &InversedCameraRotationMatrix[0]);
+            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix4fv, SP.GetUniformIDByName("u_ProjectionMatrix"), 1, false, &ProjectionMatrix[0]);
+            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1f, SP.GetUniformIDByName("u_VisualData.Shininess"), 4.f);
+            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1f, SP.GetUniformIDByName("u_VisualData.LightSourceReflectionMaxAngle"), 40.f / 180.f * 3.14f);
+            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1f, SP.GetUniformIDByName("u_VisualData.MinColorMultiplierForSurfaceLighting"), 0.05f);
 
             FB.Bind();
 
@@ -314,16 +269,16 @@ int main()
 
             VA1.Bind();
 
-            SP.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
-            SP.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
-            SP.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
+            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP.GetUniformIDByName("u_ObjectPosition"), 1, &Object1Position[0]);
+            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object1RotationMatrix[0]);
+            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP.GetUniformIDByName("u_ObjectScale"), 1, &Object1Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
             VA2.Bind();
 
-            SP.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
-            SP.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
-            SP.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
+            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP.GetUniformIDByName("u_ObjectPosition"), 1, &Object2Position[0]);
+            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object2RotationMatrix[0]);
+            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP.GetUniformIDByName("u_ObjectScale"), 1, &Object2Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
 
             Preset3D.sStencilTest_BaseMask(0);
@@ -334,23 +289,23 @@ int main()
 
 
                 SP_OUTLINE.Bind();
-                SP_OUTLINE.SetUniform3fv("u_CameraPosition", 1, &CameraPosition[0]);
-                SP_OUTLINE.SetUniformMatrix3fv("u_InversedCameraRotationMatrix", 1, false, &InversedCameraRotationMatrix[0]);
-                SP_OUTLINE.SetUniformMatrix4fv("u_ProjectionMatrix", 1, false, &ProjectionMatrix[0]);
-                SP_OUTLINE.SetUniform1f("u_OutlineScale", 0.1f);
+                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_OUTLINE.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
+                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP_OUTLINE.GetUniformIDByName("u_InversedCameraRotationMatrix"), 1, false, &InversedCameraRotationMatrix[0]);
+                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix4fv, SP_OUTLINE.GetUniformIDByName("u_ProjectionMatrix"), 1, false, &ProjectionMatrix[0]);
+                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1f, SP_OUTLINE.GetUniformIDByName("u_OutlineScale"), 0.1f);
                 
                 VA1.Bind();
 
-                SP_OUTLINE.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
-                SP_OUTLINE.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
-                SP_OUTLINE.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
+                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_OUTLINE.GetUniformIDByName("u_ObjectPosition"), 1, &Object1Position[0]);
+                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP_OUTLINE.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object1RotationMatrix[0]);
+                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_OUTLINE.GetUniformIDByName("u_ObjectScale"), 1, &Object1Scale[0]);
                 GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
                 VA2.Bind();
 
-                SP_OUTLINE.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
-                SP_OUTLINE.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
-                SP_OUTLINE.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
+                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_OUTLINE.GetUniformIDByName("u_ObjectPosition"), 1, &Object2Position[0]);
+                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP_OUTLINE.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object2RotationMatrix[0]);
+                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_OUTLINE.GetUniformIDByName("u_ObjectScale"), 1, &Object2Scale[0]);
                 GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
             }
 
@@ -358,25 +313,23 @@ int main()
             Preset3D.sStencilTest_ComparisonType(GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::AlwaysPass);
             Preset3D.sDepthTest_Enabled(true);
 
-            //////
-
             SP_NORMAL.Bind();
-            SP_NORMAL.SetUniform3fv("u_CameraPosition", 1, &CameraPosition[0]);
-            SP_NORMAL.SetUniformMatrix3fv("u_InversedCameraRotationMatrix", 1, false, &InversedCameraRotationMatrix[0]);
-            SP_NORMAL.SetUniformMatrix4fv("u_ProjectionMatrix", 1, false, &ProjectionMatrix[0]);
+            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_NORMAL.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
+            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP_NORMAL.GetUniformIDByName("u_InversedCameraRotationMatrix"), 1, false, &InversedCameraRotationMatrix[0]);
+            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix4fv, SP_NORMAL.GetUniformIDByName("u_ProjectionMatrix"), 1, false, &ProjectionMatrix[0]);
 
             VA1.Bind();
 
-            SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
-            SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
-            SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
+            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_NORMAL.GetUniformIDByName("u_ObjectPosition"), 1, &Object1Position[0]);
+            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP_NORMAL.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object1RotationMatrix[0]);
+            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_NORMAL.GetUniformIDByName("u_ObjectScale"), 1, &Object1Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
             VA2.Bind();
 
-            SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
-            SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
-            SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
+            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_NORMAL.GetUniformIDByName("u_ObjectPosition"), 1, &Object2Position[0]);
+            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP_NORMAL.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object2RotationMatrix[0]);
+            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_NORMAL.GetUniformIDByName("u_ObjectScale"), 1, &Object2Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
 
 
@@ -386,12 +339,12 @@ int main()
             window.ClearColorBuffer();
             QUAD_SP.Bind();
 
-            QUAD_SP.SetUniform1i("u_Texture", 0);
-            QUAD_SP.SetUniformMatrix3fv("u_CameraRotation", 1, false, &CameraRotationMatrix[0]);
-            QUAD_SP.SetUniform3fv("u_CameraPosition", 1, &CameraPosition[0]);
-            QUAD_SP.SetUniform2fv("u_CameraResolutionSize", 1, &ResolutionLength[0]);
-            QUAD_SP.SetUniform1f("u_EffectMult", effectMult);// (sinf(time) + 1) / 2 * 10 + 5);
-            QUAD_SP.SetUniform1f("u_Time", time);
+            QUAD_SP.g_CFAC_UniformFuncs()(QUAD_SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1i, QUAD_SP.GetUniformIDByName("u_Texture"), 0);
+            QUAD_SP.g_CFAC_UniformFuncs()(QUAD_SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, QUAD_SP.GetUniformIDByName("u_CameraRotation"), 1, false, &CameraRotationMatrix[0]);
+            QUAD_SP.g_CFAC_UniformFuncs()(QUAD_SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, QUAD_SP.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
+            QUAD_SP.g_CFAC_UniformFuncs()(QUAD_SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform2fv, QUAD_SP.GetUniformIDByName("u_CameraResolutionSize"), 1, &ResolutionLength[0]);
+            QUAD_SP.g_CFAC_UniformFuncs()(QUAD_SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1f, QUAD_SP.GetUniformIDByName("u_EffectMult"), effectMult);// (sinf(time) + 1) / 2 * 10 + 5);
+            QUAD_SP.g_CFAC_UniformFuncs()(QUAD_SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1f, QUAD_SP.GetUniformIDByName("u_Time"), TimeCounter);
 
             FB_COLOR_TEX.Bind(0);
 
@@ -403,11 +356,20 @@ int main()
 
 			//TEXT_RENDERER.RenderText(ArialFont, L"english русский ЙЖЁ!:(|&", Vector2F(-1,0), Vector2F(-1,0), Vector2U(Width, Height), Vector2F(1, 0), 0.5f);
             
-            std::wstring camPosText = std::to_wstring(CameraPosition[0]) + L',' + std::to_wstring(CameraPosition[1]) + L',' + std::to_wstring(CameraPosition[2]);
+            std::wstring camPosText = std::to_wstring(CameraPosition[0]) + L',' + std::to_wstring(CameraPosition[1]) + L',' + std::to_wstring(CameraPosition[2]) + L"; FPS: " + std::to_wstring(LastFPS_Counter);
             TEXT_RENDERER.RenderText(ArialFont, camPosText.c_str(), Vector2F(1, 1), Vector2F(1, 1), Vector2U(Width, Height), Vector2F(0, 0.05f), 1);
 
             window.SwapScreenBuffers();
             window.ProcessEvents();
+
+            unsigned int prevWholeTimeNumber = (unsigned int)TimeCounter;
+            TimeCounter += TimeNamespace::GetTime() - FrameStartTime;
+            if ((unsigned int)TimeCounter != prevWholeTimeNumber) {
+                LastFPS_Counter = CurrentFPS_Counter;
+                CurrentFPS_Counter = 0;
+            }
+            
+            
         }
 
     }

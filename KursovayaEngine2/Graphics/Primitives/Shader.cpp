@@ -31,10 +31,6 @@ ShaderClass::ShaderClass(TypesEnum typ, const char* code) {
 	glSC(ID = glCreateShader((typ == TypesEnum::Fragment) ? GL_FRAGMENT_SHADER : ((typ == TypesEnum::Vertex) ? GL_VERTEX_SHADER : GL_GEOMETRY_SHADER)));
 	glSC(glShaderSource(ID, 1, &code, 0));
 }
-ShaderClass::ShaderClass(RespConstrFlag, const ShaderClass& toCopy) {
-	memcpy(this, &toCopy, sizeof(ShaderClass));
-	toCopy.Deleted = true;
-}
 ShaderClass::ShaderClass(const ShaderClass&& toCopy) {
 	memcpy(this, &toCopy, sizeof(ShaderClass));
 	toCopy.Deleted = true;

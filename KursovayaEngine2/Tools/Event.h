@@ -21,7 +21,7 @@ class EventClass {
 
 		ConnectionDataInFrontBufferClass(std::function<void(void*)>& func, std::function<bool(void*)>& checkFunc);
 	};
-	mutable DynArr<ConnectionDataInFrontBufferClass, false> ConnectionsFrontBuffer;
+	mutable DynArr<ConnectionDataInFrontBufferClass> ConnectionsFrontBuffer;
 	struct ConnectionDataInBackBufferClass {
 		std::function<void(void*)> Func;
 		std::function<bool(void*)> CheckFunc;
@@ -35,7 +35,7 @@ class EventClass {
 
 		ConnectionDataInBackBufferClass(std::function<void(void*)>&& func, std::function<bool(void*)>&& checkFunc, float priority, const EventConnectionsHandlerClass* handler, unsigned int conInd);
 	};
-	mutable DynArr<ConnectionDataInBackBufferClass, false> ConnectionsBackBuffer;
+	mutable DynArr<ConnectionDataInBackBufferClass> ConnectionsBackBuffer;
 public:
 	DLLTREATMENT void FireEvent(void* data);
 
@@ -59,7 +59,7 @@ private:
 
 		ConnectionDataClass(ConnectionID id, const EventClass* ev, unsigned int conInd);
 	};
-	mutable DynArr<ConnectionDataClass, false> Connections;
+	mutable DynArr<ConnectionDataClass> Connections;
 
 private: ConnectionID _ConnectToEvent(const EventClass* ev, float priority, unsigned int priorityInsertInd, std::function<void(void*)>&& func, std::function<bool(void*)>&& checkFunc) const;
 public:

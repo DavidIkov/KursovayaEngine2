@@ -1,6 +1,5 @@
 #pragma once
 #include"DLL.h"
-#include"Tools/DynArr.h"
 #include"Tools/ClassFunctionsAccessController.h"
 
 namespace Graphics::Primitives {
@@ -12,7 +11,6 @@ namespace Graphics::Primitives {
 		mutable bool Deleted = false;
 	public:
 		DLLTREATMENT VertexArrayClass();
-		DLLTREATMENT VertexArrayClass(RespConstrFlag, const VertexArrayClass& toCopy);
 		DLLTREATMENT VertexArrayClass(const VertexArrayClass&& toCopy);
 		DLLTREATMENT void operator=(const VertexArrayClass&& toCopy);
 		DLLTREATMENT ~VertexArrayClass();

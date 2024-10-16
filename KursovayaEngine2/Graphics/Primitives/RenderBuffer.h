@@ -1,6 +1,5 @@
 #pragma once
 #include"DLL.h"
-#include"Tools/DynArr.h"
 #include"Tools/ClassFunctionsAccessController.h"
 
 namespace Graphics::Primitives {
@@ -9,7 +8,6 @@ namespace Graphics::Primitives {
 		mutable bool Deleted = false;
 	public:
 		DLLTREATMENT RenderBufferClass(unsigned int width, unsigned int height, bool createDepthBuffer, bool createStencilBuffer);
-		DLLTREATMENT RenderBufferClass(RespConstrFlag, const RenderBufferClass& toCopy);
 		DLLTREATMENT RenderBufferClass(const RenderBufferClass&& toCopy);
 		DLLTREATMENT void operator=(const RenderBufferClass&& toCopy);
 		DLLTREATMENT ~RenderBufferClass();

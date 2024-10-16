@@ -14,10 +14,6 @@ VertexArrayClass::VertexArrayClass() {
     glSC(glGenVertexArrays(1, &ID));
     Bind();
 }
-VertexArrayClass::VertexArrayClass(RespConstrFlag, const VertexArrayClass& toCopy) {
-    memcpy(this, &toCopy, sizeof(VertexArrayClass));
-    toCopy.Deleted = true;
-}
 VertexArrayClass::VertexArrayClass(const VertexArrayClass&& toCopy) {
     memcpy(this, &toCopy, sizeof(VertexArrayClass));
     toCopy.Deleted = true;

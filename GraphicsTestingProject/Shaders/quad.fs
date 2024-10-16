@@ -10,12 +10,28 @@ uniform vec2 u_CameraResolutionSize;
 uniform float u_EffectMult;
 uniform	float u_Time;
 
+float radius=0.1f;
 float dist(vec3 pos){
 	return length(vec3(
 		pos.x-0.4f-0.8f*floor(pos.x/0.8f),
 		pos.y-1.f-2*floor(pos.y/2),
 		pos.z-1.f-2*floor(pos.z/2)
-	))-0.1f;
+	))-radius;
+	/*vec3 localPos=vec3(
+		0.4f+0.8f*floor(pos.x/0.8f),
+		1.f+2*floor(pos.y/2),
+		1.f+2*floor(pos.z/2)
+	);
+	pos=localPos-pos;
+	pos = abs(pos);
+	return (pos.x+pos.y+pos.z-0.2f)*0.57735027;*/
+}
+vec3 closestPoint(vec3 pos){
+	return vec3(
+		0.4f+0.8f*floor(pos.x/0.8f),
+		1.f+2*floor(pos.y/2),
+		1.f+2*floor(pos.z/2)
+	);
 }
 
 float minDist=0.1f;
@@ -71,9 +87,9 @@ void main(){
 		float curDist=dist(curPos);
 		int steps=0;
 		float wholeDist=curDist;
-		while (steps<maxSteps && curDist>minDist && wholeDist<maxWholeDist){
+		while (maxSteps>steps && curDist>minDist && wholeDist<maxWholeDist){
 			float angle=wholeDist/maxWholeDist*4*u_EffectMult*3.14f;
-			
+
 			vec3 nextPos=timedCamPos+mat3(cos(angle),sin(angle),0,-sin(angle),cos(angle),0,0,0,1)*(wholeDist*vector);
 
 			curPos+=normalize(nextPos-curPos)*curDist;
@@ -85,7 +101,7 @@ void main(){
 		if (curDist<=minDist) skyboxColor=color(curPos);
 		else skyboxColor=fogColor;
 	}
-
+	
 	
 	PixelColor=vec4(skyboxColor*(1-PixelColor.w)+PixelColor.xyz*PixelColor.w,1);
 }

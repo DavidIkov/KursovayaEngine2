@@ -24,8 +24,7 @@ ProcessEvents();
 class WindowClass {
 
 public:
-    //GLFWwindow*
-    void* GLFW_WindowPtr;
+    void* GLFW_WindowPtr;//GLFWwindow*
 private:
 
     bool Deleted = false;
@@ -50,7 +49,8 @@ public:
     //color,depth,stencil
     DLLTREATMENT void ClearAllBuffers();
 
-    DLLTREATMENT WindowClass(unsigned int w, unsigned int h, const char* title, bool fullscreen, unsigned int swapInterval);
+    //will change width and height to actual window width and height
+    DLLTREATMENT WindowClass(unsigned int* w, unsigned int* h, const char* title, bool fullscreen, unsigned int swapInterval);
     DLLTREATMENT bool WindowWaitingToClose() const;
     DLLTREATMENT void UpdateMouseData();
     DLLTREATMENT void SwapScreenBuffers();

@@ -1,14 +1,10 @@
 #pragma once
 #include"DLL.h"
 #include"Maths/Vector.h"
-#include"Tools/DynArr.h"
 #include"Tools/ClassFunctionsAccessController.h"
 
 namespace Graphics::Primitives {
-
-
     class TextureClass {
-        
         unsigned int ID;
         mutable bool Deleted = false;
 
@@ -72,7 +68,6 @@ namespace Graphics::Primitives {
 
         DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, void** writeDataPtr, unsigned int* writeDataSizeInBitsPtr, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
         DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
-        DLLTREATMENT TextureClass(RespConstrFlag, const TextureClass& toCopy);
         DLLTREATMENT TextureClass(const TextureClass&& toCopy);
         DLLTREATMENT void operator=(const TextureClass&& toCopy);
         DLLTREATMENT ~TextureClass();

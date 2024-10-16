@@ -35,14 +35,16 @@ const MouseClass& WindowClass::gMouseHandle() const {
     return MouseHandle;
 }
 
-WindowClass::WindowClass(unsigned int w, unsigned int h, const char* title, bool fullscreen, unsigned int swapInterval) {
+WindowClass::WindowClass(unsigned int* w, unsigned int* h, const char* title, bool fullscreen, unsigned int swapInterval) {
     
     WindowsManager::Windows.push_back(this);
     
-    GLFW_WindowPtr = glfwCreateWindow(w, h, title, fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
+    GLFW_WindowPtr = glfwCreateWindow(*w, *h, title, fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
     if (!GLFW_WindowPtr) {
         DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO CREATE WINDOW", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
     }
+    
+    gWindowSize(w, h);
 
     //TODO this is temporary
     glfwSetWindowAttrib((GLFWwindow*)GLFW_WindowPtr, GLFW_RESIZABLE, false);

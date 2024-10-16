@@ -1,12 +1,14 @@
 #pragma once
+#include<utility>
 
 ///if function returns arrLen+1 then it failed for some reason
 ///will return index of equal value if it exists
 ///compareFunc should check if for example p1<p2, p1 and p2 are in order of array
 ///equalFunc should check if params are equal
 template<typename ArrType, typename ValType>
-unsigned int BinarySearch(const ArrType* arr, unsigned int arrLen, ValType val, 
-	bool(*compareFunc)(ValType, const ArrType&), bool(*equalFunc)(ValType, const ArrType&)) {
+unsigned int BinarySearch(const ArrType* arr, unsigned int arrLen, ValType&& val, 
+	bool(*compareFunc)(const std::remove_reference_t<ValType>&, const ArrType&),
+	bool(*equalFunc)(const std::remove_reference_t<ValType>&, const ArrType&)) {
 
 	if (arrLen == 0) return 1;
 	
@@ -37,10 +39,9 @@ unsigned int BinarySearch(const ArrType* arr, unsigned int arrLen, ValType val,
 
 ///if function returns arrLen+1 then it failed for some reason
 ///compareFunc should check if for example p1<p2, p1 and p2 are in order of array
-///equalFunc should check if params are equal
 template<typename ArrType, typename ValType>
-unsigned int BinarySearch(const ArrType* arr, unsigned int arrLen, ValType val, 
-	bool(*compareFunc)(ValType, const ArrType&)) {
+unsigned int BinarySearch(const ArrType* arr, unsigned int arrLen, ValType&& val, 
+	bool(*compareFunc)(const std::remove_reference_t<ValType>&, const ArrType&)) {
 
 	if (arrLen == 0) return 1;
 	

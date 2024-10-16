@@ -5,7 +5,7 @@
 void EventClass::FireEvent(void* data) {
 	if (NeedBufferSwap) {
 		ConnectionsFrontBuffer.Clear();
-		ConnectionsFrontBuffer.Reserve(ConnectionsBackBuffer.gLength());
+		ConnectionsFrontBuffer.ChangeCapacity(ConnectionsBackBuffer.gLength());
 		for (unsigned int i = 0; i < ConnectionsBackBuffer.gLength(); i++) {
 			ConnectionsFrontBuffer.InsertByConstructor(ConnectionsFrontBuffer.gLength(), ConnectionsBackBuffer[i].Func, ConnectionsBackBuffer[i].CheckFunc);
 			ConnectionsBackBuffer[i].IndInFrontBuffer = i + 1;

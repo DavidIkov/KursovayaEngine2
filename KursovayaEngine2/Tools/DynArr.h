@@ -1,22 +1,16 @@
 #pragma once
 #include<utility>
 #include<cstring>
+#include"DebuggingTools.h"
 typedef unsigned char byte;
 
-/*
-used to mark constructor as NON COPY constructor 
-but instead a responsiblity taking constructor
-*/
-class RespConstrFlag {};
-
-
-template<typename, bool>
+template<typename>
 class DynArr;
 
 
 //might be a weird name but it makes sence... right?
 class StalkerClass {
-	template<typename, bool>
+	template<typename>
 	friend class DynArr;
 
 	struct DynArrStalkersDataClass {
@@ -31,23 +25,12 @@ class StalkerClass {
 
 	DynArrStalkersDataClass* StalkersDataPtr;
 
-	byte* ArrayPtr;
+	byte** ArrayPtr;
 	unsigned int TypeSize;
 
 	unsigned int TargetInd;
 	unsigned int StalkerInd;
-public:
-	StalkerClass() = delete;
-	StalkerClass(const StalkerClass&) = delete;
-	StalkerClass(RespConstrFlag, const StalkerClass& toCopy) {
-		memcpy(this, &toCopy, sizeof(StalkerClass));
-		toCopy.Deleted = true;
-		StalkersDataPtr->StalkersArr[StalkerInd] = this;
-	}
-	template<typename ArrType, bool UseRespConstr>
-	StalkerClass(DynArr<ArrType, UseRespConstr>* DynArrPtr, unsigned int targetInd) :
-		StalkersDataPtr(&DynArrPtr->StalkersData), ArrayPtr((byte*)DynArrPtr->Arr), TypeSize(sizeof(ArrType)), TargetInd(targetInd) {
-
+	void _TargetStalker() {
 		if (StalkersDataPtr->StalkersArrLength == StalkersDataPtr->StalkersArrCapacity) {
 			StalkersDataPtr->StalkersArrCapacity += StalkersDataPtr->StalkersArrLengthExpansionStep;
 			StalkerClass** newMem = new StalkerClass*[StalkersDataPtr->StalkersArrCapacity];
@@ -61,7 +44,22 @@ public:
 		StalkerInd = StalkersDataPtr->StalkersArrLength;
 		StalkersDataPtr->StalkersArrLength++;
 		StalkersDataPtr->StalkersArr[StalkerInd] = this;
-
+	}
+public:
+	StalkerClass() = delete;
+	StalkerClass(const StalkerClass& toCopy) :
+		StalkersDataPtr(toCopy.StalkersDataPtr), ArrayPtr(toCopy.ArrayPtr), TypeSize(toCopy.TypeSize), TargetInd(toCopy.TargetInd) {
+		_TargetStalker();
+	}
+	StalkerClass(const StalkerClass&& toCopy) {
+		memcpy(this, &toCopy, sizeof(StalkerClass));
+		toCopy.Deleted = true;
+		StalkersDataPtr->StalkersArr[StalkerInd] = this;
+	}
+	template<typename ArrType>
+	StalkerClass(DynArr<ArrType>* DynArrPtr, unsigned int targetInd) :
+		StalkersDataPtr(&DynArrPtr->StalkersData), ArrayPtr((byte**)&DynArrPtr->Arr), TypeSize(sizeof(ArrType)), TargetInd(targetInd) {
+		_TargetStalker();
 	}
 	~StalkerClass() {
 		if (not Deleted) {
@@ -70,8 +68,15 @@ public:
 			StalkersDataPtr->StalkersArrLength--;
 		}
 	}
+	void operator=(const StalkerClass&& toCopy) {
+		this->~StalkerClass();
+		Deleted = false;
+		toCopy.Deleted = true;
+		memcpy(this, &toCopy, sizeof(StalkerClass));
+	}
 	template<typename Type>
-	Type& GetTarget() const { return *(Type*)(Deleted ? nullptr : (ArrayPtr + TypeSize * TargetInd)); }
+	Type& GetTarget() const { return *(Type*)(Deleted ? nullptr : (*ArrayPtr + TypeSize * TargetInd)); }
+	unsigned int gTargetInd() { return TargetInd; }
 	bool gIsTargetDeleted() const { return Deleted; }
 };
 
@@ -81,14 +86,10 @@ old memory to new one, and only after that it will move all elements to right by
 so 3 unnecesary "responsibility constructors" will be called
 */
 
-/*
-this is using "responsibility constructor" for moving stuff in memory
-*/
-template<typename StoreType, bool UseRespConstr>
+template<typename StoreType>
 class DynArr {
 
-	static_assert(UseRespConstr or std::is_constructible_v<StoreType, StoreType&>, "copy constructor is not defined in current type, but its required");
-	static_assert(not UseRespConstr or std::is_constructible_v<StoreType, RespConstrFlag, StoreType&>, "responsibility constructor is not defined in current type, but its required");
+	static_assert(std::is_constructible_v<StoreType, StoreType&&>, "move constructor is not defined in current type, but its required");
 
 	friend class StalkerClass;
 
@@ -102,12 +103,11 @@ private:
 
 	StalkerClass::DynArrStalkersDataClass StalkersData;
 
-	
-
-	void _MoveInstance(StoreType* from, StoreType* to) {
-		if constexpr (UseRespConstr)
-			new(to) StoreType(RespConstrFlag(), *from);
-		else new(to) StoreType(*from);
+	void _CheckIfIndexInBounds(unsigned int ind, unsigned int maxInd) {
+#if defined KE2_Debug
+		if (ind > maxInd)
+			DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "index went out of bounds", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
+#endif
 	}
 
 	void _ClearArr() {
@@ -125,7 +125,7 @@ private:
 		}
 	}
 	void _CopyArrayToArray(unsigned int len, StoreType* arrFROM, StoreType* arrTO) {
-		for (unsigned int i = 0; i < len; i++) _MoveInstance(arrFROM + i, arrTO + i);
+		for (unsigned int i = 0; i < len; i++) new(arrTO + i) StoreType(std::move(*(arrFROM + i)));
 	}
 	void _RemoveStalker(unsigned int elemInd) {
 		for (int i = (int)StalkersData.StalkersArrLength - 1; i >= 0; i--) {
@@ -177,7 +177,7 @@ public:
 		Length = len;
 		Capacity = len;
 		//this type of constructor is special for DynArr, from where and to where
-		for (unsigned int i = 0; i < len; i++) _MoveInstance(&val, Arr + i);
+		for (unsigned int i = 0; i < len; i++) new(Arr + i) StoreType(std::move(val));
 	}
 	template<typename...ConstructorParametersTyp>
 	DynArr(const unsigned int len, ConstructorParametersTyp&&...params) {
@@ -186,13 +186,13 @@ public:
 		Capacity = len;
 		for (unsigned int i = 0; i < len; i++) new(Arr + i) StoreType(std::forward<ConstructorParametersTyp>(params)...);
 	}
-	DynArr(const DynArr<StoreType, UseRespConstr>& arrToCopy) {
+	DynArr(const DynArr<StoreType>& arrToCopy) {
 		Length = arrToCopy.Length;
 		Capacity = arrToCopy.Capacity;
 		Arr = (StoreType*)(new StoreTypeDummyStruct[Capacity]);
 		_CopyArrayToArray(Length, arrToCopy.Arr, Arr);
 	}
-	void operator=(const DynArr<StoreType, UseRespConstr>& arrToCopy) {
+	void operator=(const DynArr<StoreType>& arrToCopy) {
 		_DeleteStalkers();
 		StalkersData.StalkersArrLength = 0;
 		StalkersData.StalkersArrCapacity = 0;
@@ -210,8 +210,8 @@ public:
 	unsigned int gLength() { return Length; };
 	unsigned int gCapacity() { return Capacity; };
 
-	StoreType& operator[](const unsigned int ind) { return Arr[ind]; }
-	const StoreType& operator[](const unsigned int ind) const { return Arr[ind]; }
+	StoreType& operator[](const unsigned int ind) { _CheckIfIndexInBounds(ind, Length - 1); return Arr[ind]; }
+	const StoreType& operator[](const unsigned int ind) const { _CheckIfIndexInBounds(ind, Length - 1); return Arr[ind]; }
 
 
 
@@ -222,7 +222,7 @@ private:
 		if (moveInd < Length) {
 			for (unsigned int i = 0; i < StalkersData.StalkersArrLength; i++) if (StalkersData.StalkersArr[i]->TargetInd >= moveInd) StalkersData.StalkersArr[i]->TargetInd++;
 			for (int i = Length - 1; i >= (int)moveInd; i--) {
-				_MoveInstance(Arr + i, Arr + i + 1);
+				new(Arr + i + 1) StoreType(std::move(*(Arr + i)));
 				Arr[i].~StoreType();
 			};
 		}
@@ -233,6 +233,7 @@ public:
 
 	template<typename...ConstructorParametersTyp>
 	void InsertByConstructor(unsigned int ind, ConstructorParametersTyp&&...params) {
+		_CheckIfIndexInBounds(ind, Length);
 		_MoveElements(ind);
 		new(Arr + ind) StoreType(std::forward<ConstructorParametersTyp>(params)...);
 	}
@@ -243,20 +244,22 @@ public:
 	}*/
 
 	void Remove(unsigned int ind) {
+		_CheckIfIndexInBounds(ind, Length - 1);
 
 		_RemoveStalker(ind);
 		
 		Arr[ind].~StoreType();
 		for (unsigned int i = ind + 1; i < Length; i++) {
-			_MoveInstance(Arr + i, Arr + i - 1);
+			new(Arr + i - 1) StoreType(std::move(*(Arr + i)));
 			Arr[i].~StoreType();
 		}
 		Length--;
 	}
 
-	void Reserve(const unsigned int capacityAdd) {
-		_ResizeArrayMemory(Capacity + capacityAdd);
+	void ChangeCapacity(const unsigned int newCapacity) {
+		_ResizeArrayMemory(newCapacity);
 	}
+
 
 	/*template<typename...ConstructorParametersTyp>
 	void Resize(const unsigned int newSize, ConstructorParametersTyp&&...params) {
@@ -269,5 +272,14 @@ public:
 		_ResizeArrayMemory(0);
 	}
 
+	bool IsStalkersAmountForIndexEqualTo(unsigned int ind, unsigned int toCompare) {
+		_CheckIfIndexInBounds(ind, Length - 1);
+
+		unsigned int curAmount = 0;
+		if (toCompare == 0) return true;
+		for (unsigned int i = 0; i < StalkersData.StalkersArrLength; i++)
+			if (StalkersData.StalkersArr[i]->TargetInd == ind) if (++curAmount > toCompare) return false;
+		return curAmount == toCompare;
+	}
 
 };

@@ -165,12 +165,18 @@
   <ItemGroup>
     <ClCompile Include="Dependencies\glad\src\glad.c" />
     <ClCompile Include="Dependencies\stb_image\stb_image.cpp" />
+    <ClCompile Include="Graphics\Abstractions\Shader.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GA_Shader</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">$(IntDir)GA_Shader</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GA_Shader</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)GA_Shader</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="Graphics\Abstractions\TextRenderer.cpp" />
     <ClCompile Include="Graphics\Abstractions\Texture.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)A</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">$(IntDir)A</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)A</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)A</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GA_Texture</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">$(IntDir)GA_Texture</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GA_Texture</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)GA_Texture</ObjectFileName>
     </ClCompile>
     <ClCompile Include="Graphics\Globals.cpp" />
     <ClCompile Include="Graphics\Primitives\Renderer.cpp" />
@@ -183,13 +189,18 @@
     <ClCompile Include="Graphics\Primitives\FrameBuffer.cpp" />
     <ClCompile Include="Graphics\Primitives\RenderBuffer.cpp" />
     <ClCompile Include="Graphics\Primitives\RenderingPreset.cpp" />
-    <ClCompile Include="Graphics\Primitives\Shader.cpp" />
+    <ClCompile Include="Graphics\Primitives\Shader.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GP_Shader</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">$(IntDir)GP_Shader</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GP_Shader</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)GP_Shader</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="Graphics\Primitives\ShaderProgram.cpp" />
     <ClCompile Include="Graphics\Primitives\Texture.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)B</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">$(IntDir)B</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)B</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)B</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GP_Texture</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">$(IntDir)GP_Texture</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GP_Texture</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)GP_Texture</ObjectFileName>
     </ClCompile>
     <ClCompile Include="Input\Keyboard.cpp" />
     <ClCompile Include="Tools\DebuggingTools.cpp" />
@@ -308,6 +319,7 @@
     <ClInclude Include="Dependencies\FreeType\ft2build.h" />
     <ClInclude Include="Dependencies\stb_image\stb_image.h" />
     <ClInclude Include="DLL.h" />
+    <ClInclude Include="Graphics\Abstractions\Shader.h" />
     <ClInclude Include="Graphics\Abstractions\TextRenderer.h" />
     <ClInclude Include="Graphics\Abstractions\Texture.h" />
     <ClInclude Include="Graphics\Globals.h" />

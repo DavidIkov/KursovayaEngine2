@@ -5,6 +5,7 @@
 #include"Tools/GLDebug.h"
 #include"FreeType/ft2build.h"
 #include"Tools/BinarySearch.h"
+#include"Shader.h"
 #include FT_FREETYPE_H
 
 namespace GP = Graphics::Primitives;
@@ -31,15 +32,16 @@ GA::TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const w
     {
         GP::ShaderClass VS(vertexShaderDir, GP::ShaderClass::TypesEnum::Vertex);
         VS.Compile();
-        TEXT_SP.AttachShader(VS);
+        TEXT_SP.AttachShader(VS.gID());
 
         GP::ShaderClass FS(fragmentShaderDir, GP::ShaderClass::TypesEnum::Fragment);
         FS.Compile();
-        TEXT_SP.AttachShader(FS);
+        TEXT_SP.AttachShader(FS.gID());
 
         TEXT_SP.LinkShaders();
 
-        TEXT_SP.SetUniform1i("u_TextTexture", 0);
+        TEXT_SP.Bind();
+        TEXT_SP.SetUniform1i(TEXT_SP.GetUniformIDByName("u_TextTexture"), 0);
     }
 
     TEXT_VA.Bind();
@@ -60,13 +62,13 @@ StalkerClass GA::TextRendererClass::AddFont(unsigned int characterSize, const ch
     return StalkerClass(&Fonts, Fonts.gLength() - 1);
 }
 
-GA::TextRendererClass::FontClass::FontClass(RespConstrFlag, const FontClass& toCopy) :
-    Texture(RespConstrFlag(), toCopy.Texture), FreeTypeFace(toCopy.FreeTypeFace), Characters(toCopy.Characters),
+GA::TextRendererClass::FontStruct::FontStruct(const FontStruct&& toCopy) :
+    Texture(std::move(toCopy.Texture)), FreeTypeFace(toCopy.FreeTypeFace), Characters(toCopy.Characters),
     MaxCharacterUp(toCopy.MaxCharacterUp),MaxCharacterDown(toCopy.MaxCharacterDown) {
     toCopy.Deleted = true;
 }
 
-GA::TextRendererClass::FontClass::~FontClass() {
+GA::TextRendererClass::FontStruct::~FontStruct() {
     if (not Deleted) {
         Deleted = true;
         FT_Done_Face(*(FT_Face*)FreeTypeFace);
@@ -74,7 +76,7 @@ GA::TextRendererClass::FontClass::~FontClass() {
 }
 
 
-GA::TextRendererClass::FontClass::FontClass(unsigned int characterSize, const char* fontDir, const wchar_t* chars) :
+GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const char* fontDir, const wchar_t* chars) :
     Texture(GP::TextureClass::DimensionsEnum::Two, Vector3U(0, 0, 0), false, nullptr, 0, GP::TextureClass::SettingsStruct{
                     GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,
                     GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
@@ -84,7 +86,7 @@ GA::TextRendererClass::FontClass::FontClass(unsigned int characterSize, const ch
 { 
     FreeTypeFace = new FT_Face;
 
-    if (FT_New_Face(*(FT_Library*)FreeTypeLib, fontDir, 0, (FT_Face*)FreeTypeFace)) {
+    if (FT_New_Face(*(FT_Library*)TextRendererClass::FreeTypeLib, fontDir, 0, (FT_Face*)FreeTypeFace)) {
         std::string errMsg;
         errMsg += "FreeType error: failed to open font \"";
         errMsg += fontDir;
@@ -97,7 +99,7 @@ GA::TextRendererClass::FontClass::FontClass(unsigned int characterSize, const ch
 
     unsigned int charsAmount = 0; while (chars[charsAmount] != L'\0') charsAmount++;
 
-    Characters.Reserve(charsAmount);
+    Characters.ChangeCapacity(charsAmount);
     std::vector<unsigned char*> buffers; buffers.reserve(charsAmount);
 
 
@@ -109,9 +111,9 @@ GA::TextRendererClass::FontClass::FontClass(unsigned int characterSize, const ch
         unsigned int unicodeInd = (unsigned int)chars[chi];
 
 
-        unsigned int insertInd = (Characters.gLength() == 0) ? 0 : BinarySearch<CharacterClass, unsigned int>(&Characters[0], Characters.gLength(), unicodeInd,
-            [](unsigned int v1, const CharacterClass& v2)->bool {return v2.UnicodeInd > v1; },
-            [](unsigned int v1, const CharacterClass& v2)->bool {return v1 == v2.UnicodeInd; });
+        unsigned int insertInd = (Characters.gLength() == 0) ? 0 : BinarySearch(&Characters[0], Characters.gLength(), unicodeInd,
+            +[](const unsigned int& v1, const CharacterStruct& v2)->bool {return v2.UnicodeInd > v1; },
+            +[](const unsigned int& v1, const CharacterStruct& v2)->bool {return v1 == v2.UnicodeInd; });
 
         if (insertInd<Characters.gLength() and Characters[insertInd].UnicodeInd == unicodeInd) continue;
 
@@ -134,7 +136,7 @@ GA::TextRendererClass::FontClass::FontClass(unsigned int characterSize, const ch
 
         totalXSize += face->glyph->bitmap.width;
 
-        Characters.InsertByConstructor(insertInd, CharacterClass{
+        Characters.InsertByConstructor(insertInd, CharacterStruct{
             unicodeInd,
             Vector2U(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             Vector2I(face->glyph->bitmap_left, face->glyph->bitmap_top),
@@ -150,7 +152,7 @@ GA::TextRendererClass::FontClass::FontClass(unsigned int characterSize, const ch
     {
         unsigned int xOffset = 1;
         for (unsigned int ci = 0; ci < Characters.gLength(); ci++) {
-            CharacterClass& char_ = Characters[ci];
+            CharacterStruct& char_ = Characters[ci];
             char_.XOffsetInTexture = xOffset / (float)totalXSize;
             char_.SizeInTexture = Vector2F(char_.Size[0] / (float)totalXSize, char_.Size[1] / (float)maxHeight);
             xOffset += char_.Size[0] + 1;
@@ -160,7 +162,7 @@ GA::TextRendererClass::FontClass::FontClass(unsigned int characterSize, const ch
     {
         unsigned int xOffset = 0;
         for (unsigned int ci = 0; ci < Characters.gLength(); ci++) {
-            CharacterClass& char_ = Characters[ci];
+            CharacterStruct& char_ = Characters[ci];
             for (unsigned int x = 0; x < char_.Size[0]; x++) for (unsigned int y = 0; y < char_.Size[1]; y++) {
                 textureBuffer[ci + 1 + y * totalXSize + xOffset + x] = buffers[ci][(char_.Size[1] - y - 1) * char_.Size[0] + x];
             }
@@ -194,7 +196,7 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
     TEXT_VA.Bind();
     TEXT_VB.Bind();
 
-	FontClass& font = fontStalker.GetTarget<FontClass>();
+	FontStruct& font = fontStalker.GetTarget<FontStruct>();
 
     font.Texture.Bind(0);
 
@@ -204,10 +206,10 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
 
     std::vector<unsigned int> charsInds; charsInds.resize(textLen);//adding +1 to mark unexisting characters, ind=0 will mean that character not found
     for (unsigned int ci = 0; ci < textLen; ci++) {
-        charsInds[ci] = BinarySearch<FontClass::CharacterClass, unsigned int>(
+        charsInds[ci] = BinarySearch(
             &font.Characters[0], font.Characters.gLength(), (unsigned int)text[ci],
-            [](unsigned int num, const FontClass::CharacterClass& ch)->bool {return num < ch.UnicodeInd; },
-            [](unsigned int num, const FontClass::CharacterClass& ch)->bool {return num == ch.UnicodeInd; });
+            +[](const unsigned int& num, const FontStruct::CharacterStruct& ch)->bool {return num < ch.UnicodeInd; },
+            +[](const unsigned int& num, const FontStruct::CharacterStruct& ch)->bool {return num == ch.UnicodeInd; });
         if (charsInds[ci] >= font.Characters.gLength() or font.Characters[charsInds[ci]].UnicodeInd != (unsigned int)text[ci]) charsInds[ci] = 0;
 		else charsInds[ci]++;
     }
@@ -217,7 +219,7 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
     int maxUp = 0; int maxDown = 0;
     for (unsigned int ci = 0; ci < textLen; ci++) {
         if (charsInds[ci] == 0) continue;
-        FontClass::CharacterClass& char_ = font.Characters[charsInds[ci] - 1];
+        FontStruct::CharacterStruct& char_ = font.Characters[charsInds[ci] - 1];
         fullLocalXSize += char_.Advance;
         int up = char_.Bearing[1]; int down = char_.Size[1] - up;
         if (maxUp < up) maxUp = up; if (maxDown < down) maxDown = down;
@@ -246,7 +248,7 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
 	float xOffset = 0;
     for (unsigned int ci = 0; ci < textLen; ci++) {
 		if (charsInds[ci] == 0) continue;
-        FontClass::CharacterClass& char_ = font.Characters[charsInds[ci] - 1];
+        FontStruct::CharacterStruct& char_ = font.Characters[charsInds[ci] - 1];
         
         Vector2F lbp(pos[0] + xOffset + char_.Bearing[0] * localPixelsToTexScaleByX, 
             pos[1] + (font.MaxCharacterDown - ((int)char_.Size[1] - char_.Bearing[1])) * localPixelsToTexScaleByY);
