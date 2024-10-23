@@ -6,6 +6,7 @@
 #include"Tools/DebuggingTools.h"
 #include"Tools/DebugRuntimeAssert.h"
 #include"Graphics/Globals.h"
+#include"FrameBuffer.h"
 
 using namespace Graphics::Primitives;
 #define Assert_NotDeleted_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Deleted, "TextureClass is deleted", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
@@ -119,7 +120,8 @@ void TextureClass::_Constructor(Vector3U pixelsAmount, const void* data, const T
     glSC(glGenTextures(1, &ID));
     Bind();
 
-    SetData(pixelsAmount, data, dataSets);
+    if (pixelsAmount != Vector3U(0u))
+        SetData(pixelsAmount, data, dataSets);
 }
 
 void TextureClass::_UpdSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTyp) {
@@ -156,7 +158,8 @@ void TextureClass::_UpdateSettings(const SettingsStruct& sets) {
     _UpdSettings_DepthStencilReadMode(sets.DepthStencilReadMode);
 }
 
-TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, void** writeDataPtr, unsigned int* writeDataSizeInBitsPtr, const SettingsStruct& sets, const DataSettingsStruct& dataSets) :Dimensions(dimensions) {
+TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, AnonDynArr* writeAnonDynArr, const SettingsStruct& sets, const DataSettingsStruct& dataSets) 
+    :Dimensions(dimensions) {
 
     int width, height, textureChannelsAmount;
     unsigned char* textureData = stbi_load(filePath, &width, &height, &textureChannelsAmount, 0);
@@ -165,17 +168,20 @@ TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vect
     }
 
     if (writeSizePtr != nullptr) *writeSizePtr = Vector3U(width, height, 0);
-    if (writeDataPtr != nullptr) *writeDataPtr = textureData;
-    if (writeDataSizeInBitsPtr != nullptr) *writeDataSizeInBitsPtr = sizeof(unsigned char) * width * height;
+    if (writeAnonDynArr != nullptr) writeAnonDynArr->SetData(textureData, width * height * sizeof(unsigned char));
 
     _Constructor(Vector3U(width, height, 0), textureData, dataSets);
     _UpdateSettings(sets);
     
-    if (writeDataPtr == nullptr) stbi_image_free(textureData);
+    if (writeAnonDynArr == nullptr) stbi_image_free(textureData);
 }
-TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets) :Dimensions(dimensions) {
+TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets) 
+    :Dimensions(dimensions) {
     _Constructor(pixelsAmount, data, dataSets);
     _UpdateSettings(sets);
+}
+TextureClass::TextureClass(DimensionsEnum dimensions) :Dimensions(dimensions) {
+    _Constructor(Vector3U(0u), nullptr, {});
 }
 TextureClass::TextureClass(const TextureClass&& toCopy) {
     memcpy(this, &toCopy, sizeof(TextureClass));
@@ -191,6 +197,29 @@ TextureClass::~TextureClass() {
         glSC(glDeleteTextures(1, &ID));
         Deleted = true;
     }
+}
+#include"RenderBuffer.h"
+void TextureClass::CopyFromTexture(unsigned int textureID, DimensionsEnum texDim, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount) {
+    Assert_NotDeleted_Macro;
+
+    unsigned int gl_SrcTexEnum = 0;
+    switch (texDim) {
+    case DimensionsEnum::One: gl_SrcTexEnum = GL_TEXTURE_1D; break;
+    case DimensionsEnum::Two: gl_SrcTexEnum = GL_TEXTURE_2D; break;
+    case DimensionsEnum::Three: gl_SrcTexEnum = GL_TEXTURE_3D; break;
+    }
+
+    glSC(glCopyImageSubData(textureID, gl_SrcTexEnum, 0, offsetInSource[0], offsetInSource[1], offsetInSource[2],
+        ID, GL_TexEnum, 0, offsetInDestination[0], offsetInDestination[1], offsetInDestination[2], pixelsAmount[0], pixelsAmount[1], pixelsAmount[2]));
+
+    //opengl 3.3 variant
+    /*
+    FrameBufferClass fb;
+    fb.AttachTexture(textureID, dataFormatOnGPU);
+    fb.Finish();
+    CopyFromFrameBuffer(fb.gID(), offsetInSource, offsetInDestination, pixelsAmount);
+    // glCopyTexSubImage2D(GL_TEXTURE_2D, 0, offsetInDestination[0], offsetInDestination[1], offsetInSource[0], offsetInSource[1], pixelsAmount[0], pixelsAmount[1]);
+    */
 }
 
 void TextureClass::SetData(Vector3U pixelsAmount, const void* data, const DataSettingsStruct& dataSets) {
@@ -263,5 +292,8 @@ void TextureClass::Bind(unsigned int textureInd){
 void TextureClass::Unbind() {
     Assert_NotDeleted_Macro;
     glSC(glBindTexture(GL_TexEnum, 0));
+#if defined KE2_Debug
+    BindedInstances.sTexture_ID(0);
+#endif
 }
 

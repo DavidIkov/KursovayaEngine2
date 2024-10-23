@@ -2,6 +2,7 @@
 #include<utility>
 #include<cstring>
 #include"DebuggingTools.h"
+#include"DLL.h"
 typedef unsigned char byte;
 
 template<typename>
@@ -103,7 +104,7 @@ private:
 
 	StalkerClass::DynArrStalkersDataClass StalkersData;
 
-	void _CheckIfIndexInBounds(unsigned int ind, unsigned int maxInd) {
+	void _CheckIfIndexInBounds(unsigned int ind, unsigned int maxInd) const {
 #if defined KE2_Debug
 		if (ind > maxInd)
 			DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "index went out of bounds", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
@@ -171,20 +172,33 @@ public:
 	//how much more space should be allocated of "StoreType" when there is no more space left, cant be 0
 	unsigned int SizeExpansionStep = 5;
 
-	DynArr() { }
-	DynArr(const unsigned int len, const StoreType& val) {
+	DynArr() = default;
+	/*DynArr(const unsigned int len, StoreType&& val) {
 		Arr = (StoreType*)(new StoreTypeDummyStruct[len]);
 		Length = len;
 		Capacity = len;
-		//this type of constructor is special for DynArr, from where and to where
 		for (unsigned int i = 0; i < len; i++) new(Arr + i) StoreType(std::move(val));
-	}
+	}*/
 	template<typename...ConstructorParametersTyp>
 	DynArr(const unsigned int len, ConstructorParametersTyp&&...params) {
 		Arr = (StoreType*)(new StoreTypeDummyStruct[len]);
 		Length = len;
 		Capacity = len;
 		for (unsigned int i = 0; i < len; i++) new(Arr + i) StoreType(std::forward<ConstructorParametersTyp>(params)...);
+	}
+private:
+	template<typename...Types>
+	void constexpr _FillFromInitList(StoreType&& val, Types&&...vals) {
+		new(Arr + Length - sizeof...(vals) - 1) StoreType(std::move(val));
+		if constexpr (sizeof...(vals) != 0) _FillFromInitList(std::forward<Types>(vals)...);
+	}
+public:
+	template<typename...Types>
+	DynArr(StoreType&& val, Types&&...vals) {
+		Arr = (StoreType*)(new StoreTypeDummyStruct[sizeof...(vals) + 1]);
+		Length = sizeof...(vals) + 1;
+		Capacity = sizeof...(vals) + 1;
+		_FillFromInitList(std::move(val), std::forward<Types>(vals)...);
 	}
 	DynArr(const DynArr<StoreType>& arrToCopy) {
 		Length = arrToCopy.Length;
@@ -207,10 +221,11 @@ public:
 		_DeleteStalkers();
 	}
 
-	unsigned int gLength() { return Length; };
-	unsigned int gCapacity() { return Capacity; };
+	unsigned int gLength() const { return Length; };
+	unsigned int gCapacity() const { return Capacity; };
 
 	StoreType& operator[](const unsigned int ind) { _CheckIfIndexInBounds(ind, Length - 1); return Arr[ind]; }
+
 	const StoreType& operator[](const unsigned int ind) const { _CheckIfIndexInBounds(ind, Length - 1); return Arr[ind]; }
 
 

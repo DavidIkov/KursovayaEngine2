@@ -66,7 +66,6 @@ ShaderClass::ShaderDataClass::ShaderDataClass(const wchar_t* vsPath, const wchar
 }
 ShaderClass::ShaderDataClass::ShaderDataClass(const ShaderDataClass&& toCopy):
     ShaderProgram(std::move(toCopy.ShaderProgram)), ShaderUniformsData(std::move(toCopy.ShaderUniformsData)) {
-    GP::ShaderProgramClass::CFAC_FullAccess_Class k(ShaderProgram);
     toCopy.Deleted = true;
 }
 unsigned int ShaderClass::ShaderDataClass::GetUniformIdByName(const char* name) {

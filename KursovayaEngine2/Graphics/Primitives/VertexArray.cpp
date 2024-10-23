@@ -45,4 +45,7 @@ void VertexArrayClass::Bind() {
 }
 void VertexArrayClass::Unbind() {
     glSC(glBindVertexArray(0));
+#if defined KE2_Debug
+    BindedInstances.sVertexArray_ID(0);
+#endif
 }

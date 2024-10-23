@@ -40,7 +40,17 @@ unsigned int VertexBufferClass::gID() {
     Assert_NotDeleted_Macro;
     return ID;
 }
-void VertexBufferClass::SetLayout(BufferDataTypeEnum dataType, const std::vector<unsigned int>& layout) {
+static unsigned int _GetSizeOfTypeByBufferDataTypeEnum_SwitchCase(VertexBufferClass::BufferDataTypeEnum typ) {
+    switch (typ) {
+    case VertexBufferClass::BufferDataTypeEnum::Byte: return sizeof(unsigned char);
+    case VertexBufferClass::BufferDataTypeEnum::UnsignedByte: return sizeof(unsigned char);
+    case VertexBufferClass::BufferDataTypeEnum::Float: return sizeof(float);
+    case VertexBufferClass::BufferDataTypeEnum::Int: return sizeof(int);
+    case VertexBufferClass::BufferDataTypeEnum::UnsignedInt: return sizeof(unsigned int);
+    }
+    return 0;
+}
+void VertexBufferClass::SetLayout(const DynArr<LayoutDataStruct>& layout) {
     Assert_NotDeleted_Macro;
     Assert_Binded_Macro;
 #if defined KE2_Debug
@@ -48,24 +58,28 @@ void VertexBufferClass::SetLayout(BufferDataTypeEnum dataType, const std::vector
 #endif
 
 	for (unsigned int i = 0; i < EnabledAttributesAmount; i++) { glSC(glDisableVertexAttribArray(i)); }
-	EnabledAttributesAmount = (unsigned short int)layout.size();
+	EnabledAttributesAmount = (unsigned short int)layout.gLength();
 
-	unsigned int sumOfLayout = 0; for (unsigned int i = 0; i < layout.size(); i++) sumOfLayout += layout[i];
+    unsigned int totalLayoutSize = 0; for (unsigned int i = 0; i < layout.gLength(); i++)
+        totalLayoutSize += layout[i].ComponentsAmount * _GetSizeOfTypeByBufferDataTypeEnum_SwitchCase(layout[i].DataType);
 
-	unsigned int gl_dataType = 0;
-	switch (dataType) {
-	case BufferDataTypeEnum::Byte: gl_dataType = GL_BYTE; break;
-	case BufferDataTypeEnum::UnsignedByte: gl_dataType = GL_UNSIGNED_BYTE; break;
-	case BufferDataTypeEnum::Float: gl_dataType = GL_FLOAT; break;
-	case BufferDataTypeEnum::Int: gl_dataType = GL_INT; break;
-	case BufferDataTypeEnum::UnsignedInt: gl_dataType = GL_UNSIGNED_INT; break;
-	}
+	
 
-	float* off = 0;
-	for (unsigned int i = 0; i < layout.size(); i++) {
-		glSC(glVertexAttribPointer(i, layout[i], GL_FLOAT, GL_FALSE, sumOfLayout * sizeof(float), (void*)off));
+	unsigned char* off = 0;
+	for (unsigned int i = 0; i < layout.gLength(); i++) {
+
+		unsigned int gl_dataType = 0;
+		switch (layout[i].DataType) {
+		case BufferDataTypeEnum::Byte: gl_dataType = GL_BYTE; break;
+		case BufferDataTypeEnum::UnsignedByte: gl_dataType = GL_UNSIGNED_BYTE; break;
+		case BufferDataTypeEnum::Float: gl_dataType = GL_FLOAT; break;
+		case BufferDataTypeEnum::Int: gl_dataType = GL_INT; break;
+		case BufferDataTypeEnum::UnsignedInt: gl_dataType = GL_UNSIGNED_INT; break;
+		}
+
+		glSC(glVertexAttribPointer(i, layout[i].ComponentsAmount, gl_dataType, GL_FALSE, totalLayoutSize, (void*)off));
 		glSC(glEnableVertexAttribArray(i));
-		off += layout[i];
+		off += _GetSizeOfTypeByBufferDataTypeEnum_SwitchCase(layout[i].DataType)*layout[i].ComponentsAmount;
 	}
 }
 
@@ -105,4 +119,7 @@ void VertexBufferClass::Bind() {
 }
 void VertexBufferClass::Unbind() {
     glSC(glBindBuffer(GL_ARRAY_BUFFER, 0));
+#if defined KE2_Debug
+    BindedInstances.sVertexBuffer_ID(0);
+#endif
 }

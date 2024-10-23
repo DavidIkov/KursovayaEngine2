@@ -11,7 +11,7 @@ using namespace Graphics::Primitives;
 #if defined KE2_Debug
 #define Assert_Finished_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, Finished, "FrameBuffer is not finished", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
 #define Assert_NotFinished_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Finished, "FrameBuffer is not finished", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
-#define Assert_Binded_Macro if (DebugRuntimeAssert(DebuggingTools::ErrorTypes::Warning, BindedInstances.gFrameBufferID() == ID, "FrameBuffer is not binded", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION)) Bind();
+#define Assert_Binded_Macro if (DebugRuntimeAssert(DebuggingTools::ErrorTypes::Warning, BindedInstances.gFrameBufferID() == ID, "FrameBuffer is not binded", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION)) Bind(false);
 #else
 #define Assert_Finished_Macro
 #define Assert_NotFinished_Macro
@@ -42,9 +42,13 @@ void FrameBufferClass::ClearAllBuffers() {
 	ClearStencilBuffer();
 }
 
-FrameBufferClass::FrameBufferClass(unsigned int width, unsigned int height) :Width(width), Height(height) {
+FrameBufferClass::FrameBufferClass(Vector2U viewportSize) :ViewportSize(viewportSize) {
 	glSC(glGenFramebuffers(1, &ID));
-	Bind();
+	Bind(false);
+}
+FrameBufferClass::FrameBufferClass() {
+	glSC(glGenFramebuffers(1, &ID));
+	Bind(false);
 }
 FrameBufferClass::FrameBufferClass(const FrameBufferClass&& toCopy) {
 	memcpy(this, &toCopy, sizeof(FrameBufferClass));
@@ -104,20 +108,28 @@ void FrameBufferClass::Finish() {
 
 #if defined KE2_Debug
 	Finished = true;
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FrameBuffer is not complete", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::string errMsg = "FrameBuffer is not complete, error: ";
+		errMsg += glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, errMsg.c_str(), KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
+	}
 #endif
 }
-void FrameBufferClass::Bind() {
+void FrameBufferClass::Bind(bool updViewportSize) {
 	Assert_NotDeleted_Macro;
 
 #if defined KE2_Debug
 	BindedInstances.sFrameBuffer_ID(ID);
 #endif
 	glSC(glBindFramebuffer(GL_FRAMEBUFFER, ID));
-	glSC(glViewport(0, 0, Width, Height));
+	if (updViewportSize) { glSC(glViewport(0, 0, ViewportSize[0], ViewportSize[1])); }
 }
-void FrameBufferClass::Unbind(unsigned int width, unsigned int height) {
+void FrameBufferClass::Unbind() {
 	glSC(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-	glSC(glViewport(0, 0, width, height));
+#if defined KE2_Debug
+	BindedInstances.sFrameBuffer_ID(0);
+#endif
+}
+void FrameBufferClass::SetViewportSize(Vector2U viewportSize) {
+	glSC(glViewport(0, 0, viewportSize[0], viewportSize[1]));
 }

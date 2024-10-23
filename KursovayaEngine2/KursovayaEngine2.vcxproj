@@ -184,6 +184,7 @@
     <ClCompile Include="Graphics\Primitives\VertexBuffer.cpp" />
     <ClCompile Include="KE2_Manager.cpp" />
     <ClCompile Include="Input\Mouse.cpp" />
+    <ClCompile Include="Tools\AnonDynArr.cpp" />
     <ClCompile Include="Tools\DebugRuntimeAssert.cpp" />
     <ClCompile Include="Tools\FileTypesReaders\Obj.cpp" />
     <ClCompile Include="Graphics\Primitives\FrameBuffer.cpp" />
@@ -319,6 +320,7 @@
     <ClInclude Include="Dependencies\FreeType\ft2build.h" />
     <ClInclude Include="Dependencies\stb_image\stb_image.h" />
     <ClInclude Include="DLL.h" />
+    <ClInclude Include="Graphics\Abstractions\VertexBuffer.h" />
     <ClInclude Include="Graphics\Abstractions\Shader.h" />
     <ClInclude Include="Graphics\Abstractions\TextRenderer.h" />
     <ClInclude Include="Graphics\Abstractions\Texture.h" />
@@ -331,6 +333,7 @@
     <ClInclude Include="Maths\Matrix.h" />
     <ClInclude Include="Maths\Vector.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Tools\AnonDynArr.h" />
     <ClInclude Include="Tools\BinarySearch.h" />
     <ClInclude Include="Tools\ClassFunctionsAccessController.h" />
     <ClInclude Include="Tools\DebugRuntimeAssert.h" />

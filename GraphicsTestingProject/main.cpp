@@ -36,14 +36,14 @@ int main()
         unsigned int Width = MonitorData.Size[0] / 2;
         unsigned int Height = MonitorData.Size[1] / 2;
 
-        WindowClass window(&Width, &Height, "haiiiii", false, 0);
+        WindowClass window(&Width, &Height, "haiiiii", false, 1);
         GA::TextRendererClass TEXT_RENDERER(L"Shaders/textNEW.vs", L"Shaders/textNEW.fs");
         StalkerClass ArialFont = TEXT_RENDERER.AddFont(50, "Fonts/arial.ttf", L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
             "`abcdefghijklmnopqrstuvwxyz{|}~"\
             "¿¡¬√ƒ≈®∆«»… ÀÃÕŒœ–—“”‘’÷◊ÿŸ⁄€‹›ﬁﬂˇ˛˝¸˚˙˘¯˜ˆıÙÛÚÒÔÓÌÏÎÍÈËÁÊ∏Â‰„‚·‡");
 
         
-        GP::FrameBufferClass FB(Width, Height);
+        GP::FrameBufferClass FB(Vector2U(Width, Height));
         GP::TextureClass FB_COLOR_TEX(GP::TextureClass::DimensionsEnum::Two, Vector3U(Width, Height, 0), nullptr,
             GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,
             GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Nearest,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Nearest,
@@ -62,7 +62,8 @@ int main()
         GP::RenderBufferClass RB(Width, Height, true, true);
         FB.AttachRenderBuffer(RB.gID(), true, true);
         FB.Finish();
-        FB.Unbind(Width, Height);
+        FB.Unbind();
+        FB.SetViewportSize(Vector2U(Width, Height));
 
 
         GP::RenderingPresetClass Preset3D(
@@ -94,7 +95,12 @@ int main()
 
         GP::VertexBufferClass VB1;
         VB1.SetData((unsigned int)(VB1_DATA.size()*sizeof(float)), &VB1_DATA[0], GP::VertexBufferClass::BufferDataUsageEnum::StaticDraw);
-        VB1.SetLayout(GP::VertexBufferClass::BufferDataTypeEnum::Float, { 3,3,3,2 });
+        VB1.SetLayout(DynArr<GP::VertexBufferClass::LayoutDataStruct>(
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::BufferDataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::BufferDataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::BufferDataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::BufferDataTypeEnum::Float }
+        ));
 
         VA1.Unbind();
 
@@ -102,8 +108,12 @@ int main()
         
         GP::VertexBufferClass VB2;
         VB2.SetData((unsigned int)(VB2_DATA.size() * sizeof(float)), &VB2_DATA[0], GP::VertexBufferClass::BufferDataUsageEnum::StaticDraw);
-        VB2.SetLayout(GP::VertexBufferClass::BufferDataTypeEnum::Float, { 3,3,3,2 });
-
+		VB2.SetLayout(DynArr<GP::VertexBufferClass::LayoutDataStruct>(
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::BufferDataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::BufferDataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::BufferDataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::BufferDataTypeEnum::Float }
+        ));
         VA2.Unbind();
 
         std::vector<float> quadVBD({ 1,-1,1,1,-1,1,1,-1,-1,-1,-1,1 });
@@ -112,7 +122,9 @@ int main()
 
         GP::VertexBufferClass QUAD_VB;
         QUAD_VB.SetData((unsigned int)(quadVBD.size()*sizeof(float)), &quadVBD[0], GP::VertexBufferClass::BufferDataUsageEnum::StaticDraw);
-        QUAD_VB.SetLayout(GP::VertexBufferClass::BufferDataTypeEnum::Float, { 2 });
+        QUAD_VB.SetLayout(DynArr<GP::VertexBufferClass::LayoutDataStruct>(
+            GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::BufferDataTypeEnum::Float }
+        ));
 
         QUAD_VA.Unbind();
 
@@ -262,7 +274,7 @@ int main()
             SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1f, SP.GetUniformIDByName("u_VisualData.LightSourceReflectionMaxAngle"), 40.f / 180.f * 3.14f);
             SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1f, SP.GetUniformIDByName("u_VisualData.MinColorMultiplierForSurfaceLighting"), 0.05f);
 
-            FB.Bind();
+            FB.Bind(true);
 
             Preset3D.Bind();
             FB.ClearAllBuffers();
@@ -333,7 +345,8 @@ int main()
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
 
 
-            FB.Unbind(Width,Height);
+            FB.Unbind();
+            FB.SetViewportSize(Vector2U(Width, Height));
 
             QuadPreset.Bind();
             window.ClearColorBuffer();

@@ -6,13 +6,10 @@ class Vector {
 
 	Type Axes[AxesAmount] = { 0 };
 
-	void ConstructFromTemplate(const Type num) {
-		Axes[AxesAmount - 1] = num;
-	}
 	template<typename...otherNumsTyp>
 	void ConstructFromTemplate(const Type num, const otherNumsTyp...otherNums) {
 		Axes[AxesAmount - sizeof...(otherNums) - 1] = num;
-		ConstructFromTemplate(otherNums...);
+		if constexpr (sizeof...(otherNums) != 0) ConstructFromTemplate(otherNums...);
 	}
 public:
 
@@ -118,6 +115,7 @@ public:
 	constexpr operator Vector<AxesAmount, Type2>() const { Vector<AxesAmount, Type2> vec; for (unsigned int i = 0; i < AxesAmount; i++) vec.Axes[i] = (Type2)Axes[i]; return vec; }
 	
 	bool operator==(const Vector<AxesAmount, Type>& vec) { for (unsigned int i = 0; i < AxesAmount; i++) if (Axes[i] != vec.Axes[i]) return false; return true; }
+	bool operator!=(const Vector<AxesAmount, Type>& vec) { for (unsigned int i = 0; i < AxesAmount; i++) if (Axes[i] != vec.Axes[i]) return true; return false; }
 };
 
 

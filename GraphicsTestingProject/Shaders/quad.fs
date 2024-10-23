@@ -54,12 +54,12 @@ vec3 color(vec3 pos){
 	return colorClose*t+colorFar*(1-t);
 }
 
-void main(){
-
+void main(){ 
+	u_Texture; u_CameraRotation; u_CameraPosition; u_CameraResolutionSize; u_EffectMult; u_Time;
 
 	PixelColor=texture(u_Texture,t_TextureCords);
 
-
+/*
 
 	vec3 skyboxColor=vec3(0,0,0);
 
@@ -104,4 +104,7 @@ void main(){
 	
 	
 	PixelColor=vec4(skyboxColor*(1-PixelColor.w)+PixelColor.xyz*PixelColor.w,1);
+
+
+	*/
 }

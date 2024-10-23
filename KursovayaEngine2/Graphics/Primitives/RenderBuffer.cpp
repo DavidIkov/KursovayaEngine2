@@ -50,6 +50,14 @@ void RenderBufferClass::Bind() {
     glSC(glBindRenderbuffer(GL_RENDERBUFFER, ID));
 
 }
+void RenderBufferClass::Unbind() {
+#if defined KE2_Debug
+    BindedInstances.sRenderBuffer_ID(0);
+#endif
+    glSC(glBindRenderbuffer(GL_RENDERBUFFER, 0));
+
+
+}
 unsigned int RenderBufferClass::gID() {
     Assert_NotDeleted_Macro;
     return ID;

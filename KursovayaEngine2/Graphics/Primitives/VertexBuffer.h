@@ -2,13 +2,12 @@
 #include"DLL.h"
 #include<vector>
 #include"Tools/ClassFunctionsAccessController.h"
-#include<vector>
+#include"Tools/DynArr.h"
 
 namespace Graphics::Primitives {
 
-	class VertexArrayClass;
-
 	class VertexBufferClass {
+	protected:
 		unsigned int ID = 0;
 		mutable bool Deleted = false;
 		unsigned short int EnabledAttributesAmount = 0;
@@ -30,7 +29,12 @@ namespace Graphics::Primitives {
 		DLLTREATMENT ~VertexBufferClass();
 		DLLTREATMENT void Delete();
 		DLLTREATMENT unsigned int gID();
-		DLLTREATMENT void SetLayout(BufferDataTypeEnum dataType, const std::vector<unsigned int>& layout);
+
+		struct LayoutDataStruct {
+			unsigned int ComponentsAmount;
+			BufferDataTypeEnum DataType;
+		};
+		DLLTREATMENT void SetLayout(const DynArr<LayoutDataStruct>& layout);
 		//dataLength as length*sizeof(type)
 		DLLTREATMENT void SetData(unsigned int dataLength, const void* data, const BufferDataUsageEnum usage);
 		//dataLength as length*sizeof(type)

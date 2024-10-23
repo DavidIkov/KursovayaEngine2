@@ -2,16 +2,17 @@
 #include"DLL.h"
 #include"Graphics/Primitives/Texture.h"
 #include"Tools/ClassFunctionsAccessController.h"
+#include"Tools/AnonDynArr.h"
 
 namespace Graphics::Abstractions {
 
+	//this class can store data of texture in RAM if you want so.
 	class TextureClass {
 		mutable bool Deleted = false;
 		Primitives::TextureClass Texture;
 		Vector3U Size;
-		void* Data = nullptr;//may be used to copy images
-		unsigned int DataSizeInBits = 0;
-		bool StoringData = false;
+		AnonDynArr TexData;
+		bool IsStoringTexData = false;
 	public:
 		typedef Primitives::TextureClass::SettingsStruct SettingsStruct;
 		typedef Primitives::TextureClass::DataSettingsStruct DataSettingsStruct;
@@ -25,20 +26,44 @@ namespace Graphics::Abstractions {
 		DimensionsEnum Dimensions;
 	public:
 		DLLTREATMENT TextureClass(DimensionsEnum dimensions, bool storeData, const char* filePath, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
-		//if storeData is true then you dont need to delete your data, TextureClass will handle this stuff, also data should be on the heap
-		DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, bool storeData, void* data, unsigned int dataSizeInBits, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
-		//if Data is nullptr then it will not copy texture data but copy everything else
-		DLLTREATMENT TextureClass(const TextureClass& toCopy);
+		//uses move constructor to copy AnynDynArr if storeData=true
+		DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, bool storeData, AnonDynArr* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
+		template<typename TexStoreType = void>
+		TextureClass(const TextureClass& toCopy, AnonDynArr::TypeContainer<TexStoreType>) :
+		Size(toCopy.Size), IsStoringTexData(toCopy.IsStoringTexData), Settings(toCopy.Settings), DataSettings(toCopy.DataSettings), 
+		Dimensions(toCopy.Dimensions), Texture(Dimensions, Size, toCopy.TexData.gArr(), Settings, DataSettings) {
+			TexData = AnonDynArr(toCopy.TexData, AnonDynArr::TypeContainer<TexStoreType>);
+		}
 		DLLTREATMENT TextureClass(const TextureClass&& toCopy);
 		DLLTREATMENT ~TextureClass();
-		DLLTREATMENT void operator=(const TextureClass& toCopy);
+		//if Texture is not holding data then TexStoreType can be not specified
+		template<typename TexStoreType = void>
+		void operator=(const TextureClass& toCopy) {
+			Delete();
+			Deleted = false;
+			
+			if (toCopy.TexData.gArr() != nullptr) TexData = AnonDynArr(toCopy.TexData, AnonDynArr::TypeContainer<TexStoreType>);
+			Size = toCopy.Size;
+			IsStoringTexData = toCopy.IsStoringTexData;
+			Settings = toCopy.Settings;
+			DataSettings = toCopy.DataSettings;
+			Dimensions = toCopy.Dimensions;
+			Texture = Primitives::TextureClass(Dimensions, Size, TexData, Settings, DataSettings);
+		}
 		DLLTREATMENT void operator=(const TextureClass&& toCopy);
 		
-		//if texture is not storing data then dataSizeInBits can be kept zero, otherwise it cant
-		DLLTREATMENT void ChangeData(Vector3U size, void* data, unsigned int dataSizeInBits);
+		//if texture is not storing data then dataSizeInBits can be kept zero
+		//if texture is storing data then responsibility for "data" will be taken
+		//if "data" and actual texture data memory overlap then a the overlap region will be "freed" and
+		//then this memory can be overtaken which will result in undefined behaviour
+		DLLTREATMENT void ChangeData(Vector3U newSize, void* data, unsigned int dataSizeInBits);
+		//if texture is storing data then "data" will be copyed
 		DLLTREATMENT void ChangeSubData(Vector3U offset, Vector3U size, const void* data);
+		//you can manually update data in GPU's texture only if data is stored 
+		//in texture and you changed some data in memory of data manually
+		DLLTREATMENT void UpdateDataInTexture();
 
-		DLLTREATMENT void GetData(void** writeDataPtr, unsigned int* writeDataSizeInBitsPtr);
+		DLLTREATMENT AnonDynArr& GetData();
 
 		DLLTREATMENT void StartStoringData();
 		//will free currently stored data if there is any
@@ -73,6 +98,7 @@ namespace Graphics::Abstractions {
 		CFAC_ClassConstructor(FullAccess,
 			CFAC_FuncPtrConstr(ChangeData)
 			CFAC_FuncPtrConstr(ChangeSubData)
+			CFAC_FuncPtrConstr(UpdateDataInTexture)
 			CFAC_FuncPtrConstr(GetData)
 			CFAC_FuncPtrConstr(StartStoringData)
 			CFAC_FuncPtrConstr(StopStoringData)

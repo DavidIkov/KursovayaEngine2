@@ -2,6 +2,7 @@
 #include"DLL.h"
 #include"Maths/Vector.h"
 #include"Tools/ClassFunctionsAccessController.h"
+#include"Tools/AnonDynArr.h"
 
 namespace Graphics::Primitives {
     class TextureClass {
@@ -66,8 +67,9 @@ namespace Graphics::Primitives {
         void _UpdateSettings(const SettingsStruct& sets);
     public:
 
-        DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, void** writeDataPtr, unsigned int* writeDataSizeInBitsPtr, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
+        DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, AnonDynArr* writeAnonDynArr, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
         DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
+        DLLTREATMENT TextureClass(DimensionsEnum dimensions);
         DLLTREATMENT TextureClass(const TextureClass&& toCopy);
         DLLTREATMENT void operator=(const TextureClass&& toCopy);
         DLLTREATMENT ~TextureClass();
@@ -77,6 +79,9 @@ namespace Graphics::Primitives {
             DataSettingsStruct::DataFormatOnCPU_Enum dataFormatOnCPU, DataSettingsStruct::DataTypeOnCPU_Enum dataTypeOnCPU);
 
         DLLTREATMENT void GenerateMipmaps();
+
+        //if you dont use some axes in pixelsAmounts then dont leave them 0, use 1
+        DLLTREATMENT void CopyFromTexture(unsigned int textureID, DimensionsEnum texDim, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount);
 
 		//this function is slow since it will get data from gpu to cpu
         //buffer should be not be nullptr, it should point to already allocated memory

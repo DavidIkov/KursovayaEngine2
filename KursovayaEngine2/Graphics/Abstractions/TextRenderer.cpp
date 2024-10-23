@@ -47,7 +47,9 @@ GA::TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const w
     TEXT_VA.Bind();
     TEXT_VB.Bind();
     TEXT_VB.SetData(6 * 4 * sizeof(float), nullptr, GP::VertexBufferClass::BufferDataUsageEnum::DynamicDraw);
-    TEXT_VB.SetLayout(GP::VertexBufferClass::BufferDataTypeEnum::Float, { 2,2 });
+    TEXT_VB.SetLayout(DynArr<GP::VertexBufferClass::LayoutDataStruct>(
+        GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::BufferDataTypeEnum::Float },
+        GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::BufferDataTypeEnum::Float }));
     TEXT_VA.Unbind();
 }
 
@@ -77,7 +79,7 @@ GA::TextRendererClass::FontStruct::~FontStruct() {
 
 
 GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const char* fontDir, const wchar_t* chars) :
-    Texture(GP::TextureClass::DimensionsEnum::Two, Vector3U(0, 0, 0), false, nullptr, 0, GP::TextureClass::SettingsStruct{
+    Texture(GP::TextureClass::DimensionsEnum::Two, Vector3U(0, 0, 0), false, nullptr, GP::TextureClass::SettingsStruct{
                     GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,
                     GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
                     GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth },

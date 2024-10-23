@@ -12,6 +12,7 @@ namespace Graphics::Primitives {
 		DLLTREATMENT void operator=(const RenderBufferClass&& toCopy);
 		DLLTREATMENT ~RenderBufferClass();
 		DLLTREATMENT void Bind();
+		DLLTREATMENT static void Unbind();
 		DLLTREATMENT unsigned int gID();
 		DLLTREATMENT void Delete();
 

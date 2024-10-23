@@ -16,7 +16,7 @@ namespace Graphics::Primitives {
 		mutable bool Finished = false;
 #endif
 		mutable bool Deleted = false;
-		unsigned int Width, Height;
+		Vector2U ViewportSize;
 
 	public:
 
@@ -26,17 +26,21 @@ namespace Graphics::Primitives {
 		//color,depth,stencil
 		DLLTREATMENT void ClearAllBuffers();
 
-		DLLTREATMENT FrameBufferClass(unsigned int width, unsigned int height);
+		DLLTREATMENT FrameBufferClass(Vector2U viewportSize);
+		//viewportSize will be (0,0)
+		DLLTREATMENT FrameBufferClass();
 		DLLTREATMENT FrameBufferClass(const FrameBufferClass&& toCopy);
 		DLLTREATMENT void operator=(const FrameBufferClass&& toCopy);
 		DLLTREATMENT ~FrameBufferClass();
 		DLLTREATMENT unsigned int gID();
 		DLLTREATMENT void Delete();
 		DLLTREATMENT void Finish();
-		DLLTREATMENT void Bind();
+		//if updViewportSize is true then it will update opengl's viewport size
+		DLLTREATMENT void Bind(bool updViewportSize);
 		DLLTREATMENT void AttachRenderBuffer(unsigned int renderBufferID, bool depthBufferEnabled, bool stencilBufferEnabled);
 		DLLTREATMENT void AttachTexture(unsigned int texID, TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum dataFormat);
-		DLLTREATMENT static void Unbind(unsigned int width, unsigned int height);
+		DLLTREATMENT static void Unbind();
+		DLLTREATMENT static void SetViewportSize(Vector2U viewportSize);
 
 #define CFAC_ClassName FrameBufferClass
 		CFAC_ClassConstructor(FullAccess,

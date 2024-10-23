@@ -81,6 +81,9 @@ void ShaderProgramClass::Bind() {
 }
 void ShaderProgramClass::Unbind() {
 	glSC(glUseProgram(0));
+#if defined KE2_Debug
+	BindedInstances.sShaderProgram_ID(0);
+#endif
 }
 
 unsigned int ShaderProgramClass::GetUniformIDByName(const char* name) {

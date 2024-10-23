@@ -13,23 +13,16 @@ class Matrix {
 
 	Type Nums[SizeX * SizeY] = { 0.f };
 
-	void ConstructFromNums(const Type num) {
-		Nums[SizeX * SizeY - 1] = num;
-	}
 	template<typename...otherNumsTyp>
 	void ConstructFromNums(const Type num, const otherNumsTyp...otherNums) {
 		Nums[SizeX * SizeY - sizeof...(otherNums) - 1] = num;
-		ConstructFromNums(otherNums...);
+		if constexpr (sizeof...(otherNums) != 0) ConstructFromNums(otherNums...);
 	}
 
-	template<unsigned int vecLen>
-	void ConstructFromVecs(const Vector<vecLen, Type>& vec) {
-		memcpy(&Nums[SizeY * (SizeX - 1)], &vec[0], sizeof(Type) * vecLen);
-	}
 	template<unsigned int vecLen, typename...otherVecsTyp>
 	void ConstructFromVecs(const Vector<vecLen, Type>& vec, const otherVecsTyp...otherVecs) {
 		memcpy(&Nums[SizeY * (SizeX - sizeof...(otherVecs) - 1)], &vec[0], sizeof(Type) * vecLen);
-		ConstructFromVecs<vecLen>(otherVecs...);
+		if constexpr (sizeof...(otherVecs) != 0) ConstructFromVecs<vecLen>(otherVecs...);
 	}
 public:
 	template<unsigned int, unsigned int, typename>

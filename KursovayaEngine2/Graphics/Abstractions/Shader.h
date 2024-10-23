@@ -38,8 +38,11 @@ namespace Graphics::Abstractions {
 		void(*UpdShaderDataFunc)(void* ptrToCustomStorage, ShaderClass* ptrToShader);
 		void* PtrToCustomStorageOfShaderDataUpdaterFunc;
 	public:
+		//if updShaderDataFuncPtr is nullptr then function wont be called
 		DLLTREATMENT ShaderClass(const wchar_t* vertexShaderPath, const wchar_t* fragmentShaderPath, void* ptrToCustomStorageOfShaderDataUpdaterFunc, void(*updShaderDataFuncPtr)(void*, ShaderClass*));
+		//if updShaderDataFuncPtr is nullptr then function wont be called
 		DLLTREATMENT ShaderClass(const wchar_t* vertexShaderPath, const wchar_t* geometryShaderPath, const wchar_t* fragmentShaderPath, void* ptrToCustomStorageOfShaderDataUpdaterFunc, void(*updShaderDataFuncPtr)(void*, ShaderClass*));
+		//if updShaderDataFuncPtr is nullptr then function wont be called
 		DLLTREATMENT ShaderClass(const ShaderClass& toCopy, void* ptrToCustomStorageOfShaderDataUpdaterFunc, void(*updShaderDataFuncPtr)(void*, ShaderClass*));
 		DLLTREATMENT ShaderClass(const ShaderClass&& toCopy);
 		DLLTREATMENT ~ShaderClass();
