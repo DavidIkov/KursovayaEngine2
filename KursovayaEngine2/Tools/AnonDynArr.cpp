@@ -23,6 +23,16 @@ void AnonDynArr::operator=(const AnonDynArr&& toCopy) {
 	ArrSizeInBytes = toCopy.ArrSizeInBytes;
 }
 void AnonDynArr::SetData(byte* data, unsigned int dataSizeInBytes) {
+#if defined KE2_Debug
+	byte* overlapStart = nullptr; unsigned int overlapLen = 0;
+	GetOverlappingMemoryRegion((void const**)&overlapStart, &overlapLen, Arr, ArrSizeInBytes, data, dataSizeInBytes);
+	if (overlapStart != nullptr) {
+		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,
+			"memory is overlaping",
+			KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
+		return;
+	}
+#endif
 	if (Arr != nullptr) delete[] Arr;
 	Arr = data;
 	ArrSizeInBytes = dataSizeInBytes;

@@ -2,6 +2,7 @@
 #include<utility>
 #include<cstring>
 #include"DebuggingTools.h"
+#include"AlignmentDummyClass.h"
 #include"DLL.h"
 typedef unsigned char byte;
 
@@ -100,8 +101,6 @@ class DynArr {
 
 private:
 
-	struct alignas(StoreType) StoreTypeDummyStruct { unsigned char _[sizeof(StoreType)]; };
-
 	StalkerClass::DynArrStalkersDataClass StalkersData;
 
 	void _CheckIfIndexInBounds(unsigned int ind, unsigned int maxInd) const {
@@ -148,7 +147,7 @@ private:
 			}
 			else {
 				Capacity = newSize;
-				StoreType* newArr = (StoreType*)(new StoreTypeDummyStruct[Capacity]);
+				StoreType* newArr = (StoreType*)(new AlignmentDummyClass<StoreType>[Capacity]);
 				if (Capacity < Length) {
 
 					//disconnect some stalkers
@@ -181,7 +180,7 @@ public:
 	}*/
 	template<typename...ConstructorParametersTyp>
 	DynArr(const unsigned int len, ConstructorParametersTyp&&...params) {
-		Arr = (StoreType*)(new StoreTypeDummyStruct[len]);
+		Arr = (StoreType*)(new AlignmentDummyClass<StoreType>[len]);
 		Length = len;
 		Capacity = len;
 		for (unsigned int i = 0; i < len; i++) new(Arr + i) StoreType(std::forward<ConstructorParametersTyp>(params)...);
@@ -195,7 +194,7 @@ private:
 public:
 	template<typename...Types>
 	DynArr(StoreType&& val, Types&&...vals) {
-		Arr = (StoreType*)(new StoreTypeDummyStruct[sizeof...(vals) + 1]);
+		Arr = (StoreType*)(new AlignmentDummyClass<StoreType>[sizeof...(vals) + 1]);
 		Length = sizeof...(vals) + 1;
 		Capacity = sizeof...(vals) + 1;
 		_FillFromInitList(std::move(val), std::forward<Types>(vals)...);
@@ -203,7 +202,7 @@ public:
 	DynArr(const DynArr<StoreType>& arrToCopy) {
 		Length = arrToCopy.Length;
 		Capacity = arrToCopy.Capacity;
-		Arr = (StoreType*)(new StoreTypeDummyStruct[Capacity]);
+		Arr = (StoreType*)(new AlignmentDummyClass<StoreType>[Capacity]);
 		_CopyArrayToArray(Length, arrToCopy.Arr, Arr);
 	}
 	void operator=(const DynArr<StoreType>& arrToCopy) {
@@ -213,7 +212,7 @@ public:
 		_ClearArr();
 		Length = arrToCopy.Length;
 		Capacity = arrToCopy.Capacity;
-		Arr = (StoreType*)(new StoreTypeDummyStruct[Capacity]);
+		Arr = (StoreType*)(new AlignmentDummyClass<StoreType>[Capacity]);
 		_CopyArrayToArray(Length, arrToCopy.Arr, Arr);
 	}
 	~DynArr() {

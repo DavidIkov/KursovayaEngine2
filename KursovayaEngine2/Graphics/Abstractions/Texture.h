@@ -7,80 +7,53 @@
 namespace Graphics::Abstractions {
 
 	//this class can store data of texture in RAM if you want so.
-	class TextureClass {
-		mutable bool Deleted = false;
-		Primitives::TextureClass Texture;
+	//make sure that if you dont use some axes in size specification of texture then 
+	//you dont leave them as 0, use 1, otherwise it will mean that texture is empty
+	class TextureClass : protected Primitives::TextureClass {
+	protected:
 		Vector3U Size;
-		AnonDynArr TexData;
-		bool IsStoringTexData = false;
-	public:
-		typedef Primitives::TextureClass::SettingsStruct SettingsStruct;
-		typedef Primitives::TextureClass::DataSettingsStruct DataSettingsStruct;
-	private:
 		SettingsStruct Settings;
 		DataSettingsStruct DataSettings;
 		bool DataFormatOnGPU_WasUpdated = false;
 	public:
-	typedef Primitives::TextureClass::DimensionsEnum DimensionsEnum;
-	private:
-		DimensionsEnum Dimensions;
-	public:
-		DLLTREATMENT TextureClass(DimensionsEnum dimensions, bool storeData, const char* filePath, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
-		//uses move constructor to copy AnynDynArr if storeData=true
-		DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, bool storeData, AnonDynArr* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
-		template<typename TexStoreType = void>
-		TextureClass(const TextureClass& toCopy, AnonDynArr::TypeContainer<TexStoreType>) :
-		Size(toCopy.Size), IsStoringTexData(toCopy.IsStoringTexData), Settings(toCopy.Settings), DataSettings(toCopy.DataSettings), 
-		Dimensions(toCopy.Dimensions), Texture(Dimensions, Size, toCopy.TexData.gArr(), Settings, DataSettings) {
-			TexData = AnonDynArr(toCopy.TexData, AnonDynArr::TypeContainer<TexStoreType>);
-		}
+		typedef Primitives::TextureClass::SettingsStruct SettingsStruct;
+		typedef Primitives::TextureClass::DataSettingsStruct DataSettingsStruct;
+		typedef Primitives::TextureClass::DimensionsEnum DimensionsEnum;
+		DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
+		//no taking responsibility for "data"
+		DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
+		//will just copy settings and allocate empty texture with same size
+		DLLTREATMENT TextureClass(const TextureClass& toCopy);
 		DLLTREATMENT TextureClass(const TextureClass&& toCopy);
 		DLLTREATMENT ~TextureClass();
-		//if Texture is not holding data then TexStoreType can be not specified
-		template<typename TexStoreType = void>
-		void operator=(const TextureClass& toCopy) {
-			Delete();
-			Deleted = false;
-			
-			if (toCopy.TexData.gArr() != nullptr) TexData = AnonDynArr(toCopy.TexData, AnonDynArr::TypeContainer<TexStoreType>);
-			Size = toCopy.Size;
-			IsStoringTexData = toCopy.IsStoringTexData;
-			Settings = toCopy.Settings;
-			DataSettings = toCopy.DataSettings;
-			Dimensions = toCopy.Dimensions;
-			Texture = Primitives::TextureClass(Dimensions, Size, TexData, Settings, DataSettings);
-		}
+		DLLTREATMENT void operator=(const TextureClass& toCopy);
 		DLLTREATMENT void operator=(const TextureClass&& toCopy);
 		
-		//if texture is not storing data then dataSizeInBits can be kept zero
-		//if texture is storing data then responsibility for "data" will be taken
-		//if "data" and actual texture data memory overlap then a the overlap region will be "freed" and
-		//then this memory can be overtaken which will result in undefined behaviour
-		DLLTREATMENT void ChangeData(Vector3U newSize, void* data, unsigned int dataSizeInBits);
-		//if texture is storing data then "data" will be copyed
-		DLLTREATMENT void ChangeSubData(Vector3U offset, Vector3U size, const void* data);
-		//you can manually update data in GPU's texture only if data is stored 
-		//in texture and you changed some data in memory of data manually
-		DLLTREATMENT void UpdateDataInTexture();
+		DLLTREATMENT void ChangeData(Vector3U newSize, const void* data);
+		DLLTREATMENT void ChangeData(const void* data);
+		DLLTREATMENT void ChangeSubData(Vector3U offset, const void* data, Vector3U pixelsAmount);
+		
+		//if space is not enough for a copy then only a part that can be fitted will be copyed
+		DLLTREATMENT void CopyDataFromOtherTexture(const TextureClass& toCopy);
+		DLLTREATMENT void CopySubDataFromOtherTexture(const TextureClass& srcTex, Vector3U offsetInSrc, Vector3U offsetInDst, Vector3U pixelsAmount);
 
-		DLLTREATMENT AnonDynArr& GetData();
-
-		DLLTREATMENT void StartStoringData();
-		//will free currently stored data if there is any
-		DLLTREATMENT void StopStoringData();
+		//buffer should point to already allocated memory
+		DLLTREATMENT void GetData(void* buffer);
+		//buffer should point to already allocated memory
+		DLLTREATMENT void GetSubData(Vector3U offset, void* buffer, Vector3U pixelsAmount);
 
 		DLLTREATMENT Vector3U gSize();
 
 		DLLTREATMENT void sSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX);
 		DLLTREATMENT SettingsStruct::WrapTypeEnum gSettings_WrapTypeByX();
-        DLLTREATMENT void sSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY);
-        DLLTREATMENT SettingsStruct::WrapTypeEnum gSettings_WrapTypeByY();
-        DLLTREATMENT void sSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt);
-        DLLTREATMENT SettingsStruct::DownscalingFilterFuncEnum gSettings_DownscalingFilt();
-        DLLTREATMENT void sSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt);
-        DLLTREATMENT SettingsStruct::UpscalingFilterFuncEnum gSettings_UpscalingFilt();
-        DLLTREATMENT void sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode);
-        DLLTREATMENT SettingsStruct::DepthStencilReadModeEnum gSettings_DepthStencilReadMode();
+		DLLTREATMENT void sSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY);
+		DLLTREATMENT SettingsStruct::WrapTypeEnum gSettings_WrapTypeByY();
+		DLLTREATMENT void sSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt);
+		DLLTREATMENT SettingsStruct::DownscalingFilterFuncEnum gSettings_DownscalingFilt();
+		DLLTREATMENT void sSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt);
+		DLLTREATMENT SettingsStruct::UpscalingFilterFuncEnum gSettings_UpscalingFilt();
+		DLLTREATMENT void sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode);
+		DLLTREATMENT SettingsStruct::DepthStencilReadModeEnum gSettings_DepthStencilReadMode();
 
 		//changes will happen when data will
 		DLLTREATMENT void sDataSettings_DataFormatOnGPU(DataSettingsStruct::DataFormatOnGPU_Enum dataFormat);
@@ -90,18 +63,14 @@ namespace Graphics::Abstractions {
 		DLLTREATMENT void sDataSettings_DataTypeOnCPU(DataSettingsStruct::DataTypeOnCPU_Enum dataType);
 		DLLTREATMENT DataSettingsStruct::DataTypeOnCPU_Enum gDataSettings_DataTypeOnCPU();
 
-        DLLTREATMENT void Delete();
-        DLLTREATMENT void Bind(unsigned int bindingInd = 0);
-        DLLTREATMENT void Unbind();
+		DLLTREATMENT void Delete();
+		DLLTREATMENT void Bind(unsigned int bindingInd = 0);
+		DLLTREATMENT void Unbind();
 
 #define CFAC_ClassName TextureClass
 		CFAC_ClassConstructor(FullAccess,
-			CFAC_FuncPtrConstr(ChangeData)
-			CFAC_FuncPtrConstr(ChangeSubData)
-			CFAC_FuncPtrConstr(UpdateDataInTexture)
-			CFAC_FuncPtrConstr(GetData)
-			CFAC_FuncPtrConstr(StartStoringData)
-			CFAC_FuncPtrConstr(StopStoringData)
+			//CFAC_FuncPtrConstr(ChangeData)
+			//CFAC_FuncPtrConstr(ChangeSubData(Vector3U,const void*,Vector3U))
 			CFAC_FuncPtrConstr(gSize)
 			CFAC_FuncPtrConstr(sSettings_WrapTypeByX) CFAC_FuncPtrConstr(gSettings_WrapTypeByX)
 			CFAC_FuncPtrConstr(sSettings_WrapTypeByY) CFAC_FuncPtrConstr(gSettings_WrapTypeByY)

@@ -16,7 +16,7 @@ using namespace Graphics::Primitives;
 #define Assert_Binded_Macro
 #endif
 
-static unsigned int _DataFormatOnGPU_SwitchCase(TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum format) {
+unsigned int TextureClass::_DataFormatOnGPU_SwitchCase(DataSettingsStruct::DataFormatOnGPU_Enum format) {
     switch (format) {
     case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthComponent: return GL_DEPTH_COMPONENT24;
     case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthStencil: return GL_DEPTH24_STENCIL8;
@@ -27,7 +27,7 @@ static unsigned int _DataFormatOnGPU_SwitchCase(TextureClass::DataSettingsStruct
     default: return 0;
     }
 }
-static unsigned int _DataFormatOnCPU_SwitchCase(TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum format) {
+unsigned int TextureClass::_DataFormatOnCPU_SwitchCase(DataSettingsStruct::DataFormatOnCPU_Enum format) {
     switch (format) {
     case TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::Red: return GL_RED;
     case TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RG: return GL_RG;
@@ -47,7 +47,7 @@ static unsigned int _DataFormatOnCPU_SwitchCase(TextureClass::DataSettingsStruct
     default: return 0;
     }
 }
-static unsigned int _DataTypeOnCPU_SwitchCase(TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum type) {
+unsigned int TextureClass::_DataTypeOnCPU_SwitchCase(DataSettingsStruct::DataTypeOnCPU_Enum type) {
     switch (type) {
     case TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte: return GL_UNSIGNED_BYTE;
     case TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::Byte: return GL_BYTE;
@@ -60,7 +60,7 @@ static unsigned int _DataTypeOnCPU_SwitchCase(TextureClass::DataSettingsStruct::
     default: return 0;
     }
 }
-static unsigned int _DataTypeOnCPU_Sizeof_SwitchCase(TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum type) {
+unsigned int TextureClass::_DataTypeOnCPU_Sizeof_SwitchCase(DataSettingsStruct::DataTypeOnCPU_Enum type) {
     switch (type) {
     case TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte: return sizeof(unsigned char);
     case TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::Byte: return sizeof(unsigned char);
@@ -70,7 +70,7 @@ static unsigned int _DataTypeOnCPU_Sizeof_SwitchCase(TextureClass::DataSettingsS
     default: return 0;
     }
 }
-static unsigned int _WrapType_SwitchCase(TextureClass::SettingsStruct::WrapTypeEnum wrapTyp) {
+unsigned int TextureClass::_WrapType_SwitchCase(SettingsStruct::WrapTypeEnum wrapTyp) {
     switch (wrapTyp) {
     case TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge: return GL_CLAMP_TO_EDGE;
     case TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder: return GL_CLAMP_TO_BORDER;
@@ -80,7 +80,7 @@ static unsigned int _WrapType_SwitchCase(TextureClass::SettingsStruct::WrapTypeE
     default: return 0;
     }
 }
-static unsigned int _DownscalingFilterFunc_SwitchCase(TextureClass::SettingsStruct::DownscalingFilterFuncEnum filt) {
+unsigned int TextureClass::_DownscalingFilterFunc_SwitchCase(SettingsStruct::DownscalingFilterFuncEnum filt) {
     switch (filt) {
     case TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Nearest: return GL_NEAREST;
     case TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear: return GL_LINEAR;
@@ -91,14 +91,14 @@ static unsigned int _DownscalingFilterFunc_SwitchCase(TextureClass::SettingsStru
     default: return 0;
     }
 }
-static unsigned int _UpscalingFilterFunc_SwitchCase(TextureClass::SettingsStruct::UpscalingFilterFuncEnum filt) {
+unsigned int TextureClass::_UpscalingFilterFunc_SwitchCase(SettingsStruct::UpscalingFilterFuncEnum filt) {
     switch (filt) {
     case TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Nearest: return GL_NEAREST;
     case TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear: return GL_LINEAR;
     default: return 0;
     }
 }
-static unsigned int _DepthStencilReadMode_SwitchCase(TextureClass::SettingsStruct::DepthStencilReadModeEnum readMode) {
+unsigned int TextureClass::_DepthStencilReadMode_SwitchCase(SettingsStruct::DepthStencilReadModeEnum readMode) {
     switch (readMode) {
     case TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth: return GL_DEPTH_COMPONENT;
     case TextureClass::SettingsStruct::DepthStencilReadModeEnum::Stencil: return GL_STENCIL_INDEX;
@@ -180,9 +180,6 @@ TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, con
     _Constructor(pixelsAmount, data, dataSets);
     _UpdateSettings(sets);
 }
-TextureClass::TextureClass(DimensionsEnum dimensions) :Dimensions(dimensions) {
-    _Constructor(Vector3U(0u), nullptr, {});
-}
 TextureClass::TextureClass(const TextureClass&& toCopy) {
     memcpy(this, &toCopy, sizeof(TextureClass));
     toCopy.Deleted = true;
@@ -198,20 +195,12 @@ TextureClass::~TextureClass() {
         Deleted = true;
     }
 }
-#include"RenderBuffer.h"
-void TextureClass::CopyFromTexture(unsigned int textureID, DimensionsEnum texDim, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount) {
+void TextureClass::CopyFromTexture(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount) {
     Assert_NotDeleted_Macro;
 
-    unsigned int gl_SrcTexEnum = 0;
-    switch (texDim) {
-    case DimensionsEnum::One: gl_SrcTexEnum = GL_TEXTURE_1D; break;
-    case DimensionsEnum::Two: gl_SrcTexEnum = GL_TEXTURE_2D; break;
-    case DimensionsEnum::Three: gl_SrcTexEnum = GL_TEXTURE_3D; break;
-    }
-
-    glSC(glCopyImageSubData(textureID, gl_SrcTexEnum, 0, offsetInSource[0], offsetInSource[1], offsetInSource[2],
+    glSC(glCopyImageSubData(srcTex.ID, srcTex.GL_TexEnum, 0, offsetInSource[0], offsetInSource[1], offsetInSource[2],
         ID, GL_TexEnum, 0, offsetInDestination[0], offsetInDestination[1], offsetInDestination[2], pixelsAmount[0], pixelsAmount[1], pixelsAmount[2]));
-
+    //TODO make it work with 3.3
     //opengl 3.3 variant
     /*
     FrameBufferClass fb;
@@ -257,13 +246,22 @@ void TextureClass::GenerateMipmaps() {
     glSC(glGenerateMipmap(GL_TexEnum));
 }
 
-void TextureClass::GetData(DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType, void* buffer) {
+void TextureClass::GetData(void* buffer, DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const {
     Assert_NotDeleted_Macro;
     Assert_Binded_Macro;
 #if defined KE2_Debug
     if (buffer == nullptr) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"buffer shouldnt be nullptr",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
 #endif
     glSC(glGetTexImage(GL_TexEnum, 0, _DataFormatOnCPU_SwitchCase(dataFormat), _DataTypeOnCPU_SwitchCase(dataType), buffer));
+}
+void TextureClass::GetSubData(Vector3U offset, void* buffer, Vector3U pixelsAmount, DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, 
+    DataSettingsStruct::DataTypeOnCPU_Enum dataType) const {
+    Assert_NotDeleted_Macro;
+    
+    //TODO make this work with 3.3, now in order for this to work i have to use opengl 4.5
+    glSC(glGetTextureSubImage(ID, 0, offset[0], offset[1], offset[2], pixelsAmount[0], pixelsAmount[1], pixelsAmount[2],
+        _DataFormatOnCPU_SwitchCase(dataFormat), _DataTypeOnCPU_SwitchCase(dataType),
+        _DataTypeOnCPU_Sizeof_SwitchCase(dataType) * pixelsAmount[0] * pixelsAmount[1] * pixelsAmount[2], buffer));
 }
 
 void TextureClass::sSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX) { _UpdSettings_WrapTypeByX(wrapTypeByX); }
@@ -281,7 +279,7 @@ void TextureClass::Delete() {
     this->~TextureClass();
 }
 
-void TextureClass::Bind(unsigned int textureInd){
+void TextureClass::Bind(unsigned int textureInd) const{
     Assert_NotDeleted_Macro;
 	glSC(glActiveTexture(GL_TEXTURE0 + textureInd));
 #if defined KE2_Debug

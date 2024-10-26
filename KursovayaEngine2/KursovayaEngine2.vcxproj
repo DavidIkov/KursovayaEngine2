@@ -206,6 +206,7 @@
     <ClCompile Include="Input\Keyboard.cpp" />
     <ClCompile Include="Tools\DebuggingTools.cpp" />
     <ClCompile Include="Tools\Event.cpp" />
+    <ClCompile Include="Tools\GetOverlappingMemoryRegion.cpp" />
     <ClCompile Include="Tools\RandomNumber.cpp" />
     <ClCompile Include="Tools\Time.cpp" />
     <ClCompile Include="Tools\UniqueKeysSystem.cpp" />
@@ -333,11 +334,13 @@
     <ClInclude Include="Maths\Matrix.h" />
     <ClInclude Include="Maths\Vector.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Tools\AlignmentDummyClass.h" />
     <ClInclude Include="Tools\AnonDynArr.h" />
     <ClInclude Include="Tools\BinarySearch.h" />
     <ClInclude Include="Tools\ClassFunctionsAccessController.h" />
     <ClInclude Include="Tools\DebugRuntimeAssert.h" />
     <ClInclude Include="Tools\DynArr.h" />
+    <ClInclude Include="Tools\GetOverlappingMemoryRegion.h" />
     <ClInclude Include="Tools\StaticLambda.h" />
     <ClInclude Include="Tools\UniversalLambda.h" />
     <ClInclude Include="WinOS\FilesSystem.h" />

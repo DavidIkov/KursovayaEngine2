@@ -143,12 +143,12 @@ int main()
         SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1i,SP.GetUniformIDByName("u_tex1"), 0);
         SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1i, SP.GetUniformIDByName("u_tex2"), 1);
 
-        GA::TextureClass TEX0(GP::TextureClass::DimensionsEnum::Two, false, "Textures/blackFace.jpg",
+        GA::TextureClass TEX0(GP::TextureClass::DimensionsEnum::Two, "Textures/blackFace.jpg",
             GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
             GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
             GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GP::TextureClass::DataSettingsStruct{GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
             GP::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RGB,GP::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte});
-        GA::TextureClass TEX1(GP::TextureClass::DimensionsEnum::Two, false, "Textures/simpleFace.png",
+        GA::TextureClass TEX1(GP::TextureClass::DimensionsEnum::Two, "Textures/simpleFace.png",
             GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
             GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
             GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GP::TextureClass::DataSettingsStruct{GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,

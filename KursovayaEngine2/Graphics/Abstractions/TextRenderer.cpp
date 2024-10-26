@@ -79,7 +79,7 @@ GA::TextRendererClass::FontStruct::~FontStruct() {
 
 
 GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const char* fontDir, const wchar_t* chars) :
-    Texture(GP::TextureClass::DimensionsEnum::Two, Vector3U(0, 0, 0), false, nullptr, GP::TextureClass::SettingsStruct{
+    Texture(GP::TextureClass::DimensionsEnum::Two, Vector3U(0, 0, 0), nullptr, GP::TextureClass::SettingsStruct{
                     GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,
                     GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
                     GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth },
@@ -175,7 +175,7 @@ GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const 
 
 	glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); // disable byte-alignment restriction
 
-    Texture.ChangeData(Vector3U(totalXSize, maxHeight, 0), textureBuffer, 0);
+    Texture.ChangeData(Vector3U(totalXSize, maxHeight, 0), textureBuffer);
     
 	glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 4)); // enable byte-alignment back
     

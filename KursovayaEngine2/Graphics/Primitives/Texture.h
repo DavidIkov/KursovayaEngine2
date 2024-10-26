@@ -6,21 +6,21 @@
 
 namespace Graphics::Primitives {
     class TextureClass {
+    protected:
         unsigned int ID;
         mutable bool Deleted = false;
-
     public:
 		struct SettingsStruct {
-			enum class WrapTypeEnum :unsigned short int {
+			enum class WrapTypeEnum :unsigned char {
 				ClampToEdge, ClampToBorder, MirroredRepeat, Repeat, MirrorClampToEdge
 			};
-			enum class DownscalingFilterFuncEnum :unsigned short int {
+			enum class DownscalingFilterFuncEnum :unsigned char {
 				Nearest, Linear, NearestMipmapNearest, NearestMipmapLinear, LinearMipmapLinear, LinearMipmapNearest
 			};
-			enum class UpscalingFilterFuncEnum :unsigned short int {
+			enum class UpscalingFilterFuncEnum :unsigned char {
 				Nearest, Linear
 			};
-			enum class DepthStencilReadModeEnum :unsigned short int {
+			enum class DepthStencilReadModeEnum :unsigned char {
 				Depth, Stencil, 
 				/*you cant technically select mode as None but in here but its used to just dont mention depth mode texture when they have nothing to do with depth*/
 				None
@@ -33,14 +33,14 @@ namespace Graphics::Primitives {
 			DepthStencilReadModeEnum DepthStencilReadMode;
 		};
 		struct DataSettingsStruct {
-			enum class DataFormatOnGPU_Enum :unsigned short int {
+			enum class DataFormatOnGPU_Enum :unsigned char {
 				DepthComponent, DepthStencil, Red, RG, RGB, RGBA
 			};
-			enum class DataFormatOnCPU_Enum :unsigned short int {
+			enum class DataFormatOnCPU_Enum :unsigned char {
 				Red, RG, RGB, BGR, RGBA, BGRA, RedInteger, RG_Integer, RGB_Integer, BGR_Integer, RGBA_Integer, BGRA_Integer, StencilIndex,
 				DepthComponent, DepthStencil
 			};
-			enum class DataTypeOnCPU_Enum :unsigned short int {
+			enum class DataTypeOnCPU_Enum :unsigned char {
 				UnsignedByte, Byte, UnsignedShort, Short, UnsignedInt, Int, Float, UnsignedInt_24_8
 			};
 
@@ -49,10 +49,19 @@ namespace Graphics::Primitives {
 			DataTypeOnCPU_Enum DataTypeOnCPU;
 		};
 
-        enum class DimensionsEnum :unsigned short int {
+        enum class DimensionsEnum :unsigned char {
             One, Two, Three
         };
-    private:
+    protected:
+		static unsigned int _DataFormatOnGPU_SwitchCase(DataSettingsStruct::DataFormatOnGPU_Enum format);
+		static unsigned int _DataFormatOnCPU_SwitchCase(DataSettingsStruct::DataFormatOnCPU_Enum format);
+		static unsigned int _DataTypeOnCPU_SwitchCase(DataSettingsStruct::DataTypeOnCPU_Enum type);
+		static unsigned int _DataTypeOnCPU_Sizeof_SwitchCase(DataSettingsStruct::DataTypeOnCPU_Enum type);
+		static unsigned int _WrapType_SwitchCase(SettingsStruct::WrapTypeEnum wrapTyp);
+		static unsigned int _DownscalingFilterFunc_SwitchCase(SettingsStruct::DownscalingFilterFuncEnum filt);
+		static unsigned int _UpscalingFilterFunc_SwitchCase(SettingsStruct::UpscalingFilterFuncEnum filt);
+		static unsigned int _DepthStencilReadMode_SwitchCase(SettingsStruct::DepthStencilReadModeEnum readMode);
+
         DimensionsEnum Dimensions;
         unsigned int GL_TexEnum;
 
@@ -69,7 +78,6 @@ namespace Graphics::Primitives {
 
         DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, AnonDynArr* writeAnonDynArr, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
         DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
-        DLLTREATMENT TextureClass(DimensionsEnum dimensions);
         DLLTREATMENT TextureClass(const TextureClass&& toCopy);
         DLLTREATMENT void operator=(const TextureClass&& toCopy);
         DLLTREATMENT ~TextureClass();
@@ -81,11 +89,15 @@ namespace Graphics::Primitives {
         DLLTREATMENT void GenerateMipmaps();
 
         //if you dont use some axes in pixelsAmounts then dont leave them 0, use 1
-        DLLTREATMENT void CopyFromTexture(unsigned int textureID, DimensionsEnum texDim, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount);
+        //make sure that your texture have enough pixels for copying
+        DLLTREATMENT void CopyFromTexture(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount);
 
 		//this function is slow since it will get data from gpu to cpu
-        //buffer should be not be nullptr, it should point to already allocated memory
-        DLLTREATMENT void GetData(DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType, void* buffer);
+        //buffer should not be nullptr, it should point to already allocated memory
+        DLLTREATMENT void GetData(void* buffer, DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const;
+        //this function is slow since it will get data from gpu to cpu
+        //buffer should not be nullptr, it should point to already allocated memory
+		DLLTREATMENT void GetSubData(Vector3U offset, void* buffer, Vector3U pixelsAmount, DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const;
 
         DLLTREATMENT void sSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX);
         DLLTREATMENT void sSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY);
@@ -95,7 +107,7 @@ namespace Graphics::Primitives {
 
         DLLTREATMENT unsigned int gID();
         DLLTREATMENT void Delete();
-        DLLTREATMENT void Bind(unsigned int textureInd = 0);
+        DLLTREATMENT void Bind(unsigned int textureInd = 0) const;
         DLLTREATMENT void Unbind();
 
 #define CFAC_ClassName TextureClass

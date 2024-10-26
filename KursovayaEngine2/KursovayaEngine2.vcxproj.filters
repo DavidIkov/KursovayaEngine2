@@ -108,6 +108,9 @@
     <ClCompile Include="Tools\AnonDynArr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Tools\GetOverlappingMemoryRegion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\glad\include\glad\glad.h">
@@ -558,6 +561,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tools\AnonDynArr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\AlignmentDummyClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\GetOverlappingMemoryRegion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
