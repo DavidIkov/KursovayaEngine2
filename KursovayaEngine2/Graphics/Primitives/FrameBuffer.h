@@ -44,16 +44,16 @@ namespace Graphics::Primitives {
 
 #define CFAC_ClassName FrameBufferClass
 		CFAC_ClassConstructor(FullAccess,
-			CFAC_FuncPtrConstr(ClearColorBuffer)
-			CFAC_FuncPtrConstr(ClearDepthBuffer)
-			CFAC_FuncPtrConstr(ClearStencilBuffer)
-			CFAC_FuncPtrConstr(ClearAllBuffers)
-			CFAC_FuncPtrConstr(gID)
-			CFAC_FuncPtrConstr(Finish)
-			CFAC_FuncPtrConstr(Bind)
-			CFAC_FuncPtrConstr(AttachRenderBuffer)
-			CFAC_FuncPtrConstr(AttachTexture)
-			CFAC_FuncPtrConstr(Unbind)
+			CFAC_FuncConstr(ClearColorBuffer)
+			CFAC_FuncConstr(ClearDepthBuffer)
+			CFAC_FuncConstr(ClearStencilBuffer)
+			CFAC_FuncConstr(ClearAllBuffers)
+			CFAC_FuncConstr(gID)
+			CFAC_FuncConstr(Finish)
+			CFAC_FuncConstr(Bind)
+			CFAC_FuncConstr(AttachRenderBuffer)
+			CFAC_FuncConstr(AttachTexture)
+			CFAC_FuncConstr(Unbind)
 		);
 #undef CFAC_ClassName
 	};

@@ -1,7 +1,5 @@
 #include"Texture.h"
 #include"Tools/DebugRuntimeAssert.h"
-#include<cstring>
-#include<utility>
 
 using namespace Graphics::Abstractions;
 namespace GP = Graphics::Primitives;
@@ -92,16 +90,25 @@ Vector3U TextureClass::gSize() {
 	return Size; 
 }
 
-void TextureClass::sSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX) { GP::TextureClass::sSettings_WrapTypeByX(wrapTypeByX); }
+void TextureClass::sSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX) { Settings.WrapTypeByX = wrapTypeByX; GP::TextureClass::sSettings_WrapTypeByX(wrapTypeByX); }
 TextureClass::SettingsStruct::WrapTypeEnum TextureClass::gSettings_WrapTypeByX() { return Settings.WrapTypeByX; }
-void TextureClass::sSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY) { GP::TextureClass::sSettings_WrapTypeByY(wrapTypeByY); }
+void TextureClass::sSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY) { Settings.WrapTypeByY = wrapTypeByY; GP::TextureClass::sSettings_WrapTypeByY(wrapTypeByY); }
 TextureClass::SettingsStruct::WrapTypeEnum TextureClass::gSettings_WrapTypeByY() { return Settings.WrapTypeByY; }
-void TextureClass::sSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt) { GP::TextureClass::sSettings_DownscalingFilt(downscalingFilt); }
+void TextureClass::sSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt) { Settings.DownscalingFilt = downscalingFilt; GP::TextureClass::sSettings_DownscalingFilt(downscalingFilt); }
 TextureClass::SettingsStruct::DownscalingFilterFuncEnum TextureClass::gSettings_DownscalingFilt() { return Settings.DownscalingFilt; }
-void TextureClass::sSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt) { GP::TextureClass::sSettings_UpscalingFilt(upscalingFilt); }
+void TextureClass::sSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt) { Settings.UpscalingFilt = upscalingFilt; GP::TextureClass::sSettings_UpscalingFilt(upscalingFilt); }
 TextureClass::SettingsStruct::UpscalingFilterFuncEnum TextureClass::gSettings_UpscalingFilt() { return Settings.UpscalingFilt; }
-void TextureClass::sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode) { GP::TextureClass::sSettings_DepthStencilReadMode(depthStencilReadMode); }
+void TextureClass::sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode) { Settings.DepthStencilReadMode = depthStencilReadMode; GP::TextureClass::sSettings_DepthStencilReadMode(depthStencilReadMode); }
 TextureClass::SettingsStruct::DepthStencilReadModeEnum TextureClass::gSettings_DepthStencilReadMode() { return Settings.DepthStencilReadMode; }
+
+TextureClass::SettingsStruct TextureClass::gSettings() { return Settings; }
+void TextureClass::sSettings(SettingsStruct newSets) {
+	sSettings_WrapTypeByX(newSets.WrapTypeByX);
+	sSettings_WrapTypeByY(newSets.WrapTypeByY);
+	sSettings_DownscalingFilt(newSets.DownscalingFilt);
+	sSettings_UpscalingFilt(newSets.UpscalingFilt);
+	sSettings_DepthStencilReadMode(newSets.DepthStencilReadMode);
+}
 
 void TextureClass::sDataSettings_DataFormatOnGPU(DataSettingsStruct::DataFormatOnGPU_Enum dataFormat) { DataSettings.DataFormatOnGPU = dataFormat; DataFormatOnGPU_WasUpdated = true; }
 TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum TextureClass::gDataSettings_DataFormatOnGPU() { return DataSettings.DataFormatOnGPU; }
@@ -109,6 +116,13 @@ void TextureClass::sDataSettings_DataFormatOnCPU(DataSettingsStruct::DataFormatO
 TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum TextureClass::gDataSettings_DataFormatOnCPU() { return DataSettings.DataFormatOnCPU; }
 void TextureClass::sDataSettings_DataTypeOnCPU(DataSettingsStruct::DataTypeOnCPU_Enum dataType) { DataSettings.DataTypeOnCPU = dataType; }
 TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum TextureClass::gDataSettings_DataTypeOnCPU() { return DataSettings.DataTypeOnCPU; }
+
+TextureClass::DataSettingsStruct TextureClass::gDataSettings() { return DataSettings; }
+void TextureClass::sDataSettings(DataSettingsStruct newDataSets) { 
+	sDataSettings_DataFormatOnGPU(newDataSets.DataFormatOnGPU);
+	sDataSettings_DataFormatOnCPU(newDataSets.DataFormatOnCPU);
+	sDataSettings_DataTypeOnCPU(newDataSets.DataTypeOnCPU);
+}
 
 
 void TextureClass::Delete() {
@@ -120,3 +134,12 @@ void TextureClass::Bind(unsigned int bindingInd) {
 void TextureClass::Unbind() {
 	GP::TextureClass::Unbind();
 }
+
+const GP::TextureClass& TextureClass::gPrimitiveTexture() {
+	return *this;
+}
+GP::TextureClass::CFAC_FullAccess_Class TextureClass::gPrimitiveTextureCFAC() {
+	return GP::TextureClass::CFAC_FullAccess_Class(*this);
+}
+
+

@@ -137,11 +137,11 @@ int main()
         GA::ShaderClass QUAD_SP(L"Shaders/quad.vs", L"Shaders/quad.fs", nullptr, nullptr);
 
         QUAD_SP.Bind();
-        QUAD_SP.g_CFAC_UniformFuncs()(QUAD_SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1i, QUAD_SP.GetUniformIDByName("u_Texture"), 0);
+        QUAD_SP.gCFAC_UniformFuncs().SetUniform1i(QUAD_SP.GetUniformIDByName("u_Texture"), 0);
 
         SP.Bind();
-        SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1i,SP.GetUniformIDByName("u_tex1"), 0);
-        SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1i, SP.GetUniformIDByName("u_tex2"), 1);
+        SP.gCFAC_UniformFuncs().SetUniform1i(SP.GetUniformIDByName("u_tex1"), 0);
+        SP.gCFAC_UniformFuncs().SetUniform1i(SP.GetUniformIDByName("u_tex2"), 1);
 
         GA::TextureClass TEX0(GP::TextureClass::DimensionsEnum::Two, "Textures/blackFace.jpg",
             GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
@@ -189,12 +189,6 @@ int main()
 
         float TimeCounter = 0;
         float effectMult = 1;
-        bool fullHD_Render = false;
-		EventsHandler.ConnectToEvent(&window.gKeyboardHandle().gPressableKeyEvent(KeyboardClass::PressableKeysEnum::K), [&](void* pressedDown) {
-            if (*(bool*)pressedDown) fullHD_Render = not fullHD_Render;
-            });
-
-
         EventsHandler.ConnectToEvent(&window.gKeyboardHandle().gPressableKeyEvent(KeyboardClass::PressableKeysEnum::M), [&](void* pressedDown) {
             if (*(bool*)pressedDown) effectMult += 0.2f;
             });
@@ -266,13 +260,13 @@ int main()
 
             Object1RotationMatrix = Object1RotationMatrix.RotateIn3DByAnglesC<0, 1, 2>(0.01f, 0.01f, 0);
 
-            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP.GetUniformIDByName("u_LightPos"), 1, &LightPosition[0]);
-            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
-            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP.GetUniformIDByName("u_InversedCameraRotationMatrix"), 1, false, &InversedCameraRotationMatrix[0]);
-            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix4fv, SP.GetUniformIDByName("u_ProjectionMatrix"), 1, false, &ProjectionMatrix[0]);
-            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1f, SP.GetUniformIDByName("u_VisualData.Shininess"), 4.f);
-            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1f, SP.GetUniformIDByName("u_VisualData.LightSourceReflectionMaxAngle"), 40.f / 180.f * 3.14f);
-            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1f, SP.GetUniformIDByName("u_VisualData.MinColorMultiplierForSurfaceLighting"), 0.05f);
+            SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_LightPos"), 1, &LightPosition[0]);
+            SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
+            SP.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP.GetUniformIDByName("u_InversedCameraRotationMatrix"), 1, false, &InversedCameraRotationMatrix[0]);
+            SP.gCFAC_UniformFuncs().SetUniformMatrix4fv(SP.GetUniformIDByName("u_ProjectionMatrix"), 1, false, &ProjectionMatrix[0]);
+            SP.gCFAC_UniformFuncs().SetUniform1f(SP.GetUniformIDByName("u_VisualData.Shininess"), 4.f);
+            SP.gCFAC_UniformFuncs().SetUniform1f(SP.GetUniformIDByName("u_VisualData.LightSourceReflectionMaxAngle"), 40.f / 180.f * 3.14f);
+            SP.gCFAC_UniformFuncs().SetUniform1f(SP.GetUniformIDByName("u_VisualData.MinColorMultiplierForSurfaceLighting"), 0.05f);
 
             FB.Bind(true);
 
@@ -281,16 +275,16 @@ int main()
 
             VA1.Bind();
 
-            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP.GetUniformIDByName("u_ObjectPosition"), 1, &Object1Position[0]);
-            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object1RotationMatrix[0]);
-            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP.GetUniformIDByName("u_ObjectScale"), 1, &Object1Scale[0]);
+            SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_ObjectPosition"), 1, &Object1Position[0]);
+            SP.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object1RotationMatrix[0]);
+            SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_ObjectScale"), 1, &Object1Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
             VA2.Bind();
 
-            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP.GetUniformIDByName("u_ObjectPosition"), 1, &Object2Position[0]);
-            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object2RotationMatrix[0]);
-            SP.g_CFAC_UniformFuncs()(SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP.GetUniformIDByName("u_ObjectScale"), 1, &Object2Scale[0]);
+            SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_ObjectPosition"), 1, &Object2Position[0]);
+            SP.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object2RotationMatrix[0]);
+            SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_ObjectScale"), 1, &Object2Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
 
             Preset3D.sStencilTest_BaseMask(0);
@@ -301,23 +295,23 @@ int main()
 
 
                 SP_OUTLINE.Bind();
-                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_OUTLINE.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
-                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP_OUTLINE.GetUniformIDByName("u_InversedCameraRotationMatrix"), 1, false, &InversedCameraRotationMatrix[0]);
-                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix4fv, SP_OUTLINE.GetUniformIDByName("u_ProjectionMatrix"), 1, false, &ProjectionMatrix[0]);
-                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1f, SP_OUTLINE.GetUniformIDByName("u_OutlineScale"), 0.1f);
+                SP_OUTLINE.gCFAC_UniformFuncs().SetUniform3fv(SP_OUTLINE.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
+                SP_OUTLINE.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_OUTLINE.GetUniformIDByName("u_InversedCameraRotationMatrix"), 1, false, &InversedCameraRotationMatrix[0]);
+                SP_OUTLINE.gCFAC_UniformFuncs().SetUniformMatrix4fv(SP_OUTLINE.GetUniformIDByName("u_ProjectionMatrix"), 1, false, &ProjectionMatrix[0]);
+                SP_OUTLINE.gCFAC_UniformFuncs().SetUniform1f(SP_OUTLINE.GetUniformIDByName("u_OutlineScale"), 0.1f);
                 
                 VA1.Bind();
 
-                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_OUTLINE.GetUniformIDByName("u_ObjectPosition"), 1, &Object1Position[0]);
-                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP_OUTLINE.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object1RotationMatrix[0]);
-                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_OUTLINE.GetUniformIDByName("u_ObjectScale"), 1, &Object1Scale[0]);
+                SP_OUTLINE.gCFAC_UniformFuncs().SetUniform3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectPosition"), 1, &Object1Position[0]);
+                SP_OUTLINE.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object1RotationMatrix[0]);
+                SP_OUTLINE.gCFAC_UniformFuncs().SetUniform3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectScale"), 1, &Object1Scale[0]);
                 GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
                 VA2.Bind();
 
-                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_OUTLINE.GetUniformIDByName("u_ObjectPosition"), 1, &Object2Position[0]);
-                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP_OUTLINE.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object2RotationMatrix[0]);
-                SP_OUTLINE.g_CFAC_UniformFuncs()(SP_OUTLINE.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_OUTLINE.GetUniformIDByName("u_ObjectScale"), 1, &Object2Scale[0]);
+                SP_OUTLINE.gCFAC_UniformFuncs().SetUniform3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectPosition"), 1, &Object2Position[0]);
+                SP_OUTLINE.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object2RotationMatrix[0]);
+                SP_OUTLINE.gCFAC_UniformFuncs().SetUniform3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectScale"), 1, &Object2Scale[0]);
                 GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
             }
 
@@ -326,22 +320,22 @@ int main()
             Preset3D.sDepthTest_Enabled(true);
 
             SP_NORMAL.Bind();
-            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_NORMAL.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
-            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP_NORMAL.GetUniformIDByName("u_InversedCameraRotationMatrix"), 1, false, &InversedCameraRotationMatrix[0]);
-            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix4fv, SP_NORMAL.GetUniformIDByName("u_ProjectionMatrix"), 1, false, &ProjectionMatrix[0]);
+            SP_NORMAL.gCFAC_UniformFuncs().SetUniform3fv(SP_NORMAL.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
+            SP_NORMAL.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_NORMAL.GetUniformIDByName("u_InversedCameraRotationMatrix"), 1, false, &InversedCameraRotationMatrix[0]);
+            SP_NORMAL.gCFAC_UniformFuncs().SetUniformMatrix4fv(SP_NORMAL.GetUniformIDByName("u_ProjectionMatrix"), 1, false, &ProjectionMatrix[0]);
 
             VA1.Bind();
 
-            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_NORMAL.GetUniformIDByName("u_ObjectPosition"), 1, &Object1Position[0]);
-            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP_NORMAL.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object1RotationMatrix[0]);
-            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_NORMAL.GetUniformIDByName("u_ObjectScale"), 1, &Object1Scale[0]);
+            SP_NORMAL.gCFAC_UniformFuncs().SetUniform3fv(SP_NORMAL.GetUniformIDByName("u_ObjectPosition"), 1, &Object1Position[0]);
+            SP_NORMAL.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_NORMAL.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object1RotationMatrix[0]);
+            SP_NORMAL.gCFAC_UniformFuncs().SetUniform3fv(SP_NORMAL.GetUniformIDByName("u_ObjectScale"), 1, &Object1Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
             VA2.Bind();
 
-            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_NORMAL.GetUniformIDByName("u_ObjectPosition"), 1, &Object2Position[0]);
-            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, SP_NORMAL.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object2RotationMatrix[0]);
-            SP_NORMAL.g_CFAC_UniformFuncs()(SP_NORMAL.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, SP_NORMAL.GetUniformIDByName("u_ObjectScale"), 1, &Object2Scale[0]);
+            SP_NORMAL.gCFAC_UniformFuncs().SetUniform3fv(SP_NORMAL.GetUniformIDByName("u_ObjectPosition"), 1, &Object2Position[0]);
+            SP_NORMAL.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_NORMAL.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object2RotationMatrix[0]);
+            SP_NORMAL.gCFAC_UniformFuncs().SetUniform3fv(SP_NORMAL.GetUniformIDByName("u_ObjectScale"), 1, &Object2Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
 
 
@@ -352,12 +346,12 @@ int main()
             window.ClearColorBuffer();
             QUAD_SP.Bind();
 
-            QUAD_SP.g_CFAC_UniformFuncs()(QUAD_SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1i, QUAD_SP.GetUniformIDByName("u_Texture"), 0);
-            QUAD_SP.g_CFAC_UniformFuncs()(QUAD_SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniformMatrix3fv, QUAD_SP.GetUniformIDByName("u_CameraRotation"), 1, false, &CameraRotationMatrix[0]);
-            QUAD_SP.g_CFAC_UniformFuncs()(QUAD_SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform3fv, QUAD_SP.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
-            QUAD_SP.g_CFAC_UniformFuncs()(QUAD_SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform2fv, QUAD_SP.GetUniformIDByName("u_CameraResolutionSize"), 1, &ResolutionLength[0]);
-            QUAD_SP.g_CFAC_UniformFuncs()(QUAD_SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1f, QUAD_SP.GetUniformIDByName("u_EffectMult"), effectMult);// (sinf(time) + 1) / 2 * 10 + 5);
-            QUAD_SP.g_CFAC_UniformFuncs()(QUAD_SP.g_CFAC_UniformFuncs().FuncPtrs.SetUniform1f, QUAD_SP.GetUniformIDByName("u_Time"), TimeCounter);
+            QUAD_SP.gCFAC_UniformFuncs().SetUniform1i(QUAD_SP.GetUniformIDByName("u_Texture"), 0);
+            QUAD_SP.gCFAC_UniformFuncs().SetUniformMatrix3fv(QUAD_SP.GetUniformIDByName("u_CameraRotation"), 1, false, &CameraRotationMatrix[0]);
+            QUAD_SP.gCFAC_UniformFuncs().SetUniform3fv(QUAD_SP.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
+            QUAD_SP.gCFAC_UniformFuncs().SetUniform2fv(QUAD_SP.GetUniformIDByName("u_CameraResolutionSize"), 1, &ResolutionLength[0]);
+            QUAD_SP.gCFAC_UniformFuncs().SetUniform1f(QUAD_SP.GetUniformIDByName("u_EffectMult"), effectMult);// (sinf(time) + 1) / 2 * 10 + 5);
+            QUAD_SP.gCFAC_UniformFuncs().SetUniform1f(QUAD_SP.GetUniformIDByName("u_Time"), TimeCounter);
 
             FB_COLOR_TEX.Bind(0);
 

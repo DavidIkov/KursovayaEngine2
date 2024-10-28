@@ -1,5 +1,4 @@
 #pragma once
-#include<functional>
 #include"DLL.h"
 #include"Tools/DynArr.h"
 #include"Graphics/Primitives/ShaderProgram.h"
@@ -11,23 +10,22 @@ namespace Graphics::Abstractions {
 	public:
 		typedef Primitives::ShaderProgramClass::CFAC_UniformFuncsAccess_Class CFAC_UniformFuncs_Class;
 	private:
-		//dosent actually hold shaders data, storing StalkerClass pointing to actual instance
-		class ShaderDataClass {
-			Primitives::ShaderProgramClass ShaderProgram;
+		//dosent actually hold shaders data, it is storing StalkerClass pointing to actual instance
+		class ShaderDataClass: protected Primitives::ShaderProgramClass {
 			struct UniformDataStruct {
 				std::string Name;
 				unsigned int ID;
 			};
 			DynArr<UniformDataStruct> ShaderUniformsData;
-			mutable bool Deleted = false;
 			void _SaveShaderDataNames();
 		public:
 			ShaderDataClass(const wchar_t* vsPath, const wchar_t* fsPath);
 			ShaderDataClass(const wchar_t* vsPath, const wchar_t* gsPath, const wchar_t* fsPath);
 			ShaderDataClass(const ShaderDataClass&& toCopy);
-			unsigned int GetUniformIdByName(const char* name);
+			unsigned int GetUniformIDByName(const char* name);
 			void Bind();
-			CFAC_UniformFuncs_Class g_CFAC_UniformFuncs();
+			CFAC_UniformFuncs_Class gCFAC_UniformFuncs();
+			const Primitives::ShaderProgramClass& gPrimitiveShader() const;
 			~ShaderDataClass();
 		};
 
@@ -50,7 +48,8 @@ namespace Graphics::Abstractions {
 
 		DLLTREATMENT unsigned int GetUniformIDByName(const char* name);
 		
-		DLLTREATMENT CFAC_UniformFuncs_Class g_CFAC_UniformFuncs();
+		DLLTREATMENT const Primitives::ShaderProgramClass& gPrimitiveShader() const;
+		DLLTREATMENT CFAC_UniformFuncs_Class gCFAC_UniformFuncs() const;
 
 		DLLTREATMENT void Bind();
 		DLLTREATMENT void Unbind();

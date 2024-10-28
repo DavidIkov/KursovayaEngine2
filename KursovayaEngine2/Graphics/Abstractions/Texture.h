@@ -6,19 +6,19 @@
 
 namespace Graphics::Abstractions {
 
-	//this class can store data of texture in RAM if you want so.
 	//make sure that if you dont use some axes in size specification of texture then 
 	//you dont leave them as 0, use 1, otherwise it will mean that texture is empty
 	class TextureClass : protected Primitives::TextureClass {
-	protected:
-		Vector3U Size;
-		SettingsStruct Settings;
-		DataSettingsStruct DataSettings;
-		bool DataFormatOnGPU_WasUpdated = false;
 	public:
 		typedef Primitives::TextureClass::SettingsStruct SettingsStruct;
 		typedef Primitives::TextureClass::DataSettingsStruct DataSettingsStruct;
 		typedef Primitives::TextureClass::DimensionsEnum DimensionsEnum;
+	protected:
+		bool DataFormatOnGPU_WasUpdated = false;
+		Vector3U Size;
+		SettingsStruct Settings;
+		DataSettingsStruct DataSettings;
+	public:
 		DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
 		//no taking responsibility for "data"
 		DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
@@ -55,7 +55,9 @@ namespace Graphics::Abstractions {
 		DLLTREATMENT void sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode);
 		DLLTREATMENT SettingsStruct::DepthStencilReadModeEnum gSettings_DepthStencilReadMode();
 
-		//changes will happen when data will
+		DLLTREATMENT SettingsStruct gSettings();
+		DLLTREATMENT void sSettings(SettingsStruct newSets);
+
 		DLLTREATMENT void sDataSettings_DataFormatOnGPU(DataSettingsStruct::DataFormatOnGPU_Enum dataFormat);
 		DLLTREATMENT DataSettingsStruct::DataFormatOnGPU_Enum gDataSettings_DataFormatOnGPU();
 		DLLTREATMENT void sDataSettings_DataFormatOnCPU(DataSettingsStruct::DataFormatOnCPU_Enum dataFormat);
@@ -63,25 +65,31 @@ namespace Graphics::Abstractions {
 		DLLTREATMENT void sDataSettings_DataTypeOnCPU(DataSettingsStruct::DataTypeOnCPU_Enum dataType);
 		DLLTREATMENT DataSettingsStruct::DataTypeOnCPU_Enum gDataSettings_DataTypeOnCPU();
 
+		DLLTREATMENT DataSettingsStruct gDataSettings();
+		DLLTREATMENT void sDataSettings(DataSettingsStruct newDataSets);
+
 		DLLTREATMENT void Delete();
 		DLLTREATMENT void Bind(unsigned int bindingInd = 0);
 		DLLTREATMENT void Unbind();
 
+		DLLTREATMENT const Primitives::TextureClass& gPrimitiveTexture();
+		DLLTREATMENT Primitives::TextureClass::CFAC_FullAccess_Class gPrimitiveTextureCFAC();
+
 #define CFAC_ClassName TextureClass
 		CFAC_ClassConstructor(FullAccess,
-			//CFAC_FuncPtrConstr(ChangeData)
-			//CFAC_FuncPtrConstr(ChangeSubData(Vector3U,const void*,Vector3U))
-			CFAC_FuncPtrConstr(gSize)
-			CFAC_FuncPtrConstr(sSettings_WrapTypeByX) CFAC_FuncPtrConstr(gSettings_WrapTypeByX)
-			CFAC_FuncPtrConstr(sSettings_WrapTypeByY) CFAC_FuncPtrConstr(gSettings_WrapTypeByY)
-			CFAC_FuncPtrConstr(sSettings_DownscalingFilt) CFAC_FuncPtrConstr(gSettings_DownscalingFilt)
-			CFAC_FuncPtrConstr(sSettings_UpscalingFilt) CFAC_FuncPtrConstr(gSettings_UpscalingFilt)
-			CFAC_FuncPtrConstr(sSettings_DepthStencilReadMode) CFAC_FuncPtrConstr(gSettings_DepthStencilReadMode)
-			CFAC_FuncPtrConstr(sDataSettings_DataFormatOnGPU) CFAC_FuncPtrConstr(gDataSettings_DataFormatOnGPU)
-			CFAC_FuncPtrConstr(sDataSettings_DataFormatOnCPU) CFAC_FuncPtrConstr(gDataSettings_DataFormatOnCPU)
-			CFAC_FuncPtrConstr(sDataSettings_DataTypeOnCPU) CFAC_FuncPtrConstr(gDataSettings_DataTypeOnCPU)
-			CFAC_FuncPtrConstr(Bind)
-			CFAC_FuncPtrConstr(Unbind)
+			CFAC_FuncConstr(ChangeData)
+			CFAC_FuncConstr(ChangeSubData)
+			CFAC_FuncConstr(gSize)
+			CFAC_FuncConstr(sSettings_WrapTypeByX) CFAC_FuncConstr(gSettings_WrapTypeByX)
+			CFAC_FuncConstr(sSettings_WrapTypeByY) CFAC_FuncConstr(gSettings_WrapTypeByY)
+			CFAC_FuncConstr(sSettings_DownscalingFilt) CFAC_FuncConstr(gSettings_DownscalingFilt)
+			CFAC_FuncConstr(sSettings_UpscalingFilt) CFAC_FuncConstr(gSettings_UpscalingFilt)
+			CFAC_FuncConstr(sSettings_DepthStencilReadMode) CFAC_FuncConstr(gSettings_DepthStencilReadMode)
+			CFAC_FuncConstr(sDataSettings_DataFormatOnGPU) CFAC_FuncConstr(gDataSettings_DataFormatOnGPU)
+			CFAC_FuncConstr(sDataSettings_DataFormatOnCPU) CFAC_FuncConstr(gDataSettings_DataFormatOnCPU)
+			CFAC_FuncConstr(sDataSettings_DataTypeOnCPU) CFAC_FuncConstr(gDataSettings_DataTypeOnCPU)
+			CFAC_FuncConstr(Bind)
+			CFAC_FuncConstr(Unbind)
 		);
 #undef CFAC_ClassName
 

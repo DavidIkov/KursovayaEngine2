@@ -21,9 +21,9 @@ namespace Graphics::Primitives {
 
 #define CFAC_ClassName VertexArrayClass
 		CFAC_ClassConstructor(FullAccess,
-			CFAC_FuncPtrConstr(gID)
-			CFAC_FuncPtrConstr(Bind)
-			CFAC_FuncPtrConstr(Unbind)
+			CFAC_FuncConstr(gID)
+			CFAC_FuncConstr(Bind)
+			CFAC_FuncConstr(Unbind)
 		);
 #undef CFAC_ClassName
 	};

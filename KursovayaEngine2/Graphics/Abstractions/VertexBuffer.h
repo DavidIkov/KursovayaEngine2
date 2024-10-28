@@ -3,31 +3,25 @@
 #include"Tools/AnonDynArr.h"
 #include"Tools/DynArr.h"
 #include"Graphics/Primitives/VertexBuffer.h"
+#include"Graphics/Primitives/VertexArray.h"
 
 namespace Graphics::Abstractions {
-	//can keep data in RAM if you want
-	class VertexBufferClass :public Primitives::VertexBufferClass {
-		AnonDynArr Buffer;
-		bool IsStoringBuffer;
+	class VertexBufferClass :protected Primitives::VertexBufferClass {
+	protected:
+		Primitives::VertexArrayClass VA;
 	public:
 		typedef Primitives::VertexBufferClass::BufferDataTypeEnum BufferDataTypeEnum;
-		struct LayoutDataStruct: Primitives::VertexBufferClass::LayoutDataStruct {
-			bool Skip;
-		};
-		VertexBufferClass(bool keepData, AnonDynArr data, DynArr<LayoutDataStruct> layout);
-		VertexBufferClass();
-		template<typename BufferStoreType = void>
-		VertexBufferClass(const VertexBufferClass& toCopy, AnonDynArr::TypeContainer<BufferStoreType>) {
+		typedef Primitives::VertexBufferClass::LayoutDataStruct LayoutDataStruct ;
+		DLLTREATMENT VertexBufferClass(void* data, DynArr<LayoutDataStruct> layout);
+		//filePath to some 3d object, right now only .obj is accepted
+		DLLTREATMENT VertexBufferClass(const wchar_t* filePath);
+		DLLTREATMENT VertexBufferClass(const VertexBufferClass&& toCopy);
+		DLLTREATMENT void operator=(const VertexBufferClass&& toCopy);
 
-		}
-		VertexBufferClass(const VertexBufferClass&& toCopy);
-		template<typename BufferStoreType = void>
-		void operator=(const VertexBufferClass& toCopy) {
+		using Primitives::VertexBufferClass::SetData;
+		using Primitives::VertexBufferClass::SetSubData;
 
-		}
-		void operator=(const VertexBufferClass&& toCopy);
 
-		
 
-	};
+	}
 }

@@ -18,8 +18,8 @@ namespace Graphics::Primitives {
 
 #define CFAC_ClassName RenderBufferClass
 		CFAC_ClassConstructor(FullAccess,
-			CFAC_FuncPtrConstr(Bind)
-			CFAC_FuncPtrConstr(gID)
+			CFAC_FuncConstr(Bind)
+			CFAC_FuncConstr(gID)
 		);
 #undef CFAC_ClassName
 	};

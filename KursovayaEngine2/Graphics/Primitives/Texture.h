@@ -6,9 +6,6 @@
 
 namespace Graphics::Primitives {
     class TextureClass {
-    protected:
-        unsigned int ID;
-        mutable bool Deleted = false;
     public:
 		struct SettingsStruct {
 			enum class WrapTypeEnum :unsigned char {
@@ -53,6 +50,9 @@ namespace Graphics::Primitives {
             One, Two, Three
         };
     protected:
+
+        //they are static just to have ability to call then from inherited classes in future
+
 		static unsigned int _DataFormatOnGPU_SwitchCase(DataSettingsStruct::DataFormatOnGPU_Enum format);
 		static unsigned int _DataFormatOnCPU_SwitchCase(DataSettingsStruct::DataFormatOnCPU_Enum format);
 		static unsigned int _DataTypeOnCPU_SwitchCase(DataSettingsStruct::DataTypeOnCPU_Enum type);
@@ -62,8 +62,10 @@ namespace Graphics::Primitives {
 		static unsigned int _UpscalingFilterFunc_SwitchCase(SettingsStruct::UpscalingFilterFuncEnum filt);
 		static unsigned int _DepthStencilReadMode_SwitchCase(SettingsStruct::DepthStencilReadModeEnum readMode);
 
-        DimensionsEnum Dimensions;
         unsigned int GL_TexEnum;
+        unsigned int ID;
+        DimensionsEnum Dimensions;
+        mutable bool Deleted = false;
 
         void _Constructor(Vector3U pixelsAmount, const void* data, const DataSettingsStruct& dataSets);
 
@@ -112,18 +114,18 @@ namespace Graphics::Primitives {
 
 #define CFAC_ClassName TextureClass
         CFAC_ClassConstructor(FullAccess,
-            CFAC_FuncPtrConstr(SetData)
-            CFAC_FuncPtrConstr(SetSubData)
-            CFAC_FuncPtrConstr(GenerateMipmaps)
-            CFAC_FuncPtrConstr(GetData)
-            CFAC_FuncPtrConstr(sSettings_WrapTypeByX)
-            CFAC_FuncPtrConstr(sSettings_WrapTypeByY)
-            CFAC_FuncPtrConstr(sSettings_DownscalingFilt)
-            CFAC_FuncPtrConstr(sSettings_UpscalingFilt)
-            CFAC_FuncPtrConstr(sSettings_DepthStencilReadMode)
-            CFAC_FuncPtrConstr(gID)
-            CFAC_FuncPtrConstr(Bind)
-            CFAC_FuncPtrConstr(Unbind)
+            CFAC_FuncConstr(SetData)
+            CFAC_FuncConstr(SetSubData)
+            CFAC_FuncConstr(GenerateMipmaps)
+            CFAC_FuncConstr(GetData)
+            CFAC_FuncConstr(sSettings_WrapTypeByX)
+            CFAC_FuncConstr(sSettings_WrapTypeByY)
+            CFAC_FuncConstr(sSettings_DownscalingFilt)
+            CFAC_FuncConstr(sSettings_UpscalingFilt)
+            CFAC_FuncConstr(sSettings_DepthStencilReadMode)
+            CFAC_FuncConstr(gID)
+            CFAC_FuncConstr(Bind)
+            CFAC_FuncConstr(Unbind)
         );
 #undef CFAC_ClassName
 

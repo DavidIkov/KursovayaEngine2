@@ -8,10 +8,10 @@ namespace GP = Graphics::Primitives;
 
 void ShaderClass::ShaderDataClass::_SaveShaderDataNames() {
 
-	ShaderProgram.Bind();
+    GP::ShaderProgramClass::Bind();
 
     DynArr<GP::ShaderProgramClass::UniformData> data;
-    ShaderProgram.GetUniformsData(&data);
+    GP::ShaderProgramClass::GetUniformsData(&data);
 
     ShaderUniformsData.ChangeCapacity(data.gLength());
 
@@ -36,13 +36,13 @@ ShaderClass::ShaderDataClass::ShaderDataClass(const wchar_t* vsPath, const wchar
 
 	GP::ShaderClass VS(vsPath, GP::ShaderClass::TypesEnum::Vertex);
     VS.Compile();
-    ShaderProgram.AttachShader(VS.gID());
+    GP::ShaderProgramClass::AttachShader(VS.gID());
 
 	GP::ShaderClass FS(fsPath, GP::ShaderClass::TypesEnum::Fragment);
     FS.Compile();
-    ShaderProgram.AttachShader(FS.gID());
+    GP::ShaderProgramClass::AttachShader(FS.gID());
 
-    ShaderProgram.LinkShaders();
+    GP::ShaderProgramClass::LinkShaders();
 
     _SaveShaderDataNames();
 }
@@ -50,25 +50,25 @@ ShaderClass::ShaderDataClass::ShaderDataClass(const wchar_t* vsPath, const wchar
 
 	GP::ShaderClass VS(vsPath, GP::ShaderClass::TypesEnum::Vertex);
     VS.Compile();
-    ShaderProgram.AttachShader(VS.gID());
+    GP::ShaderProgramClass::AttachShader(VS.gID());
 
 	GP::ShaderClass GS(gsPath, GP::ShaderClass::TypesEnum::Geometry);
     GS.Compile();
-    ShaderProgram.AttachShader(GS.gID());
+    GP::ShaderProgramClass::AttachShader(GS.gID());
 
 	GP::ShaderClass FS(fsPath, GP::ShaderClass::TypesEnum::Fragment);
     FS.Compile();
-    ShaderProgram.AttachShader(FS.gID());
+    GP::ShaderProgramClass::AttachShader(FS.gID());
 
-    ShaderProgram.LinkShaders();
+    GP::ShaderProgramClass::LinkShaders();
 
     _SaveShaderDataNames();
 }
 ShaderClass::ShaderDataClass::ShaderDataClass(const ShaderDataClass&& toCopy):
-    ShaderProgram(std::move(toCopy.ShaderProgram)), ShaderUniformsData(std::move(toCopy.ShaderUniformsData)) {
-    toCopy.Deleted = true;
+    GP::ShaderProgramClass(std::move(toCopy)), ShaderUniformsData(std::move(toCopy.ShaderUniformsData)) {
+
 }
-unsigned int ShaderClass::ShaderDataClass::GetUniformIdByName(const char* name) {
+unsigned int ShaderClass::ShaderDataClass::GetUniformIDByName(const char* name) {
     unsigned int uniformInd = BinarySearch(&ShaderUniformsData[0], ShaderUniformsData.gLength(), name, 
         +[](const char* const& curName, const UniformDataStruct& uniformData)->bool {return curName < uniformData.Name; },
         +[](const char* const& curName, const UniformDataStruct& uniformData)->bool {return curName == uniformData.Name; });
@@ -76,16 +76,15 @@ unsigned int ShaderClass::ShaderDataClass::GetUniformIdByName(const char* name) 
     return ShaderUniformsData[uniformInd].ID;
 }
 void ShaderClass::ShaderDataClass::Bind() {
-    ShaderProgram.Bind();
+    GP::ShaderProgramClass::Bind();
 }
-ShaderClass::CFAC_UniformFuncs_Class ShaderClass::ShaderDataClass::g_CFAC_UniformFuncs() {
-    return CFAC_UniformFuncs_Class(ShaderProgram);
+ShaderClass::CFAC_UniformFuncs_Class ShaderClass::ShaderDataClass::gCFAC_UniformFuncs() {
+    return CFAC_UniformFuncs_Class(*this);
 }
-ShaderClass::ShaderDataClass::~ShaderDataClass() {
-    if (not Deleted) {
-        Deleted = true;
-    }
+const GP::ShaderProgramClass& ShaderClass::ShaderDataClass::gPrimitiveShader() const {
+    return *this;
 }
+ShaderClass::ShaderDataClass::~ShaderDataClass() {}
 
 DynArr<ShaderClass::ShaderDataClass> ShaderClass::ShadersStorage;
 
@@ -125,10 +124,13 @@ void ShaderClass::operator=(const ShaderClass&& toCopy) {
     PtrToCustomStorageOfShaderDataUpdaterFunc = toCopy.PtrToCustomStorageOfShaderDataUpdaterFunc;
 }
 unsigned int ShaderClass::GetUniformIDByName(const char* name) {
-    return ShaderDataStalker.GetTarget<ShaderDataClass>().GetUniformIdByName(name);
+    return ShaderDataStalker.GetTarget<ShaderDataClass>().GetUniformIDByName(name);
 }
-ShaderClass::CFAC_UniformFuncs_Class ShaderClass::g_CFAC_UniformFuncs() {
-    return ShaderDataStalker.GetTarget<ShaderDataClass>().g_CFAC_UniformFuncs();
+ShaderClass::CFAC_UniformFuncs_Class ShaderClass::gCFAC_UniformFuncs() const {
+    return ShaderDataStalker.GetTarget<ShaderDataClass>().gCFAC_UniformFuncs();
+}
+const GP::ShaderProgramClass& ShaderClass::gPrimitiveShader() const {
+    return ShaderDataStalker.GetTarget<ShaderDataClass>().gPrimitiveShader();
 }
 void ShaderClass::Bind() {
     ShaderDataStalker.GetTarget<ShaderDataClass>().Bind();

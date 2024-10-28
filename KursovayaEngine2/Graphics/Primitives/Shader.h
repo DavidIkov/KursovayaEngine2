@@ -30,8 +30,8 @@ namespace Graphics::Primitives {
 		
 #define CFAC_ClassName ShaderClass
 		CFAC_ClassConstructor(FullAccess,
-			CFAC_FuncPtrConstr(Compile)
-			CFAC_FuncPtrConstr(gID)
+			CFAC_FuncConstr(Compile)
+			CFAC_FuncConstr(gID)
 		);
 #undef CFAC_ClassName
 	};

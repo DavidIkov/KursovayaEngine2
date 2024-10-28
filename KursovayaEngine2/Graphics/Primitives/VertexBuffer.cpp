@@ -97,18 +97,18 @@ static unsigned int _GetVBUsageForGL(VertexBufferClass::BufferDataUsageEnum usag
     }
     return 0;
 }
-void VertexBufferClass::SetData(unsigned int dataLength, const void* data, const BufferDataUsageEnum usage) {
+void VertexBufferClass::SetData(const AnonDynArr& data, const BufferDataUsageEnum usage) {
     Assert_NotDeleted_Macro;
     Assert_Binded_Macro;
 
-	glSC(glBufferData(GL_ARRAY_BUFFER, dataLength, data, _GetVBUsageForGL(usage)));
+	glSC(glBufferData(GL_ARRAY_BUFFER, data.gArrSizeInBytes(), data.gArr(), _GetVBUsageForGL(usage)));
 }
 
-void VertexBufferClass::SetSubData(unsigned int offset, unsigned int dataLength, void* firstElement) {
+void VertexBufferClass::SetSubData(unsigned int offsetInBytes, const AnonDynArr& data) {
     Assert_NotDeleted_Macro;
     Assert_Binded_Macro;
 
-	glSC(glBufferSubData(GL_ARRAY_BUFFER, offset, dataLength, firstElement));
+	glSC(glBufferSubData(GL_ARRAY_BUFFER, offsetInBytes, data.gArrSizeInBytes(), data.gArr()));
 }
 void VertexBufferClass::Bind() {
     Assert_NotDeleted_Macro;

@@ -3,6 +3,7 @@
 #include<vector>
 #include"Tools/ClassFunctionsAccessController.h"
 #include"Tools/DynArr.h"
+#include"Tools/AnonDynArr.h"
 
 namespace Graphics::Primitives {
 
@@ -21,7 +22,7 @@ namespace Graphics::Primitives {
 		enum class BufferDataTypeEnum :unsigned short int {
 			Byte, UnsignedByte, Float, Int, UnsignedInt
 		};
-	public:
+
 		DLLTREATMENT VertexBufferClass();
 		DLLTREATMENT VertexBufferClass(const VertexBufferClass&) = delete;
 		DLLTREATMENT VertexBufferClass(const VertexBufferClass&& toCopy);
@@ -35,21 +36,19 @@ namespace Graphics::Primitives {
 			BufferDataTypeEnum DataType;
 		};
 		DLLTREATMENT void SetLayout(const DynArr<LayoutDataStruct>& layout);
-		//dataLength as length*sizeof(type)
-		DLLTREATMENT void SetData(unsigned int dataLength, const void* data, const BufferDataUsageEnum usage);
-		//dataLength as length*sizeof(type)
-		DLLTREATMENT void SetSubData(unsigned int offset, unsigned int dataLength, void* firstElement);
+		DLLTREATMENT void SetData(const AnonDynArr& data, const BufferDataUsageEnum usage);
+		DLLTREATMENT void SetSubData(unsigned int offsetInBytes, const AnonDynArr& data);
 		DLLTREATMENT void Bind();
 		DLLTREATMENT static void Unbind();
 
 #define CFAC_ClassName VertexBufferClass
 		CFAC_ClassConstructor(FullAccess,
-			CFAC_FuncPtrConstr(gID)
-			CFAC_FuncPtrConstr(SetLayout)
-			CFAC_FuncPtrConstr(SetData)
-			CFAC_FuncPtrConstr(SetSubData)
-			CFAC_FuncPtrConstr(Bind)
-			CFAC_FuncPtrConstr(Unbind)
+			CFAC_FuncConstr(gID)
+			CFAC_FuncConstr(SetLayout)
+			CFAC_FuncConstr(SetData)
+			CFAC_FuncConstr(SetSubData)
+			CFAC_FuncConstr(Bind)
+			CFAC_FuncConstr(Unbind)
 		);
 #undef CFAC_ClassName
 	};
