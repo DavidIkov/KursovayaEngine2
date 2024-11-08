@@ -1,10 +1,8 @@
 #include"Shader.h"
-#include"Tools/DebugRuntimeAssert.h"
 #include"Tools/BinarySearch.h"
 
 using namespace Graphics::Abstractions;
 namespace GP = Graphics::Primitives;
-#define Assert_NotDeleted_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Deleted, "ShaderClass is deleted", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
 
 void ShaderClass::ShaderDataClass::_SaveShaderDataNames() {
 

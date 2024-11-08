@@ -1,6 +1,7 @@
 #pragma once
 #include"DLL.h"
 #include"Tools/ClassFunctionsAccessController.h"
+#include"Tools/ErrorsSystem.h"
 
 namespace Graphics::Primitives {
 
@@ -10,6 +11,15 @@ namespace Graphics::Primitives {
 		unsigned int ID = 0;
 		mutable bool Deleted = false;
 	public:
+
+		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
+			enum ErrorsEnum {
+				AlreadyDeleted,
+			};
+			ErrorsEnum Error;
+			inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
+		}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
+
 		DLLTREATMENT VertexArrayClass();
 		DLLTREATMENT VertexArrayClass(const VertexArrayClass&& toCopy);
 		DLLTREATMENT void operator=(const VertexArrayClass&& toCopy);

@@ -1,6 +1,5 @@
 
 #include"TextRenderer.h"
-#include"Tools/DebuggingTools.h"
 #include"Graphics/Primitives/Renderer.h"
 #include"Tools/GLDebug.h"
 #include"FreeType/ft2build.h"
@@ -8,6 +7,7 @@
 #include"Shader.h"
 #include FT_FREETYPE_H
 
+using namespace KE2;
 namespace GP = Graphics::Primitives;
 namespace GA = Graphics::Abstractions;
 
@@ -24,9 +24,9 @@ GA::TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const w
     if (FreeTypeLib == nullptr) {
         FreeTypeLib = (void*)(new FT_Library);
 
-        if (FT_Init_FreeType((FT_Library*)FreeTypeLib)) {
-            DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"failed to initialize FreeType library",KURSAVAYAENGINE2_CORE_ERRORS::FAILED_TO_INITIALIZE_LIBRARY });
-        }
+		int FT_InitErrorCode = FT_Init_FreeType((FT_Library*)FreeTypeLib);
+		if (FT_InitErrorCode != 0)
+			ErrorsSystemNamespace::SendError << "Failed to initialize FreeType library, FreeType returned error code :[" << std::to_string(FT_InitErrorCode) << "]" >> ErrorsEnumWrapperStruct(ErrorsEnum::FailedToInitializeFreeType);
     }
 
     {
@@ -46,10 +46,10 @@ GA::TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const w
 
     TEXT_VA.Bind();
     TEXT_VB.Bind();
-    TEXT_VB.SetData(6 * 4 * sizeof(float), nullptr, GP::VertexBufferClass::BufferDataUsageEnum::DynamicDraw);
+    TEXT_VB.SetData(nullptr, 6 * 4 * sizeof(float), GP::VertexBufferClass::BufferReadWriteModeEnum::DynamicDraw);
     TEXT_VB.SetLayout(DynArr<GP::VertexBufferClass::LayoutDataStruct>(
-        GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::BufferDataTypeEnum::Float },
-        GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::BufferDataTypeEnum::Float }));
+        GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
+        GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float }));
     TEXT_VA.Unbind();
 }
 
@@ -88,12 +88,10 @@ GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const 
 { 
     FreeTypeFace = new FT_Face;
 
-    if (FT_New_Face(*(FT_Library*)TextRendererClass::FreeTypeLib, fontDir, 0, (FT_Face*)FreeTypeFace)) {
-        std::string errMsg;
-        errMsg += "FreeType error: failed to open font \"";
-        errMsg += fontDir;
-        errMsg += "\"";
-        DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,errMsg.c_str(),KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
+    {
+        int FT_FontReadingError = FT_New_Face(*(FT_Library*)TextRendererClass::FreeTypeLib, fontDir, 0, (FT_Face*)FreeTypeFace);
+        if (FT_FontReadingError != 0)
+            ErrorsSystemNamespace::SendError << "FreeType failed to read font file and returned error code: [" << std::to_string(FT_FontReadingError) << "]" >> ErrorsEnumWrapperStruct(ErrorsEnum::FreeTypeError_FailedToReadFontFile);
     }
 
     FT_Set_Pixel_Sizes(*(FT_Face*)FreeTypeFace, 0, characterSize);
@@ -119,11 +117,15 @@ GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const 
 
         if (insertInd<Characters.gLength() and Characters[insertInd].UnicodeInd == unicodeInd) continue;
 
-        if (FT_Load_Char(*(FT_Face*)FreeTypeFace, unicodeInd, FT_LOAD_RENDER))
         {
-            DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"FreeType ERROR: FAILED TO LOAD CHAR",KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-            continue;
+            int FT_CharLoadingError = FT_Load_Char(*(FT_Face*)FreeTypeFace, unicodeInd, FT_LOAD_RENDER);
+            if (FT_CharLoadingError != 0) {
+                ErrorsSystemNamespace::SendError << "FreeType failed to load charater with unicode index of: [" << std::to_string(unicodeInd) <<
+                    "] and returned error code: [" << std::to_string(FT_CharLoadingError) << "]" >> ErrorsEnumWrapperStruct(ErrorsEnum::FreeTypeError_FailedToLoadChar);
+                continue;
+            }
         }
+
         FT_Face& face = *(FT_Face*)FreeTypeFace;
 
         unsigned char* newBuffer = new unsigned char[face->glyph->bitmap.width * face->glyph->bitmap.rows];
@@ -143,7 +145,7 @@ GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const 
             Vector2U(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             Vector2I(face->glyph->bitmap_left, face->glyph->bitmap_top),
             (unsigned int)face->glyph->advance.x / 64,
-            Vector2F(0,0),0
+            Vector2F(0.f,0.f),0
             });
     }
 
@@ -204,7 +206,8 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
 
     unsigned int textLen = 0;
     while (textLen != MAX_TEXT_LEN and text[textLen] != L'\0') textLen++;
-    if (textLen == MAX_TEXT_LEN) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning,"Text is too big OR no end symbol was found",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
+    if (textLen == MAX_TEXT_LEN) ErrorsSystemNamespace::SendError << "Provided text is too big or end symbol was not found, current limit on symbols is: [" <<
+        std::to_string(MAX_TEXT_LEN) << "]" >> ErrorsEnumWrapperStruct(ErrorsEnum::TextTooBigOrNoEndFound);
 
     std::vector<unsigned int> charsInds; charsInds.resize(textLen);//adding +1 to mark unexisting characters, ind=0 will mean that character not found
     for (unsigned int ci = 0; ci < textLen; ci++) {
@@ -284,7 +287,7 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
             lbp[0],lbp[1],lbc[0],lbc[1],
         };
 
-		TEXT_VB.SetSubData(0, 6 * 4 * sizeof(float), data);
+        TEXT_VB.SetSubData(0, (byte*)data, 6 * 4 * sizeof(float));
         GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, 6);
 
 

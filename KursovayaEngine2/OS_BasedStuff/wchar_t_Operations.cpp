@@ -1,6 +1,4 @@
 #include"wchar_t_Operations.h"
-#include"Tools/DebuggingTools.h"
-#include"Tools/ErrorCodes.h"
 #include"Windows.h"
 
 

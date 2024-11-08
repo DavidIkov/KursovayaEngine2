@@ -3,15 +3,15 @@
 #include"Tools/GLDebug.h"
 #include"Tools/ReadFromFile.h"
 #include"glad/glad.h"
-#include"Tools/DebuggingTools.h"
-#include"Tools/DebugRuntimeAssert.h"
 #include"Graphics/Globals.h"
 #include"FrameBuffer.h"
 
+using namespace KE2;
 using namespace Graphics::Primitives;
-#define Assert_NotDeleted_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Deleted, "TextureClass is deleted", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+
+#define Assert_NotDeleted_Macro if(Deleted) ErrorsSystemNamespace::SendError<<"Texture is already deleted">>ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyDeleted);
 #if defined KE2_Debug
-#define Assert_Binded_Macro if (DebugRuntimeAssert(DebuggingTools::ErrorTypes::Warning, BindedInstances.gTextureID() == ID, "Texture is not binded", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION)) Bind();
+#define Assert_Binded_Macro if(BindedInstances.gTextureID() != ID) { ErrorsSystemNamespace::SendWarning<<"Texture is not binded">>ErrorsSystemNamespace::EndOfWarning; Bind(); }
 #else
 #define Assert_Binded_Macro
 #endif
@@ -163,9 +163,8 @@ TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vect
 
     int width, height, textureChannelsAmount;
     unsigned char* textureData = stbi_load(filePath, &width, &height, &textureChannelsAmount, 0);
-    if (textureData == nullptr) {
-        DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "failed to load image", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-    }
+    if (textureData == nullptr)
+        ErrorsSystemNamespace::SendError << "stb_image error" >> ErrorsEnumWrapperStruct(ErrorsEnum::STB_IMAGE_Failed);
 
     if (writeSizePtr != nullptr) *writeSizePtr = Vector3U(width, height, 0);
     if (writeAnonDynArr != nullptr) writeAnonDynArr->SetData(textureData, width * height * sizeof(unsigned char));
@@ -195,7 +194,7 @@ TextureClass::~TextureClass() {
         Deleted = true;
     }
 }
-void TextureClass::CopyFromTexture(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount) {
+void TextureClass::CopySubData(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount) {
     Assert_NotDeleted_Macro;
 
     glSC(glCopyImageSubData(srcTex.ID, srcTex.GL_TexEnum, 0, offsetInSource[0], offsetInSource[1], offsetInSource[2],
@@ -249,9 +248,7 @@ void TextureClass::GenerateMipmaps() {
 void TextureClass::GetData(void* buffer, DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const {
     Assert_NotDeleted_Macro;
     Assert_Binded_Macro;
-#if defined KE2_Debug
-    if (buffer == nullptr) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"buffer shouldnt be nullptr",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
-#endif
+
     glSC(glGetTexImage(GL_TexEnum, 0, _DataFormatOnCPU_SwitchCase(dataFormat), _DataTypeOnCPU_SwitchCase(dataType), buffer));
 }
 void TextureClass::GetSubData(Vector3U offset, void* buffer, Vector3U pixelsAmount, DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, 

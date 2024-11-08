@@ -27,9 +27,7 @@ void AnonDynArr::SetData(byte* data, unsigned int dataSizeInBytes) {
 	byte* overlapStart = nullptr; unsigned int overlapLen = 0;
 	GetOverlappingMemoryRegion((void const**)&overlapStart, &overlapLen, Arr, ArrSizeInBytes, data, dataSizeInBytes);
 	if (overlapStart != nullptr) {
-		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,
-			"memory is overlaping",
-			KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
+		KE2::ErrorsSystemNamespace::SendError << "memory is overlaping" >> ErrorsEnumWrapperStruct(ErrorsEnum::MemoryIsOverlaping);
 		return;
 	}
 #endif

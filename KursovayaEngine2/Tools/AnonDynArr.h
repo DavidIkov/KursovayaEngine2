@@ -4,7 +4,7 @@
 #include"DLL.h"
 #include"AlignmentDummyClass.h"
 #include"GetOverlappingMemoryRegion.h"
-#include"DebuggingTools.h"
+#include"Tools/ErrorsSystem.h"
 typedef unsigned char byte;
 
 
@@ -13,6 +13,14 @@ class AnonDynArr {
 	unsigned int ArrSizeInBytes = 0;
 	mutable bool Deleted = false;
 public:
+
+	struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
+		enum ErrorsEnum {
+			MemoryIsOverlaping,
+		}; ErrorsEnum Error;
+		inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
+	}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
+
 	template<typename Type> struct TypeContainer {};
 	DLLTREATMENT AnonDynArr();
 	//takes responsibility for deleting "data", "data" should be allocated with new as array
@@ -35,9 +43,7 @@ public:
 		byte* overlapStart = nullptr; unsigned int overlapLen = 0;
 		GetOverlappingMemoryRegion((void const**)&overlapStart, &overlapLen, Arr, ArrSizeInBytes, toCopy.Arr, toCopy.ArrSizeInBytes);
 		if (overlapStart != nullptr) {
-			DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,
-				"memory is overlaping",
-				KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION });
+			KE2::ErrorsSystemNamespace::SendError << "memory is overlaping" >> ErrorsEnumWrapperStruct(ErrorsEnum::MemoryIsOverlaping);
 			return;
 		}
 #endif

@@ -1,7 +1,7 @@
 #pragma once
 #include<utility>
 #include<cstring>
-#include"DebuggingTools.h"
+#include"Tools/ErrorsSystem.h"
 #include"AlignmentDummyClass.h"
 #include"DLL.h"
 typedef unsigned char byte;
@@ -91,6 +91,15 @@ so 3 unnecesary "responsibility constructors" will be called
 template<typename StoreType>
 class DynArr {
 
+public:
+	struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
+		enum ErrorsEnum {
+			IndexWentOutOfBounds,
+		}; ErrorsEnum Error;
+		inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
+	}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
+private:
+
 	static_assert(std::is_constructible_v<StoreType, StoreType&&>, "move constructor is not defined in current type, but its required");
 
 	friend class StalkerClass;
@@ -106,7 +115,7 @@ private:
 	void _CheckIfIndexInBounds(unsigned int ind, unsigned int maxInd) const {
 #if defined KE2_Debug
 		if (ind > maxInd)
-			DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "index went out of bounds", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
+			KE2::ErrorsSystemNamespace::SendError << "index went out of bounds" >> ErrorsEnumWrapperStruct(ErrorsEnum::IndexWentOutOfBounds);
 #endif
 	}
 

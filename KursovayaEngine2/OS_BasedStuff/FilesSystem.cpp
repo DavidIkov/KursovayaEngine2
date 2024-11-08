@@ -1,5 +1,4 @@
 #include"FilesSystem.h"
-#include"Tools/DebuggingTools.h"
 #include<iostream>
 #include"Tools/Time.h"
 
@@ -16,7 +15,7 @@ std::string FilesSystemNamespace::SaveFileToString(const wchar_t* filePath) {
 std::wstring FilesSystemNamespace::SaveFileToWString(const wchar_t* filePath) {
 	FilesSystemNamespace::OpenedFileW file(filePath);
 	std::wstring retStr;
-	std::wstring	curStr;
+	std::wstring curStr;
 	while (file.GetNextLine(curStr)) {
 		retStr += curStr + L'\n';
 	}
@@ -33,13 +32,7 @@ void FilesSystemNamespace::OpenedFile::GoToStartOfStream() {
 FilesSystemNamespace::OpenedFile::OpenedFile(const wchar_t* filePath) :FilePath(filePath), StartTime(TimeNamespace::GetTime()) {
 
 	FileStream.open(filePath);
-	if (FileStream.fail()) {
-		std::wstring errMsg;
-		errMsg += L"Failed to open file \"";
-		errMsg += filePath;
-		errMsg += L'\"';
-		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,errMsg.c_str(),KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-	}
+	if (FileStream.fail()) KE2::ErrorsSystemNamespace::SendError << "Failed to open file at: [" << filePath << "]" >> FailedToOpenFile_Error();
 
 	std::wcout << L"Started reading file \"" << filePath << L"\"...\n";
 
@@ -60,13 +53,7 @@ void FilesSystemNamespace::OpenedFileW::GoToStartOfStream() {
 FilesSystemNamespace::OpenedFileW::OpenedFileW(const wchar_t* filePath) :FilePath(filePath), StartTime(TimeNamespace::GetTime()) {
 
 	FileStream.open(filePath);
-	if (FileStream.fail()) {
-		std::wstring errMsg;
-		errMsg += L"Failed to open file \"";
-		errMsg += filePath;
-		errMsg += L'\"';
-		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,errMsg.c_str(),KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-	}
+	if (FileStream.fail()) KE2::ErrorsSystemNamespace::SendError << "Failed to open file at: [" << filePath << "]" >> FailedToOpenFile_Error();
 
 	std::wcout << L"Started reading file \"" << filePath << L"\"...\n";
 

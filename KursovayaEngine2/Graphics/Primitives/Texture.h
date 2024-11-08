@@ -3,6 +3,7 @@
 #include"Maths/Vector.h"
 #include"Tools/ClassFunctionsAccessController.h"
 #include"Tools/AnonDynArr.h"
+#include"Tools/ErrorsSystem.h"
 
 namespace Graphics::Primitives {
     class TextureClass {
@@ -78,6 +79,15 @@ namespace Graphics::Primitives {
         void _UpdateSettings(const SettingsStruct& sets);
     public:
 
+        struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
+            enum ErrorsEnum {
+                AlreadyDeleted,
+                STB_IMAGE_Failed,
+            };
+            ErrorsEnum Error;
+            inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
+        }; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
+
         DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, AnonDynArr* writeAnonDynArr, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
         DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
         DLLTREATMENT TextureClass(const TextureClass&& toCopy);
@@ -92,7 +102,7 @@ namespace Graphics::Primitives {
 
         //if you dont use some axes in pixelsAmounts then dont leave them 0, use 1
         //make sure that your texture have enough pixels for copying
-        DLLTREATMENT void CopyFromTexture(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount);
+        DLLTREATMENT void CopySubData(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount);
 
 		//this function is slow since it will get data from gpu to cpu
         //buffer should not be nullptr, it should point to already allocated memory

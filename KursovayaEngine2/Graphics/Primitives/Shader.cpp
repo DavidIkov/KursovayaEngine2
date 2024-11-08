@@ -1,16 +1,15 @@
 #include"Shader.h"
 #include"glad/glad.h"
-#include"Tools/DebuggingTools.h"
 #include<string>
 #include"Tools/GLDebug.h"
-#include"WinOS/FilesSystem.h"
-#include"Tools/DebugRuntimeAssert.h"
+#include"OS_BasedStuff/FilesSystem.h"
 
+using namespace KE2;
 using namespace Graphics::Primitives;
 
-#define Assert_NotDeleted_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Deleted, "Shader is deleted", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#define Assert_NotDeleted_Macro if (Deleted) ErrorsSystemNamespace::SendError<<"Shader is already deleted">>ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyDeleted);
 #if defined KE2_Debug
-#define Assert_NotCompiled_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Compiled, "Shader is already compiled", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#define Assert_NotCompiled_Macro if (Compiled) ErrorsSystemNamespace::SendError<<"Shader is already compiled">>ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyCompiled);
 #else
 #define Assert_NotCompiled_Macro
 #endif
@@ -48,15 +47,14 @@ void ShaderClass::Compile() {
 #if defined KE2_Debug
 	Compiled = true;
 	{//check for compilation
-		int success;
-		char info[512];
-		glSC(glGetShaderiv(ID, GL_COMPILE_STATUS, &success));
-		if (!success) {
-			glSC(glGetShaderInfoLog(ID, 512, 0, info));
-			std::string msg = (ShaderType == TypesEnum::Fragment) ? "fragment " : ((ShaderType == TypesEnum::Vertex) ? "vertex " : "geometry ");
-			msg += "shader compilation error: ";
-			msg += info;
-			DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, msg.c_str(), KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
+		int success = 0; glSC(glGetShaderiv(ID, GL_COMPILE_STATUS, &success));
+		if (success == false) {
+			int infoLen = 0; glSC(glGetShaderiv(ID, GL_INFO_LOG_LENGTH, &infoLen));
+			std::string info(infoLen - 1, '\0');
+			glSC(glGetShaderInfoLog(ID, infoLen, 0, (char*)info.c_str()));
+			ErrorsSystemNamespace::SendError << "Failed to compile " <<
+				((ShaderType == TypesEnum::Fragment) ? "fragment" : ((ShaderType == TypesEnum::Vertex) ? "vertex" : "geometry")) <<
+				" shader, OpenGL returned a message: [" << info << "]" >> ErrorsEnumWrapperStruct(ErrorsEnum::FailedToCompile);
 		}
 	}
 #endif

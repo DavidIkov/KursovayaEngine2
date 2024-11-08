@@ -1,5 +1,4 @@
 #include"Globals.h"
-#include"Tools/DebuggingTools.h"
 
 #if defined KE2_Debug
 

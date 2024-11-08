@@ -18,9 +18,6 @@
     <ClCompile Include="Dependencies\glad\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tools\DebuggingTools.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Graphics\Primitives\ShaderProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -34,9 +31,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Input\Keyboard.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tools\UniqueKeysSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tools\Event.cpp">
@@ -72,10 +66,10 @@
     <ClCompile Include="Graphics\Primitives\VertexArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WinOS\FileExplorerDialog.cpp">
+    <ClCompile Include="OS_BasedStuff\FileExplorerDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WinOS\wchar_t_Operations.cpp">
+    <ClCompile Include="OS_BasedStuff\wchar_t_Operations.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Input\Mouse.cpp">
@@ -90,13 +84,10 @@
     <ClCompile Include="KE2_Manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WinOS\FilesSystem.cpp">
+    <ClCompile Include="OS_BasedStuff\FilesSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\Globals.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tools\DebugRuntimeAssert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\Abstractions\Texture.cpp">
@@ -109,6 +100,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tools\GetOverlappingMemoryRegion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Abstractions\VertexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools\ErrorsSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -129,9 +126,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Dependencies\glfw\3.4_x64\include\GLFW\glfw3native.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tools\DebuggingTools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\Primitives\ShaderProgram.h">
@@ -158,13 +152,7 @@
     <ClInclude Include="Tools\Event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tools\UniqueKeysSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Windows\Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tools\ErrorCodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Windows\WindowsManager.h">
@@ -500,10 +488,10 @@
     <ClInclude Include="Dependencies\FreeType\ft2build.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WinOS\FileExplorerDialog.h">
+    <ClInclude Include="OS_BasedStuff\FileExplorerDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WinOS\wchar_t_Operations.h">
+    <ClInclude Include="OS_BasedStuff\wchar_t_Operations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Input\Mouse.h">
@@ -536,7 +524,7 @@
     <ClInclude Include="Tools\UniversalLambda.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WinOS\FilesSystem.h">
+    <ClInclude Include="OS_BasedStuff\FilesSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tools\BinarySearch.h">
@@ -549,9 +537,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\Globals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tools\DebugRuntimeAssert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\Abstractions\Shader.h">
@@ -567,6 +552,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tools\GetOverlappingMemoryRegion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\ErrorsSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\UsefullMacros\RemoveBrackets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\UsefullMacros\ApplyMacroInLoop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\UsefullMacros\DelayMacro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

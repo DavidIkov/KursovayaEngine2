@@ -1,14 +1,12 @@
 #include"VertexArray.h"
 #include"Tools/GLDebug.h"
-#include"Tools/DebuggingTools.h"
 #include"glad/glad.h"
-#include"Tools/ErrorCodes.h"
-#include"Tools/DebugRuntimeAssert.h"
 #include"Graphics/Globals.h"
 
+using namespace KE2;
 using namespace Graphics::Primitives;
 
-#define Assert_NotDeleted_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Deleted, "VertexArray is deleted", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#define Assert_NotDeleted_Macro if (Deleted) ErrorsSystemNamespace::SendError<<"VertexArray is already deleted">>ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyDeleted);
 
 VertexArrayClass::VertexArrayClass() {
     glSC(glGenVertexArrays(1, &ID));

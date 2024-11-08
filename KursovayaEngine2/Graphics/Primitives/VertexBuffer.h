@@ -4,6 +4,7 @@
 #include"Tools/ClassFunctionsAccessController.h"
 #include"Tools/DynArr.h"
 #include"Tools/AnonDynArr.h"
+#include"Tools/ErrorsSystem.h"
 
 namespace Graphics::Primitives {
 
@@ -14,15 +15,24 @@ namespace Graphics::Primitives {
 		unsigned short int EnabledAttributesAmount = 0;
 
 	public:
-		enum class BufferDataUsageEnum :unsigned short int {
+
+		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
+			enum ErrorsEnum {
+				AlreadyDeleted,
+				ChangingLayoutOfVertexBufferWithoutAnyVertexArrayBinded,
+				BufferReadWriteModeInNone,
+			};
+			ErrorsEnum Error;
+			inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
+		};  using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
+
+		enum class BufferReadWriteModeEnum :unsigned char {
+			None,
 			StreamDraw, StreamRead, StreamCopy,
 			StaticDraw, StaticRead, StaticCopy,
 			DynamicDraw, DynamicRead, DynamicCopy,
 		};
-		enum class BufferDataTypeEnum :unsigned short int {
-			Byte, UnsignedByte, Float, Int, UnsignedInt
-		};
-
+		
 		DLLTREATMENT VertexBufferClass();
 		DLLTREATMENT VertexBufferClass(const VertexBufferClass&) = delete;
 		DLLTREATMENT VertexBufferClass(const VertexBufferClass&& toCopy);
@@ -33,11 +43,21 @@ namespace Graphics::Primitives {
 
 		struct LayoutDataStruct {
 			unsigned int ComponentsAmount;
-			BufferDataTypeEnum DataType;
+			enum class DataTypeEnum :unsigned char {
+				Byte, UnsignedByte, Float, Int, UnsignedInt
+			};
+			DataTypeEnum DataType;
 		};
 		DLLTREATMENT void SetLayout(const DynArr<LayoutDataStruct>& layout);
-		DLLTREATMENT void SetData(const AnonDynArr& data, const BufferDataUsageEnum usage);
-		DLLTREATMENT void SetSubData(unsigned int offsetInBytes, const AnonDynArr& data);
+
+		DLLTREATMENT void SetData(const void* data, unsigned int dataSizeInBytes, const BufferReadWriteModeEnum bufferReadWriteMode);
+		DLLTREATMENT void SetSubData(unsigned int offsetInBytes, const void* data, unsigned int dataSizeInBytes);
+
+		DLLTREATMENT void CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy);
+
+		//data should point to already allocated memory
+		DLLTREATMENT void GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data);
+
 		DLLTREATMENT void Bind();
 		DLLTREATMENT static void Unbind();
 
@@ -47,6 +67,8 @@ namespace Graphics::Primitives {
 			CFAC_FuncConstr(SetLayout)
 			CFAC_FuncConstr(SetData)
 			CFAC_FuncConstr(SetSubData)
+			CFAC_FuncConstr(CopySubData)
+			CFAC_FuncConstr(GetSubData)
 			CFAC_FuncConstr(Bind)
 			CFAC_FuncConstr(Unbind)
 		);

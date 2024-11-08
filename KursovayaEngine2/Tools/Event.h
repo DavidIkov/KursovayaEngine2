@@ -2,6 +2,7 @@
 #include"DLL.h"
 #include"DynArr.h"
 #include"functional"
+#include"ErrorsSystem.h"
 
 class EventConnectionsHandlerClass;
 
@@ -63,6 +64,15 @@ private:
 
 private: ConnectionID _ConnectToEvent(const EventClass* ev, float priority, unsigned int priorityInsertInd, std::function<void(void*)>&& func, std::function<bool(void*)>&& checkFunc) const;
 public:
+
+	struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
+		enum ErrorsEnum {
+			IncorrectID,
+		};
+		ErrorsEnum Error;
+		inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
+	}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
+
 	DLLTREATMENT ConnectionID ConnectToEvent(const EventClass* ev, std::function<void(void*)>&& func) const;
 	DLLTREATMENT ConnectionID ConnectToEvent(const EventClass* ev, std::function<void(void*)>&& func, std::function<bool(void*)>&& checkFunc) const;
 	DLLTREATMENT ConnectionID ConnectToEvent(const EventClass* ev, float priority, std::function<void(void*)>&& func) const;

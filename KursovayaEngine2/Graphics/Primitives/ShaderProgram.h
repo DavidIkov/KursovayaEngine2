@@ -12,6 +12,19 @@ namespace Graphics::Primitives {
 #endif
 		mutable bool Deleted = false;
 	public:
+
+		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
+			enum ErrorsEnum {
+				AlreadyDeleted,
+				AlreadyLinked,
+				NotLinked,
+				FailedToLinkShaders,
+				UniformNameIsTooLarge,
+			};
+			ErrorsEnum Error;
+			inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
+		}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
+
 		DLLTREATMENT ShaderProgramClass();
 		DLLTREATMENT ShaderProgramClass(const ShaderProgramClass&& toCopy);
 		DLLTREATMENT void operator=(const ShaderProgramClass&& toCopy);

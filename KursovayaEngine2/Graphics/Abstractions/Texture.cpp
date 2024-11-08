@@ -1,5 +1,4 @@
 #include"Texture.h"
-#include"Tools/DebugRuntimeAssert.h"
 
 using namespace Graphics::Abstractions;
 namespace GP = Graphics::Primitives;
@@ -13,10 +12,10 @@ TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, con
 TextureClass::TextureClass(const TextureClass& toCopy) :
 	Size(toCopy.Size), Settings(toCopy.Settings), DataSettings(toCopy.DataSettings),
 	GP::TextureClass(Dimensions, Size, nullptr, Settings, DataSettings) {
-	GP::TextureClass::CopyFromTexture(toCopy, Vector3U(0u), Vector3U(0u), Size);
+	GP::TextureClass::CopySubData(toCopy, Vector3U(0u), Vector3U(0u), Size);
 };
 TextureClass::TextureClass(const TextureClass&& toCopy):
-	GP::TextureClass(std::move(toCopy)), Size(toCopy.Size), DataFormatOnGPU_WasUpdated(toCopy.DataFormatOnGPU_WasUpdated),
+	GP::TextureClass(std::move(toCopy)), Size(toCopy.Size),
 	Settings(toCopy.Settings), DataSettings(toCopy.DataSettings) { toCopy.Deleted = true; }
 TextureClass::~TextureClass() {
 	Deleted = true;
@@ -25,14 +24,13 @@ void TextureClass::operator=(const TextureClass& toCopy) {
 	Delete();
 	Deleted = false;
 	
-	DataFormatOnGPU_WasUpdated = toCopy.DataFormatOnGPU_WasUpdated;
 	Settings = toCopy.Settings;
 	DataSettings = toCopy.DataSettings;
 	Dimensions = toCopy.Dimensions;
-	if (Size != toCopy.Size and not DataFormatOnGPU_WasUpdated)
+	if (Size != toCopy.Size)
 		GP::TextureClass::SetData(Size, nullptr, DataSettings);
 	Size = toCopy.Size;
-	GP::TextureClass::CopyFromTexture(toCopy, Vector3U(0u), Vector3U(0u), Size);
+	GP::TextureClass::CopySubData(toCopy, Vector3U(0u), Vector3U(0u), Size);
 }
 void TextureClass::operator=(const TextureClass&& toCopy) {
 	Delete();
@@ -47,7 +45,7 @@ void TextureClass::operator=(const TextureClass&& toCopy) {
 }
 void TextureClass::ChangeData(Vector3U newSize, const void* data) {
 
-	if (not DataFormatOnGPU_WasUpdated and newSize == Size)
+	if (newSize == Size)
 		GP::TextureClass::SetSubData(Vector3U(0u), newSize, data, DataSettings.DataFormatOnCPU, DataSettings.DataTypeOnCPU);
 	else {
 		GP::TextureClass::SetData(newSize, data, DataSettings);
@@ -55,29 +53,16 @@ void TextureClass::ChangeData(Vector3U newSize, const void* data) {
 	}
 }
 void TextureClass::ChangeData(const void* data) {
-
-	if (DataFormatOnGPU_WasUpdated)
-		GP::TextureClass::SetData(Size, data, DataSettings);
-	else
-		GP::TextureClass::SetSubData(Vector3U(0u), Size, data, DataSettings.DataFormatOnCPU, DataSettings.DataTypeOnCPU);
+	ChangeData(Size, data);
 }
 void TextureClass::ChangeSubData(Vector3U offset, const void* data, Vector3U size) {
-
-	if (DataFormatOnGPU_WasUpdated)
-		GP::TextureClass::SetData(Size, data, DataSettings);
-	else
-		GP::TextureClass::SetSubData(offset, size, data, DataSettings.DataFormatOnCPU, DataSettings.DataTypeOnCPU);
+	GP::TextureClass::SetSubData(offset, size, data, DataSettings.DataFormatOnCPU, DataSettings.DataTypeOnCPU);
 }
-void TextureClass::CopyDataFromOtherTexture(const TextureClass& toCopy) {
-	if (DataFormatOnGPU_WasUpdated or toCopy.Size[0] < Size[0] or toCopy.Size[1] < Size[1] or toCopy.Size[2] < Size[2]) {
-		Size = Vector3U((toCopy.Size[0] < Size[0]) ? toCopy.Size[0] : Size[0],
-			(toCopy.Size[1] < Size[1]) ? toCopy.Size[1] : Size[1], (toCopy.Size[2] < Size[2]) ? toCopy.Size[2] : Size[2]);
-		GP::TextureClass::SetData(Size, nullptr, DataSettings);
-	}
-	GP::TextureClass::CopyFromTexture(toCopy, Vector3U(0u), Vector3U(0u), Size);
+void TextureClass::AllocatePixels(Vector3U newSize) {
+	GP::TextureClass::SetData(newSize, nullptr, DataSettings);
 }
-void TextureClass::CopySubDataFromOtherTexture(const TextureClass& srcTex, Vector3U offsetInSrc, Vector3U offsetInDst, Vector3U pixelsAmount) {
-	GP::TextureClass::CopyFromTexture(srcTex, offsetInSrc, offsetInDst, pixelsAmount);
+void TextureClass::CopySubData(const TextureClass& srcTex, Vector3U offsetInSrc, Vector3U offsetInDst, Vector3U pixelsAmount) {
+	GP::TextureClass::CopySubData(srcTex, offsetInSrc, offsetInDst, pixelsAmount);
 }
 void TextureClass::GetData(void* buffer) {
 	GP::TextureClass::GetData(buffer, DataSettings.DataFormatOnCPU, DataSettings.DataTypeOnCPU);
@@ -110,7 +95,14 @@ void TextureClass::sSettings(SettingsStruct newSets) {
 	sSettings_DepthStencilReadMode(newSets.DepthStencilReadMode);
 }
 
-void TextureClass::sDataSettings_DataFormatOnGPU(DataSettingsStruct::DataFormatOnGPU_Enum dataFormat) { DataSettings.DataFormatOnGPU = dataFormat; DataFormatOnGPU_WasUpdated = true; }
+void TextureClass::SetDataSettings_DataFormatOnGPU(bool instantUpdate, DataSettingsStruct::DataFormatOnGPU_Enum dataFormat) {
+	DataSettings.DataFormatOnGPU = dataFormat;
+	if (instantUpdate) {
+		GP::TextureClass tempTex(Dimensions, Size, nullptr, Settings, DataSettings);
+		tempTex.CopySubData(*this, Vector3U(0u), Vector3U(0u), Size);
+		GP::TextureClass::operator=(std::move(tempTex));
+	}
+}
 TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum TextureClass::gDataSettings_DataFormatOnGPU() { return DataSettings.DataFormatOnGPU; }
 void TextureClass::sDataSettings_DataFormatOnCPU(DataSettingsStruct::DataFormatOnCPU_Enum dataFormat) { DataSettings.DataFormatOnCPU = dataFormat; }
 TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum TextureClass::gDataSettings_DataFormatOnCPU() { return DataSettings.DataFormatOnCPU; }
@@ -118,8 +110,8 @@ void TextureClass::sDataSettings_DataTypeOnCPU(DataSettingsStruct::DataTypeOnCPU
 TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum TextureClass::gDataSettings_DataTypeOnCPU() { return DataSettings.DataTypeOnCPU; }
 
 TextureClass::DataSettingsStruct TextureClass::gDataSettings() { return DataSettings; }
-void TextureClass::sDataSettings(DataSettingsStruct newDataSets) { 
-	sDataSettings_DataFormatOnGPU(newDataSets.DataFormatOnGPU);
+void TextureClass::sDataSettings(bool instantUpdateOfDataFormatOnGPU, DataSettingsStruct newDataSets) { 
+	SetDataSettings_DataFormatOnGPU(instantUpdateOfDataFormatOnGPU, newDataSets.DataFormatOnGPU);
 	sDataSettings_DataFormatOnCPU(newDataSets.DataFormatOnCPU);
 	sDataSettings_DataTypeOnCPU(newDataSets.DataTypeOnCPU);
 }
@@ -127,12 +119,6 @@ void TextureClass::sDataSettings(DataSettingsStruct newDataSets) {
 
 void TextureClass::Delete() {
 	this->~TextureClass();
-}
-void TextureClass::Bind(unsigned int bindingInd) {
-	GP::TextureClass::Bind(bindingInd);
-}
-void TextureClass::Unbind() {
-	GP::TextureClass::Unbind();
 }
 
 const GP::TextureClass& TextureClass::gPrimitiveTexture() {

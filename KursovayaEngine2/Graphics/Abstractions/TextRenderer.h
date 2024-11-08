@@ -42,6 +42,16 @@ namespace Graphics::Abstractions {
 
 	public:
 
+		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
+			enum ErrorsEnum {
+				FailedToInitializeFreeType,
+				TextTooBigOrNoEndFound,
+				FreeTypeError_FailedToLoadChar,
+				FreeTypeError_FailedToReadFontFile,
+			}; ErrorsEnum Error;
+			inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
+		}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
+
 		DLLTREATMENT TextRendererClass(const wchar_t* vertexShaderDir, const wchar_t* fragmentShaderDir);
 		DLLTREATMENT ~TextRendererClass();
 		DLLTREATMENT StalkerClass AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters);

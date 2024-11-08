@@ -1,6 +1,7 @@
 #pragma once
 #include"DLL.h"
 #include"Tools/ClassFunctionsAccessController.h"
+#include"Tools/ErrorsSystem.h"
 
 namespace Graphics::Primitives {
 
@@ -19,6 +20,17 @@ namespace Graphics::Primitives {
 		TypesEnum ShaderType;
 #endif
 	public:
+
+		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
+			enum ErrorsEnum {
+				AlreadyDeleted,
+				AlreadyCompiled,
+				FailedToCompile,
+			};
+			ErrorsEnum Error;
+			inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
+		}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
+
 		DLLTREATMENT ShaderClass(const wchar_t* filePath, TypesEnum typ);
 		DLLTREATMENT ShaderClass(TypesEnum typ, const char* code);
 		DLLTREATMENT ShaderClass(const ShaderClass&& toCopy);

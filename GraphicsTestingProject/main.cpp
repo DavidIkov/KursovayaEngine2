@@ -1,6 +1,6 @@
 
 #include<iostream>
-#include"Tools/DebuggingTools.h"
+#include"Tools/ErrorsSystem.h"
 #include"KE2_Manager.h"
 #include"Windows/Window.h"
 #include"Graphics/Abstractions/TextRenderer.h"
@@ -26,7 +26,7 @@ unsigned int ProgramExitCode = 0;
 int main()
 {
 
-    InitializeKE2();
+    KE2::Manager::InitializeKE2();
     
     try {
 
@@ -94,25 +94,24 @@ int main()
         GP::VertexArrayClass VA1;
 
         GP::VertexBufferClass VB1;
-        VB1.SetData((unsigned int)(VB1_DATA.size()*sizeof(float)), &VB1_DATA[0], GP::VertexBufferClass::BufferDataUsageEnum::StaticDraw);
+        VB1.SetData((byte*)&VB1_DATA[0], VB1_DATA.size() * sizeof(float), GP::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw);
         VB1.SetLayout(DynArr<GP::VertexBufferClass::LayoutDataStruct>(
-            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::BufferDataTypeEnum::Float },
-            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::BufferDataTypeEnum::Float },
-            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::BufferDataTypeEnum::Float },
-            GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::BufferDataTypeEnum::Float }
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float }
         ));
-
         VA1.Unbind();
 
         GP::VertexArrayClass VA2;
         
         GP::VertexBufferClass VB2;
-        VB2.SetData((unsigned int)(VB2_DATA.size() * sizeof(float)), &VB2_DATA[0], GP::VertexBufferClass::BufferDataUsageEnum::StaticDraw);
+        VB2.SetData((byte*)&VB2_DATA[0],VB2_DATA.size() * sizeof(float), GP::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw);
 		VB2.SetLayout(DynArr<GP::VertexBufferClass::LayoutDataStruct>(
-            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::BufferDataTypeEnum::Float },
-            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::BufferDataTypeEnum::Float },
-            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::BufferDataTypeEnum::Float },
-            GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::BufferDataTypeEnum::Float }
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float }
         ));
         VA2.Unbind();
 
@@ -121,9 +120,9 @@ int main()
         GP::VertexArrayClass QUAD_VA;
 
         GP::VertexBufferClass QUAD_VB;
-        QUAD_VB.SetData((unsigned int)(quadVBD.size()*sizeof(float)), &quadVBD[0], GP::VertexBufferClass::BufferDataUsageEnum::StaticDraw);
+        QUAD_VB.SetData((byte*)&quadVBD[0], quadVBD.size() * sizeof(float), GP::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw);
         QUAD_VB.SetLayout(DynArr<GP::VertexBufferClass::LayoutDataStruct>(
-            GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::BufferDataTypeEnum::Float }
+            GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float }
         ));
 
         QUAD_VA.Unbind();
@@ -380,8 +379,9 @@ int main()
         }
 
     }
-    catch (KURSAVAYAENGINE2_CORE_ERRORS& err) { ProgramExitCode = (unsigned int)err; }
+    catch (KE2::ErrorsSystemNamespace::AnyError&) {}
+    catch (...){}
 
-	UninitializeKE2();
+	KE2::Manager::UninitializeKE2();
     return ProgramExitCode;
 }

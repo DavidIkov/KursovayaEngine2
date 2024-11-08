@@ -1,14 +1,12 @@
 #include"RenderBuffer.h"
 #include"glad/glad.h"
 #include"Tools/GLDebug.h"
-#include"Tools/DebuggingTools.h"
-#include"Tools/ErrorCodes.h"
 #include"Graphics/Globals.h"
-#include"Tools/DebugRuntimeAssert.h"
 
+using namespace KE2;
 using namespace Graphics::Primitives;
 
-#define Assert_NotDeleted_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Deleted, "RenderBuffer is deleted", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#define Assert_NotDeleted_Macro if (Deleted) ErrorsSystemNamespace::SendError<<"RenderBuffer is already deleted">>ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyDeleted);
 
 RenderBufferClass::RenderBufferClass(unsigned int width, unsigned int height, bool createDepthBuffer, bool createStencilBuffer) {
     glSC(glGenRenderbuffers(1, &ID));
@@ -17,8 +15,8 @@ RenderBufferClass::RenderBufferClass(unsigned int width, unsigned int height, bo
     if (createDepthBuffer and createStencilBuffer) { glSC(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height)); }
     else if (createDepthBuffer and not createStencilBuffer) { glSC(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height)); }
 #if defined KE2_Debug
-    else if (not createDepthBuffer and createStencilBuffer) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"cant create RenderBuffer with stencil buffer but without depth buffer",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
-    else DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"cant create RenderBuffer without any buffers",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
+    else if (not createDepthBuffer and createStencilBuffer) ErrorsSystemNamespace::SendError << "cant create RenderBuffer with stencil buffer but without depth buffer" >> ErrorsEnumWrapperStruct(ErrorsEnum::StencilBufferWithoutDepthBuffer);
+    else ErrorsSystemNamespace::SendError << "cant create RenderBuffer without any buffers" >> ErrorsEnumWrapperStruct(ErrorsEnum::NoBuffers);
 #endif
 }
 RenderBufferClass::RenderBufferClass(const RenderBufferClass&& toCopy) {

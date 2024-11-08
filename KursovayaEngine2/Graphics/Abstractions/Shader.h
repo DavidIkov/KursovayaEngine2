@@ -36,6 +36,14 @@ namespace Graphics::Abstractions {
 		void(*UpdShaderDataFunc)(void* ptrToCustomStorage, ShaderClass* ptrToShader);
 		void* PtrToCustomStorageOfShaderDataUpdaterFunc;
 	public:
+
+		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
+			enum ErrorsEnum {
+				AlreadyDeleted,
+			}; ErrorsEnum Error;
+			inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
+		}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
+
 		//if updShaderDataFuncPtr is nullptr then function wont be called
 		DLLTREATMENT ShaderClass(const wchar_t* vertexShaderPath, const wchar_t* fragmentShaderPath, void* ptrToCustomStorageOfShaderDataUpdaterFunc, void(*updShaderDataFuncPtr)(void*, ShaderClass*));
 		//if updShaderDataFuncPtr is nullptr then function wont be called

@@ -1,17 +1,19 @@
 #include"FrameBuffer.h"
 #include"glad/glad.h"
 #include"Tools/GLDebug.h"
-#include"Tools/DebuggingTools.h"
-#include"Tools/ErrorCodes.h"
 #include"Graphics/Globals.h"
-#include"Tools/DebugRuntimeAssert.h"
 
+using namespace KE2;
 using namespace Graphics::Primitives;
-#define Assert_NotDeleted_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Deleted, "FrameBuffer is deleted", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#define Assert_NotDeleted_Macro if (Deleted) ErrorsSystemNamespace::SendError<<"FrameBuffer is already deleted">>\
+ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyDeleted);
 #if defined KE2_Debug
-#define Assert_Finished_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, Finished, "FrameBuffer is not finished", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
-#define Assert_NotFinished_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Finished, "FrameBuffer is not finished", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
-#define Assert_Binded_Macro if (DebugRuntimeAssert(DebuggingTools::ErrorTypes::Warning, BindedInstances.gFrameBufferID() == ID, "FrameBuffer is not binded", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION)) Bind(false);
+#define Assert_Finished_Macro if (not Finished) ErrorsSystemNamespace::SendError<<"FrameBuffer is not finished">>\
+ErrorsEnumWrapperStruct(ErrorsEnum::NotFinished);
+#define Assert_NotFinished_Macro if (Finished) ErrorsSystemNamespace::SendError<<"FrameBuffer is already finished">>\
+ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyFinished);
+#define Assert_Binded_Macro if (BindedInstances.gFrameBufferID() != ID) { ErrorsSystemNamespace::SendWarning<<\
+"FrameBuffer is not binded">>ErrorsSystemNamespace::EndOfWarning; Bind(false); }
 #else
 #define Assert_Finished_Macro
 #define Assert_NotFinished_Macro
@@ -76,9 +78,9 @@ void FrameBufferClass::AttachRenderBuffer(unsigned int renderBufferID, bool dept
 
 	if (depthBufferEnabled and stencilBufferEnabled) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBufferID)); }
 	else if (depthBufferEnabled and not stencilBufferEnabled) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBufferID)); }
+	else if (not depthBufferEnabled and stencilBufferEnabled) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBufferID)); }
 #if defined KE2_Debug
-	else if (not depthBufferEnabled and stencilBufferEnabled) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "cant attach RenderBuffer to a FrameBuffer, RenderBuffer have stencil buffer and no depth buffer", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
-	else DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "cant attach RenderBuffer to a FrameBuffer, RenderBuffer have no buffers", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
+	else ErrorsSystemNamespace::SendWarning << "no buffers selected to bind from RenderBuffer to FrameBuffer" >> ErrorsSystemNamespace::EndOfWarning;
 #endif
 }
 void FrameBufferClass::AttachTexture(unsigned int texID, TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum dataFormat) {
@@ -108,11 +110,9 @@ void FrameBufferClass::Finish() {
 
 #if defined KE2_Debug
 	Finished = true;
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::string errMsg = "FrameBuffer is not complete, error: ";
-		errMsg += glCheckFramebufferStatus(GL_FRAMEBUFFER);
-		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, errMsg.c_str(), KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-	}
+	unsigned int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+		ErrorsSystemNamespace::SendError << "FrameBuffer is not complete, OpenGL's error: [" << std::to_string(status) << "]" >> ErrorsEnumWrapperStruct(ErrorsEnum::NotComplete);
 #endif
 }
 void FrameBufferClass::Bind(bool updViewportSize) {

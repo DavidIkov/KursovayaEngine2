@@ -1,18 +1,17 @@
 #include"ShaderProgram.h"
 #include"glad/glad.h"
-#include"Tools/DebuggingTools.h"
 #include<vector>
 #include<string>
 #include"Tools/GLDebug.h"
-#include"Tools/DebugRuntimeAssert.h"
 #include"Graphics/Globals.h"
 
+using namespace KE2;
 using namespace Graphics::Primitives;
-#define Assert_NotDeleted_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Deleted, "ShaderProgram is deleted", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#define Assert_NotDeleted_Macro if (Deleted) ErrorsSystemNamespace::SendError<<"ShaderProgram is already deleted">>ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyDeleted);
 #if defined KE2_Debug
-#define Assert_Binded_Macro if (DebugRuntimeAssert(DebuggingTools::ErrorTypes::Warning, BindedInstances.gShaderProgramID() == ID, "ShaderProgram is not binded", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION)) Bind();
-#define Assert_Linked_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, Linked, "ShaderProgram is already not linked", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
-#define Assert_NotLinked_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Linked, "ShaderProgram is already linked", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#define Assert_Binded_Macro if (BindedInstances.gShaderProgramID() != ID) { ErrorsSystemNamespace::SendWarning<<"ShaderProgram is not binded">>ErrorsSystemNamespace::EndOfWarning; Bind(); }
+#define Assert_Linked_Macro if (not Linked) ErrorsSystemNamespace::SendError<<"ShaderProgram is not linked">>ErrorsEnumWrapperStruct(ErrorsEnum::NotLinked);
+#define Assert_NotLinked_Macro if (Linked) ErrorsSystemNamespace::SendError<<"ShaderProgram is already linked">>ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyLinked);
 #else
 #define Assert_Binded_Macro
 #define Assert_Linked_Macro
@@ -48,14 +47,12 @@ void ShaderProgramClass::LinkShaders() {
 #if defined KE2_Debug
 	Linked = true;
 	{//check for linking
-		int success;
-		char info[512];
-		glSC(glGetProgramiv(ID, GL_LINK_STATUS, &success));
-		if (!success) {
-			glSC(glGetProgramInfoLog(ID, 512, 0, info));
-			std::string msg = "SHADERS LINKING ERROR: ";
-			msg += info;
-			DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, msg.c_str(), KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
+		int success = 0; glSC(glGetProgramiv(ID, GL_LINK_STATUS, &success));
+		if (success == false) {
+			int infoLen = 0; glSC(glGetProgramiv(ID, GL_INFO_LOG_LENGTH, &infoLen));
+			std::string info(infoLen - 1, '\0');
+			glSC(glGetProgramInfoLog(ID, infoLen, 0, (char*)info.c_str()));
+			ErrorsSystemNamespace::SendError << "Failed to link shaders, OpenGL returned a message: [" << info << "]" >> ErrorsEnumWrapperStruct(ErrorsEnum::FailedToLinkShaders);
 		}
 	}
 #endif
@@ -103,7 +100,7 @@ ShaderProgramClass::UniformData ShaderProgramClass::GetUniformData(unsigned int 
 	int size = 0;
 	glSC(glGetActiveUniform(ID, index, sizeof(name) / sizeof(char), &actualNameLength, &size, &returnData.Type, name));
 	if (actualNameLength == (sizeof(name) / sizeof(char) - 1))
-		DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,"name of uniform MAY(most likely) is too long for current buffer length",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
+		ErrorsSystemNamespace::SendError << "name of uniform is too long, current limit is: [" << std::to_string(sizeof(name) / sizeof(char)) << "]" >> ErrorsEnumWrapperStruct(ErrorsEnum::UniformNameIsTooLarge);
 	returnData.Size = size;
 	returnData.Name = std::string(name);
 	returnData.ID = GetUniformIDByName(name);

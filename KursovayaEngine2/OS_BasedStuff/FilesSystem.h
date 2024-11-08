@@ -2,11 +2,13 @@
 #include"DLL.h"
 #include<string>
 #include<fstream>
+#include"Tools/ErrorsSystem.h"
 
 namespace FilesSystemNamespace {
 	DLLTREATMENT std::string SaveFileToString(const wchar_t* filePath);
 	DLLTREATMENT std::wstring SaveFileToWString(const wchar_t* filePath);
 
+	struct FailedToOpenFile_Error :KE2::ErrorsSystemNamespace::ErrorBase {};
 
 	class OpenedFile {
 		const wchar_t* FilePath;

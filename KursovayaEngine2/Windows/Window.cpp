@@ -1,11 +1,11 @@
 #include"glad/glad.h"
 #include"GLFW/glfw3.h"
 #include"Window.h"
-#include"Tools/DebuggingTools.h"
-#include"Tools/ErrorCodes.h"
 #include"WindowsManager.h"
 #include"Tools/GLDebug.h"
 #include<iostream>
+
+using namespace KE2;
 
 bool WindowClass::FirstWindow = true;
 
@@ -38,11 +38,13 @@ const MouseClass& WindowClass::gMouseHandle() const {
 WindowClass::WindowClass(unsigned int* w, unsigned int* h, const char* title, bool fullscreen, unsigned int swapInterval) {
     
     WindowsManager::Windows.push_back(this);
-    
+
+    glfwSetErrorCallback(+[](int code, const char* msg) {
+        ErrorsSystemNamespace::SendError << "GLFW error with code [" << std::to_string(code) << "] and message: [" << msg << "]" >> GLFW_ErrorWrapperStruct(code);
+        });
+
     GLFW_WindowPtr = glfwCreateWindow(*w, *h, title, fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
-    if (!GLFW_WindowPtr) {
-        DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO CREATE WINDOW", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
-    }
+
     
     gWindowSize(w, h);
 
@@ -64,8 +66,7 @@ WindowClass::WindowClass(unsigned int* w, unsigned int* h, const char* title, bo
         });
 
     if (FirstWindow) {
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-            DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO INITIALIZE GLAD", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_TO_INITIALIZE_LIBRARY });
+        gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
         std::cout << "OPENGL VERSION: " << glGetString(GL_VERSION) << std::endl;
     }
 

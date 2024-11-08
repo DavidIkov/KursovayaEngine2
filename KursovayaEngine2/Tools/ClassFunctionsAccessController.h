@@ -8,9 +8,9 @@
 CFAC_ClassName& ClassInstRef; public: CFAC_##accessType_Name##_Class(CFAC_ClassName& inst):\
 ClassInstRef(inst){} CFAC_##accessType_Name##_Class(CFAC_##accessType_Name##_Class& cfac):\
 ClassInstRef(cfac.ClassInstRef){} funcs };
-#define CFAC_FuncConstr(funcName) template<typename...Types> auto funcName##(\
-Types&&...vals)->decltype(ClassInstRef.##funcName##(std::forward<Types>(vals)...)){\
-return ClassInstRef.##funcName##(std::forward<Types>(vals)...);}
+#define CFAC_FuncConstr(funcName) template<typename...Types> auto funcName (\
+Types&&...vals)->decltype(ClassInstRef. funcName (std::forward<Types>(vals)...)){\
+return ClassInstRef. funcName (std::forward<Types>(vals)...);}
 
 /*
 #define CFAC_ClassConstructor(accessVariantName, funcPointers) private: struct CFAC_##accessVariantName##_FuncPtrsContainerStruct { funcPointers };\

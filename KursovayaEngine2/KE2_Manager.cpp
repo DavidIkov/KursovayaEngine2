@@ -1,67 +1,77 @@
 #include"KE2_Manager.h"
-#include"Tools/DebuggingTools.h"
 #include"stb_image/stb_image.h"
 #include"GLFW/glfw3.h"
 
+using namespace KE2;
+using namespace Manager;
 
-constexpr bool _IsKE2_InDebugConfig() {
+constexpr bool KE2::Manager::_IsKE2_InDebugConfig() {
 #if defined KE2_Debug
     return true;
 #else
     return false;
 #endif
 }
-constexpr bool _IsKE2_InEfficiencyConfig() {
+constexpr bool KE2::Manager::_IsKE2_InEfficiencyConfig() {
 #if defined KE2_Efficiency
     return true;
 #else
     return false;
 #endif
 }
-constexpr bool _IsKE2_In_x86_Platform() {
+constexpr bool KE2::Manager::_IsKE2_In_x86_Architecture() {
 #if defined KE2_x86
     return true;
 #else 
     return false;
 #endif
 }
-constexpr bool _IsKE2_In_x64_Platform() {
+constexpr bool KE2::Manager::_IsKE2_In_x64_Architecture() {
 #if defined KE2_x64
     return true;
 #else
     return false;
 #endif
 }
+constexpr bool KE2::Manager::_IsKE2_OnLinuxPlatform() {
+#if defined KE2_Linux
+    return true;
+#else
+    return false;
+#endif
+}
+constexpr bool KE2::Manager::_IsKE2_OnWindowsPlatform() {
+#if defined KE2_Windows
+    return true;
+#else
+    return false;
+#endif
+}
 
-bool Initialized = false;
+static bool Initialized = false;
 
+void KE2::Manager::_InitializeKE2() {
 
-KURSAVAYAENGINE2_CORE_ERRORS _InitializeKE2() {
-
-    if (Initialized) return KURSAVAYAENGINE2_CORE_ERRORS::NONE;
-
-    static_assert(sizeof(unsigned char) == 1, "cant initialize KursovayaEngine2 since sizeof(unsigned char) is not 1");
-	
-    try {
-        stbi_set_flip_vertically_on_load(true);
-
-        if (!glfwInit()) {
-            DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical, "FAILED TO INITIALIZE GLFW", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_TO_INITIALIZE_LIBRARY });
-        }
-
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        Initialized = true;
-        return KURSAVAYAENGINE2_CORE_ERRORS::NONE;
+    if (Initialized) {
+        ErrorsSystemNamespace::SendWarning << "Trying to initialize KE2 when its already initialized" >> ErrorsSystemNamespace::EndOfWarning;
+        return;
     }
-    catch (KURSAVAYAENGINE2_CORE_ERRORS& err) { return err; }
-    catch (...) { return KURSAVAYAENGINE2_CORE_ERRORS::UNKNOWN; }
+
+	stbi_set_flip_vertically_on_load(true);
+
+	if (!glfwInit()) {
+		ErrorsSystemNamespace::SendError << "Failed to initialize GLFW" >> ErrorsEnumWrapperStruct(ErrorsEnum::FailedToInitializeGLFW);
+	}
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	Initialized = true;
     
 }
 
 
-void UninitializeKE2() {
+void KE2::Manager::UninitializeKE2() {
     if (not Initialized) {
         glfwTerminate();
         Initialized = false;

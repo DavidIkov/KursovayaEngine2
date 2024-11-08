@@ -3,6 +3,7 @@
 #include"Input/Keyboard.h"
 #include"Input/Mouse.h"
 #include"Maths/Vector.h"
+#include"Tools/ErrorsSystem.h"
 
 enum class CursorModes {
     Free,
@@ -39,6 +40,11 @@ private:
     MouseClass MouseHandle;
 
 public:
+
+    struct GLFW_ErrorWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
+        unsigned int ErrCode;
+        inline GLFW_ErrorWrapperStruct(unsigned int errCode) :ErrCode(errCode) {};
+    }; using GLFW_AnyError = GLFW_ErrorWrapperStruct;
     
     DLLTREATMENT const KeyboardClass& gKeyboardHandle() const;
     DLLTREATMENT const MouseClass& gMouseHandle() const;

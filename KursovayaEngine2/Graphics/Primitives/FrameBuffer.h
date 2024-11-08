@@ -3,6 +3,7 @@
 #include"Texture.h"
 #include<vector>
 #include"Tools/ClassFunctionsAccessController.h"
+#include"Tools/ErrorsSystem.h"
 
 namespace Graphics::Primitives {
 
@@ -19,6 +20,18 @@ namespace Graphics::Primitives {
 		Vector2U ViewportSize;
 
 	public:
+
+		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
+			enum ErrorsEnum {
+				AlreadyDeleted,
+				AlreadyFinished,
+				NotFinished,
+				NotComplete
+			};
+			ErrorsEnum Error;
+			inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
+		}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
+		
 
 		DLLTREATMENT void ClearColorBuffer();
 		DLLTREATMENT void ClearDepthBuffer();

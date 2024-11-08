@@ -1,15 +1,13 @@
 #include"VertexBuffer.h"
 #include"Tools/GLDebug.h"
-#include"Tools/DebuggingTools.h"
 #include"glad/glad.h"
-#include"Tools/ErrorCodes.h"
 #include"Graphics/Globals.h"
-#include"Tools/DebugRuntimeAssert.h"
 
+using namespace KE2;
 using namespace Graphics::Primitives;
-#define Assert_NotDeleted_Macro DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, not Deleted, "VertexBuffer is deleted", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION);
+#define Assert_NotDeleted_Macro if (Deleted) ErrorsSystemNamespace::SendError<<"VertexBuffer is already deleted">>ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyDeleted);
 #if defined KE2_Debug
-#define Assert_Binded_Macro if (DebugRuntimeAssert(DebuggingTools::ErrorTypes::Warning, BindedInstances.gVertexBufferID() == ID, "VertexBuffer is not binded", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_IMPOSSIBLE_FUNCTION)) Bind();
+#define Assert_Binded_Macro if(BindedInstances.gVertexBufferID() != ID) ErrorsSystemNamespace::SendWarning<<"VertexBuffer is not binded">>ErrorsSystemNamespace::EndOfWarning;
 #else
 #define Assert_Binded_Macro
 #endif
@@ -40,13 +38,13 @@ unsigned int VertexBufferClass::gID() {
     Assert_NotDeleted_Macro;
     return ID;
 }
-static unsigned int _GetSizeOfTypeByBufferDataTypeEnum_SwitchCase(VertexBufferClass::BufferDataTypeEnum typ) {
+static unsigned int _GetSizeOfTypeByBufferDataTypeEnum_SwitchCase(VertexBufferClass::LayoutDataStruct::DataTypeEnum typ) {
     switch (typ) {
-    case VertexBufferClass::BufferDataTypeEnum::Byte: return sizeof(unsigned char);
-    case VertexBufferClass::BufferDataTypeEnum::UnsignedByte: return sizeof(unsigned char);
-    case VertexBufferClass::BufferDataTypeEnum::Float: return sizeof(float);
-    case VertexBufferClass::BufferDataTypeEnum::Int: return sizeof(int);
-    case VertexBufferClass::BufferDataTypeEnum::UnsignedInt: return sizeof(unsigned int);
+    case VertexBufferClass::LayoutDataStruct::DataTypeEnum::Byte: return sizeof(unsigned char);
+    case VertexBufferClass::LayoutDataStruct::DataTypeEnum::UnsignedByte: return sizeof(unsigned char);
+    case VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float: return sizeof(float);
+    case VertexBufferClass::LayoutDataStruct::DataTypeEnum::Int: return sizeof(int);
+    case VertexBufferClass::LayoutDataStruct::DataTypeEnum::UnsignedInt: return sizeof(unsigned int);
     }
     return 0;
 }
@@ -54,7 +52,7 @@ void VertexBufferClass::SetLayout(const DynArr<LayoutDataStruct>& layout) {
     Assert_NotDeleted_Macro;
     Assert_Binded_Macro;
 #if defined KE2_Debug
-    DebugRuntimeAssert(DebuggingTools::ErrorTypes::Critical, BindedInstances.gVertexArrayID() != 0, "changing layout of VertexBuffer without any VertexArray binded dosent make any sence", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_UNNECESARY_FUNCTION);
+    if (BindedInstances.gVertexArrayID() == 0) ErrorsSystemNamespace::SendError << "changing layout of VertexBuffer without any VertexArray binded dosent make any sence" >> ErrorsEnumWrapperStruct(ErrorsEnum::ChangingLayoutOfVertexBufferWithoutAnyVertexArrayBinded);
 #endif
 
 	for (unsigned int i = 0; i < EnabledAttributesAmount; i++) { glSC(glDisableVertexAttribArray(i)); }
@@ -70,11 +68,11 @@ void VertexBufferClass::SetLayout(const DynArr<LayoutDataStruct>& layout) {
 
 		unsigned int gl_dataType = 0;
 		switch (layout[i].DataType) {
-		case BufferDataTypeEnum::Byte: gl_dataType = GL_BYTE; break;
-		case BufferDataTypeEnum::UnsignedByte: gl_dataType = GL_UNSIGNED_BYTE; break;
-		case BufferDataTypeEnum::Float: gl_dataType = GL_FLOAT; break;
-		case BufferDataTypeEnum::Int: gl_dataType = GL_INT; break;
-		case BufferDataTypeEnum::UnsignedInt: gl_dataType = GL_UNSIGNED_INT; break;
+		case LayoutDataStruct::DataTypeEnum::Byte: gl_dataType = GL_BYTE; break;
+		case LayoutDataStruct::DataTypeEnum::UnsignedByte: gl_dataType = GL_UNSIGNED_BYTE; break;
+		case LayoutDataStruct::DataTypeEnum::Float: gl_dataType = GL_FLOAT; break;
+		case LayoutDataStruct::DataTypeEnum::Int: gl_dataType = GL_INT; break;
+		case LayoutDataStruct::DataTypeEnum::UnsignedInt: gl_dataType = GL_UNSIGNED_INT; break;
 		}
 
 		glSC(glVertexAttribPointer(i, layout[i].ComponentsAmount, gl_dataType, GL_FALSE, totalLayoutSize, (void*)off));
@@ -83,33 +81,54 @@ void VertexBufferClass::SetLayout(const DynArr<LayoutDataStruct>& layout) {
 	}
 }
 
-static unsigned int _GetVBUsageForGL(VertexBufferClass::BufferDataUsageEnum usage) {
+static unsigned int _GetVBUsageForGL(VertexBufferClass::BufferReadWriteModeEnum usage) {
     switch (usage) {
-    case VertexBufferClass::BufferDataUsageEnum::StreamDraw: return GL_STREAM_DRAW;
-    case VertexBufferClass::BufferDataUsageEnum::StreamRead: return GL_STREAM_READ;
-    case VertexBufferClass::BufferDataUsageEnum::StreamCopy: return GL_STREAM_COPY;
-    case VertexBufferClass::BufferDataUsageEnum::StaticDraw: return GL_STATIC_DRAW;
-    case VertexBufferClass::BufferDataUsageEnum::StaticRead: return GL_STATIC_READ;
-    case VertexBufferClass::BufferDataUsageEnum::StaticCopy: return GL_STATIC_COPY;
-    case VertexBufferClass::BufferDataUsageEnum::DynamicDraw: return GL_DYNAMIC_DRAW;
-    case VertexBufferClass::BufferDataUsageEnum::DynamicRead: return GL_DYNAMIC_READ;
-    case VertexBufferClass::BufferDataUsageEnum::DynamicCopy: return GL_DYNAMIC_COPY;
+    case VertexBufferClass::BufferReadWriteModeEnum::None: return 0;
+    case VertexBufferClass::BufferReadWriteModeEnum::StreamDraw: return GL_STREAM_DRAW;
+    case VertexBufferClass::BufferReadWriteModeEnum::StreamRead: return GL_STREAM_READ;
+    case VertexBufferClass::BufferReadWriteModeEnum::StreamCopy: return GL_STREAM_COPY;
+    case VertexBufferClass::BufferReadWriteModeEnum::StaticDraw: return GL_STATIC_DRAW;
+    case VertexBufferClass::BufferReadWriteModeEnum::StaticRead: return GL_STATIC_READ;
+    case VertexBufferClass::BufferReadWriteModeEnum::StaticCopy: return GL_STATIC_COPY;
+    case VertexBufferClass::BufferReadWriteModeEnum::DynamicDraw: return GL_DYNAMIC_DRAW;
+    case VertexBufferClass::BufferReadWriteModeEnum::DynamicRead: return GL_DYNAMIC_READ;
+    case VertexBufferClass::BufferReadWriteModeEnum::DynamicCopy: return GL_DYNAMIC_COPY;
     }
     return 0;
 }
-void VertexBufferClass::SetData(const AnonDynArr& data, const BufferDataUsageEnum usage) {
+void VertexBufferClass::SetData(const void* data, unsigned int dataSizeInBytes, const BufferReadWriteModeEnum bufferReadWriteMode) {
     Assert_NotDeleted_Macro;
     Assert_Binded_Macro;
 
-	glSC(glBufferData(GL_ARRAY_BUFFER, data.gArrSizeInBytes(), data.gArr(), _GetVBUsageForGL(usage)));
+    if (bufferReadWriteMode == BufferReadWriteModeEnum::None) ErrorsSystemNamespace::SendError << "BufferReadWriteMode is none" >> ErrorsEnumWrapperStruct(ErrorsEnum::BufferReadWriteModeInNone);
+	glSC(glBufferData(GL_ARRAY_BUFFER, dataSizeInBytes, data, _GetVBUsageForGL(bufferReadWriteMode)));
 }
-
-void VertexBufferClass::SetSubData(unsigned int offsetInBytes, const AnonDynArr& data) {
+void VertexBufferClass::SetSubData(unsigned int offsetInBytes, const void* data, unsigned int dataSizeInBytes) {
     Assert_NotDeleted_Macro;
     Assert_Binded_Macro;
 
-	glSC(glBufferSubData(GL_ARRAY_BUFFER, offsetInBytes, data.gArrSizeInBytes(), data.gArr()));
+	glSC(glBufferSubData(GL_ARRAY_BUFFER, offsetInBytes, dataSizeInBytes, data));
 }
+
+void VertexBufferClass::CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) {
+    Assert_NotDeleted_Macro;
+    
+    glSC(glBindBuffer(GL_COPY_READ_BUFFER, srcBuffer.ID));
+    glSC(glBindBuffer(GL_COPY_WRITE_BUFFER, ID));
+
+    glSC(glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, srcOffsetInBytes, dstOffsetInBytes, amountOfBytesToCopy));
+
+    glSC(glBindBuffer(GL_COPY_READ_BUFFER, 0));
+    glSC(glBindBuffer(GL_COPY_WRITE_BUFFER, 0));
+}
+
+void VertexBufferClass::GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) {
+    Assert_NotDeleted_Macro;
+    Assert_Binded_Macro;
+
+    glSC(glGetBufferSubData(GL_ARRAY_BUFFER, offsetInBytes, amountOfBytesToCopy, data));
+}
+
 void VertexBufferClass::Bind() {
     Assert_NotDeleted_Macro;
 #if defined KE2_Debug

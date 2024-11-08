@@ -1,10 +1,8 @@
 #include"Obj.h"
 #include<iostream>
-#include"Tools/DebuggingTools.h"
-#include"Tools/ErrorCodes.h"
 #include"Maths/Vector.h"
 #include<limits>
-#include"WinOS/FilesSystem.h"
+#include"OS_BasedStuff/FilesSystem.h"
 
 static unsigned int findSymbolInd(const std::string& txt, const char symbol, const unsigned int startInd) {
 	unsigned int i = startInd;
@@ -135,7 +133,7 @@ std::vector<float> ReadObjFileType(const wchar_t* filePath) {
 			unsigned int curTrianglesAmount = len - 2;
 			unsigned int* order = orderForThree;
 			if (len == 4) order = orderForFour;
-			else if (len != 3) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,".OBJ FILE GOT MORE THEN FOUR OR LESS THEN 3 CONNECTIONS",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
+			//else if (len != 3) DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,".OBJ FILE GOT MORE THEN FOUR OR LESS THEN 3 CONNECTIONS",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
 			
 			Vector3F normal = (fileVertexes[fileVertexConnections[curConOff + order[1]]] - fileVertexes[fileVertexConnections[curConOff + order[0]]]).Cross
 			(fileVertexes[fileVertexConnections[curConOff + order[2]]] - fileVertexes[fileVertexConnections[curConOff + order[0]]]);

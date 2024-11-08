@@ -1,8 +1,6 @@
 #include"FileExplorerDialog.h"
 #include <Windows.h>
 #include <shobjidl.h>
-#include"Tools/ErrorCodes.h"
-#include"Tools/DebuggingTools.h"
 #include"wchar_t_Operations.h"
 #include"iostream"
 
@@ -48,7 +46,7 @@ std::wstring FileExplorerDialog::OpenDialog(std::vector<DialogFilter> filters)
     if (GetOpenFileName(&ofn) == TRUE)
         return { szFile };
     else {
-        DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "Failed to read selected file", KURSAVAYAENGINE2_CORE_ERRORS::FAILED_THIRD_PARTY_FUNCTION });
+        KE2::ErrorsSystemNamespace::SendError << "Failed to open dialog box" >> FailedToOpenFileExplorerDialog_Error();
         return {};
     }
 }

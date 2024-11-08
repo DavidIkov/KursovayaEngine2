@@ -1,5 +1,4 @@
 #include"Event.h"
-#include"DebuggingTools.h"
 #include"iostream"
 
 void EventClass::FireEvent(void* data) {
@@ -95,7 +94,7 @@ void EventConnectionsHandlerClass::RemoveConnection(const ConnectionID id) {
 		}
 	}
 
-	DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Warning, "attemping to remove connection with invalid id(it can be already deleted or just invalid)", KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
+	KE2::ErrorsSystemNamespace::SendError << "attemping to remove connection with invalid id(it can be already deleted or just invalid)" >> ErrorsEnumWrapperStruct(ErrorsEnum::IncorrectID);
 }
 
 EventConnectionsHandlerClass::~EventConnectionsHandlerClass() {
