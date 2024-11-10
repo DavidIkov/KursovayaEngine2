@@ -6,6 +6,7 @@
 #include"Graphics/Abstractions/TextRenderer.h"
 #include"Graphics/Abstractions/Texture.h"
 #include"Graphics/Abstractions/Shader.h"
+#include"Graphics/Abstractions/VertexBuffer.h"
 #include"Graphics/Primitives/FrameBuffer.h"
 #include"Graphics/Primitives/VertexArray.h"
 #include"Graphics/Primitives/VertexBuffer.h"
@@ -17,6 +18,7 @@
 #include"Maths/Matrix.h"
 #include"Tools/FileTypesReaders/Obj.h"
 #include"Tools/Time.h"
+#include<array>
 
 namespace GP = Graphics::Primitives;
 namespace GA = Graphics::Abstractions;
@@ -85,12 +87,35 @@ int main()
         
 
         unsigned int floatsAmountPerVertex = 3 + 3 + 3 + 2;
+        
         std::vector<float> VB1_DATA = ReadObjFileType(L"Models3D/koleso.obj");
         std::vector<float> VB2_DATA = ReadObjFileType(L"Models3D/sphere.obj");
 
 
+        GA::VertexBufferClass VB1(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw,L"Models3D/koleso.obj",
+            DynArr<GP::VertexBufferClass::LayoutDataStruct>(
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float }
+        ));
+
+		GA::VertexBufferClass VB2(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw,L"Models3D/sphere.obj",
+            DynArr<GP::VertexBufferClass::LayoutDataStruct>(
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
+            GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float }
+        ));
+
+        GA::VertexBufferClass QUAD_VB(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw,std::array<float,12>({1,-1,1,1,-1,1,1,-1,-1,-1,-1,1}).data(), 12 * sizeof(float),
+            DynArr<GP::VertexBufferClass::LayoutDataStruct>(
+            GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float }
+        ));
 
 
+
+        /*
         GP::VertexArrayClass VA1;
 
         GP::VertexBufferClass VB1;
@@ -127,6 +152,8 @@ int main()
 
         QUAD_VA.Unbind();
 
+        */
+
 		GA::ShaderClass SP(L"Shaders/full3d.vs", L"Shaders/full3d.fs", nullptr, nullptr);
                 
         GA::ShaderClass SP_OUTLINE(L"Shaders/outline.vs", L"Shaders/outline.fs", nullptr, nullptr);
@@ -156,17 +183,17 @@ int main()
 
         
         
-        Vector3F Object1Position(0, 0, 2);
-        Matrix33F Object1RotationMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
-        Vector3F Object1Scale(0.5,0.5,0.5);
-        Vector3F Object2Position(2, 0, 3);
-        Matrix33F Object2RotationMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
-        Vector3F Object2Scale(2,2,2);
+        Vector3F Object1Position(0.f, 0.f, 2.f);
+        Matrix33F Object1RotationMatrix(1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f);
+        Vector3F Object1Scale(0.5f, 0.5f, 0.5f);
+        Vector3F Object2Position(2.f, 0.f, 3.f);
+        Matrix33F Object2RotationMatrix(1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f);
+        Vector3F Object2Scale(2.f, 2.f, 2.f);
 
-        Vector3F LightPosition(0, 0, 0);
+        Vector3F LightPosition(0.f, 0.f, 0.f);
 
-        Vector3F CameraPosition(0, 0, 0);
-        Matrix33F CameraRotationMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
+        Vector3F CameraPosition(0.f, 0.f, 0.f);
+        Matrix33F CameraRotationMatrix(1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f);
         Matrix33F InversedCameraRotationMatrix = CameraRotationMatrix.GetInversedMatrix(CameraRotationMatrix.GetDeterminant());
 
         float CameraVerticalFov = 80.f / 180.f * 3.14f;
@@ -221,12 +248,12 @@ int main()
 				bool altEnabled = window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::LeftAlt);
                 Vector3F localCamVelocity;
 
-                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::W)) localCamVelocity += Vector3F(0, 0, cameraSpeed);
-                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::S)) localCamVelocity += Vector3F(0, 0, -cameraSpeed);
-                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::A)) localCamVelocity += Vector3F(-cameraSpeed, 0, 0);
-                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::D)) localCamVelocity += Vector3F(cameraSpeed, 0, 0);
-                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::Q)) localCamVelocity += Vector3F(0, -cameraSpeed, 0);
-                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::E)) localCamVelocity += Vector3F(0, cameraSpeed, 0);
+                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::W)) localCamVelocity += Vector3F(0.f, 0.f, cameraSpeed);
+                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::S)) localCamVelocity += Vector3F(0.f, 0.f, -cameraSpeed);
+                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::A)) localCamVelocity += Vector3F(-cameraSpeed, 0.f, 0.f);
+                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::D)) localCamVelocity += Vector3F(cameraSpeed, 0.f, 0.f);
+                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::Q)) localCamVelocity += Vector3F(0.f, -cameraSpeed, 0.f);
+                if (window.gKeyboardHandle().gPressableKeyState(KeyboardClass::PressableKeysEnum::E)) localCamVelocity += Vector3F(0.f, cameraSpeed, 0.f);
 
                 float speedMult = 1;
                 if (shiftEnabled) speedMult = 10;
@@ -239,12 +266,12 @@ int main()
                 CameraRotationByDelta[0] = atanf(CameraRotationByDelta[0]); CameraRotationByDelta[1] = atanf(CameraRotationByDelta[1]);
 
                 CameraRotationMatrix = CameraRotationMatrix.RotateIn3DByAnglesC<0, 1, 2>(CameraRotationByDelta[1], 0, 0);
-                Vector3F xv(1, 0, 0);
-                Vector3F zv(0, 0, 1);
-                Matrix23F rotMat(1, 0, 0, 0, 0, 1);
+                Vector3F xv(1.f, 0.f, 0.f);
+                Vector3F zv(0.f, 0.f, 1.f);
+                Matrix23F rotMat(1.f, 0.f, 0.f, 0.f, 0.f, 1.f);
                 xv = rotMat.RotateVectorC<0, 1>(xv, -CameraRotationByDelta[0]);
                 zv = rotMat.RotateVectorC<0, 1>(zv, -CameraRotationByDelta[0]);
-                CameraRotationMatrix = Matrix33F(xv[0], xv[1], xv[2], 0, 1, 0, zv[0], zv[1], zv[2]) * CameraRotationMatrix;
+                CameraRotationMatrix = Matrix33F(xv[0], xv[1], xv[2], 0.f, 1.f, 0.f, zv[0], zv[1], zv[2]) * CameraRotationMatrix;
 
 
                 InversedCameraRotationMatrix = CameraRotationMatrix.GetInversedMatrix(CameraRotationMatrix.GetDeterminant());
@@ -255,7 +282,7 @@ int main()
             TEX1.Bind(1);
             SP.Bind();
 
-            Matrix44F ProjectionMatrix(1 / ResolutionLength[0], 0, 0, 0, 0, 1 / ResolutionLength[1], 0, 0, 0, 0, (far + near) / (far - near), 1, 0, 0, 2 * far * near / (near - far), 0);
+            Matrix44F ProjectionMatrix(1 / ResolutionLength[0], 0.f, 0.f, 0.f, 0.f, 1 / ResolutionLength[1], 0.f, 0.f, 0.f, 0.f, (far + near) / (far - near), 1.f, 0.f, 0.f, 2 * far * near / (near - far), 0.f);
 
             Object1RotationMatrix = Object1RotationMatrix.RotateIn3DByAnglesC<0, 1, 2>(0.01f, 0.01f, 0);
 
@@ -272,19 +299,23 @@ int main()
             Preset3D.Bind();
             FB.ClearAllBuffers();
 
-            VA1.Bind();
+            VB1.BindForRender();
 
             SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_ObjectPosition"), 1, &Object1Position[0]);
             SP.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object1RotationMatrix[0]);
             SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_ObjectScale"), 1, &Object1Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
-            VA2.Bind();
+            VB1.UnbindFromRender();
+
+            VB2.BindForRender();
 
             SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_ObjectPosition"), 1, &Object2Position[0]);
             SP.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object2RotationMatrix[0]);
             SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_ObjectScale"), 1, &Object2Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
+
+            VB2.UnbindFromRender();
 
             Preset3D.sStencilTest_BaseMask(0);
             Preset3D.sStencilTest_ComparisonType(GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::NotEqual);
@@ -299,19 +330,23 @@ int main()
                 SP_OUTLINE.gCFAC_UniformFuncs().SetUniformMatrix4fv(SP_OUTLINE.GetUniformIDByName("u_ProjectionMatrix"), 1, false, &ProjectionMatrix[0]);
                 SP_OUTLINE.gCFAC_UniformFuncs().SetUniform1f(SP_OUTLINE.GetUniformIDByName("u_OutlineScale"), 0.1f);
                 
-                VA1.Bind();
+                VB1.BindForRender();
 
                 SP_OUTLINE.gCFAC_UniformFuncs().SetUniform3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectPosition"), 1, &Object1Position[0]);
                 SP_OUTLINE.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object1RotationMatrix[0]);
                 SP_OUTLINE.gCFAC_UniformFuncs().SetUniform3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectScale"), 1, &Object1Scale[0]);
                 GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
-                VA2.Bind();
+                VB1.UnbindFromRender();
+
+                VB2.BindForRender();
 
                 SP_OUTLINE.gCFAC_UniformFuncs().SetUniform3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectPosition"), 1, &Object2Position[0]);
                 SP_OUTLINE.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object2RotationMatrix[0]);
                 SP_OUTLINE.gCFAC_UniformFuncs().SetUniform3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectScale"), 1, &Object2Scale[0]);
                 GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
+
+                VB2.UnbindFromRender();
             }
 
             Preset3D.sStencilTest_BaseMask(0xff);
@@ -323,20 +358,23 @@ int main()
             SP_NORMAL.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_NORMAL.GetUniformIDByName("u_InversedCameraRotationMatrix"), 1, false, &InversedCameraRotationMatrix[0]);
             SP_NORMAL.gCFAC_UniformFuncs().SetUniformMatrix4fv(SP_NORMAL.GetUniformIDByName("u_ProjectionMatrix"), 1, false, &ProjectionMatrix[0]);
 
-            VA1.Bind();
+            VB1.BindForRender();
 
             SP_NORMAL.gCFAC_UniformFuncs().SetUniform3fv(SP_NORMAL.GetUniformIDByName("u_ObjectPosition"), 1, &Object1Position[0]);
             SP_NORMAL.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_NORMAL.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object1RotationMatrix[0]);
             SP_NORMAL.gCFAC_UniformFuncs().SetUniform3fv(SP_NORMAL.GetUniformIDByName("u_ObjectScale"), 1, &Object1Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
-            VA2.Bind();
+            VB1.UnbindFromRender();
+
+            VB2.BindForRender();
 
             SP_NORMAL.gCFAC_UniformFuncs().SetUniform3fv(SP_NORMAL.GetUniformIDByName("u_ObjectPosition"), 1, &Object2Position[0]);
             SP_NORMAL.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_NORMAL.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object2RotationMatrix[0]);
             SP_NORMAL.gCFAC_UniformFuncs().SetUniform3fv(SP_NORMAL.GetUniformIDByName("u_ObjectScale"), 1, &Object2Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
 
+            VB2.UnbindFromRender();
 
             FB.Unbind();
             FB.SetViewportSize(Vector2U(Width, Height));
@@ -354,16 +392,16 @@ int main()
 
             FB_COLOR_TEX.Bind(0);
 
-            QUAD_VA.Bind();
+            QUAD_VB.BindForRender();
 
-            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)quadVBD.size() / 2);
+            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, 6);
 
-            QUAD_VA.Unbind();
+            QUAD_VB.UnbindFromRender();
 
 			//TEXT_RENDERER.RenderText(ArialFont, L"english русский ЙЖЁ!:(|&", Vector2F(-1,0), Vector2F(-1,0), Vector2U(Width, Height), Vector2F(1, 0), 0.5f);
             
             std::wstring camPosText = std::to_wstring(CameraPosition[0]) + L',' + std::to_wstring(CameraPosition[1]) + L',' + std::to_wstring(CameraPosition[2]) + L"; FPS: " + std::to_wstring(LastFPS_Counter);
-            TEXT_RENDERER.RenderText(ArialFont, camPosText.c_str(), Vector2F(1, 1), Vector2F(1, 1), Vector2U(Width, Height), Vector2F(0, 0.05f), 1);
+            TEXT_RENDERER.RenderText(ArialFont, camPosText.c_str(), Vector2F(1.f, 1.f), Vector2F(1.f, 1.f), Vector2U(Width, Height), Vector2F(0.f, 0.05f), 1.f);
 
             window.SwapScreenBuffers();
             window.ProcessEvents();

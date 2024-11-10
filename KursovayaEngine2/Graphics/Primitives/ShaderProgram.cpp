@@ -30,6 +30,7 @@ ShaderProgramClass::ShaderProgramClass(const ShaderProgramClass&& toCopy) {
 	toCopy.Deleted = true;
 }
 void ShaderProgramClass::operator=(const ShaderProgramClass&& toCopy) {
+    Delete();
 	memcpy(this, &toCopy, sizeof(ShaderProgramClass));
 	toCopy.Deleted = true;
 }
@@ -59,6 +60,7 @@ void ShaderProgramClass::LinkShaders() {
 }
 ShaderProgramClass::~ShaderProgramClass() {
 	if (not Deleted) {
+		Unbind();
 		glSC(glDeleteProgram(ID));
 		Deleted = true;
 	}

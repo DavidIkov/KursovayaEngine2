@@ -261,8 +261,8 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
         Vector2F ltp(lbp[0], lbp[1] + char_.Size[1] * localPixelsToTexScaleByY);
         Vector2F rtp(rbp[0], ltp[1]);
 
-        Vector2F lbc(char_.XOffsetInTexture, 0);
-        Vector2F rbc(lbc[0] + char_.SizeInTexture[0], 0);
+        Vector2F lbc(char_.XOffsetInTexture, 0.f);
+        Vector2F rbc(lbc[0] + char_.SizeInTexture[0], 0.f);
         Vector2F ltc(lbc[0], char_.SizeInTexture[1]);
         Vector2F rtc(rbc[0], ltc[1]);
 

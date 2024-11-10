@@ -21,11 +21,13 @@ VertexBufferClass::VertexBufferClass(const VertexBufferClass&& toCopy) {
     toCopy.Deleted = true;
 }
 void VertexBufferClass::operator=(const VertexBufferClass&& toCopy) {
+    Delete();
     memcpy(this, &toCopy, sizeof(VertexBufferClass));
     toCopy.Deleted = true;
 }
 VertexBufferClass::~VertexBufferClass() {
     if (not Deleted) {
+        Unbind();
         glSC(glDeleteBuffers(1, &ID));
         Deleted = true;
     }

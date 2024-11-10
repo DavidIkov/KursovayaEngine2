@@ -8,24 +8,35 @@
 namespace Graphics::Abstractions {
 	class VertexBufferClass :protected Primitives::VertexBufferClass {
 	public:
-		using Primitives::VertexBufferClass::BufferReadWriteModeEnum;
-		using Primitives::VertexBufferClass::LayoutDataStruct;
+
+		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
+			enum ErrorsEnum {
+				ProvidedTypeOfFileNotSupported,
+			}; ErrorsEnum Error;
+			inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
+		}; using ErrorsEnum = ErrorsEnumWrapperStruct::ErrorsEnum; using AnyError = ErrorsEnumWrapperStruct;
+
+		using BufferReadWriteModeEnum = Primitives::VertexBufferClass::BufferReadWriteModeEnum;
+		using LayoutDataStruct = Primitives::VertexBufferClass::LayoutDataStruct;
 	protected:
 		BufferReadWriteModeEnum BufferReadWriteMode = BufferReadWriteModeEnum::None;
 		Primitives::VertexArrayClass VA;
 		unsigned int DataSizeInBytes = 0;
 		DynArr<LayoutDataStruct> Layout;
 	public:
-		DLLTREATMENT VertexBufferClass();
+		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode);
 		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const void* data, unsigned int dataSizeInBytes, const DynArr<LayoutDataStruct>& layout);
 		//filePath to some 3d object, right now only .obj is accepted
-		DLLTREATMENT VertexBufferClass(const wchar_t* filePath);
+		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const wchar_t* filePath);
+		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const wchar_t* filePath, const DynArr<LayoutDataStruct>& layout);
+		DLLTREATMENT VertexBufferClass(const VertexBufferClass& toCopy, bool copyBufferData = false);
 		DLLTREATMENT VertexBufferClass(const VertexBufferClass&& toCopy);
+		DLLTREATMENT ~VertexBufferClass() = default;
+		//wont copy data on GPU, only allocate a space on GPU
+		DLLTREATMENT void operator=(const VertexBufferClass& toCopy);
 		DLLTREATMENT void operator=(const VertexBufferClass&& toCopy);
 
 		DLLTREATMENT void SetLayout(DynArr<LayoutDataStruct> layout);
-
-		DLLTREATMENT void SetBufferReadWriteModeEnum(BufferReadWriteModeEnum newBufferUsage);
 
 		DLLTREATMENT void SetData(const void* data, unsigned int dataSizeInBytes);
 		using Primitives::VertexBufferClass::SetSubData;
@@ -41,11 +52,16 @@ namespace Graphics::Abstractions {
 		DLLTREATMENT BufferReadWriteModeEnum gBufferReadWriteModeEnum() const;
 		DLLTREATMENT unsigned int gDataSizeInBytes() const;
 		DLLTREATMENT const DynArr<LayoutDataStruct>& gLayout() const;
+
+		DLLTREATMENT void Delete();
 		
 		DLLTREATMENT void Bind();
-		DLLTREATMENT void Unbind();
+		DLLTREATMENT static void Unbind();
+
+		//use this function only if you using abstractions with primitives or want to work with vertex array manually
 		DLLTREATMENT void BindForRender();
-		DLLTREATMENT void UnbindFromRender();
+		DLLTREATMENT static void UnbindFromRender();
+
 
 	};
 }

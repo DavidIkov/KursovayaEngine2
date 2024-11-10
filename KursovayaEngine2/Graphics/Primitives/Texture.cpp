@@ -184,12 +184,13 @@ TextureClass::TextureClass(const TextureClass&& toCopy) {
     toCopy.Deleted = true;
 }
 void TextureClass::operator=(const TextureClass&& toCopy) {
-    this->~TextureClass();
+    Delete();
     memcpy(this, &toCopy, sizeof(TextureClass));
     toCopy.Deleted = true;
 }
 TextureClass::~TextureClass() {
     if (not Deleted) {
+        Unbind();
         glSC(glDeleteTextures(1, &ID));
         Deleted = true;
     }

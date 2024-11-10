@@ -35,6 +35,7 @@ ShaderClass::ShaderClass(const ShaderClass&& toCopy) {
 	toCopy.Deleted = true;
 }
 void ShaderClass::operator=(const ShaderClass&& toCopy) {
+    Delete();
 	memcpy(this, &toCopy, sizeof(ShaderClass));
 	toCopy.Deleted = true;
 }

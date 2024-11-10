@@ -9,39 +9,21 @@ TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, cons
 TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets) :
 	Size(pixelsAmount), GP::TextureClass(dimensions, pixelsAmount, data, sets, dataSets), Settings(sets), DataSettings(dataSets) {}
 
-TextureClass::TextureClass(const TextureClass& toCopy) :
+TextureClass::TextureClass(const TextureClass& toCopy, bool copyTextureData) :
 	Size(toCopy.Size), Settings(toCopy.Settings), DataSettings(toCopy.DataSettings),
 	GP::TextureClass(Dimensions, Size, nullptr, Settings, DataSettings) {
-	GP::TextureClass::CopySubData(toCopy, Vector3U(0u), Vector3U(0u), Size);
+	if (copyTextureData) GP::TextureClass::CopySubData(toCopy, Vector3U(0u), Vector3U(0u), Size);
 };
 TextureClass::TextureClass(const TextureClass&& toCopy):
 	GP::TextureClass(std::move(toCopy)), Size(toCopy.Size),
-	Settings(toCopy.Settings), DataSettings(toCopy.DataSettings) { toCopy.Deleted = true; }
-TextureClass::~TextureClass() {
-	Deleted = true;
-}
+	Settings(toCopy.Settings), DataSettings(toCopy.DataSettings) { }
 void TextureClass::operator=(const TextureClass& toCopy) {
 	Delete();
-	Deleted = false;
-	
-	Settings = toCopy.Settings;
-	DataSettings = toCopy.DataSettings;
-	Dimensions = toCopy.Dimensions;
-	if (Size != toCopy.Size)
-		GP::TextureClass::SetData(Size, nullptr, DataSettings);
-	Size = toCopy.Size;
-	GP::TextureClass::CopySubData(toCopy, Vector3U(0u), Vector3U(0u), Size);
+	new(this) TextureClass(toCopy, false);
 }
 void TextureClass::operator=(const TextureClass&& toCopy) {
 	Delete();
-	Deleted = false;
-	toCopy.Deleted = true;
-	
-	Size = toCopy.Size;
-	Settings = toCopy.Settings;
-	DataSettings = toCopy.DataSettings;
-	Dimensions = toCopy.Dimensions;
-	GP::TextureClass::operator=(std::move(toCopy));
+	new(this) TextureClass(std::move(toCopy));
 }
 void TextureClass::ChangeData(Vector3U newSize, const void* data) {
 

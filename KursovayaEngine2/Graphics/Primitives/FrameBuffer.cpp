@@ -57,12 +57,13 @@ FrameBufferClass::FrameBufferClass(const FrameBufferClass&& toCopy) {
 	toCopy.Deleted = true;
 }
 void FrameBufferClass::operator=(const FrameBufferClass&& toCopy) {
-	this->~FrameBufferClass();
+    Delete();
 	memcpy(this, &toCopy, sizeof(FrameBufferClass));
 	toCopy.Deleted = true;
 }
 FrameBufferClass::~FrameBufferClass() {
 	if (not Deleted) {
+		Unbind();
 		glSC(glDeleteFramebuffers(1, &ID));
 		Deleted = true;
 	}

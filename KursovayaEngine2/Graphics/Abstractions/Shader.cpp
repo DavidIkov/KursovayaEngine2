@@ -63,9 +63,7 @@ ShaderClass::ShaderDataClass::ShaderDataClass(const wchar_t* vsPath, const wchar
     _SaveShaderDataNames();
 }
 ShaderClass::ShaderDataClass::ShaderDataClass(const ShaderDataClass&& toCopy):
-    GP::ShaderProgramClass(std::move(toCopy)), ShaderUniformsData(std::move(toCopy.ShaderUniformsData)) {
-
-}
+    GP::ShaderProgramClass(std::move(toCopy)), ShaderUniformsData(std::move(toCopy.ShaderUniformsData)) { toCopy.Deleted = true; }
 unsigned int ShaderClass::ShaderDataClass::GetUniformIDByName(const char* name) {
     unsigned int uniformInd = BinarySearch(&ShaderUniformsData[0], ShaderUniformsData.gLength(), name, 
         +[](const char* const& curName, const UniformDataStruct& uniformData)->bool {return curName < uniformData.Name; },
@@ -76,13 +74,9 @@ unsigned int ShaderClass::ShaderDataClass::GetUniformIDByName(const char* name) 
 void ShaderClass::ShaderDataClass::Bind() {
     GP::ShaderProgramClass::Bind();
 }
-ShaderClass::CFAC_UniformFuncs_Class ShaderClass::ShaderDataClass::gCFAC_UniformFuncs() {
-    return CFAC_UniformFuncs_Class(*this);
-}
 const GP::ShaderProgramClass& ShaderClass::ShaderDataClass::gPrimitiveShader() const {
     return *this;
 }
-ShaderClass::ShaderDataClass::~ShaderDataClass() {}
 
 DynArr<ShaderClass::ShaderDataClass> ShaderClass::ShadersStorage;
 
@@ -103,32 +97,25 @@ ShaderClass::ShaderClass(const ShaderClass& toCopy, void* ptrToCustomStorageOfSh
 }
 ShaderClass::ShaderClass(const ShaderClass&& toCopy) :
     UpdShaderDataFunc(toCopy.UpdShaderDataFunc), ShaderDataStalker(std::move(toCopy.ShaderDataStalker)),
-    PtrToCustomStorageOfShaderDataUpdaterFunc(toCopy.PtrToCustomStorageOfShaderDataUpdaterFunc) {
-    toCopy.Deleted = true;
-}
+    PtrToCustomStorageOfShaderDataUpdaterFunc(toCopy.PtrToCustomStorageOfShaderDataUpdaterFunc) { toCopy.Deleted = true; }
 ShaderClass::~ShaderClass() {
     if (not Deleted) {
-        Deleted = true;
         if (ShadersStorage.IsStalkersAmountForIndexEqualTo(ShaderDataStalker.gTargetInd(), 1))
             ShadersStorage.Remove(ShaderDataStalker.gTargetInd());
     }
 }
 void ShaderClass::operator=(const ShaderClass&& toCopy) {
     Delete();
-    Deleted = false;
-    toCopy.Deleted = true;
-    UpdShaderDataFunc = toCopy.UpdShaderDataFunc;
-    ShaderDataStalker = StalkerClass(std::move(toCopy.ShaderDataStalker));
-    PtrToCustomStorageOfShaderDataUpdaterFunc = toCopy.PtrToCustomStorageOfShaderDataUpdaterFunc;
+    new(this) ShaderClass(std::move(toCopy));
 }
 unsigned int ShaderClass::GetUniformIDByName(const char* name) {
     return ShaderDataStalker.GetTarget<ShaderDataClass>().GetUniformIDByName(name);
 }
 ShaderClass::CFAC_UniformFuncs_Class ShaderClass::gCFAC_UniformFuncs() const {
-    return ShaderDataStalker.GetTarget<ShaderDataClass>().gCFAC_UniformFuncs();
+    return CFAC_UniformFuncs_Class(ShaderDataStalker.GetTarget<ShaderDataClass>());
 }
 const GP::ShaderProgramClass& ShaderClass::gPrimitiveShader() const {
-    return ShaderDataStalker.GetTarget<ShaderDataClass>().gPrimitiveShader();
+    return ShaderDataStalker.GetTarget<ShaderDataClass>();
 }
 void ShaderClass::Bind() {
     ShaderDataStalker.GetTarget<ShaderDataClass>().Bind();

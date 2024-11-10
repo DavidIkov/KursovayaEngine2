@@ -17,11 +17,13 @@ VertexArrayClass::VertexArrayClass(const VertexArrayClass&& toCopy) {
     toCopy.Deleted = true;
 }
 void VertexArrayClass::operator=(const VertexArrayClass&& toCopy) {
+    Delete();
     memcpy(this, &toCopy, sizeof(VertexArrayClass));
     toCopy.Deleted = true;
 }
 VertexArrayClass::~VertexArrayClass() {
     if (not Deleted) {
+        Unbind();
         glSC(glDeleteVertexArrays(1, &ID));
         Deleted = true;
     }

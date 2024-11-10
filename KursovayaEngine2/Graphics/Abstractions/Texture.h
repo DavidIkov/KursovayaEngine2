@@ -10,9 +10,9 @@ namespace Graphics::Abstractions {
 	//you dont leave them as 0, use 1, otherwise it will mean that texture is empty
 	class TextureClass : protected Primitives::TextureClass {
 	public:
-		using Primitives::TextureClass::SettingsStruct;
-		using Primitives::TextureClass::DataSettingsStruct;
-		using Primitives::TextureClass::DimensionsEnum;
+		using SettingsStruct = Primitives::TextureClass::SettingsStruct;
+		using DataSettingsStruct = Primitives::TextureClass::DataSettingsStruct;
+		using DimensionsEnum = Primitives::TextureClass::DimensionsEnum;
 	protected:
 		Vector3U Size;
 		SettingsStruct Settings;
@@ -21,10 +21,10 @@ namespace Graphics::Abstractions {
 		DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
 		//no taking responsibility for "data"
 		DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
-		//will just copy settings and allocate empty texture with same size
-		DLLTREATMENT TextureClass(const TextureClass& toCopy);
+		DLLTREATMENT TextureClass(const TextureClass& toCopy, bool copyTextureData = false);
 		DLLTREATMENT TextureClass(const TextureClass&& toCopy);
-		DLLTREATMENT ~TextureClass();
+		DLLTREATMENT ~TextureClass() = default;
+		//will just copy data in RAM and allocate empty texture with same size on GPU
 		DLLTREATMENT void operator=(const TextureClass& toCopy);
 		DLLTREATMENT void operator=(const TextureClass&& toCopy);
 		

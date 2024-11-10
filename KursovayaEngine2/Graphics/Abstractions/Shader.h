@@ -8,10 +8,12 @@
 namespace Graphics::Abstractions {
 	class ShaderClass {
 	public:
-		typedef Primitives::ShaderProgramClass::CFAC_UniformFuncsAccess_Class CFAC_UniformFuncs_Class;
+		using CFAC_UniformFuncs_Class = Primitives::ShaderProgramClass::CFAC_UniformFuncs_Class;
 	private:
 		//dosent actually hold shaders data, it is storing StalkerClass pointing to actual instance
 		class ShaderDataClass: protected Primitives::ShaderProgramClass {
+			friend class ShaderClass;
+		protected:
 			struct UniformDataStruct {
 				std::string Name;
 				unsigned int ID;
@@ -22,11 +24,10 @@ namespace Graphics::Abstractions {
 			ShaderDataClass(const wchar_t* vsPath, const wchar_t* fsPath);
 			ShaderDataClass(const wchar_t* vsPath, const wchar_t* gsPath, const wchar_t* fsPath);
 			ShaderDataClass(const ShaderDataClass&& toCopy);
+			~ShaderDataClass() = default;
 			unsigned int GetUniformIDByName(const char* name);
 			void Bind();
-			CFAC_UniformFuncs_Class gCFAC_UniformFuncs();
 			const Primitives::ShaderProgramClass& gPrimitiveShader() const;
-			~ShaderDataClass();
 		};
 
 		static DynArr<ShaderDataClass> ShadersStorage;
@@ -49,7 +50,7 @@ namespace Graphics::Abstractions {
 		//if updShaderDataFuncPtr is nullptr then function wont be called
 		DLLTREATMENT ShaderClass(const wchar_t* vertexShaderPath, const wchar_t* geometryShaderPath, const wchar_t* fragmentShaderPath, void* ptrToCustomStorageOfShaderDataUpdaterFunc, void(*updShaderDataFuncPtr)(void*, ShaderClass*));
 		//if updShaderDataFuncPtr is nullptr then function wont be called
-		DLLTREATMENT ShaderClass(const ShaderClass& toCopy, void* ptrToCustomStorageOfShaderDataUpdaterFunc, void(*updShaderDataFuncPtr)(void*, ShaderClass*));
+		DLLTREATMENT ShaderClass(const ShaderClass& toCopy, void* ptrToCustomStorageOfShaderDataUpdaterFunc = nullptr, void(*updShaderDataFuncPtr)(void*, ShaderClass*) = nullptr);
 		DLLTREATMENT ShaderClass(const ShaderClass&& toCopy);
 		DLLTREATMENT ~ShaderClass();
 		DLLTREATMENT void operator=(const ShaderClass&& toCopy);

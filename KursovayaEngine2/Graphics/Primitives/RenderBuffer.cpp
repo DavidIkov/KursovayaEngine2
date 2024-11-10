@@ -24,12 +24,13 @@ RenderBufferClass::RenderBufferClass(const RenderBufferClass&& toCopy) {
     toCopy.Deleted = true;
 }
 void RenderBufferClass::operator=(const RenderBufferClass&& toCopy) {
-    this->~RenderBufferClass();
+    Delete();
     memcpy(this, &toCopy, sizeof(RenderBufferClass));
     toCopy.Deleted = true;
 }
 RenderBufferClass::~RenderBufferClass() {
     if (not Deleted) {
+        Unbind();
         glSC(glDeleteRenderbuffers(1, &ID));
         Deleted = true;
     }

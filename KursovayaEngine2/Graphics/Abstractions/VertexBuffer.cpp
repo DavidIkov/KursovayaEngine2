@@ -1,42 +1,117 @@
 #include"VertexBuffer.h"
 #include<string>
-/*
+#include"Tools/FileTypesReaders/Obj.h"
+
+using namespace KE2;
 using namespace Graphics::Abstractions;
 namespace GP = Graphics::Primitives;
 
-VertexBufferClass::VertexBufferClass() {}
+VertexBufferClass::VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode) :BufferReadWriteMode(bufferReadWriteMode) { VA.Unbind(); }
 VertexBufferClass::VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const void* data, unsigned int dataSizeInBytes, const DynArr<LayoutDataStruct>& layout) :
 	BufferReadWriteMode(bufferReadWriteMode), DataSizeInBytes(dataSizeInBytes), Layout(layout) {
 	GP::VertexBufferClass::SetData(data, dataSizeInBytes, bufferReadWriteMode);
 	GP::VertexBufferClass::SetLayout(layout);
 	VA.Unbind();
+}
+VertexBufferClass::VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const wchar_t* filePath) :
+	BufferReadWriteMode(bufferReadWriteMode) {
+	VA.Unbind();
+	std::wstring filePathStr(filePath);
+	std::wstring fileType = filePathStr.substr(filePathStr.find_last_of(L'.') + 1);
+	if (fileType == L"obj") {
+		std::vector<float> data = ReadObjFileType(filePath);
+		DataSizeInBytes = data.size() * sizeof(float);
+		GP::VertexBufferClass::SetData(&data[0], DataSizeInBytes, bufferReadWriteMode);
+	}
+	else {
+		ErrorsSystemNamespace::SendError << "provided type of file: [" << fileType << "] is not supported" >> ErrorsEnumWrapperStruct(ErrorsEnum::ProvidedTypeOfFileNotSupported);
+	}
+}
+VertexBufferClass::VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const wchar_t* filePath, const DynArr<LayoutDataStruct>& layout):
+	VertexBufferClass(bufferReadWriteMode,filePath) {
+	VA.Bind();
+	GP::VertexBufferClass::Bind();
+	GP::VertexBufferClass::SetLayout(layout);
+	VA.Unbind();
+}
+VertexBufferClass::VertexBufferClass(const VertexBufferClass& toCopy, bool copyBufferData) :
+	BufferReadWriteMode(toCopy.BufferReadWriteMode), DataSizeInBytes(toCopy.DataSizeInBytes), Layout(toCopy.Layout) {
+	GP::VertexBufferClass::SetLayout(Layout);
+	GP::VertexBufferClass::SetData(nullptr, DataSizeInBytes, BufferReadWriteMode);
+	if (copyBufferData) GP::VertexBufferClass::CopySubData(toCopy, 0, 0, DataSizeInBytes);
+	VA.Unbind();
+}
+VertexBufferClass::VertexBufferClass(const VertexBufferClass&& toCopy) :
+	GP::VertexBufferClass(std::move(toCopy)), VA(std::move(toCopy.VA)), Layout(std::move(toCopy.Layout)),
+	BufferReadWriteMode(toCopy.BufferReadWriteMode), DataSizeInBytes(toCopy.DataSizeInBytes) {
+	VA.Unbind();
+};
+void VertexBufferClass::operator=(const VertexBufferClass& toCopy) {
+	Delete();
+	new(this) VertexBufferClass(toCopy, false);
+}
+void VertexBufferClass::operator=(const VertexBufferClass&& toCopy) {
+	Delete();
+	new(this) VertexBufferClass(std::move(toCopy));
+}
+
+void VertexBufferClass::SetLayout(DynArr<LayoutDataStruct> layout) {
+	VA.Bind();
+	GP::VertexBufferClass::SetLayout(layout);
+	VA.Unbind();
+}
+
+void VertexBufferClass::SetData(const void* data, unsigned int dataSizeInBytes) {
+	if (DataSizeInBytes == dataSizeInBytes)
+		GP::VertexBufferClass::SetSubData(0, data, DataSizeInBytes);
+	else {
+		DataSizeInBytes = dataSizeInBytes;
+		GP::VertexBufferClass::SetData(data, DataSizeInBytes, BufferReadWriteMode);
+	}
+}
+
+void VertexBufferClass::CopyData(const VertexBufferClass& srcBuffer) {
+	if (DataSizeInBytes == srcBuffer.DataSizeInBytes) GP::VertexBufferClass::CopySubData(srcBuffer, 0, 0, DataSizeInBytes);
+	else {
+		DataSizeInBytes = srcBuffer.DataSizeInBytes;
+		GP::VertexBufferClass::SetData(nullptr, DataSizeInBytes, BufferReadWriteMode);
+		GP::VertexBufferClass::CopySubData(srcBuffer, 0, 0, DataSizeInBytes);
+	}
+}
+void VertexBufferClass::CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) {
+	GP::VertexBufferClass::CopySubData(srcBuffer, srcOffsetInBytes, dstOffsetInBytes, amountOfBytesToCopy);
+}
+
+void VertexBufferClass::GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) {
+	GP::VertexBufferClass::GetSubData(offsetInBytes, amountOfBytesToCopy, data);
+}
+void VertexBufferClass::GetData(void* data) {
+	GP::VertexBufferClass::GetSubData(0, DataSizeInBytes, data);
+}
+
+VertexBufferClass::BufferReadWriteModeEnum VertexBufferClass::gBufferReadWriteModeEnum() const {
+	return BufferReadWriteMode;
+}
+unsigned int VertexBufferClass::gDataSizeInBytes() const {
+	return DataSizeInBytes;
+}
+const DynArr<VertexBufferClass::LayoutDataStruct>& VertexBufferClass::gLayout() const {
+	return Layout;
+}
+
+void VertexBufferClass::Delete() {
+	this->~VertexBufferClass();
+}
+
+void VertexBufferClass::Bind() {
+	GP::VertexBufferClass::Bind();
+}
+void VertexBufferClass::Unbind() {
 	GP::VertexBufferClass::Unbind();
 }
-VertexBufferClass::VertexBufferClass(const wchar_t* filePath) {
-	std::wstring filePathStr(filePath);
-	if (filePathStr.substr(filePathStr.size() - 3, 3) == L"obj") {
-
-	}
-	else DebuggingTools::ManageTheError({ DebuggingTools::ErrorTypes::Critical,L"the type of file \"" + filePathStr + L"\" is not accepted",KURSAVAYAENGINE2_CORE_ERRORS::TRYING_TO_CALL_FUNCTION_WITH_INVALID_ARGUMENTS });
+void VertexBufferClass::BindForRender() {
+	VA.Bind();
 }
-DLLTREATMENT VertexBufferClass(const VertexBufferClass&& toCopy);
-DLLTREATMENT void operator=(const VertexBufferClass&& toCopy);
-
-DLLTREATMENT void SetLayout(DynArr<LayoutDataStruct> layout);
-
-DLLTREATMENT void SetData(const void* data, unsigned int dataSizeInBytes);
-using Primitives::VertexBufferClass::SetSubData;
-
-DLLTREATMENT void CopyData(const VertexBufferClass& srcBuffer);
-DLLTREATMENT void CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy);
-
-//data should point to already allocated memory
-DLLTREATMENT void GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data);
-//data should point to already allocated memory
-DLLTREATMENT void GetData(void* data);
-
-DLLTREATMENT void Bind();
-DLLTREATMENT void Unbind();
-DLLTREATMENT void BindForRender();
-DLLTREATMENT void UnbindFromRender();
-*/
+void VertexBufferClass::UnbindFromRender() {
+	GP::VertexArrayClass::Unbind();
+}

@@ -6,6 +6,7 @@
 namespace Graphics::Primitives {
 
 	class ShaderProgramClass {
+	protected:
 		unsigned int ID;
 #if defined KE2_Debug
 		mutable bool Linked = false;
@@ -98,7 +99,7 @@ namespace Graphics::Primitives {
 			CFAC_FuncConstr(SetUniformMatrix2x3fv) CFAC_FuncConstr(SetUniformMatrix3x2fv) CFAC_FuncConstr(SetUniformMatrix2x4fv)
 			CFAC_FuncConstr(SetUniformMatrix4x2fv) CFAC_FuncConstr(SetUniformMatrix3x4fv) CFAC_FuncConstr(SetUniformMatrix4x3fv)
 		);
-		CFAC_ClassConstructor(UniformFuncsAccess,
+		CFAC_ClassConstructor(UniformFuncs,
 			CFAC_FuncConstr(SetUniform1f) CFAC_FuncConstr(SetUniform2f) CFAC_FuncConstr(SetUniform3f) CFAC_FuncConstr(SetUniform4f)
 			CFAC_FuncConstr(SetUniform1i) CFAC_FuncConstr(SetUniform2i) CFAC_FuncConstr(SetUniform3i) CFAC_FuncConstr(SetUniform4i)
 			CFAC_FuncConstr(SetUniform1ui) CFAC_FuncConstr(SetUniform2ui) CFAC_FuncConstr(SetUniform3ui) CFAC_FuncConstr(SetUniform4ui)
