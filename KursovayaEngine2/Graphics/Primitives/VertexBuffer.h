@@ -5,6 +5,7 @@
 #include"Tools/DynArr.h"
 #include"Tools/AnonDynArr.h"
 #include"Tools/ErrorsSystem.h"
+#include"Tools/ArrayView.h"
 
 namespace Graphics::Primitives {
 
@@ -49,8 +50,8 @@ namespace Graphics::Primitives {
 		};
 		DLLTREATMENT void SetLayout(const DynArr<LayoutDataStruct>& layout);
 
-		DLLTREATMENT void SetData(const void* data, unsigned int dataSizeInBytes, const BufferReadWriteModeEnum bufferReadWriteMode);
-		DLLTREATMENT void SetSubData(unsigned int offsetInBytes, const void* data, unsigned int dataSizeInBytes);
+		DLLTREATMENT void SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode);
+		DLLTREATMENT void SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data);
 
 		DLLTREATMENT void CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy);
 

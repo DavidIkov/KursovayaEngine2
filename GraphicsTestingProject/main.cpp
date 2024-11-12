@@ -18,12 +18,9 @@
 #include"Maths/Matrix.h"
 #include"Tools/FileTypesReaders/Obj.h"
 #include"Tools/Time.h"
-#include<array>
 
 namespace GP = Graphics::Primitives;
 namespace GA = Graphics::Abstractions;
-
-unsigned int ProgramExitCode = 0;
 
 int main()
 {
@@ -108,51 +105,12 @@ int main()
             GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float }
         ));
 
-        GA::VertexBufferClass QUAD_VB(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw,std::array<float,12>({1,-1,1,1,-1,1,1,-1,-1,-1,-1,1}).data(), 12 * sizeof(float),
+        GA::VertexBufferClass QUAD_VB(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw,ArrayView<float>({1,-1,1,1,-1,1,1,-1,-1,-1,-1,1}),
             DynArr<GP::VertexBufferClass::LayoutDataStruct>(
             GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float }
         ));
 
 
-
-        /*
-        GP::VertexArrayClass VA1;
-
-        GP::VertexBufferClass VB1;
-        VB1.SetData((byte*)&VB1_DATA[0], VB1_DATA.size() * sizeof(float), GP::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw);
-        VB1.SetLayout(DynArr<GP::VertexBufferClass::LayoutDataStruct>(
-            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
-            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
-            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
-            GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float }
-        ));
-        VA1.Unbind();
-
-        GP::VertexArrayClass VA2;
-        
-        GP::VertexBufferClass VB2;
-        VB2.SetData((byte*)&VB2_DATA[0],VB2_DATA.size() * sizeof(float), GP::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw);
-		VB2.SetLayout(DynArr<GP::VertexBufferClass::LayoutDataStruct>(
-            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
-            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
-            GP::VertexBufferClass::LayoutDataStruct{ 3,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
-            GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float }
-        ));
-        VA2.Unbind();
-
-        std::vector<float> quadVBD({ 1,-1,1,1,-1,1,1,-1,-1,-1,-1,1 });
-
-        GP::VertexArrayClass QUAD_VA;
-
-        GP::VertexBufferClass QUAD_VB;
-        QUAD_VB.SetData((byte*)&quadVBD[0], quadVBD.size() * sizeof(float), GP::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw);
-        QUAD_VB.SetLayout(DynArr<GP::VertexBufferClass::LayoutDataStruct>(
-            GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float }
-        ));
-
-        QUAD_VA.Unbind();
-
-        */
 
 		GA::ShaderClass SP(L"Shaders/full3d.vs", L"Shaders/full3d.fs", nullptr, nullptr);
                 
@@ -169,16 +127,16 @@ int main()
         SP.gCFAC_UniformFuncs().SetUniform1i(SP.GetUniformIDByName("u_tex1"), 0);
         SP.gCFAC_UniformFuncs().SetUniform1i(SP.GetUniformIDByName("u_tex2"), 1);
 
-        GA::TextureClass TEX0(GP::TextureClass::DimensionsEnum::Two, "Textures/blackFace.jpg",
-            GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
-            GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
-            GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GP::TextureClass::DataSettingsStruct{GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
-            GP::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RGB,GP::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte});
-        GA::TextureClass TEX1(GP::TextureClass::DimensionsEnum::Two, "Textures/simpleFace.png",
-            GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
-            GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
-            GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GP::TextureClass::DataSettingsStruct{GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
-            GP::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RGBA,GP::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte});
+        GA::TextureClass TEX0(GA::TextureClass::DimensionsEnum::Two, "Textures/blackFace.jpg",
+            GA::TextureClass::SettingsStruct{ GA::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GA::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
+            GA::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GA::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
+            GA::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GA::TextureClass::DataSettingsStruct{GA::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
+            GA::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RGB,GA::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte});
+        GA::TextureClass TEX1(GA::TextureClass::DimensionsEnum::Two, "Textures/simpleFace.png",
+            GA::TextureClass::SettingsStruct{ GA::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GA::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
+            GA::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GA::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
+            GA::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GA::TextureClass::DataSettingsStruct{GA::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
+            GA::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RGBA,GA::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte});
         
 
         
@@ -421,5 +379,5 @@ int main()
     catch (...){}
 
 	KE2::Manager::UninitializeKE2();
-    return ProgramExitCode;
+    return 0;
 }

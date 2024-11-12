@@ -25,7 +25,7 @@ namespace Graphics::Abstractions {
 		DynArr<LayoutDataStruct> Layout;
 	public:
 		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode);
-		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const void* data, unsigned int dataSizeInBytes, const DynArr<LayoutDataStruct>& layout);
+		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const ArrayView<void>& data, const DynArr<LayoutDataStruct>& layout);
 		//filePath to some 3d object, right now only .obj is accepted
 		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const wchar_t* filePath);
 		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const wchar_t* filePath, const DynArr<LayoutDataStruct>& layout);
@@ -38,7 +38,7 @@ namespace Graphics::Abstractions {
 
 		DLLTREATMENT void SetLayout(DynArr<LayoutDataStruct> layout);
 
-		DLLTREATMENT void SetData(const void* data, unsigned int dataSizeInBytes);
+		DLLTREATMENT void SetData(const ArrayView<void>& data);
 		using Primitives::VertexBufferClass::SetSubData;
 
 		DLLTREATMENT void CopyData(const VertexBufferClass& srcBuffer);

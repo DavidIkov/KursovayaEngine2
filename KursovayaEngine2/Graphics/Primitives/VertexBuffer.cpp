@@ -98,18 +98,18 @@ static unsigned int _GetVBUsageForGL(VertexBufferClass::BufferReadWriteModeEnum 
     }
     return 0;
 }
-void VertexBufferClass::SetData(const void* data, unsigned int dataSizeInBytes, const BufferReadWriteModeEnum bufferReadWriteMode) {
+void VertexBufferClass::SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode) {
     Assert_NotDeleted_Macro;
     Assert_Binded_Macro;
 
     if (bufferReadWriteMode == BufferReadWriteModeEnum::None) ErrorsSystemNamespace::SendError << "BufferReadWriteMode is none" >> ErrorsEnumWrapperStruct(ErrorsEnum::BufferReadWriteModeInNone);
-	glSC(glBufferData(GL_ARRAY_BUFFER, dataSizeInBytes, data, _GetVBUsageForGL(bufferReadWriteMode)));
+	glSC(glBufferData(GL_ARRAY_BUFFER, data.gLenInBytes(), data.gDataPtr(), _GetVBUsageForGL(bufferReadWriteMode)));
 }
-void VertexBufferClass::SetSubData(unsigned int offsetInBytes, const void* data, unsigned int dataSizeInBytes) {
+void VertexBufferClass::SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) {
     Assert_NotDeleted_Macro;
     Assert_Binded_Macro;
 
-	glSC(glBufferSubData(GL_ARRAY_BUFFER, offsetInBytes, dataSizeInBytes, data));
+	glSC(glBufferSubData(GL_ARRAY_BUFFER, offsetInBytes, data.gLenInBytes(), data.gDataPtr()));
 }
 
 void VertexBufferClass::CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) {

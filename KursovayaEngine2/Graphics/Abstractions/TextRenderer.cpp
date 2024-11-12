@@ -46,7 +46,7 @@ GA::TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const w
 
     TEXT_VA.Bind();
     TEXT_VB.Bind();
-    TEXT_VB.SetData(nullptr, 6 * 4 * sizeof(float), GP::VertexBufferClass::BufferReadWriteModeEnum::DynamicDraw);
+    TEXT_VB.SetData(ArrayView<float>(nullptr, 6 * 4), GP::VertexBufferClass::BufferReadWriteModeEnum::DynamicDraw);
     TEXT_VB.SetLayout(DynArr<GP::VertexBufferClass::LayoutDataStruct>(
         GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
         GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float }));
@@ -79,12 +79,12 @@ GA::TextRendererClass::FontStruct::~FontStruct() {
 
 
 GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const char* fontDir, const wchar_t* chars) :
-    Texture(GP::TextureClass::DimensionsEnum::Two, Vector3U(0, 0, 0), nullptr, GP::TextureClass::SettingsStruct{
-                    GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,
-                    GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
-                    GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth },
-                    GP::TextureClass::DataSettingsStruct{ GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Red,
-                    GP::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::Red,GP::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte })
+    Texture(GA::TextureClass::DimensionsEnum::Two, Vector3U(0, 0, 0), nullptr, GA::TextureClass::SettingsStruct{
+                    GA::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,GA::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,
+                    GA::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GA::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
+                    GA::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth },
+                    GA::TextureClass::DataSettingsStruct{ GA::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Red,
+                    GA::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::Red,GA::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte })
 { 
     FreeTypeFace = new FT_Face;
 
@@ -287,7 +287,7 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
             lbp[0],lbp[1],lbc[0],lbc[1],
         };
 
-        TEXT_VB.SetSubData(0, (byte*)data, 6 * 4 * sizeof(float));
+        TEXT_VB.SetSubData(0, ArrayView<float>(data, 6 * 4));
         GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, 6);
 
 

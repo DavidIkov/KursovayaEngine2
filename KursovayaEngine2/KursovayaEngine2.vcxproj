@@ -436,6 +436,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Tools\AlignmentDummyClass.h" />
     <ClInclude Include="Tools\AnonDynArr.h" />
+    <ClInclude Include="Tools\ArrayView.h" />
     <ClInclude Include="Tools\BinarySearch.h" />
     <ClInclude Include="Tools\ClassFunctionsAccessController.h" />
     <ClInclude Include="Tools\DynArr.h" />

@@ -7,9 +7,9 @@ using namespace Graphics::Abstractions;
 namespace GP = Graphics::Primitives;
 
 VertexBufferClass::VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode) :BufferReadWriteMode(bufferReadWriteMode) { VA.Unbind(); }
-VertexBufferClass::VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const void* data, unsigned int dataSizeInBytes, const DynArr<LayoutDataStruct>& layout) :
-	BufferReadWriteMode(bufferReadWriteMode), DataSizeInBytes(dataSizeInBytes), Layout(layout) {
-	GP::VertexBufferClass::SetData(data, dataSizeInBytes, bufferReadWriteMode);
+VertexBufferClass::VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const ArrayView<void>& data, const DynArr<LayoutDataStruct>& layout) :
+	BufferReadWriteMode(bufferReadWriteMode), DataSizeInBytes(data.gLenInBytes()), Layout(layout) {
+	GP::VertexBufferClass::SetData(data, bufferReadWriteMode);
 	GP::VertexBufferClass::SetLayout(layout);
 	VA.Unbind();
 }
@@ -20,8 +20,8 @@ VertexBufferClass::VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode
 	std::wstring fileType = filePathStr.substr(filePathStr.find_last_of(L'.') + 1);
 	if (fileType == L"obj") {
 		std::vector<float> data = ReadObjFileType(filePath);
-		DataSizeInBytes = data.size() * sizeof(float);
-		GP::VertexBufferClass::SetData(&data[0], DataSizeInBytes, bufferReadWriteMode);
+		DataSizeInBytes = (unsigned int)(data.size() * sizeof(float));
+		GP::VertexBufferClass::SetData(ArrayView<void>(&data[0], DataSizeInBytes), bufferReadWriteMode);
 	}
 	else {
 		ErrorsSystemNamespace::SendError << "provided type of file: [" << fileType << "] is not supported" >> ErrorsEnumWrapperStruct(ErrorsEnum::ProvidedTypeOfFileNotSupported);
@@ -37,7 +37,7 @@ VertexBufferClass::VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode
 VertexBufferClass::VertexBufferClass(const VertexBufferClass& toCopy, bool copyBufferData) :
 	BufferReadWriteMode(toCopy.BufferReadWriteMode), DataSizeInBytes(toCopy.DataSizeInBytes), Layout(toCopy.Layout) {
 	GP::VertexBufferClass::SetLayout(Layout);
-	GP::VertexBufferClass::SetData(nullptr, DataSizeInBytes, BufferReadWriteMode);
+	GP::VertexBufferClass::SetData(ArrayView<void>(nullptr, DataSizeInBytes), BufferReadWriteMode);
 	if (copyBufferData) GP::VertexBufferClass::CopySubData(toCopy, 0, 0, DataSizeInBytes);
 	VA.Unbind();
 }
@@ -61,12 +61,12 @@ void VertexBufferClass::SetLayout(DynArr<LayoutDataStruct> layout) {
 	VA.Unbind();
 }
 
-void VertexBufferClass::SetData(const void* data, unsigned int dataSizeInBytes) {
-	if (DataSizeInBytes == dataSizeInBytes)
-		GP::VertexBufferClass::SetSubData(0, data, DataSizeInBytes);
+void VertexBufferClass::SetData(const ArrayView<void>& data) {
+	if (DataSizeInBytes == data.gLenInBytes())
+		GP::VertexBufferClass::SetSubData(0, data);
 	else {
-		DataSizeInBytes = dataSizeInBytes;
-		GP::VertexBufferClass::SetData(data, DataSizeInBytes, BufferReadWriteMode);
+		DataSizeInBytes = data.gLenInBytes();
+		GP::VertexBufferClass::SetData(data, BufferReadWriteMode);
 	}
 }
 
@@ -74,7 +74,7 @@ void VertexBufferClass::CopyData(const VertexBufferClass& srcBuffer) {
 	if (DataSizeInBytes == srcBuffer.DataSizeInBytes) GP::VertexBufferClass::CopySubData(srcBuffer, 0, 0, DataSizeInBytes);
 	else {
 		DataSizeInBytes = srcBuffer.DataSizeInBytes;
-		GP::VertexBufferClass::SetData(nullptr, DataSizeInBytes, BufferReadWriteMode);
+		GP::VertexBufferClass::SetData(ArrayView<void>(nullptr, DataSizeInBytes), BufferReadWriteMode);
 		GP::VertexBufferClass::CopySubData(srcBuffer, 0, 0, DataSizeInBytes);
 	}
 }
