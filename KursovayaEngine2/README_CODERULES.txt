@@ -13,4 +13,11 @@ their name should start with "_" so for example _UpdSmth
 if in order to get/set somnething some calculations have to be done or its not trivial then function name should start with Get/Set
 but if its trivial then name can start with g/s instead
 
+!!!!! ERRORS/WARNINGS
+warnings happen when error can be resolved without any problems, warnings NEVER throw
+errors happen when error cant be resolved without any problems, errors ALWAYS throw
+safety checks that check some input for a function and are checking some stuff about KE2 should
+happen ONLY in debug mode, in efficiency they are disabled, but safety checks that are working with
+some third party software should happen on any config
+ALL errors should inherit from ErrorBase located at ErrorsSystem.h
 

@@ -40,48 +40,6 @@ unsigned int VertexBufferClass::gID() {
     Assert_NotDeleted_Macro;
     return ID;
 }
-static unsigned int _GetSizeOfTypeByBufferDataTypeEnum_SwitchCase(VertexBufferClass::LayoutDataStruct::DataTypeEnum typ) {
-    switch (typ) {
-    case VertexBufferClass::LayoutDataStruct::DataTypeEnum::Byte: return sizeof(unsigned char);
-    case VertexBufferClass::LayoutDataStruct::DataTypeEnum::UnsignedByte: return sizeof(unsigned char);
-    case VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float: return sizeof(float);
-    case VertexBufferClass::LayoutDataStruct::DataTypeEnum::Int: return sizeof(int);
-    case VertexBufferClass::LayoutDataStruct::DataTypeEnum::UnsignedInt: return sizeof(unsigned int);
-    }
-    return 0;
-}
-void VertexBufferClass::SetLayout(const DynArr<LayoutDataStruct>& layout) {
-    Assert_NotDeleted_Macro;
-    Assert_Binded_Macro;
-#if defined KE2_Debug
-    if (BindedInstances.gVertexArrayID() == 0) ErrorsSystemNamespace::SendError << "changing layout of VertexBuffer without any VertexArray binded dosent make any sence" >> ErrorsEnumWrapperStruct(ErrorsEnum::ChangingLayoutOfVertexBufferWithoutAnyVertexArrayBinded);
-#endif
-
-	for (unsigned int i = 0; i < EnabledAttributesAmount; i++) { glSC(glDisableVertexAttribArray(i)); }
-	EnabledAttributesAmount = (unsigned short int)layout.gLength();
-
-    unsigned int totalLayoutSize = 0; for (unsigned int i = 0; i < layout.gLength(); i++)
-        totalLayoutSize += layout[i].ComponentsAmount * _GetSizeOfTypeByBufferDataTypeEnum_SwitchCase(layout[i].DataType);
-
-	
-
-	unsigned char* off = 0;
-	for (unsigned int i = 0; i < layout.gLength(); i++) {
-
-		unsigned int gl_dataType = 0;
-		switch (layout[i].DataType) {
-		case LayoutDataStruct::DataTypeEnum::Byte: gl_dataType = GL_BYTE; break;
-		case LayoutDataStruct::DataTypeEnum::UnsignedByte: gl_dataType = GL_UNSIGNED_BYTE; break;
-		case LayoutDataStruct::DataTypeEnum::Float: gl_dataType = GL_FLOAT; break;
-		case LayoutDataStruct::DataTypeEnum::Int: gl_dataType = GL_INT; break;
-		case LayoutDataStruct::DataTypeEnum::UnsignedInt: gl_dataType = GL_UNSIGNED_INT; break;
-		}
-
-		glSC(glVertexAttribPointer(i, layout[i].ComponentsAmount, gl_dataType, GL_FALSE, totalLayoutSize, (void*)off));
-		glSC(glEnableVertexAttribArray(i));
-		off += _GetSizeOfTypeByBufferDataTypeEnum_SwitchCase(layout[i].DataType)*layout[i].ComponentsAmount;
-	}
-}
 
 static unsigned int _GetVBUsageForGL(VertexBufferClass::BufferReadWriteModeEnum usage) {
     switch (usage) {

@@ -47,10 +47,10 @@ GA::TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const w
     TEXT_VA.Bind();
     TEXT_VB.Bind();
     TEXT_VB.SetData(ArrayView<float>(nullptr, 6 * 4), GP::VertexBufferClass::BufferReadWriteModeEnum::DynamicDraw);
-    TEXT_VB.SetLayout(DynArr<GP::VertexBufferClass::LayoutDataStruct>(
-        GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float },
-        GP::VertexBufferClass::LayoutDataStruct{ 2,GP::VertexBufferClass::LayoutDataStruct::DataTypeEnum::Float }));
-    TEXT_VA.Unbind();
+    TEXT_VA.SetAttributes(ArrayView <GP::VertexArrayClass::AttributeDataStruct>({
+        GP::VertexArrayClass::AttributeDataStruct{0,TEXT_VB,false,0,2,0,sizeof(float) * (2 + 2),GP::VertexArrayClass::AttributeDataStruct::DataTypeOnCPU_Enum::Float,GP::VertexArrayClass::AttributeDataStruct::DataTypeOnGPU_Enum::Float},
+        GP::VertexArrayClass::AttributeDataStruct{1,TEXT_VB,false,0,2,sizeof(float) * 2,sizeof(float) * (2 + 2),GP::VertexArrayClass::AttributeDataStruct::DataTypeOnCPU_Enum::Float,GP::VertexArrayClass::AttributeDataStruct::DataTypeOnGPU_Enum::Float},
+        }));
 }
 
 GA::TextRendererClass::~TextRendererClass() {

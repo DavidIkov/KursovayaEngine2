@@ -4,6 +4,7 @@
 #include"Tools/ErrorsSystem.h"
 #include"AlignmentDummyClass.h"
 #include"DLL.h"
+#include"Tools/ArrayView.h"
 typedef unsigned char byte;
 
 template<typename>
@@ -194,6 +195,13 @@ public:
 		Capacity = len;
 		for (unsigned int i = 0; i < len; i++) new(Arr + i) StoreType(std::forward<ConstructorParametersTyp>(params)...);
 	}
+	//data should point to already allocated memory
+	DynArr(StoreType* data, unsigned int len) {
+		Arr = data; Length = len; Capacity = len;
+	}
+	DynArr(ArrayView<StoreType>& arr) {
+		Arr = arr.gDataPtr(); Length = arr.gLen(); Capacity = Length;
+	}
 private:
 	template<typename...Types>
 	void constexpr _FillFromInitList(StoreType&& val, Types&&...vals) {
@@ -236,6 +244,7 @@ public:
 
 	const StoreType& operator[](const unsigned int ind) const { _CheckIfIndexInBounds(ind, Length - 1); return Arr[ind]; }
 
+	operator const ArrayView<StoreType>& () const { return ArrayView(Arr, Length); }
 
 
 private:

@@ -14,7 +14,6 @@ namespace KE2::ErrorsSystemNamespace {
 		false;
 #endif
 
-	inline bool IgnoreErrors = false;
 	inline bool DebugBreakOnErrors = true;
 
 	inline std::string LastErrorMessage;
@@ -56,10 +55,19 @@ namespace KE2::ErrorsSystemNamespace {
 		void operator>>(ErrWrapperTyp errWrapper) {
 			static_assert(std::is_base_of_v<ErrorBase, ErrWrapperTyp>, "error struct should be publicly derived from ErrorBase");
 			_ProcessError_NoThrow();
-			if (not IgnoreErrors) throw errWrapper;
+			throw errWrapper;
+		}
+	};
+	class _RethrowErrorClass {
+	public:
+		template<typename ErrWrapperTyp>
+		void operator<<(ErrWrapperTyp errWrapper) {
+			static_assert(std::is_base_of_v<ErrorBase, ErrWrapperTyp>, "error struct should be publicly derived from ErrorBase");
+			throw errWrapper;
 		}
 	};
 	inline _SendErrorClass SendError;
+	inline _RethrowErrorClass RethrowError;
 
 
 }

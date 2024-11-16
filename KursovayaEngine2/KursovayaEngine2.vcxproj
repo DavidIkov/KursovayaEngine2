@@ -261,6 +261,14 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GA_Texture</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)GA_Texture</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="Graphics\Abstractions\VertexArray.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GA_VertexArray</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">$(IntDir)GA_VertexArray</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">$(IntDir)GA_VertexArray</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|ARM'">$(IntDir)GA_VertexArray</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GA_VertexArray</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)GA_VertexArray</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="Graphics\Abstractions\VertexBuffer.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GA_VertexBuffer</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">$(IntDir)GA_VertexBuffer</ObjectFileName>
@@ -421,6 +429,7 @@
     <ClInclude Include="Dependencies\FreeType\ft2build.h" />
     <ClInclude Include="Dependencies\stb_image\stb_image.h" />
     <ClInclude Include="DLL.h" />
+    <ClInclude Include="Graphics\Abstractions\VertexArray.h" />
     <ClInclude Include="Graphics\Abstractions\VertexBuffer.h" />
     <ClInclude Include="Graphics\Abstractions\Shader.h" />
     <ClInclude Include="Graphics\Abstractions\TextRenderer.h" />

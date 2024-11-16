@@ -108,6 +108,9 @@
     <ClCompile Include="Tools\ErrorsSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\Abstractions\VertexArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\glad\include\glad\glad.h">
@@ -567,6 +570,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tools\ArrayView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Abstractions\VertexArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

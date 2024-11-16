@@ -2,25 +2,23 @@
 #include"DLL.h"
 #include<vector>
 #include"Tools/ClassFunctionsAccessController.h"
-#include"Tools/DynArr.h"
-#include"Tools/AnonDynArr.h"
 #include"Tools/ErrorsSystem.h"
 #include"Tools/ArrayView.h"
 
 namespace Graphics::Primitives {
 
 	class VertexBufferClass {
+	public:
+		typedef unsigned int VertexBufferID_Type;
 	protected:
-		unsigned int ID = 0;
+		VertexBufferID_Type ID = 0;
 		mutable bool Deleted = false;
-		unsigned short int EnabledAttributesAmount = 0;
 
 	public:
 
 		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
 			enum ErrorsEnum {
 				AlreadyDeleted,
-				ChangingLayoutOfVertexBufferWithoutAnyVertexArrayBinded,
 				BufferReadWriteModeInNone,
 			};
 			ErrorsEnum Error;
@@ -39,16 +37,9 @@ namespace Graphics::Primitives {
 		DLLTREATMENT void operator=(const VertexBufferClass&& toCopy);
 		DLLTREATMENT ~VertexBufferClass();
 		DLLTREATMENT void Delete();
-		DLLTREATMENT unsigned int gID();
+		DLLTREATMENT VertexBufferID_Type gID();
 
-		struct LayoutDataStruct {
-			unsigned int ComponentsAmount;
-			enum class DataTypeEnum :unsigned char {
-				Byte, UnsignedByte, Float, Int, UnsignedInt
-			};
-			DataTypeEnum DataType;
-		};
-		DLLTREATMENT void SetLayout(const DynArr<LayoutDataStruct>& layout);
+		inline operator VertexBufferID_Type() { return ID; }
 
 		DLLTREATMENT void SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode);
 		DLLTREATMENT void SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data);
@@ -64,7 +55,6 @@ namespace Graphics::Primitives {
 #define CFAC_ClassName VertexBufferClass
 		CFAC_ClassConstructor(FullAccess,
 			CFAC_FuncConstr(gID)
-			CFAC_FuncConstr(SetLayout)
 			CFAC_FuncConstr(SetData)
 			CFAC_FuncConstr(SetSubData)
 			CFAC_FuncConstr(CopySubData)

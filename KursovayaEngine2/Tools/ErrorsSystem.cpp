@@ -70,7 +70,8 @@ KE2::ErrorsSystemNamespace::_MessageCreatingClass& KE2::ErrorsSystemNamespace::_
 #endif
 void KE2::ErrorsSystemNamespace::_SendWarningClass::operator>>(_EndOfWarningStruct) {
 	if (not IgnoreWarnings) {
-		std::cout << "KE2 Warning: {" << Msg << '}' << std::endl;
+		std::cout << "KE2 Warning: {" << (Msg.empty() ? "Empty warning" : Msg) << '}' << std::endl;
+		Msg.clear();
 		if (DebugBreakOnWarnings) {
 			MessageBeep(MB_OK);
 			__debugbreak();
@@ -78,11 +79,10 @@ void KE2::ErrorsSystemNamespace::_SendWarningClass::operator>>(_EndOfWarningStru
 	}
 }
 void KE2::ErrorsSystemNamespace::_SendErrorClass::_ProcessError_NoThrow() {
-	if (not IgnoreErrors) {
-		std::cout << "KE2 Error: " << Msg << std::endl;
-		if (DebugBreakOnErrors) {
-			MessageBeep(MB_OK);
-			__debugbreak();
-		}
+	std::cout << "KE2 Error: {" << (Msg.empty() ? "Empty error" : Msg) << "}" << std::endl;
+	Msg.clear();
+	if (DebugBreakOnErrors) {
+		MessageBeep(MB_OK);
+		__debugbreak();
 	}
 }
