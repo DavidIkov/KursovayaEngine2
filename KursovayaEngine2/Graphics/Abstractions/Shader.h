@@ -24,7 +24,7 @@ namespace Graphics::Abstractions {
 			ShaderDataClass(const wchar_t* vsPath, const wchar_t* fsPath);
 			ShaderDataClass(const wchar_t* vsPath, const wchar_t* gsPath, const wchar_t* fsPath);
 			ShaderDataClass(const ShaderDataClass&& toCopy);
-			~ShaderDataClass() = default;
+			virtual ~ShaderDataClass() override = default;
 			unsigned int GetUniformIDByName(const char* name);
 			void Bind();
 			const Primitives::ShaderProgramClass& gPrimitiveShader() const;

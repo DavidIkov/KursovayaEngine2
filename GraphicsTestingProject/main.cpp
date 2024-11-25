@@ -227,9 +227,11 @@ int main()
                 CameraRotationMatrix = CameraRotationMatrix.RotateIn3DByAnglesC<0, 1, 2>(CameraRotationByDelta[1], 0, 0);
                 Vector3F xv(1.f, 0.f, 0.f);
                 Vector3F zv(0.f, 0.f, 1.f);
-                Matrix23F rotMat(1.f, 0.f, 0.f, 0.f, 0.f, 1.f);
-                xv = rotMat.RotateVectorC<0, 1>(xv, -CameraRotationByDelta[0]);
-                zv = rotMat.RotateVectorC<0, 1>(zv, -CameraRotationByDelta[0]);
+                Matrix33F rotMat(1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f);
+                //xv = rotMat.RotateVectorC<0, 1>(xv, -CameraRotationByDelta[0]);
+                //zv = rotMat.RotateVectorC<0, 1>(zv, -CameraRotationByDelta[0]);
+                xv = rotMat.RotateVectorByTwoVectorsU<0, 2>(xv, -CameraRotationByDelta[0]);
+                zv = rotMat.RotateVectorByTwoVectorsU<0, 2>(zv, -CameraRotationByDelta[0]);
                 CameraRotationMatrix = Matrix33F(xv[0], xv[1], xv[2], 0.f, 1.f, 0.f, zv[0], zv[1], zv[2]) * CameraRotationMatrix;
 
 
@@ -342,7 +344,7 @@ int main()
 
             VA_QUAD.Bind();
 
-            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 1, 6);
+            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, 6);
 
 			//TEXT_RENDERER.RenderText(ArialFont, L"english русский ЙЖЁ!:(|&", Vector2F(-1,0), Vector2F(-1,0), Vector2U(Width, Height), Vector2F(1, 0), 0.5f);
             

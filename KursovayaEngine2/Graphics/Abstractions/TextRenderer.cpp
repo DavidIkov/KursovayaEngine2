@@ -46,8 +46,7 @@ GA::TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const w
 
     TEXT_VA.Bind();
     TEXT_VB.Bind();
-    TEXT_VB.SetData(ArrayView<float>(nullptr, 6 * 4), GP::VertexBufferClass::BufferReadWriteModeEnum::DynamicDraw);
-    TEXT_VA.SetAttributes(ArrayView <GP::VertexArrayClass::AttributeDataStruct>({
+    TEXT_VA.SetAttributes(ArrayView<GP::VertexArrayClass::AttributeDataStruct>({
         GP::VertexArrayClass::AttributeDataStruct{0,TEXT_VB,false,0,2,0,sizeof(float) * (2 + 2),GP::VertexArrayClass::AttributeDataStruct::DataTypeOnCPU_Enum::Float,GP::VertexArrayClass::AttributeDataStruct::DataTypeOnGPU_Enum::Float},
         GP::VertexArrayClass::AttributeDataStruct{1,TEXT_VB,false,0,2,sizeof(float) * 2,sizeof(float) * (2 + 2),GP::VertexArrayClass::AttributeDataStruct::DataTypeOnCPU_Enum::Float,GP::VertexArrayClass::AttributeDataStruct::DataTypeOnGPU_Enum::Float},
         }));
@@ -251,8 +250,10 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
     Vector2F scaledLocalOffset = ((localOffset + 1) / 2) * -realTextBoxSize;
 
 	float xOffset = 0;
+    DynArr<float> VertexBufferData; VertexBufferData.ChangeCapacity(6 * (2 + 2) * textLen); unsigned int realTextLen = 0;
     for (unsigned int ci = 0; ci < textLen; ci++) {
 		if (charsInds[ci] == 0) continue;
+
         FontStruct::CharacterStruct& char_ = font.Characters[charsInds[ci] - 1];
         
         Vector2F lbp(pos[0] + xOffset + char_.Bearing[0] * localPixelsToTexScaleByX, 
@@ -287,13 +288,22 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
             lbp[0],lbp[1],lbc[0],lbc[1],
         };
 
-        TEXT_VB.SetSubData(0, ArrayView<float>(data, 6 * 4));
-        GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, 6);
+        for (unsigned int i = 0; i < 6 * 4; i++) VertexBufferData[realTextLen * 4 * 6 + i] = data[i];
+
+        //TEXT_VB.SetSubData(0, ArrayView<float>(data, 6 * 4));
+        //GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, 6);
 
 
         xOffset += char_.Advance * localPixelsToTexScaleByX;
-   
+
+        realTextLen++;
     }
+
+    TEXT_VB.SetData(ArrayView<void>(VertexBufferData, realTextLen * 6 * 4 * sizeof(float)), GP::VertexBufferClass::BufferReadWriteModeEnum::StreamDraw);
+    //for (unsigned int i=0;i<realTextLen;i++)
+    GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, 6*realTextLen);
+    //GP::RendererNamespace::DrawArraysInstanced(GP::RendererNamespace::PrimitivesEnum::Triangles, 0,6, realTextLen);
+
 
     TEXT_VA.Unbind();
 }

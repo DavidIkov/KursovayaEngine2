@@ -16,7 +16,7 @@ namespace Graphics::Abstractions {
 		DLLTREATMENT VertexArrayClass(const ArrayView<AttributeDataStruct>& attribsData);
 		DLLTREATMENT VertexArrayClass(const VertexArrayClass& toCopy);
 		DLLTREATMENT VertexArrayClass(const VertexArrayClass&& toCopy);
-		DLLTREATMENT ~VertexArrayClass();
+		DLLTREATMENT virtual ~VertexArrayClass() override;
 		DLLTREATMENT VertexArrayClass& operator=(const VertexArrayClass& toCopy);
 		DLLTREATMENT VertexArrayClass& operator=(const VertexArrayClass&& toCopy);
 

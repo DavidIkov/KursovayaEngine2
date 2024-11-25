@@ -11,7 +11,7 @@ constexpr unsigned int RotationStandart3D[6] = { 2,1,0,2,0,1 };
 template<unsigned int SizeX, unsigned int SizeY, typename Type>
 class Matrix {
 
-	Type Nums[SizeX * SizeY] = { 0.f };
+	Type Nums[SizeX * SizeY] = { Type() };
 
 	template<typename...otherNumsTyp>
 	void ConstructFromNums(const Type num, const otherNumsTyp...otherNums) {
@@ -21,7 +21,7 @@ class Matrix {
 
 	template<unsigned int vecLen, typename...otherVecsTyp>
 	void ConstructFromVecs(const Vector<vecLen, Type>& vec, const otherVecsTyp...otherVecs) {
-		memcpy(&Nums[SizeY * (SizeX - sizeof...(otherVecs) - 1)], &vec[0], sizeof(Type) * vecLen);
+		std::memcpy(&Nums[SizeY * (SizeX - sizeof...(otherVecs) - 1)], &vec[0], sizeof(Type) * vecLen);
 		if constexpr (sizeof...(otherVecs) != 0) ConstructFromVecs<vecLen>(otherVecs...);
 	}
 public:
@@ -43,20 +43,20 @@ public:
 		for (unsigned int i = 0; i < SizeX * SizeY; i++) Nums[i] = num;
 	}
 	Matrix(const Type* numsStart) {
-		memcpy(&Nums[0], numsStart, sizeof(Type) * SizeX * SizeY);
+		std::memcpy(&Nums[0], numsStart, sizeof(Type) * SizeX * SizeY);
 	}
 	Matrix() {
 
 	}
 
 	Matrix(const Matrix<SizeX, SizeY, Type>& matToCopy) {
-		memcpy(this, &matToCopy, sizeof(matToCopy));
+		std::memcpy(this, &matToCopy, sizeof(matToCopy));
 	}
 	Matrix(Matrix<SizeX, SizeY, Type>&& matToCopy) {
-		memcpy(this, &matToCopy, sizeof(matToCopy));
+		std::memcpy(this, &matToCopy, sizeof(matToCopy));
 	}
 	Matrix<SizeX, SizeY, Type>& operator=(const Matrix<SizeX, SizeY, Type>& matToCopy) {
-		memcpy(this, &matToCopy, sizeof(matToCopy));
+		std::memcpy(this, &matToCopy, sizeof(matToCopy));
 		return *this;
 	}
 
@@ -126,7 +126,7 @@ public:
 		for (unsigned int x = 0; x < SizeX; x++) {
 			Vector<SizeY, Type> v(&Nums[x * SizeY]);
 			v = v.Normalize();
-			memcpy(&Nums[x * SizeY], &v[0], sizeof(Type) * SizeY);
+			std::memcpy(&Nums[x * SizeY], &v[0], sizeof(Type) * SizeY);
 		}
 	}
 
@@ -152,9 +152,9 @@ public:
 		unsigned int axis3 = RotationStandart3D[axis1 * 2];
 		if (axis3 == axis2) axis3 = RotationStandart3D[axis1 * 2 + 1];
 
-		memcpy(&Nums[axis1 * 3], &vecs[0][0], sizeof(Type) * 3);
-		memcpy(&Nums[axis2 * 3], &vecs[1][0], sizeof(Type) * 3);
-		memcpy(&Nums[axis3 * 3], &vecs[2][0], sizeof(Type) * 3);
+		std::memcpy(&Nums[axis1 * 3], &vecs[0][0], sizeof(Type) * 3);
+		std::memcpy(&Nums[axis2 * 3], &vecs[1][0], sizeof(Type) * 3);
+		std::memcpy(&Nums[axis3 * 3], &vecs[2][0], sizeof(Type) * 3);
 	}
 
 	//all vectors are supposed to be length of 1
@@ -168,11 +168,39 @@ public:
 	}
 
 	//cant be used for just 1 axis at a time, have to deal with whole matrix, this will work with any gived matrix space but it comes at a cost...
+	//U stands for Universal, meaning that it can work in any coordinates system, not only Cartesian
 	const Vector<SizeX, Type> GetLocalCordsForAxisU(const Vector<SizeY, Type>& vec) const {
 
 		static_assert(SizeX == SizeY, "Getting local cords when matrix is not a square is not defined");
 
 		return (Vector<SizeX, Type>)(GetInversedMatrix() * vec);
+
+	}
+
+	template<unsigned int axisForX, unsigned int axisForY>
+	Vector<SizeY, Type> RotateVectorByTwoVectorsU(const Vector<SizeY, Type>& vec, const float angle) const {
+		return std::move(RotateVectorByTwoVectorsU<axisForX, axisForY>(vec, angle, this->GetInversedMatrix(this->GetDeterminant())));
+	}
+	template<unsigned int axisForX, unsigned int axisForY>
+	Vector<SizeY, Type> RotateVectorByTwoVectorsU(const Vector<SizeY, Type>& vec, const float angle, const Type det) const {
+		return std::move(RotateVectorByTwoVectorsU<axisForX, axisForY>(vec, angle, this->GetInversedMatrix(det)));
+	}
+	template<unsigned int axisForX, unsigned int axisForY>
+	Vector<SizeY, Type> RotateVectorByTwoVectorsU(const Vector<SizeY, Type>& vec, const float angle, const Matrix<SizeX,SizeY,Type>& invMat) const {
+
+		static_assert(SizeX == SizeY, "Matrix should be square, otherwise it dosent make sence");
+		static_assert(axisForX < SizeX and axisForX >= 0 and axisForY < SizeX and axisForY >= 0, "Invalid axis indexes");
+		static_assert(axisForX != axisForY, "Axes cant be same");
+
+		Matrix<SizeX, SizeY, Type> RotMat;
+		for (unsigned int x = 0; x < SizeX; x++)if (x != axisForX && x != axisForY) RotMat[x * SizeY + x] = 1.f;
+
+		RotMat[axisForX * SizeY + axisForX] = cosf(angle);
+		RotMat[axisForX * SizeY + axisForY] = sinf(angle);
+		RotMat[axisForY * SizeY + axisForX] = -sinf(angle);
+		RotMat[axisForY * SizeY + axisForY] = cosf(angle);
+
+		return (*this) * RotMat * invMat * vec;
 
 	}
 
@@ -206,7 +234,7 @@ public:
 	//will work only for Cartesian coordinate system(the "C" at end means Cartesian), it means that angle between all axes is pi/2
 	//axis vectors are supposed to be length of 1
 	template<unsigned int axis1, unsigned int axis2, unsigned int axis3>
-	Matrix<SizeX, SizeY, Type> RotateIn3DByAnglesC(const Type xr, const Type yr, const Type zr) const {
+	Matrix<SizeX, SizeY, Type> RotateIn3DByAnglesC(const float xr, const float yr, const float zr) const {
 
 		static_assert(SizeX == 3 and SizeY == 3, "Matrix is not 3x3, rotation is not defined");
 		static_assert(axis1 != axis2 and axis1 != axis3 and axis2 != axis3, "You cant have repeating axis rotation order");
@@ -214,7 +242,7 @@ public:
 
 		Matrix<SizeX, SizeY, Type> retMat(*this);
 
-		const Type rots[3] = { xr,yr,zr };
+		const float rots[3] = { xr,yr,zr };
 		constexpr unsigned int order[3] = { axis1,axis2,axis3 };
 
 #define rotVecMacr(i){\
@@ -222,8 +250,8 @@ public:
 		Vector<3, Type> xv(&retMat.Nums[SizeY * xvi]); Vector<3, Type> yv(&retMat.Nums[SizeY * yvi]);\
 		Vector<3, Type> nxv = xv * cosf(rots[order[i]]) + yv * sinf(rots[order[i]]);\
 		Vector<3, Type> nyv = xv * -sinf(rots[order[i]]) + yv * cosf(rots[order[i]]);\
-		memcpy(&retMat.Nums[xvi * SizeX], &nxv[0], sizeof(Type) * 3);\
-		memcpy(&retMat.Nums[yvi * SizeX], &nyv[0], sizeof(Type) * 3);}
+		std::memcpy(&retMat.Nums[xvi * SizeX], &nxv[0], sizeof(Type) * 3);\
+		std::memcpy(&retMat.Nums[yvi * SizeX], &nyv[0], sizeof(Type) * 3);}
 
 		rotVecMacr(0);
 		rotVecMacr(1);

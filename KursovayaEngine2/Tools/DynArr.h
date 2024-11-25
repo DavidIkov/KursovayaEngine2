@@ -244,7 +244,11 @@ public:
 
 	const StoreType& operator[](const unsigned int ind) const { _CheckIfIndexInBounds(ind, Length - 1); return Arr[ind]; }
 
-	operator const ArrayView<StoreType>& () const { return ArrayView(Arr, Length); }
+	operator ArrayView<StoreType> () const { return ArrayView(Arr, Length); }
+	operator const void* () const { return Arr; }
+	operator void* () { return Arr; }
+	operator const StoreType* () const { return Arr; }
+	operator StoreType* () { return Arr; }
 
 
 private:

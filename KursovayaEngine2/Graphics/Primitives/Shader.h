@@ -37,7 +37,7 @@ namespace Graphics::Primitives {
 		DLLTREATMENT void operator=(const ShaderClass&& toCopy);
 		DLLTREATMENT void Compile();
 		DLLTREATMENT unsigned int gID();
-		DLLTREATMENT ~ShaderClass();
+		DLLTREATMENT virtual ~ShaderClass();
 		DLLTREATMENT void Delete();
 		
 #define CFAC_ClassName ShaderClass

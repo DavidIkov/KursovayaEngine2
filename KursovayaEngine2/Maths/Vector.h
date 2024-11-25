@@ -4,7 +4,7 @@
 template<unsigned int AxesAmount, typename Type>
 class Vector {
 
-	Type Axes[AxesAmount] = { 0 };
+	Type Axes[AxesAmount] = { Type() };
 
 	template<typename...otherNumsTyp>
 	void ConstructFromTemplate(const Type num, const otherNumsTyp...otherNums) {

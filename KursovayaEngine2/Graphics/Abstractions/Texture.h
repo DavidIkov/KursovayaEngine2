@@ -23,7 +23,7 @@ namespace Graphics::Abstractions {
 		DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
 		DLLTREATMENT TextureClass(const TextureClass& toCopy, bool copyTextureData = false);
 		DLLTREATMENT TextureClass(const TextureClass&& toCopy);
-		DLLTREATMENT ~TextureClass() = default;
+		DLLTREATMENT virtual ~TextureClass() override = default;
 		//will just copy data in RAM and allocate empty texture with same size on GPU
 		DLLTREATMENT void operator=(const TextureClass& toCopy);
 		DLLTREATMENT void operator=(const TextureClass&& toCopy);

@@ -35,7 +35,7 @@ namespace Graphics::Primitives {
 		DLLTREATMENT VertexBufferClass();
 		DLLTREATMENT VertexBufferClass(const VertexBufferClass&& toCopy);
 		DLLTREATMENT void operator=(const VertexBufferClass&& toCopy);
-		DLLTREATMENT ~VertexBufferClass();
+		DLLTREATMENT virtual ~VertexBufferClass();
 		DLLTREATMENT void Delete();
 		DLLTREATMENT VertexBufferID_Type gID();
 

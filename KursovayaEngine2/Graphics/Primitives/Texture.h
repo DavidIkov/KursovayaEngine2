@@ -92,7 +92,7 @@ namespace Graphics::Primitives {
         DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
         DLLTREATMENT TextureClass(const TextureClass&& toCopy);
         DLLTREATMENT void operator=(const TextureClass&& toCopy);
-        DLLTREATMENT ~TextureClass();
+        DLLTREATMENT virtual ~TextureClass();
 
         DLLTREATMENT void SetData(Vector3U pixelsAmount, const void* data, const DataSettingsStruct& dataSets);
         DLLTREATMENT void SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data,

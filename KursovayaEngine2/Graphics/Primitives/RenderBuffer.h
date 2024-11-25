@@ -22,7 +22,7 @@ namespace Graphics::Primitives {
 		DLLTREATMENT RenderBufferClass(unsigned int width, unsigned int height, bool createDepthBuffer, bool createStencilBuffer);
 		DLLTREATMENT RenderBufferClass(const RenderBufferClass&& toCopy);
 		DLLTREATMENT void operator=(const RenderBufferClass&& toCopy);
-		DLLTREATMENT ~RenderBufferClass();
+		DLLTREATMENT virtual ~RenderBufferClass();
 		DLLTREATMENT void Bind();
 		DLLTREATMENT static void Unbind();
 		DLLTREATMENT unsigned int gID();

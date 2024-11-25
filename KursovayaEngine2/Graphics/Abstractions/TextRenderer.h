@@ -53,7 +53,7 @@ namespace Graphics::Abstractions {
 		}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
 
 		DLLTREATMENT TextRendererClass(const wchar_t* vertexShaderDir, const wchar_t* fragmentShaderDir);
-		DLLTREATMENT ~TextRendererClass();
+		DLLTREATMENT virtual ~TextRendererClass();
 		DLLTREATMENT StalkerClass AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters);
 
 		//pixelsInTexture is amount of pixels in the texture you are rendering this text to

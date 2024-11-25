@@ -26,7 +26,7 @@ namespace Graphics::Abstractions {
 		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const wchar_t* filePath);
 		DLLTREATMENT VertexBufferClass(const VertexBufferClass& toCopy, bool copyBufferData = false);
 		DLLTREATMENT VertexBufferClass(const VertexBufferClass&& toCopy);
-		DLLTREATMENT ~VertexBufferClass() = default;
+		DLLTREATMENT virtual ~VertexBufferClass() override = default;
 		//wont copy data on GPU, only allocate a space on GPU
 		DLLTREATMENT void operator=(const VertexBufferClass& toCopy);
 		DLLTREATMENT void operator=(const VertexBufferClass&& toCopy);

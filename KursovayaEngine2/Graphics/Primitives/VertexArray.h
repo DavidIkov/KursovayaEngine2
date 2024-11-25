@@ -58,7 +58,7 @@ namespace Graphics::Primitives {
 		DLLTREATMENT VertexArrayClass(const ArrayView<AttributeDataStruct>& attribsData);
 		DLLTREATMENT VertexArrayClass(const VertexArrayClass&& toCopy);
 		DLLTREATMENT void operator=(const VertexArrayClass&& toCopy);
-		DLLTREATMENT ~VertexArrayClass();
+		DLLTREATMENT virtual ~VertexArrayClass();
 
 		DLLTREATMENT void SetAttributes(const ArrayView<AttributeDataStruct>& attribsData);
 		DLLTREATMENT void SetAttribute(const AttributeDataStruct& attribData);

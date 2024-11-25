@@ -25,5 +25,7 @@ void RendererNamespace::DrawArrays(PrimitivesEnum primitive, unsigned int starti
 	glSC(glDrawArrays(_GetPrimitive_SwitchCase(primitive), startingInd, amountOfVertexesToRender));
 }
 void RendererNamespace::DrawArraysInstanced(PrimitivesEnum primitive, unsigned int firstVertexInd, unsigned int amountOfVertexesToRender, unsigned int instancesAmount) {
+	//for (unsigned int i = 0; i < instancesAmount; i++)
+		//DrawArrays(primitive, amountOfVertexesToRender * i, amountOfVertexesToRender);
 	glSC(glDrawArraysInstanced(_GetPrimitive_SwitchCase(primitive), firstVertexInd, amountOfVertexesToRender, instancesAmount));
 }

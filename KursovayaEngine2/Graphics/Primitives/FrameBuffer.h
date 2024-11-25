@@ -44,7 +44,7 @@ namespace Graphics::Primitives {
 		DLLTREATMENT FrameBufferClass();
 		DLLTREATMENT FrameBufferClass(const FrameBufferClass&& toCopy);
 		DLLTREATMENT void operator=(const FrameBufferClass&& toCopy);
-		DLLTREATMENT ~FrameBufferClass();
+		DLLTREATMENT virtual ~FrameBufferClass();
 		DLLTREATMENT unsigned int gID();
 		DLLTREATMENT void Delete();
 		DLLTREATMENT void Finish();

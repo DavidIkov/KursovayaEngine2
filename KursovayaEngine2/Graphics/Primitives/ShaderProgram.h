@@ -31,7 +31,7 @@ namespace Graphics::Primitives {
 		DLLTREATMENT void operator=(const ShaderProgramClass&& toCopy);
 		DLLTREATMENT void AttachShader(unsigned int id);
 		DLLTREATMENT void LinkShaders();
-		DLLTREATMENT ~ShaderProgramClass();
+		DLLTREATMENT virtual ~ShaderProgramClass();
 		DLLTREATMENT unsigned int gID();
 		DLLTREATMENT void Delete();
 		DLLTREATMENT void Bind();

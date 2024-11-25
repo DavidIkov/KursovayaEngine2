@@ -1,7 +1,6 @@
 #pragma once
 #include"DLL.h"
 #include<string>
-#include"UsefullMacros/ApplyMacroInLoop.h"
 
 
 namespace KE2::ErrorsSystemNamespace {
