@@ -6,8 +6,6 @@
 using namespace KE2;
 using namespace Graphics::Primitives;
 
-#define Assert_NotDeleted_Macro if (Deleted) ErrorsSystemNamespace::SendError<<"RenderBuffer is already deleted">>ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyDeleted);
-
 RenderBufferClass::RenderBufferClass(unsigned int width, unsigned int height, bool createDepthBuffer, bool createStencilBuffer) {
     glSC(glGenRenderbuffers(1, &ID));
     Bind();
@@ -19,29 +17,23 @@ RenderBufferClass::RenderBufferClass(unsigned int width, unsigned int height, bo
     else ErrorsSystemNamespace::SendError << "cant create RenderBuffer without any buffers" >> ErrorsEnumWrapperStruct(ErrorsEnum::NoBuffers);
 #endif
 }
-RenderBufferClass::RenderBufferClass(const RenderBufferClass&& toCopy) {
-    memcpy(this, &toCopy, sizeof(RenderBufferClass));
-    toCopy.Deleted = true;
+RenderBufferClass::RenderBufferClass(RenderBufferClass&& toCopy) noexcept :
+    ID(toCopy.ID) {
+    toCopy.ID = 0u;
 }
-void RenderBufferClass::operator=(const RenderBufferClass&& toCopy) {
-    Delete();
-    memcpy(this, &toCopy, sizeof(RenderBufferClass));
-    toCopy.Deleted = true;
+RenderBufferClass& RenderBufferClass::operator=(RenderBufferClass&& toCopy) {
+    this->~RenderBufferClass();
+    new(this) RenderBufferClass(std::move(toCopy));
+    return *this;
 }
-RenderBufferClass::~RenderBufferClass() {
-    if (not Deleted) {
+RenderBufferClass::~RenderBufferClass() noexcept(false) {
+    if (ID != 0u) {
         Unbind();
         glSC(glDeleteRenderbuffers(1, &ID));
-        Deleted = true;
+        ID = 0u;
     }
 }
-void RenderBufferClass::Delete() {
-    Assert_NotDeleted_Macro;
-    this->~RenderBufferClass();
-}
-void RenderBufferClass::Bind() {
-
-    Assert_NotDeleted_Macro;
+void RenderBufferClass::Bind() const {
 
 #if defined KE2_Debug
     BindedInstances.sRenderBuffer_ID(ID);
@@ -56,8 +48,4 @@ void RenderBufferClass::Unbind() {
     glSC(glBindRenderbuffer(GL_RENDERBUFFER, 0));
 
 
-}
-unsigned int RenderBufferClass::gID() {
-    Assert_NotDeleted_Macro;
-    return ID;
 }

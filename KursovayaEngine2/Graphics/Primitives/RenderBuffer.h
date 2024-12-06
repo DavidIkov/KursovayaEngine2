@@ -1,17 +1,14 @@
 #pragma once
 #include"DLL.h"
-#include"Tools/ClassFunctionsAccessController.h"
 #include"Tools/ErrorsSystem.h"
 
 namespace Graphics::Primitives {
 	class RenderBufferClass {
-		unsigned int ID = 0;
-		mutable bool Deleted = false;
+		unsigned int ID = 0u;
 	public:
 
 		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
 			enum ErrorsEnum {
-				AlreadyDeleted,
 				StencilBufferWithoutDepthBuffer,
 				NoBuffers,
 			};
@@ -20,19 +17,12 @@ namespace Graphics::Primitives {
 		}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
 
 		DLLTREATMENT RenderBufferClass(unsigned int width, unsigned int height, bool createDepthBuffer, bool createStencilBuffer);
-		DLLTREATMENT RenderBufferClass(const RenderBufferClass&& toCopy);
-		DLLTREATMENT void operator=(const RenderBufferClass&& toCopy);
-		DLLTREATMENT virtual ~RenderBufferClass();
-		DLLTREATMENT void Bind();
+		DLLTREATMENT RenderBufferClass(RenderBufferClass&& toCopy) noexcept;
+		DLLTREATMENT RenderBufferClass& operator=(RenderBufferClass&& toCopy);
+		DLLTREATMENT virtual ~RenderBufferClass() noexcept(false);
+		DLLTREATMENT void Bind() const;
 		DLLTREATMENT static void Unbind();
-		DLLTREATMENT unsigned int gID();
-		DLLTREATMENT void Delete();
+		inline unsigned int gID() const noexcept { return ID; }
 
-#define CFAC_ClassName RenderBufferClass
-		CFAC_ClassConstructor(FullAccess,
-			CFAC_FuncConstr(Bind)
-			CFAC_FuncConstr(gID)
-		);
-#undef CFAC_ClassName
 	};
 }

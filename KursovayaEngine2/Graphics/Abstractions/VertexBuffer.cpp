@@ -29,16 +29,18 @@ VertexBufferClass::VertexBufferClass(const VertexBufferClass& toCopy, bool copyB
 	GP::VertexBufferClass::SetData(ArrayView<void>(nullptr, DataSizeInBytes), BufferReadWriteMode);
 	if (copyBufferData) GP::VertexBufferClass::CopySubData(toCopy, 0, 0, DataSizeInBytes);
 }
-VertexBufferClass::VertexBufferClass(const VertexBufferClass&& toCopy) :
+VertexBufferClass::VertexBufferClass(VertexBufferClass&& toCopy) noexcept :
 	GP::VertexBufferClass(std::move(toCopy)),
 	BufferReadWriteMode(toCopy.BufferReadWriteMode), DataSizeInBytes(toCopy.DataSizeInBytes) {};
-void VertexBufferClass::operator=(const VertexBufferClass& toCopy) {
-	Delete();
+VertexBufferClass& VertexBufferClass::operator=(const VertexBufferClass& toCopy) {
+	this->~VertexBufferClass();
 	new(this) VertexBufferClass(toCopy, false);
+	return *this;
 }
-void VertexBufferClass::operator=(const VertexBufferClass&& toCopy) {
-	Delete();
+VertexBufferClass& VertexBufferClass::operator=(VertexBufferClass&& toCopy) {
+	this->~VertexBufferClass();
 	new(this) VertexBufferClass(std::move(toCopy));
+	return *this;
 }
 
 
@@ -63,27 +65,11 @@ void VertexBufferClass::CopySubData(const VertexBufferClass& srcBuffer, unsigned
 	GP::VertexBufferClass::CopySubData(srcBuffer, srcOffsetInBytes, dstOffsetInBytes, amountOfBytesToCopy);
 }
 
-void VertexBufferClass::GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) {
+void VertexBufferClass::GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) const {
 	GP::VertexBufferClass::GetSubData(offsetInBytes, amountOfBytesToCopy, data);
 }
-void VertexBufferClass::GetData(void* data) {
+void VertexBufferClass::GetData(void* data) const {
 	GP::VertexBufferClass::GetSubData(0, DataSizeInBytes, data);
 }
 
-VertexBufferClass::BufferReadWriteModeEnum VertexBufferClass::gBufferReadWriteModeEnum() const {
-	return BufferReadWriteMode;
-}
-unsigned int VertexBufferClass::gDataSizeInBytes() const {
-	return DataSizeInBytes;
-}
 
-void VertexBufferClass::Delete() {
-	this->~VertexBufferClass();
-}
-
-void VertexBufferClass::Bind() {
-	GP::VertexBufferClass::Bind();
-}
-void VertexBufferClass::Unbind() {
-	GP::VertexBufferClass::Unbind();
-}

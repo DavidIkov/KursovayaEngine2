@@ -4,8 +4,8 @@
 #include"Tools/ErrorsSystem.h"
 
 struct OpenGL_AnyErrorWrapperStruct : KE2::ErrorsSystemNamespace::ErrorBase {
-    unsigned int ErrorGL_Enum;
-    inline OpenGL_AnyErrorWrapperStruct(unsigned int errorGL_Enum) :ErrorGL_Enum(errorGL_Enum) {};
+    unsigned int ErrorGL_Enum = 0u;
+    inline OpenGL_AnyErrorWrapperStruct(unsigned int errorGL_Enum) noexcept :ErrorGL_Enum(errorGL_Enum) {};
 }; using OpenGL_AnyError = OpenGL_AnyErrorWrapperStruct;
 
 #if defined KE2_Debug

@@ -5,7 +5,6 @@
 
 using namespace KE2;
 using namespace Graphics::Primitives;
-#define Assert_NotDeleted_Macro if (Deleted) ErrorsSystemNamespace::SendError<<"VertexBuffer is already deleted">>ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyDeleted);
 #if defined KE2_Debug
 #define Assert_Binded_Macro if(BindedInstances.gVertexBufferID() != ID) ErrorsSystemNamespace::SendWarning<<"VertexBuffer is not binded">>ErrorsSystemNamespace::EndOfWarning;
 #else
@@ -16,30 +15,22 @@ VertexBufferClass::VertexBufferClass() {
     glSC(glGenBuffers(1, &ID));
     Bind();
 }
-VertexBufferClass::VertexBufferClass(const VertexBufferClass&& toCopy) {
-    memcpy(this, &toCopy, sizeof(VertexBufferClass));
-    toCopy.Deleted = true;
+VertexBufferClass::VertexBufferClass(VertexBufferClass&& toCopy) noexcept :
+    ID(toCopy.ID) {
+    toCopy.ID = 0u;
 }
-void VertexBufferClass::operator=(const VertexBufferClass&& toCopy) {
-    Delete();
-    memcpy(this, &toCopy, sizeof(VertexBufferClass));
-    toCopy.Deleted = true;
+VertexBufferClass& VertexBufferClass::operator=(VertexBufferClass&& toCopy) {
+    this->~VertexBufferClass();
+    new(this) VertexBufferClass(std::move(toCopy));
+    return *this;
 }
-VertexBufferClass::~VertexBufferClass() {
-    if (not Deleted) {
+VertexBufferClass::~VertexBufferClass() noexcept(false) {
+    if (ID != 0u) {
         Unbind();
         glSC(glDeleteBuffers(1, &ID));
-        Deleted = true;
+        ID = 0u;
     }
-}
-void VertexBufferClass::Delete() {
-    Assert_NotDeleted_Macro;
-    this->~VertexBufferClass();
-}
-unsigned int VertexBufferClass::gID() {
-    Assert_NotDeleted_Macro;
-    return ID;
-}
+};
 
 static unsigned int _GetVBUsageForGL(VertexBufferClass::BufferReadWriteModeEnum usage) {
     switch (usage) {
@@ -56,23 +47,19 @@ static unsigned int _GetVBUsageForGL(VertexBufferClass::BufferReadWriteModeEnum 
     }
     return 0;
 }
-void VertexBufferClass::SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode) {
-    Assert_NotDeleted_Macro;
+void VertexBufferClass::SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode) const {
     Assert_Binded_Macro;
 
     if (bufferReadWriteMode == BufferReadWriteModeEnum::None) ErrorsSystemNamespace::SendError << "BufferReadWriteMode is none" >> ErrorsEnumWrapperStruct(ErrorsEnum::BufferReadWriteModeInNone);
 	glSC(glBufferData(GL_ARRAY_BUFFER, data.gLenInBytes(), data.gDataPtr(), _GetVBUsageForGL(bufferReadWriteMode)));
 }
-void VertexBufferClass::SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) {
-    Assert_NotDeleted_Macro;
+void VertexBufferClass::SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) const {
     Assert_Binded_Macro;
 
 	glSC(glBufferSubData(GL_ARRAY_BUFFER, offsetInBytes, data.gLenInBytes(), data.gDataPtr()));
 }
 
-void VertexBufferClass::CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) {
-    Assert_NotDeleted_Macro;
-    
+void VertexBufferClass::CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) const {
     glSC(glBindBuffer(GL_COPY_READ_BUFFER, srcBuffer.ID));
     glSC(glBindBuffer(GL_COPY_WRITE_BUFFER, ID));
 
@@ -82,15 +69,13 @@ void VertexBufferClass::CopySubData(const VertexBufferClass& srcBuffer, unsigned
     glSC(glBindBuffer(GL_COPY_WRITE_BUFFER, 0));
 }
 
-void VertexBufferClass::GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) {
-    Assert_NotDeleted_Macro;
+void VertexBufferClass::GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) const {
     Assert_Binded_Macro;
 
     glSC(glGetBufferSubData(GL_ARRAY_BUFFER, offsetInBytes, amountOfBytesToCopy, data));
 }
 
-void VertexBufferClass::Bind() {
-    Assert_NotDeleted_Macro;
+void VertexBufferClass::Bind() const {
 #if defined KE2_Debug
     BindedInstances.sVertexBuffer_ID(ID);
 #endif

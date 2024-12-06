@@ -78,11 +78,13 @@ void KE2::ErrorsSystemNamespace::_SendWarningClass::operator>>(_EndOfWarningStru
 		}
 	}
 }
-void KE2::ErrorsSystemNamespace::_SendErrorClass::_ProcessError_NoThrow() {
+void KE2::ErrorsSystemNamespace::_SendErrorClass::_ProcessError_NoThrow() noexcept {
 	std::cout << "KE2 Error: {" << (Msg.empty() ? "Empty error" : Msg) << "}" << std::endl;
 	Msg.clear();
 	if (DebugBreakOnErrors) {
 		MessageBeep(MB_OK);
 		__debugbreak();
 	}
+	if (ThrowingError) 
+		std::cout << "KE2 FATAL ERROR: {another unhandled throw happened when previous throw wasnt handled, program will crash after this message}" << std::endl;
 }

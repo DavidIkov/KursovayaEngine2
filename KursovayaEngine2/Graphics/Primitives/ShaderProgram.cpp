@@ -7,7 +7,6 @@
 
 using namespace KE2;
 using namespace Graphics::Primitives;
-#define Assert_NotDeleted_Macro if (Deleted) ErrorsSystemNamespace::SendError<<"ShaderProgram is already deleted">>ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyDeleted);
 #if defined KE2_Debug
 #define Assert_Binded_Macro if (BindedInstances.gShaderProgramID() != ID) { ErrorsSystemNamespace::SendWarning<<"ShaderProgram is not binded">>ErrorsSystemNamespace::EndOfWarning; Bind(); }
 #define Assert_Linked_Macro if (not Linked) ErrorsSystemNamespace::SendError<<"ShaderProgram is not linked">>ErrorsEnumWrapperStruct(ErrorsEnum::NotLinked);
@@ -18,30 +17,55 @@ using namespace Graphics::Primitives;
 #define Assert_NotLinked_Macro
 #endif
 
-unsigned int ShaderProgramClass::gID() {
-	Assert_NotDeleted_Macro;
-	return ID;
-}
 ShaderProgramClass::ShaderProgramClass() {
 	glSC(ID = glCreateProgram());
 }
-ShaderProgramClass::ShaderProgramClass(const ShaderProgramClass&& toCopy) {
-	memcpy(this, &toCopy, sizeof(ShaderProgramClass));
-	toCopy.Deleted = true;
+ShaderProgramClass::ShaderProgramClass(const wchar_t* vsPath, const wchar_t* fsPath) :ShaderProgramClass() {
+	ShaderClass VS(vsPath, ShaderClass::TypesEnum::Vertex);
+	VS.Compile();
+	AttachShader(VS.gID());
+
+	ShaderClass FS(fsPath, ShaderClass::TypesEnum::Fragment);
+	FS.Compile();
+	AttachShader(FS.gID());
+
+	LinkShaders();
 }
-void ShaderProgramClass::operator=(const ShaderProgramClass&& toCopy) {
-    Delete();
-	memcpy(this, &toCopy, sizeof(ShaderProgramClass));
-	toCopy.Deleted = true;
+ShaderProgramClass::ShaderProgramClass(const wchar_t* vsPath, const wchar_t* gsPath, const wchar_t* fsPath) :ShaderProgramClass() {
+	ShaderClass VS(vsPath, ShaderClass::TypesEnum::Vertex);
+	VS.Compile();
+	AttachShader(VS.gID());
+
+	ShaderClass GS(gsPath, ShaderClass::TypesEnum::Geometry);
+	GS.Compile();
+	AttachShader(GS.gID());
+
+	ShaderClass FS(fsPath, ShaderClass::TypesEnum::Fragment);
+	FS.Compile();
+	AttachShader(FS.gID());
+
+	LinkShaders();
 }
-void ShaderProgramClass::AttachShader(unsigned int id) {
-	Assert_NotDeleted_Macro;
+
+ShaderProgramClass::ShaderProgramClass(ShaderProgramClass&& toCopy) noexcept :
+	ID(toCopy.ID)
+#ifdef KE2_Debug
+	,Linked(toCopy.Linked)
+#endif
+{
+	toCopy.ID = 0u;
+}
+ShaderProgramClass& ShaderProgramClass::operator=(ShaderProgramClass&& toCopy) {
+	this->~ShaderProgramClass();
+	new(this) ShaderProgramClass(std::move(toCopy));
+	return *this;
+}
+void ShaderProgramClass::AttachShader(unsigned int id) const {
 	Assert_NotLinked_Macro;
 	
 	glSC(glAttachShader(ID, id));
 }
-void ShaderProgramClass::LinkShaders() {
-	Assert_NotDeleted_Macro;
+void ShaderProgramClass::LinkShaders() const {
 	Assert_NotLinked_Macro;
 	
 	glSC(glLinkProgram(ID));
@@ -58,20 +82,15 @@ void ShaderProgramClass::LinkShaders() {
 	}
 #endif
 }
-ShaderProgramClass::~ShaderProgramClass() {
-	if (not Deleted) {
+ShaderProgramClass::~ShaderProgramClass() noexcept(false) {
+	if (ID != 0u) {
 		Unbind();
 		glSC(glDeleteProgram(ID));
-		Deleted = true;
+		ID = 0u;
 	}
 }
-void ShaderProgramClass::Delete() {
-	Assert_NotDeleted_Macro;
-	this->~ShaderProgramClass();
-}
 
-void ShaderProgramClass::Bind() {
-	Assert_NotDeleted_Macro;
+void ShaderProgramClass::Bind() const {
 	Assert_Linked_Macro;
 #if defined KE2_Debug
 	BindedInstances.sShaderProgram_ID(ID);
@@ -85,15 +104,13 @@ void ShaderProgramClass::Unbind() {
 #endif
 }
 
-unsigned int ShaderProgramClass::GetUniformIDByName(const char* name) {
-	Assert_NotDeleted_Macro;
+unsigned int ShaderProgramClass::GetUniformIDByName(const char* name) const {
 	Assert_Linked_Macro;
 	Assert_Binded_Macro;
 	glSC(int uniformID = glGetUniformLocation(ID, name));
 	return uniformID;
 }
-ShaderProgramClass::UniformData ShaderProgramClass::GetUniformData(unsigned int index) {
-	Assert_NotDeleted_Macro;
+ShaderProgramClass::UniformData ShaderProgramClass::GetUniformData(unsigned int index) const {
 	Assert_Linked_Macro;
 	Assert_Binded_Macro;
 	UniformData returnData;
@@ -108,8 +125,7 @@ ShaderProgramClass::UniformData ShaderProgramClass::GetUniformData(unsigned int 
 	returnData.ID = GetUniformIDByName(name);
 	return returnData;
 }
-void ShaderProgramClass::GetUniformsData(DynArr<UniformData>* dynArr) {
-	Assert_NotDeleted_Macro;
+void ShaderProgramClass::GetUniformsData(DynArr<UniformData>* dynArr) const {
 	Assert_Linked_Macro;
 	Assert_Binded_Macro;
 
@@ -125,43 +141,43 @@ void ShaderProgramClass::GetUniformsData(DynArr<UniformData>* dynArr) {
 
 #if defined KE2_Debug
 #define uniformCOPYPASTE(funcName, ...)\
-Assert_NotDeleted_Macro; Assert_Linked_Macro; Assert_Binded_Macro;\
+Assert_Linked_Macro; Assert_Binded_Macro;\
 glSC(funcName(uniformID, __VA_ARGS__));
 #else
 #define uniformCOPYPASTE(funcName, ...) glSC(funcName(uniformID, __VA_ARGS__));
 #endif
 
-void ShaderProgramClass::SetUniform1f(unsigned int uniformID, float v0) { uniformCOPYPASTE(glUniform1f, v0); }
-void ShaderProgramClass::SetUniform2f(unsigned int uniformID, float v0, float v1) { uniformCOPYPASTE(glUniform2f, v0, v1); }
-void ShaderProgramClass::SetUniform3f(unsigned int uniformID, float v0, float v1, float v2) { uniformCOPYPASTE(glUniform3f, v0, v1, v2); }
-void ShaderProgramClass::SetUniform4f(unsigned int uniformID, float v0, float v1, float v2, float v3) { uniformCOPYPASTE(glUniform4f, v0, v1, v2, v3); }
-void ShaderProgramClass::SetUniform1i(unsigned int uniformID, int v0) { uniformCOPYPASTE(glUniform1i, v0); }
-void ShaderProgramClass::SetUniform2i(unsigned int uniformID, int v0, int v1) { uniformCOPYPASTE(glUniform2i, v0, v1); }
-void ShaderProgramClass::SetUniform3i(unsigned int uniformID, int v0, int v1, int v2) { uniformCOPYPASTE(glUniform3i, v0, v1, v2); }
-void ShaderProgramClass::SetUniform4i(unsigned int uniformID, int v0, int v1, int v2, int v3) { uniformCOPYPASTE(glUniform4i, v0, v1, v2, v3); }
-void ShaderProgramClass::SetUniform1ui(unsigned int uniformID, unsigned int v0) { uniformCOPYPASTE(glUniform1ui, v0); }
-void ShaderProgramClass::SetUniform2ui(unsigned int uniformID, unsigned int v0, unsigned int v1) { uniformCOPYPASTE(glUniform2ui, v0, v1); }
-void ShaderProgramClass::SetUniform3ui(unsigned int uniformID, unsigned int v0, unsigned int v1, unsigned int v2) { uniformCOPYPASTE(glUniform3ui, v0, v1, v2); }
-void ShaderProgramClass::SetUniform4ui(unsigned int uniformID, unsigned int v0, unsigned int v1, unsigned int v2, unsigned int v3) { uniformCOPYPASTE(glUniform4ui, v0, v1, v2, v3); }
-void ShaderProgramClass::SetUniform1fv(unsigned int uniformID, unsigned int count, const float* value) { uniformCOPYPASTE(glUniform1fv, count, value); }
-void ShaderProgramClass::SetUniform2fv(unsigned int uniformID, unsigned int count, const float* value) { uniformCOPYPASTE(glUniform2fv, count, value); }
-void ShaderProgramClass::SetUniform3fv(unsigned int uniformID, unsigned int count, const float* value) { uniformCOPYPASTE(glUniform3fv, count, value); }
-void ShaderProgramClass::SetUniform4fv(unsigned int uniformID, unsigned int count, const float* value) { uniformCOPYPASTE(glUniform4fv, count, value); }
-void ShaderProgramClass::SetUniform1iv(unsigned int uniformID, unsigned int count, const int* value) { uniformCOPYPASTE(glUniform1iv, count, value); }
-void ShaderProgramClass::SetUniform2iv(unsigned int uniformID, unsigned int count, const int* value) { uniformCOPYPASTE(glUniform2iv, count, value); }
-void ShaderProgramClass::SetUniform3iv(unsigned int uniformID, unsigned int count, const int* value) { uniformCOPYPASTE(glUniform3iv, count, value); }
-void ShaderProgramClass::SetUniform4iv(unsigned int uniformID, unsigned int count, const int* value) { uniformCOPYPASTE(glUniform4iv, count, value); }
-void ShaderProgramClass::SetUniform1uiv(unsigned int uniformID, unsigned int count, const unsigned int* value) { uniformCOPYPASTE(glUniform1uiv, count, value); }
-void ShaderProgramClass::SetUniform2uiv(unsigned int uniformID, unsigned int count, const unsigned int* value) { uniformCOPYPASTE(glUniform2uiv, count, value); }
-void ShaderProgramClass::SetUniform3uiv(unsigned int uniformID, unsigned int count, const unsigned int* value) { uniformCOPYPASTE(glUniform3uiv, count, value); }
-void ShaderProgramClass::SetUniform4uiv(unsigned int uniformID, unsigned int count, const unsigned int* value) { uniformCOPYPASTE(glUniform4uiv, count, value); }
-void ShaderProgramClass::SetUniformMatrix2fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) { uniformCOPYPASTE(glUniformMatrix2fv, count, transpose, value); }
-void ShaderProgramClass::SetUniformMatrix3fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) { uniformCOPYPASTE(glUniformMatrix3fv, count, transpose, value); }
-void ShaderProgramClass::SetUniformMatrix4fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) { uniformCOPYPASTE(glUniformMatrix4fv, count, transpose, value); }
-void ShaderProgramClass::SetUniformMatrix2x3fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) { uniformCOPYPASTE(glUniformMatrix2x3fv, count, transpose, value); }
-void ShaderProgramClass::SetUniformMatrix3x2fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) { uniformCOPYPASTE(glUniformMatrix3x2fv, count, transpose, value); }
-void ShaderProgramClass::SetUniformMatrix2x4fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) { uniformCOPYPASTE(glUniformMatrix2x4fv, count, transpose, value); }
-void ShaderProgramClass::SetUniformMatrix4x2fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) { uniformCOPYPASTE(glUniformMatrix4x2fv, count, transpose, value); }
-void ShaderProgramClass::SetUniformMatrix3x4fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) { uniformCOPYPASTE(glUniformMatrix3x4fv, count, transpose, value); }
-void ShaderProgramClass::SetUniformMatrix4x3fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) { uniformCOPYPASTE(glUniformMatrix4x3fv, count, transpose, value); }
+void ShaderProgramClass::SetUniform1f(unsigned int uniformID, float v0) const { uniformCOPYPASTE(glUniform1f, v0); }
+void ShaderProgramClass::SetUniform2f(unsigned int uniformID, float v0, float v1) const { uniformCOPYPASTE(glUniform2f, v0, v1); }
+void ShaderProgramClass::SetUniform3f(unsigned int uniformID, float v0, float v1, float v2) const { uniformCOPYPASTE(glUniform3f, v0, v1, v2); }
+void ShaderProgramClass::SetUniform4f(unsigned int uniformID, float v0, float v1, float v2, float v3) const { uniformCOPYPASTE(glUniform4f, v0, v1, v2, v3); }
+void ShaderProgramClass::SetUniform1i(unsigned int uniformID, int v0) const { uniformCOPYPASTE(glUniform1i, v0); }
+void ShaderProgramClass::SetUniform2i(unsigned int uniformID, int v0, int v1) const { uniformCOPYPASTE(glUniform2i, v0, v1); }
+void ShaderProgramClass::SetUniform3i(unsigned int uniformID, int v0, int v1, int v2) const { uniformCOPYPASTE(glUniform3i, v0, v1, v2); }
+void ShaderProgramClass::SetUniform4i(unsigned int uniformID, int v0, int v1, int v2, int v3) const { uniformCOPYPASTE(glUniform4i, v0, v1, v2, v3); }
+void ShaderProgramClass::SetUniform1ui(unsigned int uniformID, unsigned int v0) const { uniformCOPYPASTE(glUniform1ui, v0); }
+void ShaderProgramClass::SetUniform2ui(unsigned int uniformID, unsigned int v0, unsigned int v1) const { uniformCOPYPASTE(glUniform2ui, v0, v1); }
+void ShaderProgramClass::SetUniform3ui(unsigned int uniformID, unsigned int v0, unsigned int v1, unsigned int v2) const { uniformCOPYPASTE(glUniform3ui, v0, v1, v2); }
+void ShaderProgramClass::SetUniform4ui(unsigned int uniformID, unsigned int v0, unsigned int v1, unsigned int v2, unsigned int v3) const { uniformCOPYPASTE(glUniform4ui, v0, v1, v2, v3); }
+void ShaderProgramClass::SetUniform1fv(unsigned int uniformID, unsigned int count, const float* value) const { uniformCOPYPASTE(glUniform1fv, count, value); }
+void ShaderProgramClass::SetUniform2fv(unsigned int uniformID, unsigned int count, const float* value) const { uniformCOPYPASTE(glUniform2fv, count, value); }
+void ShaderProgramClass::SetUniform3fv(unsigned int uniformID, unsigned int count, const float* value) const { uniformCOPYPASTE(glUniform3fv, count, value); }
+void ShaderProgramClass::SetUniform4fv(unsigned int uniformID, unsigned int count, const float* value) const { uniformCOPYPASTE(glUniform4fv, count, value); }
+void ShaderProgramClass::SetUniform1iv(unsigned int uniformID, unsigned int count, const int* value) const { uniformCOPYPASTE(glUniform1iv, count, value); }
+void ShaderProgramClass::SetUniform2iv(unsigned int uniformID, unsigned int count, const int* value) const { uniformCOPYPASTE(glUniform2iv, count, value); }
+void ShaderProgramClass::SetUniform3iv(unsigned int uniformID, unsigned int count, const int* value) const { uniformCOPYPASTE(glUniform3iv, count, value); }
+void ShaderProgramClass::SetUniform4iv(unsigned int uniformID, unsigned int count, const int* value) const { uniformCOPYPASTE(glUniform4iv, count, value); }
+void ShaderProgramClass::SetUniform1uiv(unsigned int uniformID, unsigned int count, const unsigned int* value) const { uniformCOPYPASTE(glUniform1uiv, count, value); }
+void ShaderProgramClass::SetUniform2uiv(unsigned int uniformID, unsigned int count, const unsigned int* value) const { uniformCOPYPASTE(glUniform2uiv, count, value); }
+void ShaderProgramClass::SetUniform3uiv(unsigned int uniformID, unsigned int count, const unsigned int* value) const { uniformCOPYPASTE(glUniform3uiv, count, value); }
+void ShaderProgramClass::SetUniform4uiv(unsigned int uniformID, unsigned int count, const unsigned int* value) const { uniformCOPYPASTE(glUniform4uiv, count, value); }
+void ShaderProgramClass::SetUniformMatrix2fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) const { uniformCOPYPASTE(glUniformMatrix2fv, count, transpose, value); }
+void ShaderProgramClass::SetUniformMatrix3fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) const { uniformCOPYPASTE(glUniformMatrix3fv, count, transpose, value); }
+void ShaderProgramClass::SetUniformMatrix4fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) const { uniformCOPYPASTE(glUniformMatrix4fv, count, transpose, value); }
+void ShaderProgramClass::SetUniformMatrix2x3fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) const { uniformCOPYPASTE(glUniformMatrix2x3fv, count, transpose, value); }
+void ShaderProgramClass::SetUniformMatrix3x2fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) const { uniformCOPYPASTE(glUniformMatrix3x2fv, count, transpose, value); }
+void ShaderProgramClass::SetUniformMatrix2x4fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) const { uniformCOPYPASTE(glUniformMatrix2x4fv, count, transpose, value); }
+void ShaderProgramClass::SetUniformMatrix4x2fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) const { uniformCOPYPASTE(glUniformMatrix4x2fv, count, transpose, value); }
+void ShaderProgramClass::SetUniformMatrix3x4fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) const { uniformCOPYPASTE(glUniformMatrix3x4fv, count, transpose, value); }
+void ShaderProgramClass::SetUniformMatrix4x3fv(unsigned int uniformID, unsigned int count, bool transpose, const float* value) const { uniformCOPYPASTE(glUniformMatrix4x3fv, count, transpose, value); }
 

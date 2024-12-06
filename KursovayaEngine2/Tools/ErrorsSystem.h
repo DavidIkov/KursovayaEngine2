@@ -42,11 +42,16 @@ namespace KE2::ErrorsSystemNamespace {
 	inline _SendWarningClass SendWarning;
 
 
+	//means that error is already being thrown, so this variable can prevent another throw of error and potential crash
+	inline bool ThrowingError = false;
 	//used to catch any KE2 errors by reference, not depending on actual enum type
-	struct ErrorBase {};
+	struct ErrorBase {
+		inline ErrorBase() noexcept { ThrowingError = true; }
+		inline ~ErrorBase() noexcept { ThrowingError = false; }
+	};
 	typedef ErrorBase AnyError;
 	class _SendErrorClass :public _MessageCreatingClass {
-		DLLTREATMENT void _ProcessError_NoThrow();
+		DLLTREATMENT void _ProcessError_NoThrow() noexcept;
 	public:
 		template<typename MsgT>
 		_SendErrorClass& operator<<(MsgT&& msg) { _MessageCreatingClass::operator<<(msg); return *this; }

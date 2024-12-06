@@ -5,8 +5,7 @@
 
 using namespace KE2;
 using namespace Graphics::Primitives;
-#define Assert_NotDeleted_Macro if (Deleted) ErrorsSystemNamespace::SendError<<"FrameBuffer is already deleted">>\
-ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyDeleted);
+
 #if defined KE2_Debug
 #define Assert_Finished_Macro if (not Finished) ErrorsSystemNamespace::SendError<<"FrameBuffer is not finished">>\
 ErrorsEnumWrapperStruct(ErrorsEnum::NotFinished);
@@ -20,25 +19,22 @@ ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyFinished);
 #define Assert_Binded_Macro
 #endif
 
-void FrameBufferClass::ClearColorBuffer() {
-	Assert_NotDeleted_Macro;
+void FrameBufferClass::ClearColorBuffer() const {
 	Assert_Finished_Macro;
 	Assert_Binded_Macro;
 	glSC(glClear(GL_COLOR_BUFFER_BIT));
 }
-void FrameBufferClass::ClearDepthBuffer() {
-	Assert_NotDeleted_Macro;
+void FrameBufferClass::ClearDepthBuffer() const {
 	Assert_Finished_Macro;
 	Assert_Binded_Macro;
 	glSC(glClear(GL_DEPTH_BUFFER_BIT));
 }
-void FrameBufferClass::ClearStencilBuffer() {
-	Assert_NotDeleted_Macro;
+void FrameBufferClass::ClearStencilBuffer() const {
 	Assert_Finished_Macro;
 	Assert_Binded_Macro;
 	glSC(glClear(GL_STENCIL_BUFFER_BIT));
 }
-void FrameBufferClass::ClearAllBuffers() {
+void FrameBufferClass::ClearAllBuffers() const {
 	ClearColorBuffer();
 	ClearDepthBuffer();
 	ClearStencilBuffer();
@@ -52,28 +48,27 @@ FrameBufferClass::FrameBufferClass() {
 	glSC(glGenFramebuffers(1, &ID));
 	Bind(false);
 }
-FrameBufferClass::FrameBufferClass(const FrameBufferClass&& toCopy) {
-	memcpy(this, &toCopy, sizeof(FrameBufferClass));
-	toCopy.Deleted = true;
+FrameBufferClass::FrameBufferClass(FrameBufferClass&& toCopy) noexcept:
+	ID(toCopy.ID), ViewportSize(toCopy.ViewportSize) 
+#ifdef KE2_Debug
+	,Finished(toCopy.Finished)
+#endif
+{
+	toCopy.ID = 0u;
 }
-void FrameBufferClass::operator=(const FrameBufferClass&& toCopy) {
-    Delete();
-	memcpy(this, &toCopy, sizeof(FrameBufferClass));
-	toCopy.Deleted = true;
+FrameBufferClass& FrameBufferClass::operator=(FrameBufferClass&& toCopy) {
+	this->~FrameBufferClass();
+	new(this) FrameBufferClass(std::move(toCopy));
+	return *this;
 }
-FrameBufferClass::~FrameBufferClass() {
-	if (not Deleted) {
+FrameBufferClass::~FrameBufferClass() noexcept(false) {
+	if (ID != 0u) {
 		Unbind();
 		glSC(glDeleteFramebuffers(1, &ID));
-		Deleted = true;
+		ID = 0u;
 	}
 }
-unsigned int FrameBufferClass::gID() {
-	Assert_NotDeleted_Macro;
-	return ID;
-}
-void FrameBufferClass::AttachRenderBuffer(unsigned int renderBufferID, bool depthBufferEnabled, bool stencilBufferEnabled) {
-	Assert_NotDeleted_Macro;
+void FrameBufferClass::AttachRenderBuffer(unsigned int renderBufferID, bool depthBufferEnabled, bool stencilBufferEnabled) const {
 	Assert_Binded_Macro;
 	Assert_NotFinished_Macro;
 
@@ -84,8 +79,7 @@ void FrameBufferClass::AttachRenderBuffer(unsigned int renderBufferID, bool dept
 	else ErrorsSystemNamespace::SendWarning << "no buffers selected to bind from RenderBuffer to FrameBuffer" >> ErrorsSystemNamespace::EndOfWarning;
 #endif
 }
-void FrameBufferClass::AttachTexture(unsigned int texID, TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum dataFormat) {
-	Assert_NotDeleted_Macro;
+void FrameBufferClass::AttachTexture(unsigned int texID, TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum dataFormat) const {
 	Assert_Binded_Macro;
 	Assert_NotFinished_Macro;
 
@@ -100,12 +94,7 @@ void FrameBufferClass::AttachTexture(unsigned int texID, TextureClass::DataSetti
 	}
 	glSC(glFramebufferTexture2D(GL_FRAMEBUFFER, glAtt, GL_TEXTURE_2D, texID, 0));
 }
-void FrameBufferClass::Delete() {
-	Assert_NotDeleted_Macro;
-	this->~FrameBufferClass();
-}
-void FrameBufferClass::Finish() {
-	Assert_NotDeleted_Macro;
+void FrameBufferClass::Finish() const {
 	Assert_Binded_Macro;
 	Assert_NotFinished_Macro;
 
@@ -116,8 +105,7 @@ void FrameBufferClass::Finish() {
 		ErrorsSystemNamespace::SendError << "FrameBuffer is not complete, OpenGL's error: [" << std::to_string(status) << "]" >> ErrorsEnumWrapperStruct(ErrorsEnum::NotComplete);
 #endif
 }
-void FrameBufferClass::Bind(bool updViewportSize) {
-	Assert_NotDeleted_Macro;
+void FrameBufferClass::Bind(bool updViewportSize) const {
 
 #if defined KE2_Debug
 	BindedInstances.sFrameBuffer_ID(ID);
@@ -131,6 +119,10 @@ void FrameBufferClass::Unbind() {
 	BindedInstances.sFrameBuffer_ID(0);
 #endif
 }
-void FrameBufferClass::SetViewportSize(Vector2U viewportSize) {
+void FrameBufferClass::sViewportSize(Vector2U viewportSize, bool updViewportSize) {
+	ViewportSize = viewportSize;
+	if (updViewportSize) { glSC(glViewport(0, 0, viewportSize[0], viewportSize[1])); }
+}
+void FrameBufferClass::SetViewportSize_Static(Vector2U viewportSize) {
 	glSC(glViewport(0, 0, viewportSize[0], viewportSize[1]));
 }

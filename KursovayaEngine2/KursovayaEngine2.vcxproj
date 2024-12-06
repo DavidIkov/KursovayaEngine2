@@ -244,14 +244,6 @@
   <ItemGroup>
     <ClCompile Include="Dependencies\glad\src\glad.c" />
     <ClCompile Include="Dependencies\stb_image\stb_image.cpp" />
-    <ClCompile Include="Graphics\Abstractions\Shader.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GA_Shader</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">$(IntDir)GA_Shader</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">$(IntDir)GA_Shader</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|ARM'">$(IntDir)GA_Shader</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GA_Shader</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)GA_Shader</ObjectFileName>
-    </ClCompile>
     <ClCompile Include="Graphics\Abstractions\TextRenderer.cpp" />
     <ClCompile Include="Graphics\Abstractions\Texture.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GA_Texture</ObjectFileName>
@@ -431,7 +423,6 @@
     <ClInclude Include="DLL.h" />
     <ClInclude Include="Graphics\Abstractions\VertexArray.h" />
     <ClInclude Include="Graphics\Abstractions\VertexBuffer.h" />
-    <ClInclude Include="Graphics\Abstractions\Shader.h" />
     <ClInclude Include="Graphics\Abstractions\TextRenderer.h" />
     <ClInclude Include="Graphics\Abstractions\Texture.h" />
     <ClInclude Include="Graphics\Globals.h" />

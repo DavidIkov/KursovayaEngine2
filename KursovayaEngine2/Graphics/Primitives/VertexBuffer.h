@@ -1,7 +1,6 @@
 #pragma once
 #include"DLL.h"
 #include<vector>
-#include"Tools/ClassFunctionsAccessController.h"
 #include"Tools/ErrorsSystem.h"
 #include"Tools/ArrayView.h"
 
@@ -11,14 +10,12 @@ namespace Graphics::Primitives {
 	public:
 		typedef unsigned int VertexBufferID_Type;
 	protected:
-		VertexBufferID_Type ID = 0;
-		mutable bool Deleted = false;
+		VertexBufferID_Type ID = 0u;
 
 	public:
 
 		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
 			enum ErrorsEnum {
-				AlreadyDeleted,
 				BufferReadWriteModeInNone,
 			};
 			ErrorsEnum Error;
@@ -33,35 +30,23 @@ namespace Graphics::Primitives {
 		};
 		
 		DLLTREATMENT VertexBufferClass();
-		DLLTREATMENT VertexBufferClass(const VertexBufferClass&& toCopy);
-		DLLTREATMENT void operator=(const VertexBufferClass&& toCopy);
-		DLLTREATMENT virtual ~VertexBufferClass();
-		DLLTREATMENT void Delete();
-		DLLTREATMENT VertexBufferID_Type gID();
+		DLLTREATMENT VertexBufferClass(VertexBufferClass&& toCopy) noexcept;
+		DLLTREATMENT VertexBufferClass& operator=(VertexBufferClass&& toCopy);
+		DLLTREATMENT virtual ~VertexBufferClass() noexcept(false);
 
-		inline operator VertexBufferID_Type() { return ID; }
+		inline VertexBufferID_Type gID() const noexcept { return ID; }
+		inline operator VertexBufferID_Type() const noexcept { return ID; }
 
-		DLLTREATMENT void SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode);
-		DLLTREATMENT void SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data);
+		DLLTREATMENT void SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode) const;
+		DLLTREATMENT void SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) const;
 
-		DLLTREATMENT void CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy);
+		DLLTREATMENT void CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) const;
 
 		//data should point to already allocated memory
-		DLLTREATMENT void GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data);
+		DLLTREATMENT void GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) const;
 
-		DLLTREATMENT void Bind();
+		DLLTREATMENT void Bind() const;
 		DLLTREATMENT static void Unbind();
 
-#define CFAC_ClassName VertexBufferClass
-		CFAC_ClassConstructor(FullAccess,
-			CFAC_FuncConstr(gID)
-			CFAC_FuncConstr(SetData)
-			CFAC_FuncConstr(SetSubData)
-			CFAC_FuncConstr(CopySubData)
-			CFAC_FuncConstr(GetSubData)
-			CFAC_FuncConstr(Bind)
-			CFAC_FuncConstr(Unbind)
-		);
-#undef CFAC_ClassName
 	};
 }

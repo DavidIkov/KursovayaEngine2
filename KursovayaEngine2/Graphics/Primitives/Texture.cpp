@@ -9,14 +9,13 @@
 using namespace KE2;
 using namespace Graphics::Primitives;
 
-#define Assert_NotDeleted_Macro if(Deleted) ErrorsSystemNamespace::SendError<<"Texture is already deleted">>ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyDeleted);
 #if defined KE2_Debug
 #define Assert_Binded_Macro if(BindedInstances.gTextureID() != ID) { ErrorsSystemNamespace::SendWarning<<"Texture is not binded">>ErrorsSystemNamespace::EndOfWarning; Bind(); }
 #else
 #define Assert_Binded_Macro
 #endif
 
-unsigned int TextureClass::_DataFormatOnGPU_SwitchCase(DataSettingsStruct::DataFormatOnGPU_Enum format) {
+unsigned int TextureClass::_DataFormatOnGPU_SwitchCase(DataSettingsStruct::DataFormatOnGPU_Enum format) noexcept {
     switch (format) {
     case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthComponent: return GL_DEPTH_COMPONENT24;
     case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthStencil: return GL_DEPTH24_STENCIL8;
@@ -27,7 +26,7 @@ unsigned int TextureClass::_DataFormatOnGPU_SwitchCase(DataSettingsStruct::DataF
     default: return 0;
     }
 }
-unsigned int TextureClass::_DataFormatOnCPU_SwitchCase(DataSettingsStruct::DataFormatOnCPU_Enum format) {
+unsigned int TextureClass::_DataFormatOnCPU_SwitchCase(DataSettingsStruct::DataFormatOnCPU_Enum format) noexcept {
     switch (format) {
     case TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::Red: return GL_RED;
     case TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RG: return GL_RG;
@@ -47,7 +46,7 @@ unsigned int TextureClass::_DataFormatOnCPU_SwitchCase(DataSettingsStruct::DataF
     default: return 0;
     }
 }
-unsigned int TextureClass::_DataTypeOnCPU_SwitchCase(DataSettingsStruct::DataTypeOnCPU_Enum type) {
+unsigned int TextureClass::_DataTypeOnCPU_SwitchCase(DataSettingsStruct::DataTypeOnCPU_Enum type) noexcept {
     switch (type) {
     case TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte: return GL_UNSIGNED_BYTE;
     case TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::Byte: return GL_BYTE;
@@ -60,7 +59,7 @@ unsigned int TextureClass::_DataTypeOnCPU_SwitchCase(DataSettingsStruct::DataTyp
     default: return 0;
     }
 }
-unsigned int TextureClass::_DataTypeOnCPU_Sizeof_SwitchCase(DataSettingsStruct::DataTypeOnCPU_Enum type) {
+unsigned int TextureClass::_DataTypeOnCPU_Sizeof_SwitchCase(DataSettingsStruct::DataTypeOnCPU_Enum type) noexcept {
     switch (type) {
     case TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte: return sizeof(unsigned char);
     case TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::Byte: return sizeof(unsigned char);
@@ -70,7 +69,7 @@ unsigned int TextureClass::_DataTypeOnCPU_Sizeof_SwitchCase(DataSettingsStruct::
     default: return 0;
     }
 }
-unsigned int TextureClass::_WrapType_SwitchCase(SettingsStruct::WrapTypeEnum wrapTyp) {
+unsigned int TextureClass::_WrapType_SwitchCase(SettingsStruct::WrapTypeEnum wrapTyp) noexcept {
     switch (wrapTyp) {
     case TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge: return GL_CLAMP_TO_EDGE;
     case TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder: return GL_CLAMP_TO_BORDER;
@@ -80,7 +79,7 @@ unsigned int TextureClass::_WrapType_SwitchCase(SettingsStruct::WrapTypeEnum wra
     default: return 0;
     }
 }
-unsigned int TextureClass::_DownscalingFilterFunc_SwitchCase(SettingsStruct::DownscalingFilterFuncEnum filt) {
+unsigned int TextureClass::_DownscalingFilterFunc_SwitchCase(SettingsStruct::DownscalingFilterFuncEnum filt) noexcept {
     switch (filt) {
     case TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Nearest: return GL_NEAREST;
     case TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear: return GL_LINEAR;
@@ -91,14 +90,14 @@ unsigned int TextureClass::_DownscalingFilterFunc_SwitchCase(SettingsStruct::Dow
     default: return 0;
     }
 }
-unsigned int TextureClass::_UpscalingFilterFunc_SwitchCase(SettingsStruct::UpscalingFilterFuncEnum filt) {
+unsigned int TextureClass::_UpscalingFilterFunc_SwitchCase(SettingsStruct::UpscalingFilterFuncEnum filt) noexcept {
     switch (filt) {
     case TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Nearest: return GL_NEAREST;
     case TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear: return GL_LINEAR;
     default: return 0;
     }
 }
-unsigned int TextureClass::_DepthStencilReadMode_SwitchCase(SettingsStruct::DepthStencilReadModeEnum readMode) {
+unsigned int TextureClass::_DepthStencilReadMode_SwitchCase(SettingsStruct::DepthStencilReadModeEnum readMode) noexcept {
     switch (readMode) {
     case TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth: return GL_DEPTH_COMPONENT;
     case TextureClass::SettingsStruct::DepthStencilReadModeEnum::Stencil: return GL_STENCIL_INDEX;
@@ -107,15 +106,18 @@ unsigned int TextureClass::_DepthStencilReadMode_SwitchCase(SettingsStruct::Dept
     }
 }
 
+static constexpr unsigned int _GL_TextureEnum_SwitchCase(TextureClass::DimensionsEnum dim) noexcept {
+    switch (dim) {
+    case TextureClass::DimensionsEnum::One: return GL_TEXTURE_1D; break;
+    case TextureClass::DimensionsEnum::Two: return GL_TEXTURE_2D; break;
+    case TextureClass::DimensionsEnum::Three: return GL_TEXTURE_3D; break;
+    }
+    return 0;
+}
+
 
 
 void TextureClass::_Constructor(Vector3U pixelsAmount, const void* data, const TextureClass::DataSettingsStruct& dataSets) {
-
-    switch (Dimensions) {
-    case DimensionsEnum::One: GL_TexEnum = GL_TEXTURE_1D; break;
-    case DimensionsEnum::Two: GL_TexEnum = GL_TEXTURE_2D; break;
-    case DimensionsEnum::Three: GL_TexEnum = GL_TEXTURE_3D; break;
-    }
 
     glSC(glGenTextures(1, &ID));
     Bind();
@@ -124,33 +126,28 @@ void TextureClass::_Constructor(Vector3U pixelsAmount, const void* data, const T
         SetData(pixelsAmount, data, dataSets);
 }
 
-void TextureClass::_UpdSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTyp) {
-    Assert_NotDeleted_Macro;
+void TextureClass::_UpdSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTyp) const {
     Assert_Binded_Macro;
     glSC(glTexParameteri(GL_TexEnum, GL_TEXTURE_WRAP_S, _WrapType_SwitchCase(wrapTyp)));
 }
-void TextureClass::_UpdSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTyp) {
-    Assert_NotDeleted_Macro;
+void TextureClass::_UpdSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTyp) const {
     Assert_Binded_Macro;
     glSC(glTexParameteri(GL_TexEnum, GL_TEXTURE_WRAP_T, _WrapType_SwitchCase(wrapTyp)));
 }
-void TextureClass::_UpdSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum filt) {
-    Assert_NotDeleted_Macro;
+void TextureClass::_UpdSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum filt) const {
     Assert_Binded_Macro;
     glSC(glTexParameteri(GL_TexEnum, GL_TEXTURE_MIN_FILTER, _DownscalingFilterFunc_SwitchCase(filt)));
 }
-void TextureClass::_UpdSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum filt) {
-    Assert_NotDeleted_Macro;
+void TextureClass::_UpdSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum filt) const {
     Assert_Binded_Macro; 
     glSC(glTexParameteri(GL_TexEnum, GL_TEXTURE_MAG_FILTER, _UpscalingFilterFunc_SwitchCase(filt)));
 }
-void TextureClass::_UpdSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum readMode) {
-    Assert_NotDeleted_Macro;
+void TextureClass::_UpdSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum readMode) const {
     Assert_Binded_Macro;
     glSC(glTexParameteri(GL_TexEnum, GL_DEPTH_STENCIL_TEXTURE_MODE, _DepthStencilReadMode_SwitchCase(readMode)));
 }
 
-void TextureClass::_UpdateSettings(const SettingsStruct& sets) {
+void TextureClass::_UpdateSettings(const SettingsStruct& sets) const {
     _UpdSettings_WrapTypeByX(sets.WrapTypeByX);
     _UpdSettings_WrapTypeByY(sets.WrapTypeByY);
     _UpdSettings_DownscalingFilt(sets.DownscalingFilt);
@@ -159,7 +156,7 @@ void TextureClass::_UpdateSettings(const SettingsStruct& sets) {
 }
 
 TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, AnonDynArr* writeAnonDynArr, const SettingsStruct& sets, const DataSettingsStruct& dataSets) 
-    :Dimensions(dimensions) {
+    :Dimensions(dimensions), GL_TexEnum(_GL_TextureEnum_SwitchCase(dimensions)) {
 
     int width, height, textureChannelsAmount;
     unsigned char* textureData = stbi_load(filePath, &width, &height, &textureChannelsAmount, 0);
@@ -175,28 +172,27 @@ TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vect
     if (writeAnonDynArr == nullptr) stbi_image_free(textureData);
 }
 TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets) 
-    :Dimensions(dimensions) {
+    :Dimensions(dimensions), GL_TexEnum(_GL_TextureEnum_SwitchCase(dimensions)) {
     _Constructor(pixelsAmount, data, dataSets);
     _UpdateSettings(sets);
 }
-TextureClass::TextureClass(const TextureClass&& toCopy) {
-    memcpy(this, &toCopy, sizeof(TextureClass));
-    toCopy.Deleted = true;
+TextureClass::TextureClass(TextureClass&& toCopy) noexcept :
+    Dimensions(toCopy.Dimensions), GL_TexEnum(toCopy.GL_TexEnum), ID(toCopy.ID) {
+    toCopy.ID = 0u;
 }
-void TextureClass::operator=(const TextureClass&& toCopy) {
-    Delete();
-    memcpy(this, &toCopy, sizeof(TextureClass));
-    toCopy.Deleted = true;
+TextureClass& TextureClass::operator=(TextureClass&& toCopy){
+    this->~TextureClass();
+    new(this) TextureClass(std::move(toCopy));
+    return *this;
 }
-TextureClass::~TextureClass() {
-    if (not Deleted) {
+TextureClass::~TextureClass() noexcept(false) {
+    if (ID != 0u) {
         Unbind();
         glSC(glDeleteTextures(1, &ID));
-        Deleted = true;
+        ID = 0u;
     }
 }
-void TextureClass::CopySubData(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount) {
-    Assert_NotDeleted_Macro;
+void TextureClass::CopySubData(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount) const {
 
     glSC(glCopyImageSubData(srcTex.ID, srcTex.GL_TexEnum, 0, offsetInSource[0], offsetInSource[1], offsetInSource[2],
         ID, GL_TexEnum, 0, offsetInDestination[0], offsetInDestination[1], offsetInDestination[2], pixelsAmount[0], pixelsAmount[1], pixelsAmount[2]));
@@ -211,8 +207,7 @@ void TextureClass::CopySubData(const TextureClass& srcTex, Vector3U offsetInSour
     */
 }
 
-void TextureClass::SetData(Vector3U pixelsAmount, const void* data, const DataSettingsStruct& dataSets) {
-    Assert_NotDeleted_Macro;
+void TextureClass::SetData(Vector3U pixelsAmount, const void* data, const DataSettingsStruct& dataSets) const {
     Assert_Binded_Macro;
 
     unsigned int gl_dataFormatOnGPU = _DataFormatOnGPU_SwitchCase(dataSets.DataFormatOnGPU);
@@ -225,8 +220,7 @@ void TextureClass::SetData(Vector3U pixelsAmount, const void* data, const DataSe
     }
 }
 void TextureClass::SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data,
-    DataSettingsStruct::DataFormatOnCPU_Enum dataFormatOnCPU, DataSettingsStruct::DataTypeOnCPU_Enum dataTypeOnCPU) {
-    Assert_NotDeleted_Macro;
+    DataSettingsStruct::DataFormatOnCPU_Enum dataFormatOnCPU, DataSettingsStruct::DataTypeOnCPU_Enum dataTypeOnCPU) const {
     Assert_Binded_Macro;
 
     //glSC(glTexSubImage2D(GL_TEXTURE_2D, 0, pixelsOffset[0], pixelsOffset[1], pixelsAmount[0], pixelsAmount[1],
@@ -240,21 +234,18 @@ void TextureClass::SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, cons
     }
 }
 
-void TextureClass::GenerateMipmaps() {
-    Assert_NotDeleted_Macro;
+void TextureClass::GenerateMipmaps() const {
     Assert_Binded_Macro;
     glSC(glGenerateMipmap(GL_TexEnum));
 }
 
 void TextureClass::GetData(void* buffer, DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const {
-    Assert_NotDeleted_Macro;
     Assert_Binded_Macro;
 
     glSC(glGetTexImage(GL_TexEnum, 0, _DataFormatOnCPU_SwitchCase(dataFormat), _DataTypeOnCPU_SwitchCase(dataType), buffer));
 }
 void TextureClass::GetSubData(Vector3U offset, void* buffer, Vector3U pixelsAmount, DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, 
     DataSettingsStruct::DataTypeOnCPU_Enum dataType) const {
-    Assert_NotDeleted_Macro;
     
     //TODO make this work with 3.3, now in order for this to work i have to use opengl 4.5
     glSC(glGetTextureSubImage(ID, 0, offset[0], offset[1], offset[2], pixelsAmount[0], pixelsAmount[1], pixelsAmount[2],
@@ -262,31 +253,20 @@ void TextureClass::GetSubData(Vector3U offset, void* buffer, Vector3U pixelsAmou
         _DataTypeOnCPU_Sizeof_SwitchCase(dataType) * pixelsAmount[0] * pixelsAmount[1] * pixelsAmount[2], buffer));
 }
 
-void TextureClass::sSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX) { _UpdSettings_WrapTypeByX(wrapTypeByX); }
-void TextureClass::sSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY) { _UpdSettings_WrapTypeByY(wrapTypeByY); }
-void TextureClass::sSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt) { _UpdSettings_DownscalingFilt(downscalingFilt); }
-void TextureClass::sSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt) { _UpdSettings_UpscalingFilt(upscalingFilt); }
-void TextureClass::sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode) { _UpdSettings_DepthStencilReadMode(depthStencilReadMode); }
+void TextureClass::sSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX) const { _UpdSettings_WrapTypeByX(wrapTypeByX); }
+void TextureClass::sSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY) const { _UpdSettings_WrapTypeByY(wrapTypeByY); }
+void TextureClass::sSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt) const { _UpdSettings_DownscalingFilt(downscalingFilt); }
+void TextureClass::sSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt) const { _UpdSettings_UpscalingFilt(upscalingFilt); }
+void TextureClass::sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode) const { _UpdSettings_DepthStencilReadMode(depthStencilReadMode); }
 
-unsigned int TextureClass::gID()  {
-    Assert_NotDeleted_Macro;
-    return ID;
-}
-void TextureClass::Delete() {
-    Assert_NotDeleted_Macro;
-    this->~TextureClass();
-}
-
-void TextureClass::Bind(unsigned int textureInd) const{
-    Assert_NotDeleted_Macro;
+void TextureClass::Bind(unsigned int textureInd) const {
 	glSC(glActiveTexture(GL_TEXTURE0 + textureInd));
 #if defined KE2_Debug
     BindedInstances.sTexture_ID(ID);
 #endif
 	glSC(glBindTexture(GL_TexEnum, ID));
 }
-void TextureClass::Unbind() {
-    Assert_NotDeleted_Macro;
+void TextureClass::Unbind() const {
     glSC(glBindTexture(GL_TexEnum, 0));
 #if defined KE2_Debug
     BindedInstances.sTexture_ID(0);

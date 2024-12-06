@@ -7,41 +7,51 @@
 using namespace KE2;
 using namespace Graphics::Primitives;
 
-#define Assert_NotDeleted_Macro if (Deleted) ErrorsSystemNamespace::SendError<<"Shader is already deleted">>ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyDeleted);
 #if defined KE2_Debug
 #define Assert_NotCompiled_Macro if (Compiled) ErrorsSystemNamespace::SendError<<"Shader is already compiled">>ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyCompiled);
 #else
 #define Assert_NotCompiled_Macro
 #endif
 
-ShaderClass::ShaderClass(const wchar_t* filePath, TypesEnum typ) {
-#if defined KE2_Debug
-	ShaderType = typ;
+ShaderClass::ShaderClass(const wchar_t* filePath, TypesEnum typ) 
+#ifdef KE2_Debug
+	:ShaderType(typ)
 #endif
+{
 	glSC(ID = glCreateShader((typ == TypesEnum::Fragment) ? GL_FRAGMENT_SHADER : ((typ == TypesEnum::Vertex) ? GL_VERTEX_SHADER : GL_GEOMETRY_SHADER)));
 	std::string scode = FilesSystemNamespace::SaveFileToString(filePath);
 	const char* code = scode.c_str();
 	glSC(glShaderSource(ID, 1, &code, 0));
 }
-ShaderClass::ShaderClass(TypesEnum typ, const char* code) {
-#if defined KE2_Debug
-	ShaderType = typ;
+ShaderClass::ShaderClass(TypesEnum typ, const char* code) 
+#ifdef KE2_Debug
+	:ShaderType(typ)
 #endif
+{
 	glSC(ID = glCreateShader((typ == TypesEnum::Fragment) ? GL_FRAGMENT_SHADER : ((typ == TypesEnum::Vertex) ? GL_VERTEX_SHADER : GL_GEOMETRY_SHADER)));
 	glSC(glShaderSource(ID, 1, &code, 0));
 }
-ShaderClass::ShaderClass(const ShaderClass&& toCopy) {
-	memcpy(this, &toCopy, sizeof(ShaderClass));
-	toCopy.Deleted = true;
+ShaderClass::ShaderClass(ShaderClass&& toCopy) noexcept :
+#ifdef KE2_Debug
+	ShaderType(toCopy.ShaderType), Compiled(toCopy.Compiled),
+#endif
+	ID(toCopy.ID)
+{
+	toCopy.ID = 0u;
 }
-void ShaderClass::operator=(const ShaderClass&& toCopy) {
-    Delete();
-	memcpy(this, &toCopy, sizeof(ShaderClass));
-	toCopy.Deleted = true;
+ShaderClass& ShaderClass::operator=(ShaderClass&& toCopy) {
+	this->~ShaderClass();
+	new(this) ShaderClass(std::move(toCopy));
+	return *this;
 }
-void ShaderClass::Compile() {
+ShaderClass::~ShaderClass() noexcept(false) {
+	if (ID != 0u) {
+		glSC(glDeleteShader(ID));
+		ID = 0u;
+	}
+}
+void ShaderClass::Compile() const {
 
-	Assert_NotDeleted_Macro;
 	Assert_NotCompiled_Macro;
 
 	glSC(glCompileShader(ID));
@@ -59,18 +69,4 @@ void ShaderClass::Compile() {
 		}
 	}
 #endif
-}
-unsigned int ShaderClass::gID() {
-	Assert_NotDeleted_Macro;
-	return ID;
-}
-ShaderClass::~ShaderClass() {
-	if (not Deleted) {
-		glSC(glDeleteShader(ID));
-		Deleted = true;
-	}
-}
-void ShaderClass::Delete() {
-	Assert_NotDeleted_Macro;
-	this->~ShaderClass();
 }

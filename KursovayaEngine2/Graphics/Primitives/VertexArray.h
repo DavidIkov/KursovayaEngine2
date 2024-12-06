@@ -1,6 +1,5 @@
 #pragma once
 #include"DLL.h"
-#include"Tools/ClassFunctionsAccessController.h"
 #include"Tools/ErrorsSystem.h"
 #include"Tools/ArrayView.h"
 #include"VertexBuffer.h"
@@ -9,13 +8,11 @@ namespace Graphics::Primitives {
 
 	class VertexArrayClass {
 	protected:
-		unsigned int ID = 0;
-		mutable bool Deleted = false;
+		unsigned int ID = 0u;
 	public:
 
 		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
 			enum ErrorsEnum {
-				AlreadyDeleted,
 				ZeroVB_CantBeUsed,
 			};
 			ErrorsEnum Error;
@@ -44,39 +41,30 @@ namespace Graphics::Primitives {
 			unsigned int FirstElementByteOffset;
 			/* byte offset representing where is next value will be located */
 			unsigned int ByteOffsetToNextElement;
-			enum class DataTypeOnCPU_Enum :unsigned char {
+			enum class DataTypeInMemory_Enum :unsigned char {
 				Byte, UnsignedByte, Float, Int, UnsignedInt, Double
 			};
-			DataTypeOnCPU_Enum DataTypeOnCPU;
-			enum class DataTypeOnGPU_Enum :unsigned char {
+			DataTypeInMemory_Enum DataTypeInMemory;
+			enum class DataTypeForReadingOnGPU_Enum :unsigned char {
 				Float,Int,Double
 			};
-			DataTypeOnGPU_Enum DataTypeOnGPU;
+			DataTypeForReadingOnGPU_Enum DataTypeForReadingOnGPU;
 		};
 
 		DLLTREATMENT VertexArrayClass();
 		DLLTREATMENT VertexArrayClass(const ArrayView<AttributeDataStruct>& attribsData);
-		DLLTREATMENT VertexArrayClass(const VertexArrayClass&& toCopy);
-		DLLTREATMENT void operator=(const VertexArrayClass&& toCopy);
-		DLLTREATMENT virtual ~VertexArrayClass();
+		DLLTREATMENT VertexArrayClass(VertexArrayClass&& toCopy) noexcept;
+		DLLTREATMENT VertexArrayClass& operator=(VertexArrayClass&& toCopy);
+		DLLTREATMENT virtual ~VertexArrayClass() noexcept(false);
 
-		DLLTREATMENT void SetAttributes(const ArrayView<AttributeDataStruct>& attribsData);
-		DLLTREATMENT void SetAttribute(const AttributeDataStruct& attribData);
+		DLLTREATMENT void SetAttributes(const ArrayView<AttributeDataStruct>& attribsData) const;
+		DLLTREATMENT void SetAttribute(const AttributeDataStruct& attribData) const;
 		DLLTREATMENT void EnableAttribute(unsigned int attribInd) const;
 		DLLTREATMENT void DisableAttribute(unsigned int attribInd) const;
 
-
-		DLLTREATMENT unsigned int gID() const;
-		DLLTREATMENT void Delete();
+		inline unsigned int gID() const noexcept { return ID; }
 		DLLTREATMENT void Bind() const;
 		DLLTREATMENT static void Unbind();
 
-#define CFAC_ClassName VertexArrayClass
-		CFAC_ClassConstructor(FullAccess,
-			CFAC_FuncConstr(gID)
-			CFAC_FuncConstr(Bind)
-			CFAC_FuncConstr(Unbind)
-		);
-#undef CFAC_ClassName
 	};
 }

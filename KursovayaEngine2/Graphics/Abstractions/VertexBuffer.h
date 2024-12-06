@@ -17,22 +17,22 @@ namespace Graphics::Abstractions {
 		using VertexBufferID_Type = Primitives::VertexBufferClass::VertexBufferID_Type;
 		using BufferReadWriteModeEnum = Primitives::VertexBufferClass::BufferReadWriteModeEnum;
 	protected:
-		BufferReadWriteModeEnum BufferReadWriteMode = BufferReadWriteModeEnum::None;
-		unsigned int DataSizeInBytes = 0;
+		const BufferReadWriteModeEnum BufferReadWriteMode = BufferReadWriteModeEnum::None;
+		unsigned int DataSizeInBytes = 0u;
 	public:
 		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode);
 		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const ArrayView<void>& data);
 		//filePath to some 3d object, right now only .obj is accepted
 		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const wchar_t* filePath);
 		DLLTREATMENT VertexBufferClass(const VertexBufferClass& toCopy, bool copyBufferData = false);
-		DLLTREATMENT VertexBufferClass(const VertexBufferClass&& toCopy);
-		DLLTREATMENT virtual ~VertexBufferClass() override = default;
+		DLLTREATMENT VertexBufferClass(VertexBufferClass&& toCopy) noexcept;
+		DLLTREATMENT virtual ~VertexBufferClass() noexcept(false) override = default;
 		//wont copy data on GPU, only allocate a space on GPU
-		DLLTREATMENT void operator=(const VertexBufferClass& toCopy);
-		DLLTREATMENT void operator=(const VertexBufferClass&& toCopy);
+		DLLTREATMENT VertexBufferClass& operator=(const VertexBufferClass& toCopy);
+		DLLTREATMENT VertexBufferClass& operator=(VertexBufferClass&& toCopy);
 
-		inline operator VertexBufferID_Type() const { return ID; }
-		inline VertexBufferID_Type gID() const { return ID; }
+		using Primitives::VertexBufferClass::gID;
+		using Primitives::VertexBufferClass::operator VertexBufferID_Type;
 
 		DLLTREATMENT void SetData(const ArrayView<void>& data);
 		using Primitives::VertexBufferClass::SetSubData;
@@ -41,18 +41,15 @@ namespace Graphics::Abstractions {
 		DLLTREATMENT void CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy);
 
 		//data should point to already allocated memory
-		DLLTREATMENT void GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data);
+		DLLTREATMENT void GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) const;
 		//data should point to already allocated memory
-		DLLTREATMENT void GetData(void* data);
+		DLLTREATMENT void GetData(void* data) const;
 
-		DLLTREATMENT BufferReadWriteModeEnum gBufferReadWriteModeEnum() const;
-		DLLTREATMENT unsigned int gDataSizeInBytes() const;
+		inline BufferReadWriteModeEnum gBufferReadWriteModeEnum() const noexcept { return BufferReadWriteMode; }
+		inline unsigned int gDataSizeInBytes() const noexcept { return DataSizeInBytes; }
 
-		DLLTREATMENT void Delete();
-		
-		DLLTREATMENT void Bind();
-		DLLTREATMENT static void Unbind();
-
+		using Primitives::VertexBufferClass::Bind;
+		using Primitives::VertexBufferClass::Unbind;
 
 	};
 }

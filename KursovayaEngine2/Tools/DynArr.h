@@ -202,6 +202,9 @@ public:
 	DynArr(ArrayView<StoreType>& arr) {
 		Arr = arr.gDataPtr(); Length = arr.gLen(); Capacity = Length;
 	}
+	DynArr(ArrayView<StoreType> arr) {
+		Arr = arr.gDataPtr(); Length = arr.gLen(); Capacity = Length;
+	}
 private:
 	template<typename...Types>
 	void constexpr _FillFromInitList(StoreType&& val, Types&&...vals) {

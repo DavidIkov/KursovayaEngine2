@@ -15,14 +15,14 @@ namespace Graphics::Abstractions {
 		DLLTREATMENT VertexArrayClass();
 		DLLTREATMENT VertexArrayClass(const ArrayView<AttributeDataStruct>& attribsData);
 		DLLTREATMENT VertexArrayClass(const VertexArrayClass& toCopy);
-		DLLTREATMENT VertexArrayClass(const VertexArrayClass&& toCopy);
-		DLLTREATMENT virtual ~VertexArrayClass() override;
+		DLLTREATMENT VertexArrayClass(VertexArrayClass&& toCopy) noexcept;
+		DLLTREATMENT virtual ~VertexArrayClass() noexcept(false) override;
 		DLLTREATMENT VertexArrayClass& operator=(const VertexArrayClass& toCopy);
-		DLLTREATMENT VertexArrayClass& operator=(const VertexArrayClass&& toCopy);
+		DLLTREATMENT VertexArrayClass& operator=(VertexArrayClass&& toCopy);
 
-		inline const DynArr<AttributeDataStruct>& gAttribsData() const { return AttribsData; }
+		inline const DynArr<AttributeDataStruct>& gAttribsData() const noexcept { return AttribsData; }
 		
-		DLLTREATMENT void SetLayout(const ArrayView<AttributeDataStruct>& attribsData);
+		DLLTREATMENT void SetAttributes(const ArrayView<AttributeDataStruct>& attribsData);
 		DLLTREATMENT void SetAttribute(const AttributeDataStruct& attribData);
 		DLLTREATMENT void EnableAttribute(unsigned int attribInd) const;
 		DLLTREATMENT void DisableAttribute(unsigned int attribInd) const;
@@ -32,17 +32,14 @@ namespace Graphics::Abstractions {
 		DLLTREATMENT void Change_Divisor_InAttribute(unsigned int attribInd, unsigned int divisor);
 		DLLTREATMENT void Change_ComponentsAmount_InAttribute(unsigned int attribInd, unsigned int componentsAmount);
 		DLLTREATMENT void Change_ByteOffsetToNextElement_InAttribute(unsigned int attribInd, unsigned int byteOffsetToNextElement);
-		DLLTREATMENT void Change_DataTypeOnCPU_InAttribute(unsigned int attribInd, AttributeDataStruct::DataTypeOnCPU_Enum dataTypeOnCPU);
-		DLLTREATMENT void Change_DataTypeOnGPU_InAttribute(unsigned int attribInd, AttributeDataStruct::DataTypeOnGPU_Enum dataTypeOnGPU);
+		DLLTREATMENT void Change_DataTypeInMemory_InAttribute(unsigned int attribInd, AttributeDataStruct::DataTypeInMemory_Enum dataTypeInMemory);
+		DLLTREATMENT void Change_DataTypeForReadingOnGPU_InAttribute(unsigned int attribInd, AttributeDataStruct::DataTypeForReadingOnGPU_Enum dataTypeForReadingOnGPU);
 
-		inline const AttributeDataStruct& gAttributeData(unsigned int ind) const { return AttribsData[ind]; }
-		inline const DynArr<AttributeDataStruct>& gAttributesData() const { return AttribsData; }
+		inline const AttributeDataStruct& gAttributeData(unsigned int ind) const noexcept { return AttribsData[ind]; }
+		inline const DynArr<AttributeDataStruct>& gAttributesData() const noexcept { return AttribsData; }
 
-		DLLTREATMENT void Delete();
-
-		DLLTREATMENT void Bind() const;
-		DLLTREATMENT static void Unbind();
-
+		using Primitives::VertexArrayClass::Bind;
+		using Primitives::VertexArrayClass::Unbind;
 
 	};
 }

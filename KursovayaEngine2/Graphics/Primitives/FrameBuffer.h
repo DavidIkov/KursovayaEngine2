@@ -2,7 +2,6 @@
 #include"DLL.h"
 #include"Texture.h"
 #include<vector>
-#include"Tools/ClassFunctionsAccessController.h"
 #include"Tools/ErrorsSystem.h"
 
 namespace Graphics::Primitives {
@@ -12,20 +11,20 @@ namespace Graphics::Primitives {
 	};
 
 	class FrameBufferClass {
-		unsigned int ID = 0;
+		unsigned int ID = 0u;
 #if defined KE2_Debug
 		mutable bool Finished = false;
 #endif
-		mutable bool Deleted = false;
-		Vector2U ViewportSize;
+		Vector2U ViewportSize = Vector2U(0u);
 
 	public:
 
 		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
 			enum ErrorsEnum {
-				AlreadyDeleted,
 				AlreadyFinished,
+#ifdef KE2_Debug
 				NotFinished,
+#endif
 				NotComplete
 			};
 			ErrorsEnum Error;
@@ -33,41 +32,30 @@ namespace Graphics::Primitives {
 		}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
 		
 
-		DLLTREATMENT void ClearColorBuffer();
-		DLLTREATMENT void ClearDepthBuffer();
-		DLLTREATMENT void ClearStencilBuffer();
+		DLLTREATMENT void ClearColorBuffer() const;
+		DLLTREATMENT void ClearDepthBuffer() const;
+		DLLTREATMENT void ClearStencilBuffer() const;
 		//color,depth,stencil
-		DLLTREATMENT void ClearAllBuffers();
+		DLLTREATMENT void ClearAllBuffers() const;
 
 		DLLTREATMENT FrameBufferClass(Vector2U viewportSize);
 		//viewportSize will be (0,0)
 		DLLTREATMENT FrameBufferClass();
-		DLLTREATMENT FrameBufferClass(const FrameBufferClass&& toCopy);
-		DLLTREATMENT void operator=(const FrameBufferClass&& toCopy);
-		DLLTREATMENT virtual ~FrameBufferClass();
-		DLLTREATMENT unsigned int gID();
-		DLLTREATMENT void Delete();
-		DLLTREATMENT void Finish();
+		DLLTREATMENT FrameBufferClass(FrameBufferClass&& toCopy) noexcept;
+		DLLTREATMENT FrameBufferClass& operator=(FrameBufferClass&& toCopy);
+		DLLTREATMENT virtual ~FrameBufferClass() noexcept(false);
+		inline unsigned int gID() const noexcept { return ID; }
+		DLLTREATMENT void Finish() const;
 		//if updViewportSize is true then it will update opengl's viewport size
-		DLLTREATMENT void Bind(bool updViewportSize);
-		DLLTREATMENT void AttachRenderBuffer(unsigned int renderBufferID, bool depthBufferEnabled, bool stencilBufferEnabled);
-		DLLTREATMENT void AttachTexture(unsigned int texID, TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum dataFormat);
+		DLLTREATMENT void Bind(bool updViewportSize = true) const;
+		DLLTREATMENT void AttachRenderBuffer(unsigned int renderBufferID, bool depthBufferEnabled, bool stencilBufferEnabled) const;
+		DLLTREATMENT void AttachTexture(unsigned int texID, TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum dataFormat) const;
 		DLLTREATMENT static void Unbind();
-		DLLTREATMENT static void SetViewportSize(Vector2U viewportSize);
+		//if updViewportSize is true then it will update opengl's viewport size
+		inline Vector2U gViewportSize() const noexcept { return ViewportSize; }
+		DLLTREATMENT void sViewportSize(Vector2U viewportSize, bool updViewportSize = true);
+		//will update opengl's viewport size
+		DLLTREATMENT static void SetViewportSize_Static(Vector2U viewportSize);
 
-#define CFAC_ClassName FrameBufferClass
-		CFAC_ClassConstructor(FullAccess,
-			CFAC_FuncConstr(ClearColorBuffer)
-			CFAC_FuncConstr(ClearDepthBuffer)
-			CFAC_FuncConstr(ClearStencilBuffer)
-			CFAC_FuncConstr(ClearAllBuffers)
-			CFAC_FuncConstr(gID)
-			CFAC_FuncConstr(Finish)
-			CFAC_FuncConstr(Bind)
-			CFAC_FuncConstr(AttachRenderBuffer)
-			CFAC_FuncConstr(AttachTexture)
-			CFAC_FuncConstr(Unbind)
-		);
-#undef CFAC_ClassName
 	};
 }

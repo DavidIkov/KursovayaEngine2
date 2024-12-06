@@ -5,7 +5,6 @@
 #include"Windows/Window.h"
 #include"Graphics/Abstractions/TextRenderer.h"
 #include"Graphics/Abstractions/Texture.h"
-#include"Graphics/Abstractions/Shader.h"
 #include"Graphics/Abstractions/VertexBuffer.h"
 #include"Graphics/Abstractions/VertexArray.h"
 #include"Graphics/Primitives/FrameBuffer.h"
@@ -26,7 +25,7 @@ namespace GA = Graphics::Abstractions;
 int main()
 {
 
-    KE2::Manager::InitializeKE2();
+    KE2::Manager::KE2_LibraryStruct KE2_Library;
     
     try {
 
@@ -57,13 +56,12 @@ int main()
             GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Nearest,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Nearest,
             GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Stencil },
             TextureClass::DataSettingsClass{ TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil,
-            TextureClass::DataSettingsClass::DataFormatOnCPU_Enum::DepthStencil, TextureClass::DataSettingsClass::DataTypeOnCPU_Enum::UnsignedInt_24_8 });
+            TextureClass::DataSettingsClass::DataFormatOnCPU_Enum::DepthStencil, TextureClass::DataSettingsClass::DataTypeInMemory_Enum::UnsignedInt_24_8 });
         FB.AttachTexture(FB_DEPTH_STENCIL_TEX.gID(), TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil);*/
         GP::RenderBufferClass RB(Width, Height, true, true);
         FB.AttachRenderBuffer(RB.gID(), true, true);
         FB.Finish();
         FB.Unbind();
-        FB.SetViewportSize(Vector2U(Width, Height));
 
 
         GP::RenderingPresetClass Preset3D(
@@ -94,39 +92,39 @@ int main()
 		GA::VertexBufferClass VB2(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, L"Models3D/sphere.obj");
 
         GA::VertexArrayClass VA1(ArrayView<GA::VertexArrayClass::AttributeDataStruct>({
-            GA::VertexArrayClass::AttributeDataStruct{ 0,VB1,false,0,3,0,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeOnCPU_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeOnGPU_Enum::Float },
-            GA::VertexArrayClass::AttributeDataStruct{ 1,VB1,false,0,3,sizeof(float) * 3,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeOnCPU_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeOnGPU_Enum::Float},
-            GA::VertexArrayClass::AttributeDataStruct{ 2,VB1,false,0,3,sizeof(float) * (3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeOnCPU_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeOnGPU_Enum::Float},
-            GA::VertexArrayClass::AttributeDataStruct{ 3,VB1,false,0,2,sizeof(float) * (3 + 3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeOnCPU_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeOnGPU_Enum::Float},
+            GA::VertexArrayClass::AttributeDataStruct{ 0,VB1,false,0,3,0,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float },
+            GA::VertexArrayClass::AttributeDataStruct{ 1,VB1,false,0,3,sizeof(float) * 3,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
+            GA::VertexArrayClass::AttributeDataStruct{ 2,VB1,false,0,3,sizeof(float) * (3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
+            GA::VertexArrayClass::AttributeDataStruct{ 3,VB1,false,0,2,sizeof(float) * (3 + 3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
             }));
 		GA::VertexArrayClass VA2(ArrayView<GA::VertexArrayClass::AttributeDataStruct>({
-            GA::VertexArrayClass::AttributeDataStruct{ 0,VB2,false,0,3,0,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeOnCPU_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeOnGPU_Enum::Float },
-            GA::VertexArrayClass::AttributeDataStruct{ 1,VB2,false,0,3,sizeof(float) * 3,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeOnCPU_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeOnGPU_Enum::Float},
-            GA::VertexArrayClass::AttributeDataStruct{ 2,VB2,false,0,3,sizeof(float) * (3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeOnCPU_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeOnGPU_Enum::Float},
-            GA::VertexArrayClass::AttributeDataStruct{ 3,VB2,false,0,2,sizeof(float) * (3 + 3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeOnCPU_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeOnGPU_Enum::Float},
+            GA::VertexArrayClass::AttributeDataStruct{ 0,VB2,false,0,3,0,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float },
+            GA::VertexArrayClass::AttributeDataStruct{ 1,VB2,false,0,3,sizeof(float) * 3,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
+            GA::VertexArrayClass::AttributeDataStruct{ 2,VB2,false,0,3,sizeof(float) * (3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
+            GA::VertexArrayClass::AttributeDataStruct{ 3,VB2,false,0,2,sizeof(float) * (3 + 3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
             }));
 
         GA::VertexBufferClass VB_QUAD(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<float>({1,-1,1,1,-1,1,1,-1,-1,-1,-1,1}));
         GA::VertexArrayClass VA_QUAD(ArrayView<GA::VertexArrayClass::AttributeDataStruct>({
-            GA::VertexArrayClass::AttributeDataStruct{ 0,VB_QUAD,false,0,2,0,sizeof(float) * 2, GA::VertexArrayClass::AttributeDataStruct::DataTypeOnCPU_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeOnGPU_Enum::Float },
+            GA::VertexArrayClass::AttributeDataStruct{ 0,VB_QUAD,false,0,2,0,sizeof(float) * 2, GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float },
             }));
 
 
 
-		GA::ShaderClass SP(L"Shaders/full3d.vs", L"Shaders/full3d.fs", nullptr, nullptr);
-                
-        GA::ShaderClass SP_OUTLINE(L"Shaders/outline.vs", L"Shaders/outline.fs", nullptr, nullptr);
+		GP::ShaderProgramClass SP(L"Shaders/full3d.vs", L"Shaders/full3d.fs");
+        
+        GP::ShaderProgramClass  SP_OUTLINE(L"Shaders/outline.vs", L"Shaders/outline.fs");
 
-        GA::ShaderClass SP_NORMAL(L"Shaders/normal.vs", L"Shaders/normal.gs", L"Shaders/normal.fs", nullptr, nullptr);
+        GP::ShaderProgramClass SP_NORMAL(L"Shaders/normal.vs", L"Shaders/normal.gs", L"Shaders/normal.fs");
 
-        GA::ShaderClass QUAD_SP(L"Shaders/quad.vs", L"Shaders/quad.fs", nullptr, nullptr);
+        GP::ShaderProgramClass QUAD_SP(L"Shaders/quad.vs", L"Shaders/quad.fs");
 
         QUAD_SP.Bind();
-        QUAD_SP.gCFAC_UniformFuncs().SetUniform1i(QUAD_SP.GetUniformIDByName("u_Texture"), 0);
+        QUAD_SP.SetUniform1i("u_Texture", 0);
 
         SP.Bind();
-        SP.gCFAC_UniformFuncs().SetUniform1i(SP.GetUniformIDByName("u_tex1"), 0);
-        SP.gCFAC_UniformFuncs().SetUniform1i(SP.GetUniformIDByName("u_tex2"), 1);
+        SP.SetUniform1i("u_tex1", 0);
+        SP.SetUniform1i("u_tex2", 1);
 
         GA::TextureClass TEX0(GA::TextureClass::DimensionsEnum::Two, "Textures/blackFace.jpg",
             GA::TextureClass::SettingsStruct{ GA::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GA::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
@@ -247,13 +245,13 @@ int main()
 
             Object1RotationMatrix = Object1RotationMatrix.RotateIn3DByAnglesC<0, 1, 2>(0.01f, 0.01f, 0);
 
-            SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_LightPos"), 1, &LightPosition[0]);
-            SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
-            SP.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP.GetUniformIDByName("u_InversedCameraRotationMatrix"), 1, false, &InversedCameraRotationMatrix[0]);
-            SP.gCFAC_UniformFuncs().SetUniformMatrix4fv(SP.GetUniformIDByName("u_ProjectionMatrix"), 1, false, &ProjectionMatrix[0]);
-            SP.gCFAC_UniformFuncs().SetUniform1f(SP.GetUniformIDByName("u_VisualData.Shininess"), 4.f);
-            SP.gCFAC_UniformFuncs().SetUniform1f(SP.GetUniformIDByName("u_VisualData.LightSourceReflectionMaxAngle"), 40.f / 180.f * 3.14f);
-            SP.gCFAC_UniformFuncs().SetUniform1f(SP.GetUniformIDByName("u_VisualData.MinColorMultiplierForSurfaceLighting"), 0.05f);
+            SP.SetUniform3fv("u_LightPos", 1, &LightPosition[0]);
+            SP.SetUniform3fv("u_CameraPosition", 1, &CameraPosition[0]);
+            SP.SetUniformMatrix3fv("u_InversedCameraRotationMatrix", 1, false, &InversedCameraRotationMatrix[0]);
+            SP.SetUniformMatrix4fv("u_ProjectionMatrix", 1, false, &ProjectionMatrix[0]);
+            SP.SetUniform1f("u_VisualData.Shininess", 4.f);
+            SP.SetUniform1f("u_VisualData.LightSourceReflectionMaxAngle", 40.f / 180.f * 3.14f);
+            SP.SetUniform1f("u_VisualData.MinColorMultiplierForSurfaceLighting", 0.05f);
 
             FB.Bind(true);
 
@@ -262,16 +260,16 @@ int main()
 
             VA1.Bind();
 
-            SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_ObjectPosition"), 1, &Object1Position[0]);
-            SP.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object1RotationMatrix[0]);
-            SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_ObjectScale"), 1, &Object1Scale[0]);
+            SP.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
+            SP.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
+            SP.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
             VA2.Bind();
 
-            SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_ObjectPosition"), 1, &Object2Position[0]);
-            SP.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object2RotationMatrix[0]);
-            SP.gCFAC_UniformFuncs().SetUniform3fv(SP.GetUniformIDByName("u_ObjectScale"), 1, &Object2Scale[0]);
+            SP.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
+            SP.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
+            SP.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
 
             Preset3D.sStencilTest_BaseMask(0);
@@ -282,23 +280,23 @@ int main()
 
 
                 SP_OUTLINE.Bind();
-                SP_OUTLINE.gCFAC_UniformFuncs().SetUniform3fv(SP_OUTLINE.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
-                SP_OUTLINE.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_OUTLINE.GetUniformIDByName("u_InversedCameraRotationMatrix"), 1, false, &InversedCameraRotationMatrix[0]);
-                SP_OUTLINE.gCFAC_UniformFuncs().SetUniformMatrix4fv(SP_OUTLINE.GetUniformIDByName("u_ProjectionMatrix"), 1, false, &ProjectionMatrix[0]);
-                SP_OUTLINE.gCFAC_UniformFuncs().SetUniform1f(SP_OUTLINE.GetUniformIDByName("u_OutlineScale"), 0.1f);
+                SP_OUTLINE.SetUniform3fv("u_CameraPosition", 1, &CameraPosition[0]);
+                SP_OUTLINE.SetUniformMatrix3fv("u_InversedCameraRotationMatrix", 1, false, &InversedCameraRotationMatrix[0]);
+                SP_OUTLINE.SetUniformMatrix4fv("u_ProjectionMatrix", 1, false, &ProjectionMatrix[0]);
+                SP_OUTLINE.SetUniform1f("u_OutlineScale", 0.1f);
                 
                 VA1.Bind();
 
-                SP_OUTLINE.gCFAC_UniformFuncs().SetUniform3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectPosition"), 1, &Object1Position[0]);
-                SP_OUTLINE.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object1RotationMatrix[0]);
-                SP_OUTLINE.gCFAC_UniformFuncs().SetUniform3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectScale"), 1, &Object1Scale[0]);
+                SP_OUTLINE.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
+                SP_OUTLINE.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
+                SP_OUTLINE.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
                 GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
                 VA2.Bind();
 
-                SP_OUTLINE.gCFAC_UniformFuncs().SetUniform3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectPosition"), 1, &Object2Position[0]);
-                SP_OUTLINE.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object2RotationMatrix[0]);
-                SP_OUTLINE.gCFAC_UniformFuncs().SetUniform3fv(SP_OUTLINE.GetUniformIDByName("u_ObjectScale"), 1, &Object2Scale[0]);
+                SP_OUTLINE.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
+                SP_OUTLINE.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
+                SP_OUTLINE.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
                 GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
 
             }
@@ -308,37 +306,37 @@ int main()
             Preset3D.sDepthTest_Enabled(true);
 
             SP_NORMAL.Bind();
-            SP_NORMAL.gCFAC_UniformFuncs().SetUniform3fv(SP_NORMAL.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
-            SP_NORMAL.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_NORMAL.GetUniformIDByName("u_InversedCameraRotationMatrix"), 1, false, &InversedCameraRotationMatrix[0]);
-            SP_NORMAL.gCFAC_UniformFuncs().SetUniformMatrix4fv(SP_NORMAL.GetUniformIDByName("u_ProjectionMatrix"), 1, false, &ProjectionMatrix[0]);
+            SP_NORMAL.SetUniform3fv("u_CameraPosition", 1, &CameraPosition[0]);
+            SP_NORMAL.SetUniformMatrix3fv("u_InversedCameraRotationMatrix", 1, false, &InversedCameraRotationMatrix[0]);
+            SP_NORMAL.SetUniformMatrix4fv("u_ProjectionMatrix", 1, false, &ProjectionMatrix[0]);
 
             VA1.Bind();
 
-            SP_NORMAL.gCFAC_UniformFuncs().SetUniform3fv(SP_NORMAL.GetUniformIDByName("u_ObjectPosition"), 1, &Object1Position[0]);
-            SP_NORMAL.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_NORMAL.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object1RotationMatrix[0]);
-            SP_NORMAL.gCFAC_UniformFuncs().SetUniform3fv(SP_NORMAL.GetUniformIDByName("u_ObjectScale"), 1, &Object1Scale[0]);
+            SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
+            SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
+            SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
 
             VA2.Bind();
 
-            SP_NORMAL.gCFAC_UniformFuncs().SetUniform3fv(SP_NORMAL.GetUniformIDByName("u_ObjectPosition"), 1, &Object2Position[0]);
-            SP_NORMAL.gCFAC_UniformFuncs().SetUniformMatrix3fv(SP_NORMAL.GetUniformIDByName("u_ObjectRotationMatrix"), 1, false, &Object2RotationMatrix[0]);
-            SP_NORMAL.gCFAC_UniformFuncs().SetUniform3fv(SP_NORMAL.GetUniformIDByName("u_ObjectScale"), 1, &Object2Scale[0]);
+            SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
+            SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
+            SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
 
             FB.Unbind();
-            FB.SetViewportSize(Vector2U(Width, Height));
+            GP::FrameBufferClass::SetViewportSize_Static(Vector2U(Width, Height));
 
             QuadPreset.Bind();
             window.ClearColorBuffer();
             QUAD_SP.Bind();
 
-            QUAD_SP.gCFAC_UniformFuncs().SetUniform1i(QUAD_SP.GetUniformIDByName("u_Texture"), 0);
-            QUAD_SP.gCFAC_UniformFuncs().SetUniformMatrix3fv(QUAD_SP.GetUniformIDByName("u_CameraRotation"), 1, false, &CameraRotationMatrix[0]);
-            QUAD_SP.gCFAC_UniformFuncs().SetUniform3fv(QUAD_SP.GetUniformIDByName("u_CameraPosition"), 1, &CameraPosition[0]);
-            QUAD_SP.gCFAC_UniformFuncs().SetUniform2fv(QUAD_SP.GetUniformIDByName("u_CameraResolutionSize"), 1, &ResolutionLength[0]);
-            QUAD_SP.gCFAC_UniformFuncs().SetUniform1f(QUAD_SP.GetUniformIDByName("u_EffectMult"), effectMult);// (sinf(time) + 1) / 2 * 10 + 5);
-            QUAD_SP.gCFAC_UniformFuncs().SetUniform1f(QUAD_SP.GetUniformIDByName("u_Time"), TimeCounter);
+            QUAD_SP.SetUniform1i("u_Texture", 0);
+            QUAD_SP.SetUniformMatrix3fv("u_CameraRotation", 1, false, &CameraRotationMatrix[0]);
+            QUAD_SP.SetUniform3fv("u_CameraPosition", 1, &CameraPosition[0]);
+            QUAD_SP.SetUniform2fv("u_CameraResolutionSize", 1, &ResolutionLength[0]);
+            QUAD_SP.SetUniform1f("u_EffectMult", effectMult);// (sinf(time) + 1) / 2 * 10 + 5);
+            QUAD_SP.SetUniform1f("u_Time", TimeCounter);
 
             FB_COLOR_TEX.Bind(0);
 
@@ -368,6 +366,5 @@ int main()
     catch (KE2::ErrorsSystemNamespace::AnyError&) {}
     catch (...){}
 
-	KE2::Manager::UninitializeKE2();
     return 0;
 }

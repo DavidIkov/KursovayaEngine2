@@ -6,7 +6,6 @@
 using namespace KE2;
 using namespace Graphics::Primitives;
 
-#define Assert_NotDeleted_Macro if (Deleted) ErrorsSystemNamespace::SendError<<"VertexArray is already deleted">>ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyDeleted);
 #if defined KE2_Debug
 #define Assert_Binded_Macro if (BindedInstances.gVertexArrayID() != ID) ErrorsSystemNamespace::SendWarning << "VertexArray is not binded" >> ErrorsSystemNamespace::EndOfWarning;
 #else
@@ -20,20 +19,20 @@ VertexArrayClass::VertexArrayClass() {
 VertexArrayClass::VertexArrayClass(const ArrayView<AttributeDataStruct>& attribsData) :VertexArrayClass() {
     SetAttributes(attribsData);
 }
-VertexArrayClass::VertexArrayClass(const VertexArrayClass&& toCopy) {
-    memcpy(this, &toCopy, sizeof(VertexArrayClass));
-    toCopy.Deleted = true;
+VertexArrayClass::VertexArrayClass(VertexArrayClass&& toCopy) noexcept :
+    ID(toCopy.ID) {
+    toCopy.ID = 0u;
 }
-void VertexArrayClass::operator=(const VertexArrayClass&& toCopy) {
-    Delete();
-    memcpy(this, &toCopy, sizeof(VertexArrayClass));
-    toCopy.Deleted = true;
+VertexArrayClass& VertexArrayClass::operator=(VertexArrayClass&& toCopy) {
+    this->~VertexArrayClass();
+    new(this) VertexArrayClass(std::move(toCopy));
+    return *this;
 }
-VertexArrayClass::~VertexArrayClass() {
-    if (not Deleted) {
+VertexArrayClass::~VertexArrayClass() noexcept(false) {
+    if (ID != 0u) {
         Unbind();
         glSC(glDeleteVertexArrays(1, &ID));
-        Deleted = true;
+        ID = 0u;
     }
 }
 /*
@@ -48,8 +47,7 @@ static unsigned int _GetSizeOfTypeByBufferDataTypeEnum_SwitchCase(VertexArrayCla
     return 0;
 }
 */
-void VertexArrayClass::SetAttribute(const AttributeDataStruct& attribData) {
-    Assert_NotDeleted_Macro;
+void VertexArrayClass::SetAttribute(const AttributeDataStruct& attribData) const {
     Assert_Binded_Macro;
 	if (attribData.VB_ID == 0)
 		ErrorsSystemNamespace::SendError << "Cant use zero vertex buffer for attribute" >> ErrorsEnumWrapperStruct(ErrorsEnum::ZeroVB_CantBeUsed);
@@ -58,23 +56,23 @@ void VertexArrayClass::SetAttribute(const AttributeDataStruct& attribData) {
 
 	glSC(glBindBuffer(GL_ARRAY_BUFFER, attribData.VB_ID));
 	unsigned int glDataTypeOnCPU = 0;
-	switch (attribData.DataTypeOnCPU) {
-	case AttributeDataStruct::DataTypeOnCPU_Enum::Byte: glDataTypeOnCPU = GL_BYTE; break;
-	case AttributeDataStruct::DataTypeOnCPU_Enum::UnsignedByte: glDataTypeOnCPU = GL_UNSIGNED_BYTE; break;
-	case AttributeDataStruct::DataTypeOnCPU_Enum::Float: glDataTypeOnCPU = GL_FLOAT; break;
-	case AttributeDataStruct::DataTypeOnCPU_Enum::Int: glDataTypeOnCPU = GL_INT; break;
-	case AttributeDataStruct::DataTypeOnCPU_Enum::UnsignedInt: glDataTypeOnCPU = GL_UNSIGNED_INT; break;
-	case AttributeDataStruct::DataTypeOnCPU_Enum::Double: glDataTypeOnCPU = GL_DOUBLE; break;
+	switch (attribData.DataTypeInMemory) {
+	case AttributeDataStruct::DataTypeInMemory_Enum::Byte: glDataTypeOnCPU = GL_BYTE; break;
+	case AttributeDataStruct::DataTypeInMemory_Enum::UnsignedByte: glDataTypeOnCPU = GL_UNSIGNED_BYTE; break;
+	case AttributeDataStruct::DataTypeInMemory_Enum::Float: glDataTypeOnCPU = GL_FLOAT; break;
+	case AttributeDataStruct::DataTypeInMemory_Enum::Int: glDataTypeOnCPU = GL_INT; break;
+	case AttributeDataStruct::DataTypeInMemory_Enum::UnsignedInt: glDataTypeOnCPU = GL_UNSIGNED_INT; break;
+	case AttributeDataStruct::DataTypeInMemory_Enum::Double: glDataTypeOnCPU = GL_DOUBLE; break;
 	}
 
-	switch (attribData.DataTypeOnGPU) {
-	case AttributeDataStruct::DataTypeOnGPU_Enum::Float: {
+	switch (attribData.DataTypeForReadingOnGPU) {
+	case AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float: {
 		glSC(glVertexAttribPointer(attribData.AttribInd, attribData.ComponentsAmount, glDataTypeOnCPU, attribData.Normalize, attribData.ByteOffsetToNextElement, (const void*)(unsigned long long int)attribData.FirstElementByteOffset));
 		break;
-	} case AttributeDataStruct::DataTypeOnGPU_Enum::Int: {
+	} case AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Int: {
 		glSC(glVertexAttribIPointer(attribData.AttribInd, attribData.ComponentsAmount, glDataTypeOnCPU, attribData.ByteOffsetToNextElement, (const void*)(unsigned long long int)attribData.FirstElementByteOffset));
 		break;
-	} case AttributeDataStruct::DataTypeOnGPU_Enum::Double: {
+	} case AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Double: {
 		glSC(glVertexAttribLPointer(attribData.AttribInd, attribData.ComponentsAmount, glDataTypeOnCPU, attribData.ByteOffsetToNextElement, (const void*)(unsigned long long int)attribData.FirstElementByteOffset));
 		break;
 	}
@@ -82,16 +80,13 @@ void VertexArrayClass::SetAttribute(const AttributeDataStruct& attribData) {
 
 	glSC(glVertexAttribDivisor(attribData.AttribInd, attribData.Divisor));
 }
-void VertexArrayClass::SetAttributes(const ArrayView<AttributeDataStruct>& attribsData) {
-    Assert_NotDeleted_Macro;
+void VertexArrayClass::SetAttributes(const ArrayView<AttributeDataStruct>& attribsData) const {
     Assert_Binded_Macro;
-
-    unsigned int beforeFunctionBindedVB_ID = BindedInstances.gVertexBufferID();
 
     for (unsigned int i = 0; i < attribsData.gLen(); i++)
         SetAttribute(attribsData[i]);
 
-    glBindBuffer(GL_ARRAY_BUFFER, beforeFunctionBindedVB_ID);
+    glSC(glBindBuffer(GL_ARRAY_BUFFER, 0));
 
     /*
         unsigned int last
@@ -114,25 +109,14 @@ void VertexArrayClass::SetAttributes(const ArrayView<AttributeDataStruct>& attri
         */
 }
 void VertexArrayClass::EnableAttribute(unsigned int attribInd) const {
-    Assert_NotDeleted_Macro;
     Assert_Binded_Macro;
     glSC(glEnableVertexAttribArray(attribInd));
 }
 void VertexArrayClass::DisableAttribute(unsigned int attribInd) const {
-    Assert_NotDeleted_Macro;
     Assert_Binded_Macro;
     glSC(glDisableVertexAttribArray(attribInd));
 }
-unsigned int VertexArrayClass::gID() const {
-    Assert_NotDeleted_Macro;
-    return ID;
-}
-void VertexArrayClass::Delete() {
-    Assert_NotDeleted_Macro;
-	this->~VertexArrayClass();
-}
 void VertexArrayClass::Bind() const {
-    Assert_NotDeleted_Macro;
 #if defined KE2_Debug
     BindedInstances.sVertexArray_ID(ID);
 #endif
