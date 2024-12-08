@@ -5,11 +5,11 @@
 
 namespace Graphics::Primitives {
 
-	class VertexBufferClass {
+	class IndexBufferClass {
 	public:
-		typedef unsigned int VertexBufferID_Type;
+		typedef unsigned int IndexBufferID_Type;
 	protected:
-		VertexBufferID_Type ID = 0u;
+		IndexBufferID_Type ID = 0u;
 
 	public:
 
@@ -27,18 +27,18 @@ namespace Graphics::Primitives {
 			DynamicDraw, DynamicRead, DynamicCopy,
 		};
 		
-		DLLTREATMENT VertexBufferClass();
-		DLLTREATMENT VertexBufferClass(VertexBufferClass&& toCopy) noexcept;
-		DLLTREATMENT VertexBufferClass& operator=(VertexBufferClass&& toCopy);
-		DLLTREATMENT virtual ~VertexBufferClass() noexcept(false);
+		DLLTREATMENT IndexBufferClass();
+		DLLTREATMENT IndexBufferClass(IndexBufferClass&& toCopy) noexcept;
+		DLLTREATMENT IndexBufferClass& operator=(IndexBufferClass&& toCopy);
+		DLLTREATMENT virtual ~IndexBufferClass() noexcept(false);
 
-		inline VertexBufferID_Type gID() const noexcept { return ID; }
-		inline operator VertexBufferID_Type() const noexcept { return ID; }
+		inline IndexBufferID_Type gID() const noexcept { return ID; }
+		inline operator IndexBufferID_Type() const noexcept { return ID; }
 
 		DLLTREATMENT void SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode) const;
 		DLLTREATMENT void SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) const;
 
-		DLLTREATMENT void CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) const;
+		DLLTREATMENT void CopySubData(const IndexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) const;
 
 		//data should point to already allocated memory
 		DLLTREATMENT void GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) const;

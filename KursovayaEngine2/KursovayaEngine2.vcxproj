@@ -244,6 +244,14 @@
   <ItemGroup>
     <ClCompile Include="Dependencies\glad\src\glad.c" />
     <ClCompile Include="Dependencies\stb_image\stb_image.cpp" />
+    <ClCompile Include="Graphics\Abstractions\IndexBuffer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GA_IndexBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">$(IntDir)GA_IndexBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">$(IntDir)GA_IndexBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|ARM'">$(IntDir)GA_IndexBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GA_IndexBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)GA_IndexBuffer</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="Graphics\Abstractions\TextRenderer.cpp" />
     <ClCompile Include="Graphics\Abstractions\Texture.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GA_Texture</ObjectFileName>
@@ -269,7 +277,14 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GA_VertexBuffer</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)GA_VertexBuffer</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="Graphics\Globals.cpp" />
+    <ClCompile Include="Graphics\Primitives\IndexBuffer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GP_IndexBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">$(IntDir)GP_IndexBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">$(IntDir)GP_IndexBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|ARM'">$(IntDir)GP_IndexBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GP_IndexBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)GP_IndexBuffer</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="Graphics\Primitives\Renderer.cpp" />
     <ClCompile Include="Graphics\Primitives\VertexArray.cpp" />
     <ClCompile Include="Graphics\Primitives\VertexBuffer.cpp">
@@ -421,11 +436,13 @@
     <ClInclude Include="Dependencies\FreeType\ft2build.h" />
     <ClInclude Include="Dependencies\stb_image\stb_image.h" />
     <ClInclude Include="DLL.h" />
+    <ClInclude Include="Graphics\Abstractions\IndexBuffer.h" />
     <ClInclude Include="Graphics\Abstractions\VertexArray.h" />
     <ClInclude Include="Graphics\Abstractions\VertexBuffer.h" />
     <ClInclude Include="Graphics\Abstractions\TextRenderer.h" />
     <ClInclude Include="Graphics\Abstractions\Texture.h" />
     <ClInclude Include="Graphics\Globals.h" />
+    <ClInclude Include="Graphics\Primitives\IndexBuffer.h" />
     <ClInclude Include="Graphics\Primitives\Renderer.h" />
     <ClInclude Include="Graphics\Primitives\VertexArray.h" />
     <ClInclude Include="Graphics\Primitives\VertexBuffer.h" />

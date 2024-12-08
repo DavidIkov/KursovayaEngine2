@@ -53,6 +53,8 @@
     <None Include="Models3D\troll.obj" />
     <None Include="Shaders\textNEW.vs" />
     <None Include="Shaders\textNEW.fs" />
+    <None Include="Shaders\simpleQuad.vs" />
+    <None Include="Shaders\simpleQuad.fs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\blackFace.jpg">

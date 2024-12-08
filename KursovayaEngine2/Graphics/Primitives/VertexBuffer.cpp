@@ -34,7 +34,6 @@ VertexBufferClass::~VertexBufferClass() noexcept(false) {
 
 static unsigned int _GetVBUsageForGL(VertexBufferClass::BufferReadWriteModeEnum usage) {
     switch (usage) {
-    case VertexBufferClass::BufferReadWriteModeEnum::None: return 0;
     case VertexBufferClass::BufferReadWriteModeEnum::StreamDraw: return GL_STREAM_DRAW;
     case VertexBufferClass::BufferReadWriteModeEnum::StreamRead: return GL_STREAM_READ;
     case VertexBufferClass::BufferReadWriteModeEnum::StreamCopy: return GL_STREAM_COPY;
@@ -50,7 +49,6 @@ static unsigned int _GetVBUsageForGL(VertexBufferClass::BufferReadWriteModeEnum 
 void VertexBufferClass::SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode) const {
     Assert_Binded_Macro;
 
-    if (bufferReadWriteMode == BufferReadWriteModeEnum::None) ErrorsSystemNamespace::SendError << "BufferReadWriteMode is none" >> ErrorsEnumWrapperStruct(ErrorsEnum::BufferReadWriteModeInNone);
 	glSC(glBufferData(GL_ARRAY_BUFFER, data.gLenInBytes(), data.gDataPtr(), _GetVBUsageForGL(bufferReadWriteMode)));
 }
 void VertexBufferClass::SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) const {
@@ -77,13 +75,13 @@ void VertexBufferClass::GetSubData(unsigned int offsetInBytes, unsigned int amou
 
 void VertexBufferClass::Bind() const {
 #if defined KE2_Debug
-    BindedInstances.sVertexBuffer_ID(ID);
+    BindedInstances.sVertexBufferID(ID);
 #endif
 	glSC(glBindBuffer(GL_ARRAY_BUFFER, ID));
 }
 void VertexBufferClass::Unbind() {
     glSC(glBindBuffer(GL_ARRAY_BUFFER, 0));
 #if defined KE2_Debug
-    BindedInstances.sVertexBuffer_ID(0);
+    BindedInstances.sVertexBufferID(0);
 #endif
 }

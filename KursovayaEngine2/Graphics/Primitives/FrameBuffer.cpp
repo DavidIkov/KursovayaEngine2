@@ -108,7 +108,7 @@ void FrameBufferClass::Finish() const {
 void FrameBufferClass::Bind(bool updViewportSize) const {
 
 #if defined KE2_Debug
-	BindedInstances.sFrameBuffer_ID(ID);
+	BindedInstances.sFrameBufferID(ID);
 #endif
 	glSC(glBindFramebuffer(GL_FRAMEBUFFER, ID));
 	if (updViewportSize) { glSC(glViewport(0, 0, ViewportSize[0], ViewportSize[1])); }
@@ -116,10 +116,10 @@ void FrameBufferClass::Bind(bool updViewportSize) const {
 void FrameBufferClass::Unbind() {
 	glSC(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 #if defined KE2_Debug
-	BindedInstances.sFrameBuffer_ID(0);
+	BindedInstances.sFrameBufferID(0);
 #endif
 }
-void FrameBufferClass::sViewportSize(Vector2U viewportSize, bool updViewportSize) {
+void FrameBufferClass::SetViewportSize(Vector2U viewportSize, bool updViewportSize) {
 	ViewportSize = viewportSize;
 	if (updViewportSize) { glSC(glViewport(0, 0, viewportSize[0], viewportSize[1])); }
 }

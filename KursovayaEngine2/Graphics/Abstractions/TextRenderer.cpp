@@ -5,6 +5,7 @@
 #include"FreeType/ft2build.h"
 #include FT_FREETYPE_H
 #include"Tools/BinarySearch.h"
+#include<vector>
 
 using namespace KE2;
 namespace GP = Graphics::Primitives;

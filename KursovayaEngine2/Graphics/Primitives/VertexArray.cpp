@@ -118,13 +118,13 @@ void VertexArrayClass::DisableAttribute(unsigned int attribInd) const {
 }
 void VertexArrayClass::Bind() const {
 #if defined KE2_Debug
-    BindedInstances.sVertexArray_ID(ID);
+    BindedInstances.sVertexArrayID(ID);
 #endif
 	glSC(glBindVertexArray(ID));
 }
 void VertexArrayClass::Unbind() {
     glSC(glBindVertexArray(0));
 #if defined KE2_Debug
-    BindedInstances.sVertexArray_ID(0);
+    BindedInstances.sVertexArrayID(0);
 #endif
 }

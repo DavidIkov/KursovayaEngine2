@@ -93,14 +93,14 @@ ShaderProgramClass::~ShaderProgramClass() noexcept(false) {
 void ShaderProgramClass::Bind() const {
 	Assert_Linked_Macro;
 #if defined KE2_Debug
-	BindedInstances.sShaderProgram_ID(ID);
+	BindedInstances.sShaderProgramID(ID);
 #endif
 	glSC(glUseProgram(ID));
 }
 void ShaderProgramClass::Unbind() {
 	glSC(glUseProgram(0));
 #if defined KE2_Debug
-	BindedInstances.sShaderProgram_ID(0);
+	BindedInstances.sShaderProgramID(0);
 #endif
 }
 

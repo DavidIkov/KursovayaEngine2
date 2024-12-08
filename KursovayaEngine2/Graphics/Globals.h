@@ -10,43 +10,47 @@ namespace Graphics {
 	private:
 		unsigned int FrameBufferID = 0;
 	public:
-		unsigned int gFrameBufferID();
-		void sFrameBuffer_ID(unsigned int newID);
+		inline unsigned int gFrameBufferID() const noexcept{ return FrameBufferID; }
+		inline void sFrameBufferID(unsigned int newID) noexcept { FrameBufferID = newID; }
 
 	private:
 		unsigned int RenderBufferID = 0;
 	public:
-		unsigned int gRenderBufferID();
-		void sRenderBuffer_ID(unsigned int newID);
+		inline unsigned int gRenderBufferID() const noexcept{ return RenderBufferID; }
+		inline void sRenderBufferID(unsigned int newID) noexcept { RenderBufferID = newID; }
 
 	private:
 		unsigned int ShaderProgramID = 0;
 	public:
-		unsigned int gShaderProgramID();
-		void sShaderProgram_ID(unsigned int newID);
+		inline unsigned int gShaderProgramID() const noexcept{ return ShaderProgramID; }
+		inline void sShaderProgramID(unsigned int newID) noexcept { ShaderProgramID = newID; }
 
 	private:
 		unsigned int TextureID = 0;
 	public:
-		unsigned int gTextureID();
-		void sTexture_ID(unsigned int newID);
+		inline unsigned int gTextureID() const noexcept{ return TextureID; }
+		inline void sTextureID(unsigned int newID) noexcept { TextureID = newID; }
 
 	private:
 		unsigned int VertexArrayID = 0;
-		void* VertexArrayPtr=nullptr;
 	public:
-		unsigned int gVertexArrayID();
-		void sVertexArray_ID(unsigned int newID);
+		inline unsigned int gVertexArrayID() const noexcept{ return VertexArrayID; }
+		inline void sVertexArrayID(unsigned int newID) noexcept { VertexArrayID = newID; }
 
 	private:
 		unsigned int VertexBufferID = 0;
-		void* VertexBufferPtr=nullptr;
 	public:
-		unsigned int gVertexBufferID();
-		void sVertexBuffer_ID(unsigned int newID);
+		inline unsigned int gVertexBufferID() const noexcept{ return VertexBufferID; }
+		inline void sVertexBufferID(unsigned int newID) noexcept { VertexBufferID = newID; }
+
+	private:
+		unsigned int IndexBufferID = 0;
+	public:
+		inline unsigned int gIndexBufferID() const noexcept{ return IndexBufferID; }
+		inline void sIndexBufferID(unsigned int newID) noexcept { IndexBufferID = newID; }
 
 	public:
-		_BindedInstancesClass();
+		inline _BindedInstancesClass() noexcept {};
 	};
 	inline _BindedInstancesClass BindedInstances;
 }

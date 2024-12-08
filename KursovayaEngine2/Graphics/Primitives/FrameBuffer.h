@@ -53,7 +53,7 @@ namespace Graphics::Primitives {
 		DLLTREATMENT static void Unbind();
 		//if updViewportSize is true then it will update opengl's viewport size
 		inline Vector2U gViewportSize() const noexcept { return ViewportSize; }
-		DLLTREATMENT void sViewportSize(Vector2U viewportSize, bool updViewportSize = true);
+		DLLTREATMENT void SetViewportSize(Vector2U viewportSize, bool updViewportSize = true);
 		//will update opengl's viewport size
 		DLLTREATMENT static void SetViewportSize_Static(Vector2U viewportSize);
 

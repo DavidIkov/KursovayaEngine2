@@ -17,7 +17,7 @@ namespace Graphics::Abstractions {
 		using VertexBufferID_Type = Primitives::VertexBufferClass::VertexBufferID_Type;
 		using BufferReadWriteModeEnum = Primitives::VertexBufferClass::BufferReadWriteModeEnum;
 	protected:
-		const BufferReadWriteModeEnum BufferReadWriteMode = BufferReadWriteModeEnum::None;
+		const BufferReadWriteModeEnum BufferReadWriteMode;
 		unsigned int DataSizeInBytes = 0u;
 	public:
 		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode);

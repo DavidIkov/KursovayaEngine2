@@ -264,6 +264,8 @@
     <None Include="Shaders\outline.vs" />
     <None Include="Shaders\quad.fs" />
     <None Include="Shaders\quad.vs" />
+    <None Include="Shaders\simpleQuad.fs" />
+    <None Include="Shaders\simpleQuad.vs" />
     <None Include="Shaders\text.fs" />
     <None Include="Shaders\text.vs" />
     <None Include="Shaders\textNEW.fs" />

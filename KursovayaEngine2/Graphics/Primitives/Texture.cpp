@@ -262,14 +262,21 @@ void TextureClass::sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilRe
 void TextureClass::Bind(unsigned int textureInd) const {
 	glSC(glActiveTexture(GL_TEXTURE0 + textureInd));
 #if defined KE2_Debug
-    BindedInstances.sTexture_ID(ID);
+    BindedInstances.sTextureID(ID);
 #endif
 	glSC(glBindTexture(GL_TexEnum, ID));
 }
+void TextureClass::Bind() const {
+#if defined KE2_Debug
+    BindedInstances.sTextureID(ID);
+#endif
+	glSC(glBindTexture(GL_TexEnum, ID));
+}
+
 void TextureClass::Unbind() const {
     glSC(glBindTexture(GL_TexEnum, 0));
 #if defined KE2_Debug
-    BindedInstances.sTexture_ID(0);
+    BindedInstances.sTextureID(0);
 #endif
 }
 

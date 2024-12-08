@@ -7,6 +7,7 @@
 #include"Graphics/Abstractions/Texture.h"
 #include"Graphics/Abstractions/VertexBuffer.h"
 #include"Graphics/Abstractions/VertexArray.h"
+#include"Graphics/Abstractions/IndexBuffer.h"
 #include"Graphics/Primitives/FrameBuffer.h"
 #include"Graphics/Primitives/VertexArray.h"
 #include"Graphics/Primitives/VertexBuffer.h"
@@ -14,6 +15,7 @@
 #include"Graphics/Primitives/ShaderProgram.h"
 #include"Graphics/Primitives/Texture.h"
 #include"Graphics/Primitives/Renderer.h"
+#include"Graphics/Primitives/IndexBuffer.h"
 #include"Maths/Vector.h"
 #include"Maths/Matrix.h"
 #include"Tools/FileTypesReaders/Obj.h"
@@ -84,9 +86,15 @@ int main()
 
         unsigned int floatsAmountPerVertex = 3 + 3 + 3 + 2;
         
-        std::vector<float> VB1_DATA = ReadObjFileType(L"Models3D/koleso.obj");
-        std::vector<float> VB2_DATA = ReadObjFileType(L"Models3D/sphere.obj");
-
+        GP::ShaderProgramClass Test_SP(L"Shaders/simpleQuad.vs", L"Shaders/simpleQuad.fs");
+        GA::VertexBufferClass Test_VB(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<float>({ 0.5f,0.5f,-0.5f,0.5f,-0.5f,-0.5f,0.5f,-0.5f }));
+        GA::VertexBufferClass Test_VB2(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<float>({ 0.f,0.3f,0.6f,1.f }));
+        GA::IndexBufferClass Test_IB(GA::IndexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<unsigned int>({ 0u,1u,2u,2u,3u,0u }));
+        Test_IB.Unbind();
+		GA::VertexArrayClass Test_VA(ArrayView<GA::VertexArrayClass::AttributeDataStruct>({
+            GA::VertexArrayClass::AttributeDataStruct{ 0,Test_VB,false,0,2,0,sizeof(float) * 2, GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float },
+            GA::VertexArrayClass::AttributeDataStruct{ 1,Test_VB2,false,0,1,0,sizeof(float) * 1, GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
+            }));
 
         GA::VertexBufferClass VB1(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, L"Models3D/koleso.obj");
 		GA::VertexBufferClass VB2(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, L"Models3D/sphere.obj");
@@ -108,7 +116,6 @@ int main()
         GA::VertexArrayClass VA_QUAD(ArrayView<GA::VertexArrayClass::AttributeDataStruct>({
             GA::VertexArrayClass::AttributeDataStruct{ 0,VB_QUAD,false,0,2,0,sizeof(float) * 2, GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float },
             }));
-
 
 
 		GP::ShaderProgramClass SP(L"Shaders/full3d.vs", L"Shaders/full3d.fs");
@@ -263,14 +270,14 @@ int main()
             SP.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
             SP.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
             SP.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
-            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
+            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, VB1.gDataSizeInBytes() / sizeof(float) / floatsAmountPerVertex);
 
             VA2.Bind();
 
             SP.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
             SP.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
             SP.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
-            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
+            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, VB2.gDataSizeInBytes() / sizeof(float) / floatsAmountPerVertex);
 
             Preset3D.sStencilTest_BaseMask(0);
             Preset3D.sStencilTest_ComparisonType(GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::NotEqual);
@@ -290,14 +297,14 @@ int main()
                 SP_OUTLINE.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
                 SP_OUTLINE.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
                 SP_OUTLINE.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
-                GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
+                GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, VB1.gDataSizeInBytes() / sizeof(float) / floatsAmountPerVertex);
 
                 VA2.Bind();
 
                 SP_OUTLINE.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
                 SP_OUTLINE.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
                 SP_OUTLINE.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
-                GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
+                GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, VB2.gDataSizeInBytes() / sizeof(float) / floatsAmountPerVertex);
 
             }
 
@@ -315,14 +322,14 @@ int main()
             SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object1Position[0]);
             SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object1RotationMatrix[0]);
             SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object1Scale[0]);
-            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB1_DATA.size() / floatsAmountPerVertex);
+            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, VB1.gDataSizeInBytes() / sizeof(float) / floatsAmountPerVertex);
 
             VA2.Bind();
 
             SP_NORMAL.SetUniform3fv("u_ObjectPosition", 1, &Object2Position[0]);
             SP_NORMAL.SetUniformMatrix3fv("u_ObjectRotationMatrix", 1, false, &Object2RotationMatrix[0]);
             SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
-            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, (int)VB2_DATA.size() / floatsAmountPerVertex);
+            GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, VB2.gDataSizeInBytes() / sizeof(float) / floatsAmountPerVertex);
 
             FB.Unbind();
             GP::FrameBufferClass::SetViewportSize_Static(Vector2U(Width, Height));
@@ -343,6 +350,12 @@ int main()
             VA_QUAD.Bind();
 
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, 6);
+
+            Test_SP.Bind();
+            Test_VA.Bind();
+            Test_IB.Bind();
+            GP::RendererNamespace::DrawElements(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, 6, GP::RendererNamespace::IndexBufferDataTypeEnum::UnsignedInt);
+
 
 			//TEXT_RENDERER.RenderText(ArialFont, L"english русский ЙЖЁ!:(|&", Vector2F(-1,0), Vector2F(-1,0), Vector2U(Width, Height), Vector2F(1, 0), 0.5f);
             

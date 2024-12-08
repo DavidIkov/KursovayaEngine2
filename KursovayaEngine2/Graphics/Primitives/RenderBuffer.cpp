@@ -36,14 +36,14 @@ RenderBufferClass::~RenderBufferClass() noexcept(false) {
 void RenderBufferClass::Bind() const {
 
 #if defined KE2_Debug
-    BindedInstances.sRenderBuffer_ID(ID);
+    BindedInstances.sRenderBufferID(ID);
 #endif
     glSC(glBindRenderbuffer(GL_RENDERBUFFER, ID));
 
 }
 void RenderBufferClass::Unbind() {
 #if defined KE2_Debug
-    BindedInstances.sRenderBuffer_ID(0);
+    BindedInstances.sRenderBufferID(0);
 #endif
     glSC(glBindRenderbuffer(GL_RENDERBUFFER, 0));
 

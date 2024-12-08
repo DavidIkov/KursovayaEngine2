@@ -117,7 +117,9 @@ namespace Graphics::Primitives {
         DLLTREATMENT void sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode) const;
 
         inline unsigned int gID() const noexcept { return ID; }
-        DLLTREATMENT void Bind(unsigned int bindingInd = 0) const;
+        DLLTREATMENT void Bind(unsigned int bindingInd) const;
+        //will not set active texture, so it will replace texture in last binded slot(by opengl rules)
+        DLLTREATMENT void Bind() const;
         DLLTREATMENT void Unbind() const;
 
         
