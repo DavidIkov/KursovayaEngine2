@@ -2,7 +2,7 @@
 #include"DLL.h"
 #include"Tools/ErrorsSystem.h"
 
-namespace Graphics::Primitives {
+namespace KE2::Graphics::Primitives {
 	class RenderBufferClass {
 		unsigned int ID = 0u;
 	public:
@@ -22,7 +22,10 @@ namespace Graphics::Primitives {
 		DLLTREATMENT virtual ~RenderBufferClass() noexcept(false);
 		DLLTREATMENT void Bind() const;
 		DLLTREATMENT static void Unbind();
-		inline unsigned int gID() const noexcept { return ID; }
+
+		typedef unsigned int RenderBufferID_Type;
+		inline RenderBufferID_Type gID() const noexcept { return ID; }
+		inline operator RenderBufferID_Type() const noexcept { return ID; }
 
 	};
 }

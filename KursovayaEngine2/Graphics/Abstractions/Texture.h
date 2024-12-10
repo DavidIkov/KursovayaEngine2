@@ -3,7 +3,7 @@
 #include"Graphics/Primitives/Texture.h"
 #include"Tools/ClassFunctionsAccessController.h"
 
-namespace Graphics::Abstractions {
+namespace KE2::Graphics::Abstractions {
 
 	//make sure that if you dont use some axes in size specification of texture then 
 	//you dont leave them as 0, use 1, otherwise it will mean that texture is empty

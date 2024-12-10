@@ -8,7 +8,7 @@
 #include"Texture.h"
 #include"Tools/DynArr.h"
 
-namespace Graphics::Abstractions {
+namespace KE2::Graphics::Abstractions {
 	class TextRendererClass {
 		struct FontStruct {
 

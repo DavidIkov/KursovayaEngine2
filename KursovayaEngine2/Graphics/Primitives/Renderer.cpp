@@ -2,6 +2,7 @@
 #include"Tools/GLDebug.h"
 #include"glad/glad.h"
 
+using namespace KE2;
 using namespace Graphics::Primitives;
 
 static unsigned int constexpr _GetPrimitive_SwitchCase(RendererNamespace::PrimitivesEnum primitive) noexcept {

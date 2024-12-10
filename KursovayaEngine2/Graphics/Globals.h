@@ -2,7 +2,7 @@
 #include"DLL.h"
 
 #if defined KE2_Debug
-namespace Graphics {
+namespace KE2::Graphics {
 
 	//not for user, you cant call sSomeClassID
 	class _BindedInstancesClass {

@@ -4,7 +4,7 @@
 #include"Tools/DynArr.h"
 #include"Tools/ClassFunctionsAccessController.h"
 
-namespace Graphics::Primitives {
+namespace KE2::Graphics::Primitives {
 
 	class ShaderProgramClass {
 	protected:
@@ -35,7 +35,10 @@ namespace Graphics::Primitives {
 		DLLTREATMENT void AttachShader(unsigned int id) const;
 		DLLTREATMENT void LinkShaders() const;
 		DLLTREATMENT virtual ~ShaderProgramClass() noexcept(false);
-		inline unsigned int gID() const noexcept { return ID; };
+
+		typedef unsigned int ShaderProgramID_Type;
+		inline ShaderProgramID_Type gID() const noexcept { return ID; }
+		inline operator ShaderProgramID_Type() const noexcept { return ID; }
 
 		DLLTREATMENT void Bind() const;
 		DLLTREATMENT static void Unbind();

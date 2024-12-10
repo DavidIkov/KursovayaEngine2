@@ -3,13 +3,11 @@
 #include"Tools/ErrorsSystem.h"
 #include"Tools/ArrayView.h"
 
-namespace Graphics::Primitives {
+namespace KE2::Graphics::Primitives {
 
 	class VertexBufferClass {
-	public:
-		typedef unsigned int VertexBufferID_Type;
 	protected:
-		VertexBufferID_Type ID = 0u;
+		unsigned int ID = 0u;
 
 	public:
 
@@ -32,6 +30,7 @@ namespace Graphics::Primitives {
 		DLLTREATMENT VertexBufferClass& operator=(VertexBufferClass&& toCopy);
 		DLLTREATMENT virtual ~VertexBufferClass() noexcept(false);
 
+		typedef unsigned int VertexBufferID_Type;
 		inline VertexBufferID_Type gID() const noexcept { return ID; }
 		inline operator VertexBufferID_Type() const noexcept { return ID; }
 

@@ -2,6 +2,7 @@
 #include"glad/glad.h"
 #include"Tools/GLDebug.h"
 
+using namespace KE2;
 using namespace Graphics::Primitives;
 
 RenderingPresetClass::RenderingPresetClass(

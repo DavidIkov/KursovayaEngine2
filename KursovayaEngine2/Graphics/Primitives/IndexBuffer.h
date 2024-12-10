@@ -3,13 +3,11 @@
 #include"Tools/ErrorsSystem.h"
 #include"Tools/ArrayView.h"
 
-namespace Graphics::Primitives {
+namespace KE2::Graphics::Primitives {
 
 	class IndexBufferClass {
-	public:
-		typedef unsigned int IndexBufferID_Type;
 	protected:
-		IndexBufferID_Type ID = 0u;
+		unsigned int ID = 0u;
 
 	public:
 
@@ -32,6 +30,7 @@ namespace Graphics::Primitives {
 		DLLTREATMENT IndexBufferClass& operator=(IndexBufferClass&& toCopy);
 		DLLTREATMENT virtual ~IndexBufferClass() noexcept(false);
 
+		typedef unsigned int IndexBufferID_Type;
 		inline IndexBufferID_Type gID() const noexcept { return ID; }
 		inline operator IndexBufferID_Type() const noexcept { return ID; }
 

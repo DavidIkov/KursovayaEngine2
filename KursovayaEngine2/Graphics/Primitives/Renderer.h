@@ -1,7 +1,7 @@
 #pragma once
 #include"DLL.h"
 
-namespace Graphics::Primitives {
+namespace KE2::Graphics::Primitives {
 
 	namespace RendererNamespace {
 		enum class PrimitivesEnum :unsigned char {

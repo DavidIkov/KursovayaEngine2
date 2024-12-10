@@ -4,7 +4,7 @@
 #include"Tools/ArrayView.h"
 #include"Graphics/Primitives/VertexArray.h"
 
-namespace Graphics::Abstractions {
+namespace KE2::Graphics::Abstractions {
 	class VertexArrayClass :protected Primitives::VertexArrayClass {
 	public:
 		using AttributeDataStruct = Primitives::VertexArrayClass::AttributeDataStruct;

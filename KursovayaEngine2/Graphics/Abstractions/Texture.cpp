@@ -1,5 +1,6 @@
 #include"Texture.h"
 
+using namespace KE2;
 using namespace Graphics::Abstractions;
 namespace GP = Graphics::Primitives;
 

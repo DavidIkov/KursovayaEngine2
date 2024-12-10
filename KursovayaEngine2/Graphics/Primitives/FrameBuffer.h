@@ -4,7 +4,7 @@
 #include<vector>
 #include"Tools/ErrorsSystem.h"
 
-namespace Graphics::Primitives {
+namespace KE2::Graphics::Primitives {
 
 	enum class FrameBufferClassTextureAttachment {
 		Color, Depth, Stencil
@@ -44,7 +44,11 @@ namespace Graphics::Primitives {
 		DLLTREATMENT FrameBufferClass(FrameBufferClass&& toCopy) noexcept;
 		DLLTREATMENT FrameBufferClass& operator=(FrameBufferClass&& toCopy);
 		DLLTREATMENT virtual ~FrameBufferClass() noexcept(false);
-		inline unsigned int gID() const noexcept { return ID; }
+
+		typedef unsigned int FrameBufferID_Type;
+		inline FrameBufferID_Type gID() const noexcept { return ID; }
+		inline operator FrameBufferID_Type() const noexcept { return ID; }
+
 		DLLTREATMENT void Finish() const;
 		//if updViewportSize is true then it will update opengl's viewport size
 		DLLTREATMENT void Bind(bool updViewportSize = true) const;

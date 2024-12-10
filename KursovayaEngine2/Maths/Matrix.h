@@ -14,60 +14,92 @@ class Matrix {
 	Type Nums[SizeX * SizeY] = { Type() };
 
 	template<typename...otherNumsTyp>
-	void ConstructFromNums(const Type num, const otherNumsTyp...otherNums) {
+	constexpr void ConstructFromNums(const Type& num, otherNumsTyp&&...otherNums) noexcept {
 		Nums[SizeX * SizeY - sizeof...(otherNums) - 1] = num;
-		if constexpr (sizeof...(otherNums) != 0) ConstructFromNums(otherNums...);
+		if constexpr (sizeof...(otherNums) != 0) ConstructFromNums(std::forward<otherNumsTyp>(otherNums)...);
+	}
+	template<typename...otherNumsTyp>
+	constexpr void ConstructFromNums(Type&& num, otherNumsTyp&&...otherNums) noexcept {
+		Nums[SizeX * SizeY - sizeof...(otherNums) - 1] = std::move(num);
+		if constexpr (sizeof...(otherNums) != 0) ConstructFromNums(std::forward<otherNumsTyp>(otherNums)...);
 	}
 
 	template<unsigned int vecLen, typename...otherVecsTyp>
-	void ConstructFromVecs(const Vector<vecLen, Type>& vec, const otherVecsTyp...otherVecs) {
-		std::memcpy(&Nums[SizeY * (SizeX - sizeof...(otherVecs) - 1)], &vec[0], sizeof(Type) * vecLen);
-		if constexpr (sizeof...(otherVecs) != 0) ConstructFromVecs<vecLen>(otherVecs...);
+	constexpr void ConstructFromVecs(const Vector<vecLen, Type>& vec, otherVecsTyp&&...otherVecs) {
+		static_assert(vecLen == SizeY, "Vector length is not the same as SizeY, cant construct matrix out of it");
+		for (unsigned int y = 0; y < SizeY; y++) Nums[SizeY * (SizeX - sizeof...(otherVecs) - 1) + y] = vec[y];
+		if constexpr (sizeof...(otherVecs) != 0) ConstructFromVecs<vecLen>(std::forward<otherVecsTyp>(otherVecs)...);
+	}
+	template<unsigned int vecLen, typename...otherVecsTyp>
+	constexpr void ConstructFromVecs(Vector<vecLen, Type>&& vec, otherVecsTyp&&...otherVecs) {
+		static_assert(vecLen == SizeY, "Vector length is not the same as SizeY, cant construct matrix out of it");
+		for (unsigned int y = 0; y < SizeY; y++) Nums[SizeY * (SizeX - sizeof...(otherVecs) - 1) + y] = std::move(vec[y]);
+		if constexpr (sizeof...(otherVecs) != 0) ConstructFromVecs<vecLen>(std::forward<otherVecsTyp>(otherVecs)...);
 	}
 public:
 	template<unsigned int, unsigned int, typename>
 	friend class Matrix;
 
 	template<typename...NumsTyp>
-	Matrix(const Type num, const NumsTyp...nums) {
+	constexpr Matrix(const Type& num, NumsTyp&&...nums) noexcept {
 		static_assert(sizeof...(nums) == (SizeX * SizeY - 1), "Too many numbers");
-		ConstructFromNums(num, nums...);
+		ConstructFromNums(num, std::forward<NumsTyp>(nums)...);
+	}
+	template<typename...NumsTyp>
+	constexpr Matrix(Type&& num, NumsTyp&&...nums) noexcept {
+		static_assert(sizeof...(nums) == (SizeX * SizeY - 1), "Too many numbers");
+		ConstructFromNums(std::move(num), std::forward<NumsTyp>(nums)...);
 	}
 	//all vectors should be same length
 	template<unsigned int vecLen, typename...VecsTyp>
-	Matrix(const Vector<vecLen, Type>& vec, const VecsTyp...vecs) {
-		static_assert(vecLen == SizeY, "Vector length is not the same as SizeY, cant construct matrix out of it");
-		ConstructFromVecs<vecLen>(vec, vecs...);
+	constexpr Matrix(const Vector<vecLen, Type>& vec, VecsTyp&&...vecs) noexcept {
+		ConstructFromVecs<vecLen>(vec, std::forward<VecsTyp>(vecs)...);
 	}
-	Matrix(const Type num) {
+	//all vectors should be same length
+	template<unsigned int vecLen, typename...VecsTyp>
+	constexpr Matrix(Vector<vecLen, Type>&& vec, VecsTyp&&...vecs) noexcept {
+		ConstructFromVecs<vecLen>(std::move(vec), std::forward<VecsTyp>(vecs)...);
+	}
+	constexpr Matrix(const Type& num) noexcept {
 		for (unsigned int i = 0; i < SizeX * SizeY; i++) Nums[i] = num;
 	}
-	Matrix(const Type* numsStart) {
-		std::memcpy(&Nums[0], numsStart, sizeof(Type) * SizeX * SizeY);
+	//be aware that this constructor will not call move contructors for Type, it will use copy constructors
+	constexpr Matrix(Type&& num) noexcept:Matrix(num) { }
+	constexpr Matrix(Type const* const numsArrPtr) noexcept {
+		for (unsigned int i = 0; i < SizeX * SizeY; i++)
+			Nums[i] = numsArrPtr[i];
 	}
-	Matrix() {
+	constexpr Matrix() noexcept {}
 
-	}
+	~Matrix() = default;
 
-	Matrix(const Matrix<SizeX, SizeY, Type>& matToCopy) {
-		std::memcpy(this, &matToCopy, sizeof(matToCopy));
+	constexpr Matrix(const Matrix<SizeX, SizeY, Type>& matToCopy) noexcept {
+		for (unsigned int i = 0; i < SizeX * SizeY; i++)
+			Nums[i] = matToCopy.Nums[i];
 	}
-	Matrix(Matrix<SizeX, SizeY, Type>&& matToCopy) {
-		std::memcpy(this, &matToCopy, sizeof(matToCopy));
+	constexpr Matrix(Matrix<SizeX, SizeY, Type>&& matToCopy) noexcept {
+		for (unsigned int i = 0; i < SizeX * SizeY; i++)
+			Nums[i] = std::move(matToCopy.Nums[i]);
 	}
-	Matrix<SizeX, SizeY, Type>& operator=(const Matrix<SizeX, SizeY, Type>& matToCopy) {
-		std::memcpy(this, &matToCopy, sizeof(matToCopy));
+	constexpr Matrix<SizeX, SizeY, Type>& operator=(const Matrix<SizeX, SizeY, Type>& matToCopy) noexcept {
+		this->~Matrix();
+		new(this) Matrix(matToCopy);
+		return *this;
+	}
+	constexpr Matrix<SizeX, SizeY, Type>& operator=(Matrix<SizeX, SizeY, Type>&& matToCopy) noexcept {
+		this->~Matrix();
+		new(this) Matrix(std::move(matToCopy));
 		return *this;
 	}
 
-	Type& operator[](const unsigned int ind) {
+	constexpr Type& operator[](const unsigned int ind) noexcept {
 		return Nums[ind];
 	}
-	const Type& operator[](const unsigned int ind) const {
+	constexpr const Type& operator[](const unsigned int ind) const noexcept{
 		return Nums[ind];
 	}
 
-	Type GetDeterminant() const {
+	constexpr Type GetDeterminant() const noexcept {
 
 		static_assert(SizeX == SizeY, "Determinant is only defined for square matrix");
 
@@ -76,7 +108,7 @@ public:
 		}
 		else {
 
-			Type* tempNums = new Type[(SizeX - 1) * (SizeY - 1)];
+			Type tempNums[(SizeX - 1) * (SizeY - 1)] = { Type() };
 			int multiplier = 1;
 			Type det = 0;
 			for (unsigned int ai = 0; ai < SizeX; ai++) {
@@ -90,13 +122,12 @@ public:
 				det += Nums[ai * SizeY] * multiplier * Matrix<SizeX - 1, SizeX - 1, Type>(&tempNums[0]).GetDeterminant();
 				multiplier = -multiplier;
 			}
-			delete[] tempNums;
 			return det;
 		}
 	}
 
 
-	Matrix<SizeX, SizeY, Type> GetInversedMatrix(Type det) const {
+	constexpr Matrix<SizeX, SizeY, Type> GetInversedMatrix(const Type& det) const noexcept {
 
 		static_assert(SizeX == SizeY, "Inversed matrix is only defined for square matrix becouse of determinant");
 
@@ -122,11 +153,11 @@ public:
 	}
 
 	//used to normalize whole matrix, since after some rotations matrix can get a little broken becouse of Typeing point precision error
-	void Normalize() {
+	void Normalize() noexcept {
 		for (unsigned int x = 0; x < SizeX; x++) {
 			Vector<SizeY, Type> v(&Nums[x * SizeY]);
 			v = v.Normalize();
-			std::memcpy(&Nums[x * SizeY], &v[0], sizeof(Type) * SizeY);
+			for (unsigned int y = 0; y < SizeY; y++) Nums[x * SizeY + y] = v[y];
 		}
 	}
 
@@ -137,7 +168,7 @@ public:
 	//the cross will be taken between axis1 and axis2 so this will be axis3,
 	//and after that axis2 will be a cross product between axis1 and axis3
 	template<unsigned int axis1, unsigned int axis2>
-	void CrossFix3D() {
+	constexpr void CrossFix3D() noexcept {
 
 		static_assert(SizeX == 3 and SizeY == 3, "Matrix is not 3x3, cross fix is not defined");
 		static_assert(axis1 != axis2, "You cant have repeating axis rotation order");
@@ -152,41 +183,54 @@ public:
 		unsigned int axis3 = RotationStandart3D[axis1 * 2];
 		if (axis3 == axis2) axis3 = RotationStandart3D[axis1 * 2 + 1];
 
-		std::memcpy(&Nums[axis1 * 3], &vecs[0][0], sizeof(Type) * 3);
-		std::memcpy(&Nums[axis2 * 3], &vecs[1][0], sizeof(Type) * 3);
-		std::memcpy(&Nums[axis3 * 3], &vecs[2][0], sizeof(Type) * 3);
+		for (unsigned int i = 0; i < SizeX * SizeY; i++)
+			Nums[i] = vecs[i / 3u][i % 3];
 	}
 
 	//all vectors are supposed to be length of 1
 	//works only for Cartesian coordinates system
 	template<unsigned int axisInd>
-	Type GetLocalCordForAxisC(const Vector<SizeY, Type>& vec) const {
+	constexpr Type GetLocalCordForAxisC(const Vector<SizeY, Type>& vec) const noexcept {
 
+		static_assert(SizeX == SizeY, "Matrix should be square");
 		static_assert(axisInd >= 0 and axisInd < SizeX, "Invalid axis");
 
 		return Vector<SizeY, Type>(&Nums[SizeY * axisInd]).DotFL(vec);
 	}
 
+	//all vectors are supposed to be length of 1
+	//works only for Cartesian coordinates system
+	template<unsigned int axisInd>
+	constexpr Vector<SizeX, Type> GetLocalCordsForAxisC(const Vector<SizeY, Type>& vec) const noexcept {
+
+		static_assert(SizeX == SizeY, "Matrix should be square");
+		static_assert(axisInd >= 0 and axisInd < SizeX, "Invalid axis");
+
+		Type nums[SizeX] = { Type() };
+		for (unsigned int i = 0; i < SizeX; i++) nums[i] = GetLocalCordForAxisC(vec);
+
+		return Vector<SizeX, Type>(nums);
+	}
+
 	//cant be used for just 1 axis at a time, have to deal with whole matrix, this will work with any gived matrix space but it comes at a cost...
 	//U stands for Universal, meaning that it can work in any coordinates system, not only Cartesian
-	const Vector<SizeX, Type> GetLocalCordsForAxisU(const Vector<SizeY, Type>& vec) const {
+	constexpr Vector<SizeX, Type> GetLocalCordsForAxisU(const Vector<SizeY, Type>& vec) const noexcept {
 
 		static_assert(SizeX == SizeY, "Getting local cords when matrix is not a square is not defined");
 
 		return (Vector<SizeX, Type>)(GetInversedMatrix() * vec);
-
 	}
 
 	template<unsigned int axisForX, unsigned int axisForY>
-	Vector<SizeY, Type> RotateVectorByTwoVectorsU(const Vector<SizeY, Type>& vec, const float angle) const {
-		return std::move(RotateVectorByTwoVectorsU<axisForX, axisForY>(vec, angle, this->GetInversedMatrix(this->GetDeterminant())));
+	Vector<SizeY, Type> RotateVectorByTwoVectorsU(const Vector<SizeY, Type>& vec, const float angle) const noexcept {
+		return RotateVectorByTwoVectorsU<axisForX, axisForY>(vec, angle, this->GetInversedMatrix(this->GetDeterminant()));
 	}
 	template<unsigned int axisForX, unsigned int axisForY>
-	Vector<SizeY, Type> RotateVectorByTwoVectorsU(const Vector<SizeY, Type>& vec, const float angle, const Type det) const {
-		return std::move(RotateVectorByTwoVectorsU<axisForX, axisForY>(vec, angle, this->GetInversedMatrix(det)));
+	Vector<SizeY, Type> RotateVectorByTwoVectorsU(const Vector<SizeY, Type>& vec, const float angle, const Type det) const noexcept {
+		return RotateVectorByTwoVectorsU<axisForX, axisForY>(vec, angle, this->GetInversedMatrix(det));
 	}
 	template<unsigned int axisForX, unsigned int axisForY>
-	Vector<SizeY, Type> RotateVectorByTwoVectorsU(const Vector<SizeY, Type>& vec, const float angle, const Matrix<SizeX,SizeY,Type>& invMat) const {
+	Vector<SizeY, Type> RotateVectorByTwoVectorsU(const Vector<SizeY, Type>& vec, const float angle, const Matrix<SizeX,SizeY,Type>& invMat) const noexcept {
 
 		static_assert(SizeX == SizeY, "Matrix should be square, otherwise it dosent make sence");
 		static_assert(axisForX < SizeX and axisForX >= 0 and axisForY < SizeX and axisForY >= 0, "Invalid axis indexes");
@@ -205,10 +249,8 @@ public:
 	}
 
 	//"C" stands for Cartesian coordinates system
-	//better to not use if you can optimize and dont use arccos, but if you cant then this is the function you need
-	//be aware that acosf in this function can create "Typeing point error" very fast
 	template<unsigned int axisX, unsigned int axisY>
-	Vector<SizeY, Type> RotateVectorC(const Vector<SizeY, Type>& vec, const Type angle) const {
+	Vector<SizeY, Type> RotateVectorC(const Vector<SizeY, Type>& vec, const Type angle) const noexcept {
 
 		static_assert(axisX < SizeX and axisX >= 0 and axisY < SizeX and axisY >= 0, "Invalid axis indexes");
 		static_assert(axisX != axisY, "Axes cant be same");
@@ -230,11 +272,15 @@ public:
 		return (xv * cosf(angleToX) + yv * sinf(angleToX)) * vecLen;
 	}
 
+	template<unsigned int axis1, unsigned int axis2, unsigned int axis3>
+	Matrix<SizeX, SizeY, Type> RotateIn3DByAnglesC(const Vector3F& rot) const noexcept {
+		return RotateIn3DByAnglesC<axis1, axis2, axis3>(rot[0], rot[1], rot[2]);
+	}
 	//axis1,axis2,axis3 are representing the order of rotation, X=0,Y=1,Z=2, so for example rotation by XYZ will be 0,1,2
 	//will work only for Cartesian coordinate system(the "C" at end means Cartesian), it means that angle between all axes is pi/2
 	//axis vectors are supposed to be length of 1
 	template<unsigned int axis1, unsigned int axis2, unsigned int axis3>
-	Matrix<SizeX, SizeY, Type> RotateIn3DByAnglesC(const float xr, const float yr, const float zr) const {
+	Matrix<SizeX, SizeY, Type> RotateIn3DByAnglesC(const float xr, const float yr, const float zr) const noexcept {
 
 		static_assert(SizeX == 3 and SizeY == 3, "Matrix is not 3x3, rotation is not defined");
 		static_assert(axis1 != axis2 and axis1 != axis3 and axis2 != axis3, "You cant have repeating axis rotation order");
@@ -263,17 +309,17 @@ public:
 	}
 
 
-	operator Vector<SizeX * SizeY, Type>() {
+	constexpr operator Vector<SizeX * SizeY, Type>() noexcept{
 		return Vector<SizeX * SizeY, Type>(&Nums[0]);
 	}
 
-	Matrix<SizeX, SizeY, Type> operator+(Type num) { Matrix<SizeX, SizeY, Type> retMat; for (unsigned int i = 0; i < SizeX * SizeY; i++) retMat.Nums[i] = Nums[i] + num; return retMat; }
-	Matrix<SizeX, SizeY, Type> operator-(Type num) { Matrix<SizeX, SizeY, Type> retMat; for (unsigned int i = 0; i < SizeX * SizeY; i++) retMat.Nums[i] = Nums[i] - num; return retMat; }
-	Matrix<SizeX, SizeY, Type> operator*(Type num) { Matrix<SizeX, SizeY, Type> retMat; for (unsigned int i = 0; i < SizeX * SizeY; i++) retMat.Nums[i] = Nums[i] * num; return retMat; }
-	Matrix<SizeX, SizeY, Type> operator/(Type num) { Matrix<SizeX, SizeY, Type> retMat; for (unsigned int i = 0; i < SizeX * SizeY; i++) retMat.Nums[i] = Nums[i] / num; return retMat; }
+	constexpr Matrix<SizeX, SizeY, Type> operator+(const Type& num) const noexcept { Matrix<SizeX, SizeY, Type> retMat; for (unsigned int i = 0; i < SizeX * SizeY; i++) retMat.Nums[i] = Nums[i] + num; return retMat; }
+	constexpr Matrix<SizeX, SizeY, Type> operator-(const Type& num) const noexcept { Matrix<SizeX, SizeY, Type> retMat; for (unsigned int i = 0; i < SizeX * SizeY; i++) retMat.Nums[i] = Nums[i] - num; return retMat; }
+	constexpr Matrix<SizeX, SizeY, Type> operator*(const Type& num) const noexcept { Matrix<SizeX, SizeY, Type> retMat; for (unsigned int i = 0; i < SizeX * SizeY; i++) retMat.Nums[i] = Nums[i] * num; return retMat; }
+	constexpr Matrix<SizeX, SizeY, Type> operator/(const Type& num) const noexcept { Matrix<SizeX, SizeY, Type> retMat; for (unsigned int i = 0; i < SizeX * SizeY; i++) retMat.Nums[i] = Nums[i] / num; return retMat; }
 
 	template<unsigned int SizeX2>
-	Matrix<SizeX2, SizeY, Type> operator*(const Matrix<SizeX2, SizeX, Type>& mat) const {
+	constexpr Matrix<SizeX2, SizeY, Type> operator*(const Matrix<SizeX2, SizeX, Type>& mat) const noexcept {
 		Matrix<SizeX2, SizeY, Type> retMat;
 		for (unsigned int y = 0; y < SizeY; y++) {
 			for (unsigned int x = 0; x < SizeX2; x++) {
@@ -287,8 +333,8 @@ public:
 		return retMat;
 	}
 
-	Vector<SizeY, Type> operator*(const Vector<SizeY, Type>& vec) const {
-		return (Vector<SizeY, Type>)((*this) * Matrix<1, SizeY, Type>(&vec[0]));
+	constexpr Vector<SizeY, Type> operator*(const Vector<SizeY, Type>& vec) const noexcept {
+		return (*this) * Matrix<1, SizeY, Type>(&vec[0]);
 	}
 
 
@@ -327,4 +373,9 @@ typedef Matrix<4, 1, double> Matrix41D;
 typedef Matrix<4, 2, double> Matrix42D;
 typedef Matrix<4, 3, double> Matrix43D;
 typedef Matrix<4, 4, double> Matrix44D;
+
+constexpr inline Matrix33F Mat3D_RotBaseF = Matrix33F(1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f);
+constexpr inline Matrix33D Mat3D_RotBaseD = Matrix33D(1., 0., 0., 0., 1., 0., 0., 0., 1.);
+constexpr inline Matrix22F Mat2D_RotBaseF = Matrix22F(1.f, 0.f, 0.f, 1.f);
+constexpr inline Matrix22D Mat2D_RotBaseD = Matrix22D(1., 0., 0., 1.);
 

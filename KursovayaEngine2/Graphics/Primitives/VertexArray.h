@@ -4,7 +4,7 @@
 #include"Tools/ArrayView.h"
 #include"VertexBuffer.h"
 
-namespace Graphics::Primitives {
+namespace KE2::Graphics::Primitives {
 
 	class VertexArrayClass {
 	protected:
@@ -62,7 +62,10 @@ namespace Graphics::Primitives {
 		DLLTREATMENT void EnableAttribute(unsigned int attribInd) const;
 		DLLTREATMENT void DisableAttribute(unsigned int attribInd) const;
 
-		inline unsigned int gID() const noexcept { return ID; }
+		typedef unsigned int VertexArrayID_Type;
+		inline VertexArrayID_Type gID() const noexcept { return ID; }
+		inline operator VertexArrayID_Type() const noexcept { return ID; }
+
 		DLLTREATMENT void Bind() const;
 		DLLTREATMENT static void Unbind();
 

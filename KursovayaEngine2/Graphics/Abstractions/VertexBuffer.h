@@ -3,7 +3,7 @@
 #include"Tools/DynArr.h"
 #include"Graphics/Primitives/VertexBuffer.h"
 
-namespace Graphics::Abstractions {
+namespace KE2::Graphics::Abstractions {
 	class VertexBufferClass :protected Primitives::VertexBufferClass {
 	public:
 
@@ -28,8 +28,8 @@ namespace Graphics::Abstractions {
 		DLLTREATMENT VertexBufferClass(VertexBufferClass&& toCopy) noexcept;
 		DLLTREATMENT virtual ~VertexBufferClass() noexcept(false) override = default;
 		//wont copy data on GPU, only allocate a space on GPU
-		DLLTREATMENT VertexBufferClass& operator=(const VertexBufferClass& toCopy);
-		DLLTREATMENT VertexBufferClass& operator=(VertexBufferClass&& toCopy);
+		DLLTREATMENT virtual VertexBufferClass& operator=(const VertexBufferClass& toCopy);
+		DLLTREATMENT virtual VertexBufferClass& operator=(VertexBufferClass&& toCopy);
 
 		using Primitives::VertexBufferClass::gID;
 		using Primitives::VertexBufferClass::operator VertexBufferID_Type;

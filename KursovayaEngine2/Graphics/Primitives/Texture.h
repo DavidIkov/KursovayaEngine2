@@ -4,7 +4,7 @@
 #include"Tools/AnonDynArr.h"
 #include"Tools/ErrorsSystem.h"
 
-namespace Graphics::Primitives {
+namespace KE2::Graphics::Primitives {
     class TextureClass {
     public:
 		struct SettingsStruct {
@@ -116,7 +116,10 @@ namespace Graphics::Primitives {
         DLLTREATMENT void sSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt) const;
         DLLTREATMENT void sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode) const;
 
-        inline unsigned int gID() const noexcept { return ID; }
+		typedef unsigned int TextureID_Type;
+		inline TextureID_Type gID() const noexcept { return ID; }
+		inline operator TextureID_Type() const noexcept { return ID; }
+
         DLLTREATMENT void Bind(unsigned int bindingInd) const;
         //will not set active texture, so it will replace texture in last binded slot(by opengl rules)
         DLLTREATMENT void Bind() const;

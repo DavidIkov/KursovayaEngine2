@@ -1,5 +1,6 @@
 #pragma once
 #include"math.h"
+#include<utility>
 
 template<unsigned int AxesAmount, typename Type>
 class Vector {
@@ -7,9 +8,14 @@ class Vector {
 	Type Axes[AxesAmount] = { Type() };
 
 	template<typename...otherNumsTyp>
-	void ConstructFromTemplate(const Type num, const otherNumsTyp...otherNums) {
+	constexpr void ConstructFromTemplate(const Type& num, otherNumsTyp&&...otherNums) noexcept {
 		Axes[AxesAmount - sizeof...(otherNums) - 1] = num;
-		if constexpr (sizeof...(otherNums) != 0) ConstructFromTemplate(otherNums...);
+		if constexpr (sizeof...(otherNums) != 0) ConstructFromTemplate(std::forward<otherNumsTyp>(otherNums)...);
+	}
+	template<typename...otherNumsTyp>
+	constexpr void ConstructFromTemplate(Type&& num, otherNumsTyp&&...otherNums) noexcept {
+		Axes[AxesAmount - sizeof...(otherNums) - 1] = std::move(num);
+		if constexpr (sizeof...(otherNums) != 0) ConstructFromTemplate(std::forward<otherNumsTyp>(otherNums)...);
 	}
 public:
 
@@ -17,122 +23,155 @@ public:
 	friend class Vector;
 
 
-	Vector(const Type num) {
+	constexpr Vector(const Type& num) noexcept {
 		for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] = num;
 	}
-	Vector(const Type* numsStart) {
-		memcpy(&Axes[0], numsStart, sizeof(Type) * AxesAmount);
+	//be aware that this constructor will not call move contructors for Type, it will use copy constructors
+	constexpr Vector(Type&& num) noexcept :Vector(num) {};
+	constexpr Vector(Type const* const numsArrPtr) noexcept {
+		for (unsigned int i = 0; i < AxesAmount; i++)
+			Axes[i] = numsArrPtr[i];
 	}
 	template<typename...NumsTyp>
-	Vector(const Type num, const NumsTyp...nums) {
+	constexpr Vector(const Type& num, NumsTyp&&...nums) noexcept {
 		static_assert(sizeof...(nums) == (AxesAmount - 1), "Too many or not enough numbers");
-		ConstructFromTemplate(num, nums...);
+		ConstructFromTemplate(num, std::forward<NumsTyp>(nums)...);
 	}
-	Vector() {
-		
+	template<typename...NumsTyp>
+	constexpr Vector(Type&& num, NumsTyp&&...nums) noexcept {
+		static_assert(sizeof...(nums) == (AxesAmount - 1), "Too many or not enough numbers");
+		ConstructFromTemplate(std::move(num), std::forward<NumsTyp>(nums)...);
 	}
+	constexpr Vector() noexcept {}
 
-	Vector(const Vector<AxesAmount, Type>& vecToCopy) {
-		memcpy(this, &vecToCopy, sizeof(vecToCopy));
+	~Vector() = default;
+
+	constexpr Vector(const Vector<AxesAmount, Type>& vecToCopy) noexcept {
+		for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] = vecToCopy[i];
 	}
-	Vector(Vector<AxesAmount, Type>&& vecToCopy) {
-		memcpy(this, &vecToCopy, sizeof(vecToCopy));
+	constexpr Vector(Vector<AxesAmount, Type>&& vecToCopy) noexcept {
+		for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] = std::move(vecToCopy[i]);
 	}
-	Vector<AxesAmount, Type>& operator=(const Vector<AxesAmount, Type>& vecToCopy) {
-		memcpy(this, &vecToCopy, sizeof(vecToCopy));
+	constexpr Vector<AxesAmount, Type>& operator=(const Vector<AxesAmount, Type>& vecToCopy) noexcept {
+		this->~Vector();
+		new(this) Vector(vecToCopy);
+		return *this;
+	}
+	constexpr Vector<AxesAmount, Type>& operator=(Vector<AxesAmount, Type>&& vecToCopy) noexcept {
+		this->~Vector();
+		new(this) Vector(std::move(vecToCopy));
 		return *this;
 	}
 
 
-	Type& operator[](const unsigned int ind) {
+	constexpr Type& operator[](const unsigned int ind) noexcept {
 		return Axes[ind];
 	}
-	const Type& operator[](const unsigned int ind) const {
+	constexpr const Type& operator[](const unsigned int ind) const noexcept {
 		return Axes[ind];
 	}
 
 	//length but squared, square root didnt happen
-	Type LengthSQ() const {
-		Type sum = 0; for (unsigned int i = 0; i < AxesAmount; i++) sum += Axes[i] * Axes[i];
+	constexpr Type LengthSQ() const noexcept {
+		Type sum = Type(); for (unsigned int i = 0; i < AxesAmount; i++) sum += Axes[i] * Axes[i];
 		return sum;
 	}
-	Type Length() const { return sqrt(LengthSQ()); }
+	Type Length() const noexcept { return sqrt(LengthSQ()); }
 
-	Vector<AxesAmount, Type> Normalize() const {
+	Vector<AxesAmount, Type> Normalize() const noexcept {
 		return (*this) / Length();
 	}
 	//dot product with full length, means that it wasnt divided by length of both vectors
-	Type DotFL(const Vector<AxesAmount, Type>& vec) const {
-		Type sum = 0;
+	constexpr Type DotFL(const Vector<AxesAmount, Type>& vec) const noexcept {
+		Type sum = Type();
 		for (unsigned int i = 0; i < AxesAmount; i++) sum += vec.Axes[i] * Axes[i];
 		return sum;
 	}
-	Type Dot(const Vector<AxesAmount, Type>& vec) const {
+	Type Dot(const Vector<AxesAmount, Type>& vec) const noexcept {
 		return DotFL(vec) / vec.Length() / Length();
 	}
 
+	//first value is dist from p1, and second one is from p2
+	static Vector<2, Type> GetDistsToStortestDistBetweenVecs(
+		const Vector<AxesAmount, Type>& p1, const Vector<AxesAmount, Type>& v1,
+		const Vector<AxesAmount, Type>& p2, const Vector<AxesAmount, Type>& v2) noexcept
+	{
+		Vector<AxesAmount, Type> diff = p1 - p2;
+		Type v1l = v1.Length(); Type v2l = v2.Length();
+
+		//variables for system like
+		// {ax+by+c=0
+		// {dx+ey+f=0
+		Type a = v1.DotFL(v2); Type b = -v2l*v2l; Type c = diff.DotFL(v2);
+		Type d = v1l*v1l; Type e = -v2.DotFL(v1); Type f = diff.DotFL(v1);
+
+		return Vector<2, Type>((b * f - e * c) / (a * e - d * b), (d * c - f * a) / (a * e - d * b));
+	};
+	static Type GetShortestDistBetweenVecs(
+		const Vector<AxesAmount, Type>& p1, const Vector<AxesAmount, Type>& v1,
+		const Vector<AxesAmount, Type>& p2, const Vector<AxesAmount, Type>& v2) noexcept
+	{
+		Vector<2, Type> dists = GetDistsToStortestDistBetweenVecs(p1, v1, p2, v2);
+
+		Vector<AxesAmount, Type> mp1 = p1 + dists[0]* v1; Vector<AxesAmount, Type> mp2 = p2 + dists[1]* v2; 
+
+		return (mp1 - mp2).Length();
+	};
+
 	//cross product of full length, means that it wasnt deivided by length of both vectors
-	Vector<AxesAmount, Type> CrossFL(const Vector<AxesAmount, Type>& vec) const {
+	constexpr Vector<AxesAmount, Type> CrossFL(const Vector<AxesAmount, Type>& vec) const noexcept {
 		static_assert(AxesAmount == 3, "Cross is defined only for 3-axes vectors!");
 		return Vector<AxesAmount, Type>(Axes[1] * vec.Axes[2] - Axes[2] * vec.Axes[1], Axes[2] * vec.Axes[0] - Axes[0] * vec.Axes[2], Axes[0] * vec.Axes[1] - Axes[1] * vec.Axes[0]);
 	}
-	Vector<AxesAmount, Type> Cross(const Vector<AxesAmount, Type>& vec) const {
+	Vector<AxesAmount, Type> Cross(const Vector<AxesAmount, Type>& vec) const noexcept {
 		return CrossFL(vec) / Length() / vec.Length();
 	}
 
 
-	Vector<AxesAmount, Type> operator+(const Type num) const { Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] + num; return retVec; }
-	Vector<AxesAmount, Type> operator-(const Type num) const { Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] - num; return retVec; }
-	Vector<AxesAmount, Type> operator*(const Type num) const { Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] * num; return retVec; }
-	Vector<AxesAmount, Type> operator/(const Type num) const { Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] / num; return retVec; }
+	constexpr Vector<AxesAmount, Type> operator+(const Type& num) const noexcept { Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] + num; return retVec; }
+	constexpr Vector<AxesAmount, Type> operator-(const Type& num) const noexcept { Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] - num; return retVec; }
+	constexpr Vector<AxesAmount, Type> operator*(const Type& num) const noexcept { Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] * num; return retVec; }
+	constexpr Vector<AxesAmount, Type> operator/(const Type& num) const noexcept { Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] / num; return retVec; }
 
-	Vector<AxesAmount, Type> operator+(const Vector<AxesAmount, Type>& vec) const {
-		Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] + vec.Axes[i]; return retVec;
-	}
-	Vector<AxesAmount, Type> operator-(const Vector<AxesAmount, Type>& vec) const {
-		Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] - vec.Axes[i]; return retVec;
-	}
-	Vector<AxesAmount, Type> operator*(const Vector<AxesAmount, Type>& vec) const {
-		Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] * vec.Axes[i]; return retVec;
-	}
-	Vector<AxesAmount, Type> operator/(const Vector<AxesAmount, Type>& vec) const {
-		Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] / vec.Axes[i]; return retVec;
-	}
+	constexpr Vector<AxesAmount, Type> operator+(const Vector<AxesAmount, Type>& vec) const noexcept { Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] + vec.Axes[i]; return retVec; }
+	constexpr Vector<AxesAmount, Type> operator-(const Vector<AxesAmount, Type>& vec) const noexcept { Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] - vec.Axes[i]; return retVec; }
+	constexpr Vector<AxesAmount, Type> operator*(const Vector<AxesAmount, Type>& vec) const noexcept { Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] * vec.Axes[i]; return retVec; }
+	constexpr Vector<AxesAmount, Type> operator/(const Vector<AxesAmount, Type>& vec) const noexcept { Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = Axes[i] / vec.Axes[i]; return retVec; }
 
-	Vector<AxesAmount, Type> operator-() const { Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = -Axes[i]; return retVec; }
+	constexpr Vector<AxesAmount, Type> operator-() const noexcept { Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec.Axes[i] = -Axes[i]; return retVec; }
 
-	void operator+=(const Type num) { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] += num; }
-	void operator-=(const Type num) { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] -= num; }
-	void operator*=(const Type num) { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] *= num; }
-	void operator/=(const Type num) { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] /= num; }
+	constexpr Vector<AxesAmount, Type>& operator+=(const Type& num) noexcept { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] += num; return *this; }
+	constexpr Vector<AxesAmount, Type>& operator-=(const Type& num) noexcept { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] -= num; return *this; }
+	constexpr Vector<AxesAmount, Type>& operator*=(const Type& num) noexcept { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] *= num; return *this; }
+	constexpr Vector<AxesAmount, Type>& operator/=(const Type& num) noexcept { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] /= num; return *this; }
 
-	void operator+=(const Vector<AxesAmount, Type>& vec) { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] += vec.Axes[i]; }
-	void operator-=(const Vector<AxesAmount, Type>& vec) { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] -= vec.Axes[i]; }
-	void operator*=(const Vector<AxesAmount, Type>& vec) { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] *= vec.Axes[i]; }
-	void operator/=(const Vector<AxesAmount, Type>& vec) { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] /= vec.Axes[i]; }
+	constexpr Vector<AxesAmount, Type>& operator+=(const Vector<AxesAmount, Type>& vec) noexcept { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] += vec.Axes[i]; return *this; }
+	constexpr Vector<AxesAmount, Type>& operator-=(const Vector<AxesAmount, Type>& vec) noexcept { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] -= vec.Axes[i]; return *this; }
+	constexpr Vector<AxesAmount, Type>& operator*=(const Vector<AxesAmount, Type>& vec) noexcept { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] *= vec.Axes[i]; return *this; }
+	constexpr Vector<AxesAmount, Type>& operator/=(const Vector<AxesAmount, Type>& vec) noexcept { for (unsigned int i = 0; i < AxesAmount; i++) Axes[i] /= vec.Axes[i]; return *this; }
 
 	template<typename Type2>
-	constexpr operator Vector<AxesAmount, Type2>() const { Vector<AxesAmount, Type2> vec; for (unsigned int i = 0; i < AxesAmount; i++) vec.Axes[i] = (Type2)Axes[i]; return vec; }
+	constexpr operator Vector<AxesAmount, Type2>() const noexcept { Vector<AxesAmount, Type2> vec; for (unsigned int i = 0; i < AxesAmount; i++) vec.Axes[i] = (Type2)Axes[i]; return vec; }
 	
-	bool operator==(const Vector<AxesAmount, Type>& vec) { for (unsigned int i = 0; i < AxesAmount; i++) if (Axes[i] != vec.Axes[i]) return false; return true; }
-	bool operator!=(const Vector<AxesAmount, Type>& vec) { for (unsigned int i = 0; i < AxesAmount; i++) if (Axes[i] != vec.Axes[i]) return true; return false; }
+	constexpr bool operator==(const Vector<AxesAmount, Type>& vec) noexcept { for (unsigned int i = 0; i < AxesAmount; i++) if (Axes[i] != vec.Axes[i]) return false; return true; }
+	constexpr bool operator!=(const Vector<AxesAmount, Type>& vec) noexcept { for (unsigned int i = 0; i < AxesAmount; i++) if (Axes[i] != vec.Axes[i]) return true; return false; }
 };
 
 
 template<unsigned int AxesAmount, typename Type>
-Vector<AxesAmount, Type> operator+(const Type num, const Vector<AxesAmount, Type>& vec) {
+constexpr Vector<AxesAmount, Type> operator+(const Type& num, const Vector<AxesAmount, Type>& vec) noexcept {
 	Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec[i] = num + vec[i]; return retVec;
 }
 template<unsigned int AxesAmount, typename Type>
-Vector<AxesAmount, Type> operator-(const Type num, const Vector<AxesAmount, Type>& vec) {
+constexpr Vector<AxesAmount, Type> operator-(const Type& num, const Vector<AxesAmount, Type>& vec) noexcept {
 	Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec[i] = num - vec[i]; return retVec;
 }
 template<unsigned int AxesAmount, typename Type>
-Vector<AxesAmount, Type> operator*(const Type num, const Vector<AxesAmount, Type>& vec) {
+constexpr Vector<AxesAmount, Type> operator*(const Type& num, const Vector<AxesAmount, Type>& vec) noexcept {
 	Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec[i] = num * vec[i]; return retVec;
 }
 template<unsigned int AxesAmount, typename Type>
-Vector<AxesAmount, Type> operator/(const Type num, const Vector<AxesAmount, Type>& vec) {
+constexpr Vector<AxesAmount, Type> operator/(const Type& num, const Vector<AxesAmount, Type>& vec) noexcept {
 	Vector<AxesAmount, Type> retVec; for (unsigned int i = 0; i < AxesAmount; i++) retVec[i] = num / vec[i]; return retVec;
 }
 
@@ -156,3 +195,18 @@ typedef Vector<1, double> Vector1D;
 typedef Vector<2, double> Vector2D;
 typedef Vector<3, double> Vector3D;
 typedef Vector<4, double> Vector4D;
+
+constexpr inline Vector2F Vec2D_X_F = Vector2F(1.f, 0.f);
+constexpr inline Vector2F Vec2D_Y_F = Vector2F(0.f, 1.f);
+constexpr inline Vector2D Vec2D_X_D = Vector2D(1., 0.);
+constexpr inline Vector2D Vec2D_Y_D = Vector2D(0., 1.);
+
+constexpr inline Vector3F Vec3D_X_F = Vector3F(1.f, 0.f, 0.f);
+constexpr inline Vector3F Vec3D_Y_F = Vector3F(0.f, 1.f, 0.f);
+constexpr inline Vector3F Vec3D_Z_F = Vector3F(0.f, 0.f, 1.f);
+
+constexpr inline Vector3D Vec3D_X_D = Vector3D(1., 0., 0.);
+constexpr inline Vector3D Vec3D_Y_D = Vector3D(0., 1., 0.);
+constexpr inline Vector3D Vec3D_Z_D = Vector3D(0., 0., 1.);
+
+

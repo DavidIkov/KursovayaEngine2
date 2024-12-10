@@ -21,8 +21,8 @@
 #include"Tools/FileTypesReaders/Obj.h"
 #include"Tools/Time.h"
 
-namespace GP = Graphics::Primitives;
-namespace GA = Graphics::Abstractions;
+namespace GP = KE2::Graphics::Primitives;
+namespace GA = KE2::Graphics::Abstractions;
 
 int main()
 {
@@ -148,16 +148,16 @@ int main()
         
         
         Vector3F Object1Position(0.f, 0.f, 2.f);
-        Matrix33F Object1RotationMatrix(1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f);
+        Matrix33F Object1RotationMatrix = Mat3D_RotBaseF;
         Vector3F Object1Scale(0.5f, 0.5f, 0.5f);
         Vector3F Object2Position(2.f, 0.f, 3.f);
-        Matrix33F Object2RotationMatrix(1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f);
+        Matrix33F Object2RotationMatrix = Mat3D_RotBaseF;
         Vector3F Object2Scale(2.f, 2.f, 2.f);
 
         Vector3F LightPosition(0.f, 0.f, 0.f);
 
         Vector3F CameraPosition(0.f, 0.f, 0.f);
-        Matrix33F CameraRotationMatrix(1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f);
+        Matrix33F CameraRotationMatrix = Mat3D_RotBaseF;
         Matrix33F InversedCameraRotationMatrix = CameraRotationMatrix.GetInversedMatrix(CameraRotationMatrix.GetDeterminant());
 
         float CameraVerticalFov = 80.f / 180.f * 3.14f;
@@ -232,12 +232,12 @@ int main()
                 CameraRotationMatrix = CameraRotationMatrix.RotateIn3DByAnglesC<0, 1, 2>(CameraRotationByDelta[1], 0, 0);
                 Vector3F xv(1.f, 0.f, 0.f);
                 Vector3F zv(0.f, 0.f, 1.f);
-                Matrix33F rotMat(1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f);
-                //xv = rotMat.RotateVectorC<0, 1>(xv, -CameraRotationByDelta[0]);
-                //zv = rotMat.RotateVectorC<0, 1>(zv, -CameraRotationByDelta[0]);
-                xv = rotMat.RotateVectorByTwoVectorsU<0, 2>(xv, -CameraRotationByDelta[0]);
-                zv = rotMat.RotateVectorByTwoVectorsU<0, 2>(zv, -CameraRotationByDelta[0]);
-                CameraRotationMatrix = Matrix33F(xv[0], xv[1], xv[2], 0.f, 1.f, 0.f, zv[0], zv[1], zv[2]) * CameraRotationMatrix;
+                Matrix33F rotMat = Mat3D_RotBaseF;
+                xv = rotMat.RotateVectorC<0, 2>(xv, -CameraRotationByDelta[0]);
+                zv = rotMat.RotateVectorC<0, 2>(zv, -CameraRotationByDelta[0]);
+                //xv = rotMat.RotateVectorByTwoVectorsU<0, 2>(xv, -CameraRotationByDelta[0]);
+                //zv = rotMat.RotateVectorByTwoVectorsU<0, 2>(zv, -CameraRotationByDelta[0]);
+                CameraRotationMatrix = CameraRotationMatrix * Matrix33F(xv[0], xv[1], xv[2], 0.f, 1.f, 0.f, zv[0], zv[1], zv[2]);
 
 
                 InversedCameraRotationMatrix = CameraRotationMatrix.GetInversedMatrix(CameraRotationMatrix.GetDeterminant());

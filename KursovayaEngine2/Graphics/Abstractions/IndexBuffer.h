@@ -3,7 +3,7 @@
 #include"Tools/DynArr.h"
 #include"Graphics/Primitives/IndexBuffer.h"
 
-namespace Graphics::Abstractions {
+namespace KE2::Graphics::Abstractions {
 	class IndexBufferClass :protected Primitives::IndexBufferClass {
 	public:
 

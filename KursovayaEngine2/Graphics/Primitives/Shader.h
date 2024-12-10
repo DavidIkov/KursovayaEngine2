@@ -2,7 +2,7 @@
 #include"DLL.h"
 #include"Tools/ErrorsSystem.h"
 
-namespace Graphics::Primitives {
+namespace KE2::Graphics::Primitives {
 
 	class ShaderClass {
 		unsigned int ID = 0u;
@@ -35,7 +35,11 @@ namespace Graphics::Primitives {
 		DLLTREATMENT ShaderClass(ShaderClass&& toCopy) noexcept;
 		DLLTREATMENT ShaderClass& operator=(ShaderClass&& toCopy);
 		DLLTREATMENT void Compile() const;
-		inline unsigned int gID() const noexcept { return ID; }
+
+		typedef unsigned int ShaderID_Type;
+		inline ShaderID_Type gID() const noexcept { return ID; }
+		inline operator ShaderID_Type() const noexcept { return ID; }
+
 		DLLTREATMENT virtual ~ShaderClass() noexcept(false);
 	};
 }
