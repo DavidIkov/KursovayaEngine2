@@ -52,6 +52,9 @@ void VertexBufferClass::SetData(const ArrayView<void>& data) {
 		GP::VertexBufferClass::SetData(data, BufferReadWriteMode);
 	}
 }
+void VertexBufferClass::SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) {
+	GP::VertexBufferClass::SetSubData(offsetInBytes, data);
+}
 
 void VertexBufferClass::CopyData(const VertexBufferClass& srcBuffer) {
 	if (DataSizeInBytes == srcBuffer.DataSizeInBytes) GP::VertexBufferClass::CopySubData(srcBuffer, 0, 0, DataSizeInBytes);

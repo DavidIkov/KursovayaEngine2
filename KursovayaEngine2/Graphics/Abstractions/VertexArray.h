@@ -12,20 +12,27 @@ namespace KE2::Graphics::Abstractions {
 		DynArr<AttributeDataStruct> AttribsData;
 	public:
 
+		inline Primitives::VertexArrayClass& gPrimitiveVertexArrayClass() noexcept { return *this; }
+		inline const Primitives::VertexArrayClass& gPrimitiveVertexArrayClass() const noexcept { return *this; }
+
+
 		DLLTREATMENT VertexArrayClass();
 		DLLTREATMENT VertexArrayClass(const ArrayView<AttributeDataStruct>& attribsData);
 		DLLTREATMENT VertexArrayClass(const VertexArrayClass& toCopy);
 		DLLTREATMENT VertexArrayClass(VertexArrayClass&& toCopy) noexcept;
 		DLLTREATMENT virtual ~VertexArrayClass() noexcept(false) override;
-		DLLTREATMENT VertexArrayClass& operator=(const VertexArrayClass& toCopy);
-		DLLTREATMENT VertexArrayClass& operator=(VertexArrayClass&& toCopy);
+		DLLTREATMENT virtual VertexArrayClass& operator=(const VertexArrayClass& toCopy);
+	private:
+		inline virtual Primitives::VertexArrayClass& operator=(Primitives::VertexArrayClass&& toCopy) override final { return operator=(dynamic_cast<VertexArrayClass&&>(toCopy)); }
+	public:
+		DLLTREATMENT virtual VertexArrayClass& operator=(VertexArrayClass&& toCopy);
 
 		inline const DynArr<AttributeDataStruct>& gAttribsData() const noexcept { return AttribsData; }
 		
-		DLLTREATMENT void SetAttributes(const ArrayView<AttributeDataStruct>& attribsData);
-		DLLTREATMENT void SetAttribute(const AttributeDataStruct& attribData);
-		DLLTREATMENT void EnableAttribute(unsigned int attribInd) const;
-		DLLTREATMENT void DisableAttribute(unsigned int attribInd) const;
+		DLLTREATMENT virtual void SetAttributes(const ArrayView<AttributeDataStruct>& attribsData) override final;
+		DLLTREATMENT virtual void SetAttribute(const AttributeDataStruct& attribData) override final;
+		DLLTREATMENT virtual void EnableAttribute(unsigned int attribInd) override final;
+		DLLTREATMENT virtual void DisableAttribute(unsigned int attribInd) override final;
 
 		DLLTREATMENT void Change_VB_ID_InAttribute(unsigned int attribInd, Primitives::VertexBufferClass::VertexBufferID_Type vb_id);
 		DLLTREATMENT void Change_Normalize_InAttribute(unsigned int attribInd, bool normalize);

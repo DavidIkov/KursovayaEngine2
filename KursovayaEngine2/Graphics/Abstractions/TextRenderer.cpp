@@ -176,7 +176,7 @@ GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const 
 
 	glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); // disable byte-alignment restriction
 
-    Texture.ChangeData(Vector3U(totalXSize, maxHeight, 0), textureBuffer);
+    Texture.SetData(Vector3U(totalXSize, maxHeight, 0), textureBuffer);
     
 	glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 4)); // enable byte-alignment back
     

@@ -3,6 +3,7 @@
 #include"Maths/Vector.h"
 #include"Tools/AnonDynArr.h"
 #include"Tools/ErrorsSystem.h"
+#include"Tools/UsefullMacros/ComparisonByBytes.h"
 
 namespace KE2::Graphics::Primitives {
     class TextureClass {
@@ -28,6 +29,10 @@ namespace KE2::Graphics::Primitives {
 			DownscalingFilterFuncEnum DownscalingFilt;
 			UpscalingFilterFuncEnum UpscalingFilt;
 			DepthStencilReadModeEnum DepthStencilReadMode;
+
+			ComparisonByBytesMacro(SettingsStruct,==);
+            ComparisonByBytesMacro(SettingsStruct,!=);
+
 		};
 		struct DataSettingsStruct {
 			enum class DataFormatOnGPU_Enum :unsigned char {
@@ -44,6 +49,9 @@ namespace KE2::Graphics::Primitives {
 			DataFormatOnGPU_Enum DataFormatOnGPU;
 			DataFormatOnCPU_Enum DataFormatOnCPU;
 			DataTypeOnCPU_Enum DataTypeOnCPU;
+
+            ComparisonByBytesMacro(DataSettingsStruct,==);
+            ComparisonByBytesMacro(DataSettingsStruct,!=);
 		};
 
         enum class DimensionsEnum :unsigned char {
@@ -89,32 +97,32 @@ namespace KE2::Graphics::Primitives {
         DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, AnonDynArr* writeAnonDynArr, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
         DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
         DLLTREATMENT TextureClass(TextureClass&& toCopy) noexcept;
-        DLLTREATMENT TextureClass& operator=(TextureClass&& toCopy);
+        DLLTREATMENT virtual TextureClass& operator=(TextureClass&& toCopy);
         DLLTREATMENT virtual ~TextureClass() noexcept(false);
 
-        DLLTREATMENT void SetData(Vector3U pixelsAmount, const void* data, const DataSettingsStruct& dataSets) const;
-        DLLTREATMENT void SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data,
-            DataSettingsStruct::DataFormatOnCPU_Enum dataFormatOnCPU, DataSettingsStruct::DataTypeOnCPU_Enum dataTypeOnCPU) const;
+        DLLTREATMENT virtual void SetData(Vector3U pixelsAmount, const void* data, const DataSettingsStruct& dataSets);
+        DLLTREATMENT virtual void SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data,
+            DataSettingsStruct::DataFormatOnCPU_Enum dataFormatOnCPU, DataSettingsStruct::DataTypeOnCPU_Enum dataTypeOnCPU);
 
-        DLLTREATMENT void GenerateMipmaps() const;
+        DLLTREATMENT virtual void GenerateMipmaps();
 
         //if you dont use some axes in pixelsAmounts then dont leave them 0, use 1
         //make sure that your texture have enough pixels for copying
-        DLLTREATMENT void CopySubData(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount) const;
+        DLLTREATMENT virtual void CopySubData(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount);
 
 		//this function is slow since it will get data from gpu to cpu
         //buffer should not be nullptr, it should point to already allocated memory
-        DLLTREATMENT void GetData(void* buffer, DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const;
+        DLLTREATMENT virtual void GetData(void* buffer, DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const;
         //this function is slow since it will get data from gpu to cpu
         //buffer should not be nullptr, it should point to already allocated memory
-		DLLTREATMENT void GetSubData(Vector3U offset, void* buffer, Vector3U pixelsAmount, 
+		DLLTREATMENT virtual void GetSubData(Vector3U offset, void* buffer, Vector3U pixelsAmount, 
             DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const;
 
-        DLLTREATMENT void sSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX) const;
-        DLLTREATMENT void sSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY) const;
-        DLLTREATMENT void sSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt) const;
-        DLLTREATMENT void sSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt) const;
-        DLLTREATMENT void sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode) const;
+        DLLTREATMENT virtual void sSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX);
+        DLLTREATMENT virtual void sSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY);
+        DLLTREATMENT virtual void sSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt);
+        DLLTREATMENT virtual void sSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt);
+        DLLTREATMENT virtual void sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode);
 
 		typedef unsigned int TextureID_Type;
 		inline TextureID_Type gID() const noexcept { return ID; }

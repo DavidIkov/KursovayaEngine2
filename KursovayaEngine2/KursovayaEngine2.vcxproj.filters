@@ -578,6 +578,9 @@
     <ClInclude Include="Graphics\Abstractions\IndexBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Tools\UsefullMacros\ComparisonByBytes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\glfw\3.4_Win32\lib-vc2022\glfw3.lib" />

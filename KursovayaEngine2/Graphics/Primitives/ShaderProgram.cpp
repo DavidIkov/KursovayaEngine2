@@ -125,17 +125,18 @@ ShaderProgramClass::UniformData ShaderProgramClass::GetUniformData(unsigned int 
 	returnData.ID = GetUniformIDByName(name);
 	return returnData;
 }
-void ShaderProgramClass::GetUniformsData(DynArr<UniformData>* dynArr) const {
+void ShaderProgramClass::GetUniformsData(DynArr<UniformData>& dynArr) const {
 	Assert_Linked_Macro;
 	Assert_Binded_Macro;
 
 	int amountOfUniforms = 0;
 	glSC(glGetProgramiv(ID, GL_ACTIVE_UNIFORMS, &amountOfUniforms));
 
-	dynArr->ChangeCapacity(amountOfUniforms);
+	dynArr.Clear();
+	dynArr.ChangeCapacity(amountOfUniforms);
 
 	for (int i = 0; i < amountOfUniforms; i++)
-		dynArr->InsertByConstructor(i, GetUniformData(i));
+		dynArr.InsertByConstructor(i, GetUniformData(i));
 }
 
 

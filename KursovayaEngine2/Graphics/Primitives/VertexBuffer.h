@@ -27,20 +27,21 @@ namespace KE2::Graphics::Primitives {
 		
 		DLLTREATMENT VertexBufferClass();
 		DLLTREATMENT VertexBufferClass(VertexBufferClass&& toCopy) noexcept;
-		DLLTREATMENT VertexBufferClass& operator=(VertexBufferClass&& toCopy);
+		DLLTREATMENT virtual VertexBufferClass& operator=(VertexBufferClass&& toCopy);
 		DLLTREATMENT virtual ~VertexBufferClass() noexcept(false);
 
 		typedef unsigned int VertexBufferID_Type;
 		inline VertexBufferID_Type gID() const noexcept { return ID; }
 		inline operator VertexBufferID_Type() const noexcept { return ID; }
 
-		DLLTREATMENT void SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode) const;
-		DLLTREATMENT void SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) const;
+		DLLTREATMENT virtual void SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode);
 
-		DLLTREATMENT void CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) const;
+		DLLTREATMENT virtual void SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data);
+
+		DLLTREATMENT virtual void CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy);
 
 		//data should point to already allocated memory
-		DLLTREATMENT void GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) const;
+		DLLTREATMENT virtual void GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) const;
 
 		DLLTREATMENT void Bind() const;
 		DLLTREATMENT static void Unbind();

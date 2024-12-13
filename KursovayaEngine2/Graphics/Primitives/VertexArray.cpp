@@ -47,7 +47,7 @@ static unsigned int _GetSizeOfTypeByBufferDataTypeEnum_SwitchCase(VertexArrayCla
     return 0;
 }
 */
-void VertexArrayClass::SetAttribute(const AttributeDataStruct& attribData) const {
+void VertexArrayClass::SetAttribute(const AttributeDataStruct& attribData) {
     Assert_Binded_Macro;
 	if (attribData.VB_ID == 0)
 		ErrorsSystemNamespace::SendError << "Cant use zero vertex buffer for attribute" >> ErrorsEnumWrapperStruct(ErrorsEnum::ZeroVB_CantBeUsed);
@@ -80,7 +80,7 @@ void VertexArrayClass::SetAttribute(const AttributeDataStruct& attribData) const
 
 	glSC(glVertexAttribDivisor(attribData.AttribInd, attribData.Divisor));
 }
-void VertexArrayClass::SetAttributes(const ArrayView<AttributeDataStruct>& attribsData) const {
+void VertexArrayClass::SetAttributes(const ArrayView<AttributeDataStruct>& attribsData) {
     Assert_Binded_Macro;
 
     for (unsigned int i = 0; i < attribsData.gLen(); i++)
@@ -108,11 +108,11 @@ void VertexArrayClass::SetAttributes(const ArrayView<AttributeDataStruct>& attri
         }
         */
 }
-void VertexArrayClass::EnableAttribute(unsigned int attribInd) const {
+void VertexArrayClass::EnableAttribute(unsigned int attribInd) {
     Assert_Binded_Macro;
     glSC(glEnableVertexAttribArray(attribInd));
 }
-void VertexArrayClass::DisableAttribute(unsigned int attribInd) const {
+void VertexArrayClass::DisableAttribute(unsigned int attribInd) {
     Assert_Binded_Macro;
     glSC(glDisableVertexAttribArray(attribInd));
 }

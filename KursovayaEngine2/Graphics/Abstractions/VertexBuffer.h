@@ -10,6 +10,9 @@ namespace KE2::Graphics::Abstractions {
 		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
 			enum ErrorsEnum {
 				ProvidedTypeOfFileNotSupported,
+#ifdef KE2_Debug
+				TryingToUseDifferentBufferReadWriteMode,
+#endif
 			}; ErrorsEnum Error;
 			inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
 		}; using ErrorsEnum = ErrorsEnumWrapperStruct::ErrorsEnum; using AnyError = ErrorsEnumWrapperStruct;
@@ -19,7 +22,11 @@ namespace KE2::Graphics::Abstractions {
 	protected:
 		const BufferReadWriteModeEnum BufferReadWriteMode;
 		unsigned int DataSizeInBytes = 0u;
+
 	public:
+		inline Primitives::VertexBufferClass& gPrimitiveVertexBufferClass() noexcept { return *this; }
+		inline const Primitives::VertexBufferClass& gPrimitiveVertexBufferClass() const noexcept { return *this; }
+
 		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode);
 		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const ArrayView<void>& data);
 		//filePath to some 3d object, right now only .obj is accepted
@@ -29,19 +36,37 @@ namespace KE2::Graphics::Abstractions {
 		DLLTREATMENT virtual ~VertexBufferClass() noexcept(false) override = default;
 		//wont copy data on GPU, only allocate a space on GPU
 		DLLTREATMENT virtual VertexBufferClass& operator=(const VertexBufferClass& toCopy);
+	private:
+		inline virtual Primitives::VertexBufferClass& operator=(Primitives::VertexBufferClass&& toCopy) override final { return operator=(dynamic_cast<VertexBufferClass&&>(toCopy)); }
+	public:
 		DLLTREATMENT virtual VertexBufferClass& operator=(VertexBufferClass&& toCopy);
 
 		using Primitives::VertexBufferClass::gID;
 		using Primitives::VertexBufferClass::operator VertexBufferID_Type;
 
-		DLLTREATMENT void SetData(const ArrayView<void>& data);
-		using Primitives::VertexBufferClass::SetSubData;
+	private:
+		inline virtual void SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode) override final { 
+#ifdef KE2_Debug
+			if (bufferReadWriteMode != BufferReadWriteMode) 
+				ErrorsSystemNamespace::SendError << "Trying to use different buffer read write mode" >> ErrorsEnumWrapperStruct(ErrorsEnum::TryingToUseDifferentBufferReadWriteMode);
+#endif
+			SetData(data); 
+		}
+	public:
+		DLLTREATMENT virtual void SetData(const ArrayView<void>& data);
+		DLLTREATMENT virtual void SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) override;
 
-		DLLTREATMENT void CopyData(const VertexBufferClass& srcBuffer);
-		DLLTREATMENT void CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy);
+		DLLTREATMENT virtual void CopyData(const VertexBufferClass& srcBuffer);
+
+	private:
+		inline virtual void CopySubData(const Primitives::VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) override final {
+			CopySubData(dynamic_cast<const VertexBufferClass&>(srcBuffer), srcOffsetInBytes, dstOffsetInBytes, amountOfBytesToCopy);
+		}
+	public:
+		DLLTREATMENT virtual void CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy);
 
 		//data should point to already allocated memory
-		DLLTREATMENT void GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) const;
+		DLLTREATMENT virtual void GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) const override final;
 		//data should point to already allocated memory
 		DLLTREATMENT void GetData(void* data) const;
 

@@ -31,10 +31,10 @@ void VertexArrayClass::SetAttribute(const AttributeDataStruct& attribData) {
 	AttribsData[attribData.AttribInd] = attribData;
 	GP::VertexArrayClass::SetAttribute(attribData);
 }
-void VertexArrayClass::EnableAttribute(unsigned int attribInd) const {
+void VertexArrayClass::EnableAttribute(unsigned int attribInd) {
 	GP::VertexArrayClass::EnableAttribute(attribInd);
 }
-void VertexArrayClass::DisableAttribute(unsigned int attribInd) const {
+void VertexArrayClass::DisableAttribute(unsigned int attribInd) {
 	GP::VertexArrayClass::DisableAttribute(attribInd);
 }
 void VertexArrayClass::Change_VB_ID_InAttribute(unsigned int attribInd, GP::VertexBufferClass::VertexBufferID_Type vb_id) 

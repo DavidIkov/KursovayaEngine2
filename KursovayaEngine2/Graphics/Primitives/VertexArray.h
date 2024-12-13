@@ -54,13 +54,13 @@ namespace KE2::Graphics::Primitives {
 		DLLTREATMENT VertexArrayClass();
 		DLLTREATMENT VertexArrayClass(const ArrayView<AttributeDataStruct>& attribsData);
 		DLLTREATMENT VertexArrayClass(VertexArrayClass&& toCopy) noexcept;
-		DLLTREATMENT VertexArrayClass& operator=(VertexArrayClass&& toCopy);
+		DLLTREATMENT virtual VertexArrayClass& operator=(VertexArrayClass&& toCopy);
 		DLLTREATMENT virtual ~VertexArrayClass() noexcept(false);
 
-		DLLTREATMENT void SetAttributes(const ArrayView<AttributeDataStruct>& attribsData) const;
-		DLLTREATMENT void SetAttribute(const AttributeDataStruct& attribData) const;
-		DLLTREATMENT void EnableAttribute(unsigned int attribInd) const;
-		DLLTREATMENT void DisableAttribute(unsigned int attribInd) const;
+		DLLTREATMENT virtual void SetAttributes(const ArrayView<AttributeDataStruct>& attribsData);
+		DLLTREATMENT virtual void SetAttribute(const AttributeDataStruct& attribData);
+		DLLTREATMENT virtual void EnableAttribute(unsigned int attribInd);
+		DLLTREATMENT virtual void DisableAttribute(unsigned int attribInd);
 
 		typedef unsigned int VertexArrayID_Type;
 		inline VertexArrayID_Type gID() const noexcept { return ID; }

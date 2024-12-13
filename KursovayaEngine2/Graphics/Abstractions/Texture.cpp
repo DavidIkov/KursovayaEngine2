@@ -28,7 +28,7 @@ TextureClass& TextureClass::operator=(TextureClass&& toCopy) {
 	new(this) TextureClass(std::move(toCopy));
 	return *this;
 }
-void TextureClass::ChangeData(Vector3U newSize, const void* data) {
+void TextureClass::SetData(Vector3U newSize, const void* data) {
 
 	if (newSize == Size)
 		GP::TextureClass::SetSubData(Vector3U(0u), newSize, data, DataSettings.DataFormatOnCPU, DataSettings.DataTypeOnCPU);
@@ -37,16 +37,16 @@ void TextureClass::ChangeData(Vector3U newSize, const void* data) {
 		Size = newSize;
 	}
 }
-void TextureClass::ChangeData(const void* data) const {
+void TextureClass::SetData(const void* data) {
 	GP::TextureClass::SetSubData(Vector3U(0u), Size, data, DataSettings.DataFormatOnCPU, DataSettings.DataTypeOnCPU);
 }
-void TextureClass::ChangeSubData(Vector3U offset, const void* data, Vector3U size) const {
-	GP::TextureClass::SetSubData(offset, size, data, DataSettings.DataFormatOnCPU, DataSettings.DataTypeOnCPU);
+void TextureClass::SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data) {
+	GP::TextureClass::SetSubData(pixelsOffset, pixelsAmount, data, DataSettings.DataFormatOnCPU, DataSettings.DataTypeOnCPU);
 }
 void TextureClass::AllocatePixels(Vector3U newSize) {
 	GP::TextureClass::SetData(newSize, nullptr, DataSettings);
 }
-void TextureClass::CopySubData(const TextureClass& srcTex, Vector3U offsetInSrc, Vector3U offsetInDst, Vector3U pixelsAmount) const {
+void TextureClass::CopySubData(const TextureClass& srcTex, Vector3U offsetInSrc, Vector3U offsetInDst, Vector3U pixelsAmount) {
 	GP::TextureClass::CopySubData(srcTex, offsetInSrc, offsetInDst, pixelsAmount);
 }
 void TextureClass::GetData(void* buffer) const {

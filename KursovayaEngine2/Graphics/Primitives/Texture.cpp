@@ -192,7 +192,7 @@ TextureClass::~TextureClass() noexcept(false) {
         ID = 0u;
     }
 }
-void TextureClass::CopySubData(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount) const {
+void TextureClass::CopySubData(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount) {
 
     glSC(glCopyImageSubData(srcTex.ID, srcTex.GL_TexEnum, 0, offsetInSource[0], offsetInSource[1], offsetInSource[2],
         ID, GL_TexEnum, 0, offsetInDestination[0], offsetInDestination[1], offsetInDestination[2], pixelsAmount[0], pixelsAmount[1], pixelsAmount[2]));
@@ -207,7 +207,7 @@ void TextureClass::CopySubData(const TextureClass& srcTex, Vector3U offsetInSour
     */
 }
 
-void TextureClass::SetData(Vector3U pixelsAmount, const void* data, const DataSettingsStruct& dataSets) const {
+void TextureClass::SetData(Vector3U pixelsAmount, const void* data, const DataSettingsStruct& dataSets) {
     Assert_Binded_Macro;
 
     unsigned int gl_dataFormatOnGPU = _DataFormatOnGPU_SwitchCase(dataSets.DataFormatOnGPU);
@@ -220,7 +220,7 @@ void TextureClass::SetData(Vector3U pixelsAmount, const void* data, const DataSe
     }
 }
 void TextureClass::SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data,
-    DataSettingsStruct::DataFormatOnCPU_Enum dataFormatOnCPU, DataSettingsStruct::DataTypeOnCPU_Enum dataTypeOnCPU) const {
+    DataSettingsStruct::DataFormatOnCPU_Enum dataFormatOnCPU, DataSettingsStruct::DataTypeOnCPU_Enum dataTypeOnCPU) {
     Assert_Binded_Macro;
 
     //glSC(glTexSubImage2D(GL_TEXTURE_2D, 0, pixelsOffset[0], pixelsOffset[1], pixelsAmount[0], pixelsAmount[1],
@@ -234,7 +234,7 @@ void TextureClass::SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, cons
     }
 }
 
-void TextureClass::GenerateMipmaps() const {
+void TextureClass::GenerateMipmaps() {
     Assert_Binded_Macro;
     glSC(glGenerateMipmap(GL_TexEnum));
 }
@@ -253,11 +253,11 @@ void TextureClass::GetSubData(Vector3U offset, void* buffer, Vector3U pixelsAmou
         _DataTypeOnCPU_Sizeof_SwitchCase(dataType) * pixelsAmount[0] * pixelsAmount[1] * pixelsAmount[2], buffer));
 }
 
-void TextureClass::sSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX) const { _UpdSettings_WrapTypeByX(wrapTypeByX); }
-void TextureClass::sSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY) const { _UpdSettings_WrapTypeByY(wrapTypeByY); }
-void TextureClass::sSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt) const { _UpdSettings_DownscalingFilt(downscalingFilt); }
-void TextureClass::sSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt) const { _UpdSettings_UpscalingFilt(upscalingFilt); }
-void TextureClass::sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode) const { _UpdSettings_DepthStencilReadMode(depthStencilReadMode); }
+void TextureClass::sSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX) { _UpdSettings_WrapTypeByX(wrapTypeByX); }
+void TextureClass::sSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY) { _UpdSettings_WrapTypeByY(wrapTypeByY); }
+void TextureClass::sSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt) { _UpdSettings_DownscalingFilt(downscalingFilt); }
+void TextureClass::sSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt) { _UpdSettings_UpscalingFilt(upscalingFilt); }
+void TextureClass::sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode) { _UpdSettings_DepthStencilReadMode(depthStencilReadMode); }
 
 void TextureClass::Bind(unsigned int textureInd) const {
 	glSC(glActiveTexture(GL_TEXTURE0 + textureInd));

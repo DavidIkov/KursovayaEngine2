@@ -39,6 +39,9 @@ void IndexBufferClass::SetData(const ArrayView<void>& data) {
 		GP::IndexBufferClass::SetData(data, BufferReadWriteMode);
 	}
 }
+void IndexBufferClass::SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) {
+	GP::IndexBufferClass::SetSubData(offsetInBytes, data);
+}
 
 void IndexBufferClass::CopyData(const IndexBufferClass& srcBuffer) {
 	if (DataSizeInBytes == srcBuffer.DataSizeInBytes) GP::IndexBufferClass::CopySubData(srcBuffer, 0, 0, DataSizeInBytes);

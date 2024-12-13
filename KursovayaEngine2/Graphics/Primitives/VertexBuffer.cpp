@@ -46,18 +46,18 @@ static unsigned int _GetVBUsageForGL(VertexBufferClass::BufferReadWriteModeEnum 
     }
     return 0;
 }
-void VertexBufferClass::SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode) const {
+void VertexBufferClass::SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode) {
     Assert_Binded_Macro;
 
 	glSC(glBufferData(GL_ARRAY_BUFFER, data.gLenInBytes(), data.gDataPtr(), _GetVBUsageForGL(bufferReadWriteMode)));
 }
-void VertexBufferClass::SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) const {
+void VertexBufferClass::SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) {
     Assert_Binded_Macro;
 
 	glSC(glBufferSubData(GL_ARRAY_BUFFER, offsetInBytes, data.gLenInBytes(), data.gDataPtr()));
 }
 
-void VertexBufferClass::CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) const {
+void VertexBufferClass::CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) {
     glSC(glBindBuffer(GL_COPY_READ_BUFFER, srcBuffer.ID));
     glSC(glBindBuffer(GL_COPY_WRITE_BUFFER, ID));
 

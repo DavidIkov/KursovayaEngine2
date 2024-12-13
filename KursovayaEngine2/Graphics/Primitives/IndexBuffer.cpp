@@ -46,18 +46,18 @@ static unsigned int _GetIBUsageForGL(IndexBufferClass::BufferReadWriteModeEnum u
     }
     return 0;
 }
-void IndexBufferClass::SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode) const {
+void IndexBufferClass::SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode) {
     Assert_Binded_Macro;
 
 	glSC(glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.gLenInBytes() * sizeof(unsigned int), data.gDataPtr(), _GetIBUsageForGL(bufferReadWriteMode)));
 }
-void IndexBufferClass::SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) const {
+void IndexBufferClass::SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) {
     Assert_Binded_Macro;
 
 	glSC(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offsetInBytes, data.gLenInBytes() * sizeof(unsigned int), data.gDataPtr()));
 }
 
-void IndexBufferClass::CopySubData(const IndexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) const {
+void IndexBufferClass::CopySubData(const IndexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) {
     glSC(glBindBuffer(GL_COPY_READ_BUFFER, srcBuffer.ID));
     glSC(glBindBuffer(GL_COPY_WRITE_BUFFER, ID));
 

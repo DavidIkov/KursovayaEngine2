@@ -483,6 +483,7 @@
     <ClInclude Include="Tools\Time.h" />
     <ClInclude Include="Tools\UsefullMacros\ApplyMacroInLoop.h" />
     <ClInclude Include="Tools\UsefullMacros\DelayMacro.h" />
+    <ClInclude Include="Tools\UsefullMacros\ComparisonByBytes.h" />
     <ClInclude Include="Tools\UsefullMacros\RemoveBrackets.h" />
     <ClInclude Include="Windows\Window.h" />
     <ClInclude Include="Windows\WindowsManager.h" />
