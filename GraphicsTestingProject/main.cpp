@@ -32,12 +32,12 @@ int main()
     try {
 
 
-        WindowClass::MonitorDataStruct MonitorData = WindowClass::gPrimaryMonitorData();
+        KE2::Window::WindowClass::MonitorDataStruct MonitorData = KE2::Window::WindowClass::gPrimaryMonitorData();
 
         unsigned int Width = MonitorData.Size[0] / 2;
         unsigned int Height = MonitorData.Size[1] / 2;
 
-        WindowClass window(&Width, &Height, "haiiiii", false, 1);
+        KE2::Window::WindowClass window(&Width, &Height, "haiiiii", false, 1);
         GA::TextRendererClass TEXT_RENDERER(L"Shaders/textNEW.vs", L"Shaders/textNEW.fs");
         StalkerClass ArialFont = TEXT_RENDERER.AddFont(50, "Fonts/arial.ttf", L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
             "`abcdefghijklmnopqrstuvwxyz{|}~"\
@@ -171,8 +171,9 @@ int main()
 
         EventsHandler.ConnectToEvent(&window.gKeyboardHandle().gPressableKeyEvent(KeyboardClass::PressableKeysEnum::L), [&window](void* pressedDown) {
             if (*(bool*)pressedDown) {
-                if (window.gCursorMode() == CursorModes::Free) window.SetCursorMode(CursorModes::LockedAndInvisible);
-                else window.SetCursorMode(CursorModes::Free);
+                if (window.gCursorMode() == KE2::Window::WindowClass::CursorModes::Free) 
+                    window.SetCursorMode(KE2::Window::WindowClass::CursorModes::LockedAndInvisible);
+                else window.SetCursorMode(KE2::Window::WindowClass::CursorModes::Free);
             }
             
             });

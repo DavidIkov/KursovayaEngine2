@@ -326,7 +326,6 @@
     <ClCompile Include="Tools\RandomNumber.cpp" />
     <ClCompile Include="Tools\Time.cpp" />
     <ClCompile Include="Windows\Window.cpp" />
-    <ClCompile Include="Windows\WindowsManager.cpp" />
     <ClCompile Include="OS_BasedStuff\FileExplorerDialog.cpp" />
     <ClCompile Include="OS_BasedStuff\FilesSystem.cpp" />
     <ClCompile Include="OS_BasedStuff\wchar_t_Operations.cpp" />
@@ -486,7 +485,6 @@
     <ClInclude Include="Tools\UsefullMacros\ComparisonByBytes.h" />
     <ClInclude Include="Tools\UsefullMacros\RemoveBrackets.h" />
     <ClInclude Include="Windows\Window.h" />
-    <ClInclude Include="Windows\WindowsManager.h" />
     <ClInclude Include="OS_BasedStuff\FileExplorerDialog.h" />
   </ItemGroup>
   <ItemGroup>

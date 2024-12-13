@@ -1,11 +1,10 @@
 #include"glad/glad.h"
 #include"GLFW/glfw3.h"
 #include"Window.h"
-#include"WindowsManager.h"
 #include"Tools/GLDebug.h"
 #include<iostream>
 
-using namespace KE2;
+using namespace KE2::Window;
 
 bool WindowClass::FirstWindow = true;
 
@@ -37,8 +36,6 @@ const MouseClass& WindowClass::gMouseHandle() const {
 
 WindowClass::WindowClass(unsigned int* w, unsigned int* h, const char* title, bool fullscreen, unsigned int swapInterval) {
     
-    WindowsManager::Windows.push_back(this);
-
     glfwSetErrorCallback(+[](int code, const char* msg) {
         ErrorsSystemNamespace::SendError << "GLFW error with code [" << std::to_string(code) << "] and message: [" << msg << "]" >> GLFW_ErrorWrapperStruct(code);
         });
@@ -82,7 +79,7 @@ void WindowClass::SetCursorMode(CursorModes mode) {
     glfwSetInputMode((GLFWwindow*)GLFW_WindowPtr, GLFW_CURSOR, glfwMode);
     CursorMode = mode;
 }
-CursorModes WindowClass::gCursorMode() const {
+WindowClass::CursorModes WindowClass::gCursorMode() const {
     return CursorMode;
 }
 bool WindowClass::WindowWaitingToClose() const {
