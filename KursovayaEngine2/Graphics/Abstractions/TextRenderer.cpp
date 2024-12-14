@@ -5,13 +5,13 @@
 #include"FreeType/ft2build.h"
 #include FT_FREETYPE_H
 #include"Tools/BinarySearch.h"
-#include<vector>
 
 using namespace KE2;
 namespace GP = Graphics::Primitives;
 namespace GA = Graphics::Abstractions;
 
 void* GA::TextRendererClass::FreeTypeLib = nullptr;
+unsigned short GA::TextRendererClass::AmountOfInstances = 0;
 
 GA::TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const wchar_t* fragmentShaderDir) :TextPreset(
     false, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
@@ -21,6 +21,9 @@ GA::TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const w
     true, 0, 0, 0, 0, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
     0.f, 0.f, 0.f, 1.f
 ) {
+
+    AmountOfInstances++;
+
     if (FreeTypeLib == nullptr) {
         FreeTypeLib = (void*)(new FT_Library);
 
@@ -53,31 +56,32 @@ GA::TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const w
 }
 
 GA::TextRendererClass::~TextRendererClass() {
-    Fonts.Clear();
-    FT_Done_FreeType(*(FT_Library*)FreeTypeLib);
-    delete (FT_Library*)FreeTypeLib;
+
+    AmountOfInstances--;
+
+    Fonts.clear();
+
+    if (AmountOfInstances == 0) {
+        FT_Done_FreeType(*(FT_Library*)FreeTypeLib);
+        delete (FT_Library*)FreeTypeLib;
+        FreeTypeLib = nullptr;
+    }
 }
 
-StalkerClass GA::TextRendererClass::AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters) {
-    Fonts.InsertByConstructor(Fonts.gLength(), characterSize, fontDir, characters);
-    return StalkerClass(&Fonts, Fonts.gLength() - 1);
-}
-
-GA::TextRendererClass::FontStruct::FontStruct(const FontStruct&& toCopy) :
-    Texture(std::move(toCopy.Texture)), FreeTypeFace(toCopy.FreeTypeFace), Characters(toCopy.Characters),
-    MaxCharacterUp(toCopy.MaxCharacterUp),MaxCharacterDown(toCopy.MaxCharacterDown) {
-    toCopy.Deleted = true;
+const GA::TextRendererClass::FontStruct& GA::TextRendererClass::AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters) {
+    const FontStruct& insertedFont = Fonts.emplace_back(FontStruct::GuardFromUser(), characterSize, fontDir, characters);
+    return insertedFont;
 }
 
 GA::TextRendererClass::FontStruct::~FontStruct() {
-    if (not Deleted) {
-        Deleted = true;
+    if (FreeTypeFace != nullptr) {
         FT_Done_Face(*(FT_Face*)FreeTypeFace);
+        FreeTypeFace = nullptr;
     }
 }
 
 
-GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const char* fontDir, const wchar_t* chars) :
+GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int characterSize, const char* fontDir, const wchar_t* chars) :
     Texture(GA::TextureClass::DimensionsEnum::Two, Vector3U(0, 0, 0), nullptr, GA::TextureClass::SettingsStruct{
                     GA::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,GA::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,
                     GA::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GA::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
@@ -99,7 +103,8 @@ GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const 
     unsigned int charsAmount = 0; while (chars[charsAmount] != L'\0') charsAmount++;
 
     Characters.ChangeCapacity(charsAmount);
-    std::vector<unsigned char*> buffers; buffers.reserve(charsAmount);
+    DynArr<unsigned char*> buffers; buffers.ChangeCapacity(charsAmount);
+    DynArr<unsigned int> nums; nums.ChangeCapacity(charsAmount);
 
 
     unsigned int maxWidth = 0; unsigned int maxHeight = 0;
@@ -110,11 +115,11 @@ GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const 
         unsigned int unicodeInd = (unsigned int)chars[chi];
 
 
-        unsigned int insertInd = (Characters.gLength() == 0) ? 0 : BinarySearch(&Characters[0], Characters.gLength(), unicodeInd,
+        size_t insertInd = (Characters.gLen() == 0) ? 0 : BinarySearch(*Characters, Characters.gLen(), unicodeInd,
             +[](const unsigned int& v1, const CharacterStruct& v2)->bool {return v2.UnicodeInd > v1; },
             +[](const unsigned int& v1, const CharacterStruct& v2)->bool {return v1 == v2.UnicodeInd; });
 
-        if (insertInd<Characters.gLength() and Characters[insertInd].UnicodeInd == unicodeInd) continue;
+        if (insertInd<Characters.gLen() and Characters[insertInd].UnicodeInd == unicodeInd) continue;
 
         {
             int FT_CharLoadingError = FT_Load_Char(*(FT_Face*)FreeTypeFace, unicodeInd, FT_LOAD_RENDER);
@@ -129,7 +134,7 @@ GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const 
 
         unsigned char* newBuffer = new unsigned char[face->glyph->bitmap.width * face->glyph->bitmap.rows];
         memcpy(newBuffer, face->glyph->bitmap.buffer, sizeof(unsigned char) * face->glyph->bitmap.width * face->glyph->bitmap.rows);
-        buffers.insert(buffers.begin() + insertInd, newBuffer);
+        buffers.InsertAtIndex(insertInd, newBuffer);
 
         if (face->glyph->bitmap.width > maxWidth) maxWidth = face->glyph->bitmap.width;
         if (face->glyph->bitmap.rows > maxHeight) maxHeight = face->glyph->bitmap.rows;
@@ -139,7 +144,7 @@ GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const 
 
         totalXSize += face->glyph->bitmap.width;
 
-        Characters.InsertByConstructor(insertInd, CharacterStruct{
+        Characters.InsertAtIndex(insertInd, CharacterStruct{
             unicodeInd,
             Vector2U(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             Vector2I(face->glyph->bitmap_left, face->glyph->bitmap_top),
@@ -154,7 +159,7 @@ GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const 
     
     {
         unsigned int xOffset = 1;
-        for (unsigned int ci = 0; ci < Characters.gLength(); ci++) {
+        for (unsigned int ci = 0; ci < Characters.gLen(); ci++) {
             CharacterStruct& char_ = Characters[ci];
             char_.XOffsetInTexture = xOffset / (float)totalXSize;
             char_.SizeInTexture = Vector2F(char_.Size[0] / (float)totalXSize, char_.Size[1] / (float)maxHeight);
@@ -164,7 +169,7 @@ GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const 
 
     {
         unsigned int xOffset = 0;
-        for (unsigned int ci = 0; ci < Characters.gLength(); ci++) {
+        for (unsigned int ci = 0; ci < Characters.gLen(); ci++) {
             CharacterStruct& char_ = Characters[ci];
             for (unsigned int x = 0; x < char_.Size[0]; x++) for (unsigned int y = 0; y < char_.Size[1]; y++) {
                 textureBuffer[ci + 1 + y * totalXSize + xOffset + x] = buffers[ci][(char_.Size[1] - y - 1) * char_.Size[0] + x];
@@ -182,6 +187,7 @@ GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const 
     
 
 	delete[] textureBuffer;
+
     for (unsigned int bi = 0; bi < charsAmount; bi++) delete[] buffers[bi];
 
 
@@ -189,7 +195,7 @@ GA::TextRendererClass::FontStruct::FontStruct(unsigned int characterSize, const 
 
 static constexpr unsigned int MAX_TEXT_LEN = 100000;
 
-void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wchar_t* text, Vector2F pos, Vector2F localOffset, Vector2U pixelsInTexture,
+void GA::TextRendererClass::RenderText(const FontStruct& font, const wchar_t* text, Vector2F pos, Vector2F localOffset, Vector2U pixelsInTexture,
     Vector2F boxSize, float lineSizeInBox, const wchar_t* dividingSymbols) {
     
     if (boxSize[0] == 0 and boxSize[1] == 0) return;//theres nothing we can do
@@ -199,8 +205,6 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
     TEXT_VA.Bind();
     TEXT_VB.Bind();
 
-	FontStruct& font = fontStalker.GetTarget<FontStruct>();
-
     font.Texture.Bind(0);
 
     unsigned int textLen = 0;
@@ -208,13 +212,13 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
     if (textLen == MAX_TEXT_LEN) ErrorsSystemNamespace::SendError << "Provided text is too big or end symbol was not found, current limit on symbols is: [" <<
         std::to_string(MAX_TEXT_LEN) << "]" >> ErrorsEnumWrapperStruct(ErrorsEnum::TextTooBigOrNoEndFound);
 
-    std::vector<unsigned int> charsInds; charsInds.resize(textLen);//adding +1 to mark unexisting characters, ind=0 will mean that character not found
+    DynArr<size_t> charsInds; charsInds.ChangeLen(textLen);//adding +1 to mark unexisting characters, ind=0 will mean that character not found
     for (unsigned int ci = 0; ci < textLen; ci++) {
         charsInds[ci] = BinarySearch(
-            &font.Characters[0], font.Characters.gLength(), (unsigned int)text[ci],
+            *font.Characters, font.Characters.gLen(), (unsigned int)text[ci],
             +[](const unsigned int& num, const FontStruct::CharacterStruct& ch)->bool {return num < ch.UnicodeInd; },
             +[](const unsigned int& num, const FontStruct::CharacterStruct& ch)->bool {return num == ch.UnicodeInd; });
-        if (charsInds[ci] >= font.Characters.gLength() or font.Characters[charsInds[ci]].UnicodeInd != (unsigned int)text[ci]) charsInds[ci] = 0;
+        if (charsInds[ci] >= font.Characters.gLen() or font.Characters[charsInds[ci]].UnicodeInd != (unsigned int)text[ci]) charsInds[ci] = 0;
 		else charsInds[ci]++;
     }
 
@@ -223,7 +227,7 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
     int maxUp = 0; int maxDown = 0;
     for (unsigned int ci = 0; ci < textLen; ci++) {
         if (charsInds[ci] == 0) continue;
-        FontStruct::CharacterStruct& char_ = font.Characters[charsInds[ci] - 1];
+        const FontStruct::CharacterStruct& char_ = font.Characters[charsInds[ci] - 1];
         fullLocalXSize += char_.Advance;
         int up = char_.Bearing[1]; int down = char_.Size[1] - up;
         if (maxUp < up) maxUp = up; if (maxDown < down) maxDown = down;
@@ -250,11 +254,11 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
     Vector2F scaledLocalOffset = ((localOffset + 1) / 2) * -realTextBoxSize;
 
 	float xOffset = 0;
-    DynArr<float> VertexBufferData; VertexBufferData.ChangeCapacity(6 * (2 + 2) * textLen); unsigned int realTextLen = 0;
+    DynArr<float> VertexBufferData; VertexBufferData.ChangeLen(6 * (2 + 2) * textLen); unsigned int realTextLen = 0;
     for (unsigned int ci = 0; ci < textLen; ci++) {
 		if (charsInds[ci] == 0) continue;
 
-        FontStruct::CharacterStruct& char_ = font.Characters[charsInds[ci] - 1];
+        const FontStruct::CharacterStruct& char_ = font.Characters[charsInds[ci] - 1];
         
         Vector2F lbp(pos[0] + xOffset + char_.Bearing[0] * localPixelsToTexScaleByX, 
             pos[1] + (font.MaxCharacterDown - ((int)char_.Size[1] - char_.Bearing[1])) * localPixelsToTexScaleByY);
@@ -290,8 +294,6 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
 
         for (unsigned int i = 0; i < 6 * 4; i++) VertexBufferData[realTextLen * 4 * 6 + i] = data[i];
 
-        //TEXT_VB.SetSubData(0, ArrayView<float>(data, 6 * 4));
-        //GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, 6);
 
 
         xOffset += char_.Advance * localPixelsToTexScaleByX;
@@ -299,10 +301,9 @@ void GA::TextRendererClass::RenderText(const StalkerClass& fontStalker, const wc
         realTextLen++;
     }
 
+    VertexBufferData.CutDeadLength(realTextLen * 6 * 4);
     TEXT_VB.SetData(ArrayView<void>(VertexBufferData, realTextLen * 6 * 4 * sizeof(float)), GP::VertexBufferClass::BufferReadWriteModeEnum::StreamDraw);
-    //for (unsigned int i=0;i<realTextLen;i++)
-    GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, 6*realTextLen);
-    //GP::RendererNamespace::DrawArraysInstanced(GP::RendererNamespace::PrimitivesEnum::Triangles, 0,6, realTextLen);
+    GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, 6 * realTextLen);
 
 
     TEXT_VA.Unbind();

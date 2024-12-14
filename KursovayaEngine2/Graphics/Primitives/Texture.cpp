@@ -155,7 +155,7 @@ void TextureClass::_UpdateSettings(const SettingsStruct& sets) const {
     _UpdSettings_DepthStencilReadMode(sets.DepthStencilReadMode);
 }
 
-TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, AnonDynArr* writeAnonDynArr, const SettingsStruct& sets, const DataSettingsStruct& dataSets) 
+TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, ArrayView<void>* writeArrayView, const SettingsStruct& sets, const DataSettingsStruct& dataSets) 
     :Dimensions(dimensions), GL_TexEnum(_GL_TextureEnum_SwitchCase(dimensions)) {
 
     int width, height, textureChannelsAmount;
@@ -164,12 +164,12 @@ TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vect
         ErrorsSystemNamespace::SendError << "stb_image error" >> ErrorsEnumWrapperStruct(ErrorsEnum::STB_IMAGE_Failed);
 
     if (writeSizePtr != nullptr) *writeSizePtr = Vector3U(width, height, 0);
-    if (writeAnonDynArr != nullptr) writeAnonDynArr->SetData(textureData, width * height * sizeof(unsigned char));
+    if (writeArrayView != nullptr) *writeArrayView = ArrayView<void>(textureData, width * height * sizeof(unsigned char));
 
     _Constructor(Vector3U(width, height, 0), textureData, dataSets);
     _UpdateSettings(sets);
     
-    if (writeAnonDynArr == nullptr) stbi_image_free(textureData);
+    if (writeArrayView == nullptr) stbi_image_free(textureData);
 }
 TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets) 
     :Dimensions(dimensions), GL_TexEnum(_GL_TextureEnum_SwitchCase(dimensions)) {

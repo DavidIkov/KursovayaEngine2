@@ -1,8 +1,7 @@
 #pragma once
 #include"DLL.h"
-#include"Tools/DynArr.h"
-#include"Tools/ArrayView.h"
 #include"Graphics/Primitives/VertexArray.h"
+#include"Tools/DynArr.h"
 
 namespace KE2::Graphics::Abstractions {
 	class VertexArrayClass :protected Primitives::VertexArrayClass {

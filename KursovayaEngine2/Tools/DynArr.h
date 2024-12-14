@@ -1,324 +1,155 @@
 #pragma once
-#include<utility>
-#include<cstring>
-#include"Tools/ErrorsSystem.h"
+#include"ArrayView.h"
+#include"ErrorsSystem.h"
 #include"AlignmentDummyClass.h"
-#include"DLL.h"
-#include"Tools/ArrayView.h"
-typedef unsigned char byte;
 
-template<typename>
-class DynArr;
-
-
-//might be a weird name but it makes sence... right?
-class StalkerClass {
-	template<typename>
-	friend class DynArr;
-
-	struct DynArrStalkersDataClass {
-		StalkerClass** StalkersArr = nullptr;
-		unsigned int StalkersArrLength = 0; unsigned int StalkersArrCapacity = 0;
-		//how much more space should be allocated of stalkers when there is no more space left, cant be 0
-		unsigned int StalkersArrLengthExpansionStep = 1;
-
-	};
-
-	mutable bool Deleted = false;
-
-	DynArrStalkersDataClass* StalkersDataPtr;
-
-	byte** ArrayPtr;
-	unsigned int TypeSize;
-
-	unsigned int TargetInd;
-	unsigned int StalkerInd;
-	void _TargetStalker() {
-		if (StalkersDataPtr->StalkersArrLength == StalkersDataPtr->StalkersArrCapacity) {
-			StalkersDataPtr->StalkersArrCapacity += StalkersDataPtr->StalkersArrLengthExpansionStep;
-			StalkerClass** newMem = new StalkerClass*[StalkersDataPtr->StalkersArrCapacity];
-			if (StalkersDataPtr->StalkersArr != nullptr) {
-				memcpy(newMem, StalkersDataPtr->StalkersArr, sizeof(StalkerClass*) * StalkersDataPtr->StalkersArrLength);
-				delete[] StalkersDataPtr->StalkersArr;
-			}
-			StalkersDataPtr->StalkersArr = newMem;
-		}
-
-		StalkerInd = StalkersDataPtr->StalkersArrLength;
-		StalkersDataPtr->StalkersArrLength++;
-		StalkersDataPtr->StalkersArr[StalkerInd] = this;
-	}
-public:
-	StalkerClass() = delete;
-	StalkerClass(const StalkerClass& toCopy) :
-		StalkersDataPtr(toCopy.StalkersDataPtr), ArrayPtr(toCopy.ArrayPtr), TypeSize(toCopy.TypeSize), TargetInd(toCopy.TargetInd) {
-		_TargetStalker();
-	}
-	StalkerClass(const StalkerClass&& toCopy) {
-		memcpy(this, &toCopy, sizeof(StalkerClass));
-		toCopy.Deleted = true;
-		StalkersDataPtr->StalkersArr[StalkerInd] = this;
-	}
-	template<typename ArrType>
-	StalkerClass(DynArr<ArrType>* DynArrPtr, unsigned int targetInd) :
-		StalkersDataPtr(&DynArrPtr->StalkersData), ArrayPtr((byte**)&DynArrPtr->Arr), TypeSize(sizeof(ArrType)), TargetInd(targetInd) {
-		_TargetStalker();
-	}
-	~StalkerClass() {
-		if (not Deleted) {
-			Deleted = true;
-			for (unsigned int i = StalkerInd + 1; i < StalkersDataPtr->StalkersArrLength; i++) StalkersDataPtr->StalkersArr[i - 1] = StalkersDataPtr->StalkersArr[i];
-			StalkersDataPtr->StalkersArrLength--;
-		}
-	}
-	void operator=(const StalkerClass&& toCopy) {
-		this->~StalkerClass();
-		Deleted = false;
-		toCopy.Deleted = true;
-		memcpy(this, &toCopy, sizeof(StalkerClass));
-	}
-	template<typename Type>
-	Type& GetTarget() const { return *(Type*)(Deleted ? nullptr : (*ArrayPtr + TypeSize * TargetInd)); }
-	unsigned int gTargetInd() { return TargetInd; }
-	bool gIsTargetDeleted() const { return Deleted; }
-};
-
-/*TODO have a "bug", if you for example have array of 3 elements and insert at index 0,
-and it will have to resize array then if will firstly resize array and copy everything from
-old memory to new one, and only after that it will move all elements to right by 1 index,
-so 3 unnecesary "responsibility constructors" will be called
-*/
-
-template<typename StoreType>
+//by default after moving some object, destructor will get called for safety, if you dont want this behaviour you can disable it
+template<typename T, bool CallDestructorAfterMove = true>
 class DynArr {
+protected:
+    using DT = typename AlignmentDummyClass<T>;
+    T* Arr = nullptr;
+    size_t Len = 0; size_t Capacity = 0; 
 
 public:
-	struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
-		enum ErrorsEnum {
-			IndexWentOutOfBounds,
-		}; ErrorsEnum Error;
-		inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
-	}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
-private:
-
-	static_assert(std::is_constructible_v<StoreType, StoreType&&>, "move constructor is not defined in current type, but its required");
-
-	friend class StalkerClass;
-
-	unsigned int Length = 0;
-	unsigned int Capacity = 0;
-	StoreType* Arr = nullptr;
-
-private:
-
-	StalkerClass::DynArrStalkersDataClass StalkersData;
-
-	void _CheckIfIndexInBounds(unsigned int ind, unsigned int maxInd) const {
-#if defined KE2_Debug
-		if (ind > maxInd)
-			KE2::ErrorsSystemNamespace::SendError << "index went out of bounds" >> ErrorsEnumWrapperStruct(ErrorsEnum::IndexWentOutOfBounds);
-#endif
-	}
-
-	void _ClearArr() {
-		if (Arr != nullptr) {
-			for (unsigned int i = 0; i < Length; i++) Arr[i].~StoreType();
-			delete[] (void*)Arr;
-			Arr = nullptr;
-		}
-	}
-	void _DeleteStalkers() {
-		if (StalkersData.StalkersArr != nullptr) {
-			for (unsigned int i = 0; i < StalkersData.StalkersArrLength; i++) StalkersData.StalkersArr[i]->Deleted = true;
-			delete[] StalkersData.StalkersArr;
-			StalkersData.StalkersArr = nullptr;
-		}
-	}
-	void _CopyArrayToArray(unsigned int len, StoreType* arrFROM, StoreType* arrTO) {
-		for (unsigned int i = 0; i < len; i++) new(arrTO + i) StoreType(std::move(*(arrFROM + i)));
-	}
-	void _RemoveStalker(unsigned int elemInd) {
-		for (int i = (int)StalkersData.StalkersArrLength - 1; i >= 0; i--) {
-			if (StalkersData.StalkersArr[i]->TargetInd > elemInd) StalkersData.StalkersArr[i]->TargetInd--;
-			else if (StalkersData.StalkersArr[i]->TargetInd == elemInd) StalkersData.StalkersArr[i]->~StalkerClass();
-		}
-
-	}
-	void _ResizeArrayMemory(unsigned int newSize) {
-		if (newSize != Capacity) {
-			if (newSize == 0) {
-				_ClearArr();
-				Capacity = 0;
-				Length = 0;
-				_DeleteStalkers();
-				StalkersData.StalkersArrLength = 0;
-				StalkersData.StalkersArrCapacity = 0;
-
-			}
-			else {
-				Capacity = newSize;
-				StoreType* newArr = (StoreType*)(new AlignmentDummyClass<StoreType>[Capacity]);
-				if (Capacity < Length) {
-
-					//disconnect some stalkers
-					//Length cant be 0 here so 0u-1 wont be a problem
-					for (int ti = Length - 1; ti >= (int)Capacity; ti--)
-						_RemoveStalker(ti);
-
-					_CopyArrayToArray(Capacity, Arr, newArr);
-					Length = Capacity;
-				}
-				else _CopyArrayToArray(Length, Arr, newArr);
-				_ClearArr();
-				Arr = newArr;
-			}
-		}
-	}
-
-
+    struct IndexWentOutOfBoundsError:KE2::ErrorsSystemNamespace::ErrorBase{};
+protected:
+    void _SafetyCheckForIndex(size_t ind, size_t max) const {
+        if (ind >= max)
+            KE2::ErrorsSystemNamespace::SendError << "Index went out of bounds" >> IndexWentOutOfBoundsError();
+    }
 public:
-	
-	//how much more space should be allocated of "StoreType" when there is no more space left, cant be 0
-	unsigned int SizeExpansionStep = 5;
+    size_t CapacityExpansionSize = 10;
 
-	DynArr() = default;
-	/*DynArr(const unsigned int len, StoreType&& val) {
-		Arr = (StoreType*)(new StoreTypeDummyStruct[len]);
-		Length = len;
-		Capacity = len;
-		for (unsigned int i = 0; i < len; i++) new(Arr + i) StoreType(std::move(val));
-	}*/
-	template<typename...ConstructorParametersTyp>
-	DynArr(const unsigned int len, ConstructorParametersTyp&&...params) {
-		Arr = (StoreType*)(new AlignmentDummyClass<StoreType>[len]);
-		Length = len;
-		Capacity = len;
-		for (unsigned int i = 0; i < len; i++) new(Arr + i) StoreType(std::forward<ConstructorParametersTyp>(params)...);
-	}
-	//data should point to already allocated memory
-	DynArr(StoreType* data, unsigned int len) {
-		Arr = data; Length = len; Capacity = len;
-	}
-	DynArr(ArrayView<StoreType>& arr) {
-		Arr = arr.gDataPtr(); Length = arr.gLen(); Capacity = Length;
-	}
-	DynArr(ArrayView<StoreType> arr) {
-		Arr = arr.gDataPtr(); Length = arr.gLen(); Capacity = Length;
-	}
-private:
-	template<typename...Types>
-	void constexpr _FillFromInitList(StoreType&& val, Types&&...vals) {
-		new(Arr + Length - sizeof...(vals) - 1) StoreType(std::move(val));
-		if constexpr (sizeof...(vals) != 0) _FillFromInitList(std::forward<Types>(vals)...);
-	}
-public:
-	template<typename...Types>
-	DynArr(StoreType&& val, Types&&...vals) {
-		Arr = (StoreType*)(new AlignmentDummyClass<StoreType>[sizeof...(vals) + 1]);
-		Length = sizeof...(vals) + 1;
-		Capacity = sizeof...(vals) + 1;
-		_FillFromInitList(std::move(val), std::forward<Types>(vals)...);
-	}
-	DynArr(const DynArr<StoreType>& arrToCopy) {
-		Length = arrToCopy.Length;
-		Capacity = arrToCopy.Capacity;
-		Arr = (StoreType*)(new AlignmentDummyClass<StoreType>[Capacity]);
-		_CopyArrayToArray(Length, arrToCopy.Arr, Arr);
-	}
-	void operator=(const DynArr<StoreType>& arrToCopy) {
-		_DeleteStalkers();
-		StalkersData.StalkersArrLength = 0;
-		StalkersData.StalkersArrCapacity = 0;
-		_ClearArr();
-		Length = arrToCopy.Length;
-		Capacity = arrToCopy.Capacity;
-		Arr = (StoreType*)(new AlignmentDummyClass<StoreType>[Capacity]);
-		_CopyArrayToArray(Length, arrToCopy.Arr, Arr);
-	}
-	~DynArr() {
-		_ClearArr();
-		_DeleteStalkers();
-	}
 
-	unsigned int gLength() const { return Length; };
-	unsigned int gCapacity() const { return Capacity; };
+    DynArr() {}
+    DynArr(size_t capacity) : Capacity(capacity), Arr((T*)new DT[capacity]) {}
+	DynArr(size_t len, const T& inst) :Len(len), Capacity(len), Arr((T*)new DT[len]) { for (size_t i = 0; i < len; i++) new(Arr + i) T(inst); }
+    DynArr(size_t len, T const* arr) :Len(len), Capacity(len), Arr((T*)new DT[len]) { for (size_t i = 0; i < len; i++) new(Arr + i) T(arr[i]); }
+	DynArr(size_t len, T *&& arr) :Len(len), Capacity(len), Arr(arr) {}
+	DynArr(const ArrayView<T>& arrView) : Len(arrView.gLen()), Capacity(arrView.gLen()), Arr((T*)new DT[Len]) { for (size_t i = 0; i < Len; i++) new(Arr + i) T(arrView[i]); }
+    DynArr(ArrayView<T>&& arrView) : Len(arrView.gLen()), Capacity(arrView.gLen()), Arr(arrView.gDataPtr()) {}
+    DynArr(const ArrayView<void>& arrView) : Len(arrView.gLenInBytes() / sizeof(T)), Capacity(Len), Arr((T*)new DT[Len]) { for (size_t i = 0; i < Len; i++) new(Arr + i) T(arrView[i * sizeof(T)]); }
+    DynArr(ArrayView<void>&& arrView) : Len(arrView.gLenInBytes()/sizeof(T)), Capacity(Len), Arr((T*)arrView.gDataPtr()) {}
+    DynArr(DynArr<T>&& toCopy) : Len(toCopy.Len), Capacity(toCopy.Capacity), Arr(toCopy.Arr) { toCopy.Arr = nullptr; toCopy.Len = 0; toCopy.Capacity = 0; }
+    DynArr(const DynArr<T>& toCopy, bool copyCapacity = true) :Len(toCopy.Len), Capacity(copyCapacity ? toCopy.Capacity : toCopy.Len), Arr((T*)new DT[Capacity]) { 
+        for (size_t i = 0; i < Len; i++) new(Arr + i) T(toCopy.Arr[i]); }
+    virtual ~DynArr() { if (Arr != nullptr) { for (size_t i = 0; i < Len; i++) Arr[i].~T();
+            delete[](void*)Arr; Arr = nullptr; Len = 0; Capacity = 0; } }
 
-	StoreType& operator[](const unsigned int ind) { _CheckIfIndexInBounds(ind, Length - 1); return Arr[ind]; }
-
-	const StoreType& operator[](const unsigned int ind) const { _CheckIfIndexInBounds(ind, Length - 1); return Arr[ind]; }
-
-	operator ArrayView<StoreType> () const { return ArrayView(Arr, Length); }
+	operator ArrayView<T> () const { return ArrayView<T>(Arr, Len); }
 	operator const void* () const { return Arr; }
 	operator void* () { return Arr; }
-	operator const StoreType* () const { return Arr; }
-	operator StoreType* () { return Arr; }
+	operator const T* () const { return Arr; }
+	operator T* () { return Arr; }
+    T* operator*() { return Arr; }
+    T const* operator*() const { return Arr; }
 
 
-private:
-	void _MoveElements(unsigned int moveInd) {
-		if (Length == Capacity) _ResizeArrayMemory(Capacity + SizeExpansionStep);
+    virtual DynArr<T>& operator=(DynArr<T>&& toCopy) { this->~DynArr(); new(this) DynArr(std::move(toCopy)); return *this; }
+    DynArr<T>& operator=(const DynArr<T>& toCopy) { this->~DynArr(); new(this) DynArr(toCopy); return *this; }
 
-		if (moveInd < Length) {
-			for (unsigned int i = 0; i < StalkersData.StalkersArrLength; i++) if (StalkersData.StalkersArr[i]->TargetInd >= moveInd) StalkersData.StalkersArr[i]->TargetInd++;
-			for (int i = Length - 1; i >= (int)moveInd; i--) {
-				new(Arr + i + 1) StoreType(std::move(*(Arr + i)));
-				Arr[i].~StoreType();
-			};
-		}
+    T& operator[](size_t ind) noexcept { _SafetyCheckForIndex(ind, Len); return Arr[ind]; }
+    const T& operator[](size_t ind) const noexcept { _SafetyCheckForIndex(ind, Len); return Arr[ind]; }
 
-		Length++;
-	}
-public:
+    size_t gLen() const noexcept { return Len; }
+    size_t gCapacity() const noexcept { return Capacity; }
 
-	template<typename...ConstructorParametersTyp>
-	void InsertByConstructor(unsigned int ind, ConstructorParametersTyp&&...params) {
-		_CheckIfIndexInBounds(ind, Length);
-		_MoveElements(ind);
-		new(Arr + ind) StoreType(std::forward<ConstructorParametersTyp>(params)...);
-	}
-	/*void InsertByResponsibilityConstructor(unsigned int ind, const StoreType& val) {
-		_MoveElements(ind);
-		_MoveInstance(&val, Arr + ind);
-		Length++;
-	}*/
+    template<typename...ConstrTypes>
+    void InsertAtIndex(size_t ind, ConstrTypes&&...constrParams) {
 
-	void Remove(unsigned int ind) {
-		_CheckIfIndexInBounds(ind, Length - 1);
+        _SafetyCheckForIndex(ind, Len + 1);
 
-		_RemoveStalker(ind);
-		
-		Arr[ind].~StoreType();
-		for (unsigned int i = ind + 1; i < Length; i++) {
-			new(Arr + i - 1) StoreType(std::move(*(Arr + i)));
-			Arr[i].~StoreType();
-		}
-		Length--;
-	}
+        if (Len == Capacity) {
+            Capacity += CapacityExpansionSize;
+            T* oldArr = Arr;
+            Arr = (T*)new DT[Capacity];
+            for (size_t i = 0; i < ind; i++) { new(Arr + i) T(std::move(oldArr[i])); if constexpr (CallDestructorAfterMove) oldArr[i].~T(); }
+            new(Arr + ind) T(std::forward<ConstrTypes>(constrParams)...);
+            for (size_t i = ind; i < Len; i++) { new(Arr + i + 1) T(std::move(oldArr[i])); if constexpr (CallDestructorAfterMove) oldArr[i].~T(); }
+            Len++;
+            if (oldArr != nullptr) delete[](void*)oldArr;
+        }
+        else {
+            if (ind != Len) {
+                new(Arr + Len) T(std::move(Arr[Len - 1]));
+                for (size_t i = Len - 1;; i--) { 
+                    if constexpr (CallDestructorAfterMove) Arr[i].~T();
+                    if (i == ind) break;
+                    new(Arr + i) T(std::move(Arr[i - 1])); 
+                }
+            }
+            new(Arr + ind) T(std::forward<ConstrTypes>(constrParams)...);
+            Len++;
+        }
 
-	void ChangeCapacity(const unsigned int newCapacity) {
-		_ResizeArrayMemory(newCapacity);
-	}
+    }
 
+	template<typename...ConstrTypes>
+    void InsertAtEnd(ConstrTypes&&...constrParams) { InsertAtIndex(Len, std::forward<ConstrTypes>(constrParams)...); }
 
-	/*template<typename...ConstructorParametersTyp>
-	void Resize(const unsigned int newSize, ConstructorParametersTyp&&...params) {
-		unsigned int oldLen = Length;
-		_ResizeArrayMemory(newSize);
-		if (newSize > oldLen) for (unsigned int i=oldLen;i<newSize;i++) new(Arr + i) StoreType(std::forward<ConstructorParametersTyp>(params)...);
-		Length = newSize;
-	}*/
-	void Clear() {
-		_ResizeArrayMemory(0);
-	}
+    void ChangeCapacity(size_t newCapacity) {
+        if (newCapacity == Capacity) return;
+        else if (newCapacity == 0) this->~DynArr();
+        else {
+			T* oldArr = Arr;
+			Arr = (T*)new DT[newCapacity];
+            if (newCapacity < Len) {
+                for (size_t i = newCapacity; i < Len; i++) oldArr[i].~T();
+                Len = newCapacity;
+            }
+			for (size_t i = 0; i < Len; i++) { new(Arr + i) T(std::move(oldArr[i])); if constexpr (CallDestructorAfterMove) oldArr[i].~T(); }
+            if (oldArr != nullptr) delete[](void*)oldArr;
+			Capacity = newCapacity;
+        }
+    }
+    //be aware that if you expand size then new memory area wont change any values that already been in this memory sector,
+    //so if you change length of array and dont fill it, it can result in UB when move constructors/copy constructors/destructors will get called
+    //for example if you have array of 10 elements, doing somnething like myArr.ChangeLen(20); ...somecode; myArr.ChangeLen(10); can result in UB 
+    // since destructors will have to be called for 10 of those elements
+    //instead use myArr.ChangeLen(20); ...someCode; myArr.CutDeadLength(10);
+    void ChangeLen(size_t newLen) {
+        if (newLen == Len) return;
+        else if (newLen > Len) {
+            if (newLen <= Capacity) Len = newLen;
+            else { ChangeCapacity(newLen); Len = newLen; }
+        }
+        else {
+            for (size_t i = newLen; i < Len; i++) Arr[i].~T();
+            Len = newLen;
+        }
+    }
+    //elements that will fall into length of cut will NOT get destroyed, destructors wont be called since these elements considered "dead"
+    //used to avoid UB for calling destructors of "dead" elements
+    void CutDeadLength(size_t newLen) {
+        if (newLen == Len) return;
+        _SafetyCheckForIndex(newLen, Len);
+        Len = newLen;
+    }
+    template<typename...ParamsTyps>
+    void ReplaceAtIndex(size_t ind, ParamsTyps&&...params) {
+        _SafetyCheckForIndex(ind, Len);
+        Arr[ind].~T(); new(Arr + ind) T(std::forward<ParamsTyps>(params)...);
+    }
+    void RemoveAtIndex(size_t ind) {
+        RemoveRegion(ind, 1);
+    }
+    void RemoveRegion(size_t startInd, size_t lenOfRegion) {
 
-	bool IsStalkersAmountForIndexEqualTo(unsigned int ind, unsigned int toCompare) {
-		_CheckIfIndexInBounds(ind, Length - 1);
+        _SafetyCheckForIndex(startInd, Len - lenOfRegion + 1);
 
-		unsigned int curAmount = 0;
-		if (toCompare == 0) return true;
-		for (unsigned int i = 0; i < StalkersData.StalkersArrLength; i++)
-			if (StalkersData.StalkersArr[i]->TargetInd == ind) if (++curAmount > toCompare) return false;
-		return curAmount == toCompare;
-	}
+        for (size_t i = startInd; i < startInd + lenOfRegion; i++) Arr[i].~T();
+
+        for (size_t i = startInd; i < Len - lenOfRegion; i++) {
+            new(Arr + i) T(std::move(Arr[i + lenOfRegion]));
+            if constexpr (CallDestructorAfterMove) Arr[i + lenOfRegion].~T();
+        }
+
+        Len -= lenOfRegion;
+
+    }
+    void ExpandAtIndex(size_t ind, size_t expansionSize) {
+        //todo
+    }
 
 };

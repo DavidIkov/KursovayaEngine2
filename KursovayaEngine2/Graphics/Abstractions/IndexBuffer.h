@@ -1,6 +1,5 @@
 #pragma once
 #include"DLL.h"
-#include"Tools/DynArr.h"
 #include"Graphics/Primitives/IndexBuffer.h"
 
 namespace KE2::Graphics::Abstractions {
@@ -21,7 +20,7 @@ namespace KE2::Graphics::Abstractions {
 		using BufferReadWriteModeEnum = Primitives::IndexBufferClass::BufferReadWriteModeEnum;
 	protected:
 		const BufferReadWriteModeEnum BufferReadWriteMode;
-		unsigned int DataSizeInBytes = 0u;
+		size_t DataSizeInBytes = 0u;
 	public:
 
 		inline Primitives::IndexBufferClass& gPrimitiveIndexBufferClass() noexcept { return *this; }
@@ -53,23 +52,23 @@ namespace KE2::Graphics::Abstractions {
 		}
 	public:
 		DLLTREATMENT virtual void SetData(const ArrayView<void>& data);
-		DLLTREATMENT virtual void SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) override;
+		DLLTREATMENT virtual void SetSubData(size_t offsetInBytes, const ArrayView<void>& data) override;
 
 		DLLTREATMENT virtual void CopyData(const IndexBufferClass& srcBuffer);
 	private:
-		inline virtual void CopySubData(const Primitives::IndexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) override final {
+		inline virtual void CopySubData(const Primitives::IndexBufferClass& srcBuffer, size_t srcOffsetInBytes, size_t dstOffsetInBytes, size_t amountOfBytesToCopy) override final {
 			CopySubData(dynamic_cast<const IndexBufferClass&>(srcBuffer), srcOffsetInBytes, dstOffsetInBytes, amountOfBytesToCopy);
 		}
 	public:
-		DLLTREATMENT virtual void CopySubData(const IndexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy);
+		DLLTREATMENT virtual void CopySubData(const IndexBufferClass& srcBuffer, size_t srcOffsetInBytes, size_t dstOffsetInBytes, size_t amountOfBytesToCopy);
 
 		//data should point to already allocated memory
-		DLLTREATMENT virtual void GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) const override final;
+		DLLTREATMENT virtual void GetSubData(size_t offsetInBytes, size_t amountOfBytesToCopy, void* data) const override final;
 		//data should point to already allocated memory
 		DLLTREATMENT void GetData(void* data) const;
 
 		inline BufferReadWriteModeEnum gBufferReadWriteModeEnum() const noexcept { return BufferReadWriteMode; }
-		inline unsigned int gDataSizeInBytes() const noexcept { return DataSizeInBytes; }
+		inline size_t gDataSizeInBytes() const noexcept { return DataSizeInBytes; }
 
 		using Primitives::IndexBufferClass::Bind;
 		using Primitives::IndexBufferClass::Unbind;

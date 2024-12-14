@@ -72,6 +72,7 @@
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>true</EnableASAN>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -297,7 +298,6 @@
     </ClCompile>
     <ClCompile Include="KE2_Manager.cpp" />
     <ClCompile Include="Input\Mouse.cpp" />
-    <ClCompile Include="Tools\AnonDynArr.cpp" />
     <ClCompile Include="Tools\ErrorsSystem.cpp" />
     <ClCompile Include="Tools\FileTypesReaders\Obj.cpp" />
     <ClCompile Include="Graphics\Primitives\FrameBuffer.cpp" />
@@ -451,7 +451,6 @@
     <ClInclude Include="Maths\Vector.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Tools\AlignmentDummyClass.h" />
-    <ClInclude Include="Tools\AnonDynArr.h" />
     <ClInclude Include="Tools\ArrayView.h" />
     <ClInclude Include="Tools\BinarySearch.h" />
     <ClInclude Include="Tools\ClassFunctionsAccessController.h" />

@@ -36,12 +36,12 @@ namespace KE2::Graphics::Primitives {
 
 		DLLTREATMENT virtual void SetData(const ArrayView<void>& data, const BufferReadWriteModeEnum bufferReadWriteMode);
 
-		DLLTREATMENT virtual void SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data);
+		DLLTREATMENT virtual void SetSubData(size_t offsetInBytes, const ArrayView<void>& data);
 
-		DLLTREATMENT virtual void CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy);
+		DLLTREATMENT virtual void CopySubData(const VertexBufferClass& srcBuffer, size_t srcOffsetInBytes, size_t dstOffsetInBytes, size_t amountOfBytesToCopy);
 
 		//data should point to already allocated memory
-		DLLTREATMENT virtual void GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) const;
+		DLLTREATMENT virtual void GetSubData(size_t offsetInBytes, size_t amountOfBytesToCopy, void* data) const;
 
 		DLLTREATMENT void Bind() const;
 		DLLTREATMENT static void Unbind();

@@ -1,9 +1,9 @@
 #pragma once
 #include"DLL.h"
 #include"Maths/Vector.h"
-#include"Tools/AnonDynArr.h"
 #include"Tools/ErrorsSystem.h"
 #include"Tools/UsefullMacros/ComparisonByBytes.h"
+#include"Tools/ArrayView.h"
 
 namespace KE2::Graphics::Primitives {
     class TextureClass {
@@ -94,7 +94,7 @@ namespace KE2::Graphics::Primitives {
             inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
         }; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
 
-        DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, AnonDynArr* writeAnonDynArr, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
+        DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, ArrayView<void>* writeArrayView, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
         DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
         DLLTREATMENT TextureClass(TextureClass&& toCopy) noexcept;
         DLLTREATMENT virtual TextureClass& operator=(TextureClass&& toCopy);

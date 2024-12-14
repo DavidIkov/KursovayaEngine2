@@ -6,12 +6,13 @@
 #include"Graphics/Primitives/VertexArray.h"
 #include"Graphics/Primitives/VertexBuffer.h"
 #include"Texture.h"
-#include"Tools/DynArr.h"
+#include<list>
 
 namespace KE2::Graphics::Abstractions {
 	class TextRendererClass {
-		struct FontStruct {
 
+	public:
+		struct FontStruct {
 			struct CharacterStruct {
 				unsigned int UnicodeInd;
 				Vector2U Size;       // Size of glyph
@@ -20,18 +21,26 @@ namespace KE2::Graphics::Abstractions {
 				Vector2F SizeInTexture;
 				float XOffsetInTexture;
 			};
-			mutable bool Deleted = false;
 			TextureClass Texture;
 			void* FreeTypeFace;//FT_Face
 			DynArr<CharacterStruct> Characters;
 			int MaxCharacterUp = 0; int MaxCharacterDown = 0;
 
-			FontStruct(unsigned int characterSize, const char* fontDir, const wchar_t* chars);
-			FontStruct(const FontStruct&& toCopy);
+			friend TextRendererClass;
+			//made so user wont be able to create font class by himself, only TextRendererClass can do it
+			struct GuardFromUser{};
+
+		public:
+			FontStruct(GuardFromUser, unsigned int characterSize, const char* fontDir, const wchar_t* chars);
+			FontStruct(const FontStruct&) = delete;
+			FontStruct(const FontStruct&&) = delete;
+			FontStruct& operator=(const FontStruct&) = delete;
+			FontStruct& operator=(FontStruct&&) = delete;
 			~FontStruct();
 		};
+	private:
 
-		DynArr<FontStruct> Fonts;
+		std::list<FontStruct> Fonts;
 
 		Graphics::Primitives::ShaderProgramClass TEXT_SP;
 		Graphics::Primitives::RenderingPresetClass TextPreset;
@@ -39,6 +48,7 @@ namespace KE2::Graphics::Abstractions {
 		Graphics::Primitives::VertexBufferClass TEXT_VB;
 
 		static void* FreeTypeLib;//FT_Library, nullptr
+		static unsigned short AmountOfInstances;// 0
 
 	public:
 
@@ -54,11 +64,11 @@ namespace KE2::Graphics::Abstractions {
 
 		DLLTREATMENT TextRendererClass(const wchar_t* vertexShaderDir, const wchar_t* fragmentShaderDir);
 		DLLTREATMENT virtual ~TextRendererClass();
-		DLLTREATMENT StalkerClass AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters);
+		DLLTREATMENT const FontStruct& AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters);
 
 		//pixelsInTexture is amount of pixels in the texture you are rendering this text to
 		//TODO add functionality for "dividingSymbols" and make so text will be separated in a few lines if possible
-		DLLTREATMENT void RenderText(const StalkerClass& fontStaker, const wchar_t* text, Vector2F pos, Vector2F localOffset, Vector2U pixelsInTexture,
+		DLLTREATMENT void RenderText(const FontStruct& font, const wchar_t* text, Vector2F pos, Vector2F localOffset, Vector2U pixelsInTexture,
 			Vector2F boxSize, float lineSizeInBox, const wchar_t* dividingSymbols = nullptr);
 
 

@@ -39,7 +39,7 @@ void IndexBufferClass::SetData(const ArrayView<void>& data) {
 		GP::IndexBufferClass::SetData(data, BufferReadWriteMode);
 	}
 }
-void IndexBufferClass::SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) {
+void IndexBufferClass::SetSubData(size_t offsetInBytes, const ArrayView<void>& data) {
 	GP::IndexBufferClass::SetSubData(offsetInBytes, data);
 }
 
@@ -51,11 +51,11 @@ void IndexBufferClass::CopyData(const IndexBufferClass& srcBuffer) {
 		GP::IndexBufferClass::CopySubData(srcBuffer, 0, 0, DataSizeInBytes);
 	}
 }
-void IndexBufferClass::CopySubData(const IndexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) {
+void IndexBufferClass::CopySubData(const IndexBufferClass& srcBuffer, size_t srcOffsetInBytes, size_t dstOffsetInBytes, size_t amountOfBytesToCopy) {
 	GP::IndexBufferClass::CopySubData(srcBuffer, srcOffsetInBytes, dstOffsetInBytes, amountOfBytesToCopy);
 }
 
-void IndexBufferClass::GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) const {
+void IndexBufferClass::GetSubData(size_t offsetInBytes, size_t amountOfBytesToCopy, void* data) const {
 	GP::IndexBufferClass::GetSubData(offsetInBytes, amountOfBytesToCopy, data);
 }
 void IndexBufferClass::GetData(void* data) const {

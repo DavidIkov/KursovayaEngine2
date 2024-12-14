@@ -21,7 +21,7 @@ namespace KE2::Graphics::Abstractions {
 		using BufferReadWriteModeEnum = Primitives::VertexBufferClass::BufferReadWriteModeEnum;
 	protected:
 		const BufferReadWriteModeEnum BufferReadWriteMode;
-		unsigned int DataSizeInBytes = 0u;
+		size_t DataSizeInBytes = 0;
 
 	public:
 		inline Primitives::VertexBufferClass& gPrimitiveVertexBufferClass() noexcept { return *this; }
@@ -54,24 +54,24 @@ namespace KE2::Graphics::Abstractions {
 		}
 	public:
 		DLLTREATMENT virtual void SetData(const ArrayView<void>& data);
-		DLLTREATMENT virtual void SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) override;
+		DLLTREATMENT virtual void SetSubData(size_t offsetInBytes, const ArrayView<void>& data) override;
 
 		DLLTREATMENT virtual void CopyData(const VertexBufferClass& srcBuffer);
 
 	private:
-		inline virtual void CopySubData(const Primitives::VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) override final {
+		inline virtual void CopySubData(const Primitives::VertexBufferClass& srcBuffer, size_t srcOffsetInBytes, size_t dstOffsetInBytes, size_t amountOfBytesToCopy) override final {
 			CopySubData(dynamic_cast<const VertexBufferClass&>(srcBuffer), srcOffsetInBytes, dstOffsetInBytes, amountOfBytesToCopy);
 		}
 	public:
-		DLLTREATMENT virtual void CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy);
+		DLLTREATMENT virtual void CopySubData(const VertexBufferClass& srcBuffer, size_t srcOffsetInBytes, size_t dstOffsetInBytes, size_t amountOfBytesToCopy);
 
 		//data should point to already allocated memory
-		DLLTREATMENT virtual void GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) const override final;
+		DLLTREATMENT virtual void GetSubData(size_t offsetInBytes, size_t amountOfBytesToCopy, void* data) const override final;
 		//data should point to already allocated memory
 		DLLTREATMENT void GetData(void* data) const;
 
 		inline BufferReadWriteModeEnum gBufferReadWriteModeEnum() const noexcept { return BufferReadWriteMode; }
-		inline unsigned int gDataSizeInBytes() const noexcept { return DataSizeInBytes; }
+		inline size_t gDataSizeInBytes() const noexcept { return DataSizeInBytes; }
 
 		using Primitives::VertexBufferClass::Bind;
 		using Primitives::VertexBufferClass::Unbind;

@@ -51,13 +51,13 @@ void IndexBufferClass::SetData(const ArrayView<void>& data, const BufferReadWrit
 
 	glSC(glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.gLenInBytes() * sizeof(unsigned int), data.gDataPtr(), _GetIBUsageForGL(bufferReadWriteMode)));
 }
-void IndexBufferClass::SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) {
+void IndexBufferClass::SetSubData(size_t offsetInBytes, const ArrayView<void>& data) {
     Assert_Binded_Macro;
 
-	glSC(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offsetInBytes, data.gLenInBytes() * sizeof(unsigned int), data.gDataPtr()));
+	glSC(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offsetInBytes, data.gLenInBytes() * sizeof(size_t), data.gDataPtr()));
 }
 
-void IndexBufferClass::CopySubData(const IndexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) {
+void IndexBufferClass::CopySubData(const IndexBufferClass& srcBuffer, size_t srcOffsetInBytes, size_t dstOffsetInBytes, size_t amountOfBytesToCopy) {
     glSC(glBindBuffer(GL_COPY_READ_BUFFER, srcBuffer.ID));
     glSC(glBindBuffer(GL_COPY_WRITE_BUFFER, ID));
 
@@ -67,7 +67,7 @@ void IndexBufferClass::CopySubData(const IndexBufferClass& srcBuffer, unsigned i
     glSC(glBindBuffer(GL_COPY_WRITE_BUFFER, 0));
 }
 
-void IndexBufferClass::GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) const {
+void IndexBufferClass::GetSubData(size_t offsetInBytes, size_t amountOfBytesToCopy, void* data) const {
     Assert_Binded_Macro;
 
     glSC(glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offsetInBytes, amountOfBytesToCopy, data));

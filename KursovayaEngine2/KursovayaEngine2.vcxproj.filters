@@ -87,9 +87,6 @@
     <ClCompile Include="Graphics\Abstractions\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tools\AnonDynArr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Tools\GetOverlappingMemoryRegion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -512,9 +509,6 @@
     <ClInclude Include="Maths\Vector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tools\DynArr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Tools\StaticLambda.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -537,9 +531,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\Abstractions\VertexBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tools\AnonDynArr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tools\AlignmentDummyClass.h">
@@ -573,6 +564,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tools\UsefullMacros\ComparisonByBytes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\DynArr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -17,7 +17,7 @@ VertexBufferClass::VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode
 	std::wstring fileType = filePathStr.substr(filePathStr.find_last_of(L'.') + 1);
 	if (fileType == L"obj") {
 		std::vector<float> data = ReadObjFileType(filePath);
-		DataSizeInBytes = (unsigned int)(data.size() * sizeof(float));
+		DataSizeInBytes = data.size() * sizeof(float);
 		GP::VertexBufferClass::SetData(ArrayView<void>(&data[0], DataSizeInBytes), bufferReadWriteMode);
 	}
 	else {
@@ -52,7 +52,7 @@ void VertexBufferClass::SetData(const ArrayView<void>& data) {
 		GP::VertexBufferClass::SetData(data, BufferReadWriteMode);
 	}
 }
-void VertexBufferClass::SetSubData(unsigned int offsetInBytes, const ArrayView<void>& data) {
+void VertexBufferClass::SetSubData(size_t offsetInBytes, const ArrayView<void>& data) {
 	GP::VertexBufferClass::SetSubData(offsetInBytes, data);
 }
 
@@ -64,11 +64,11 @@ void VertexBufferClass::CopyData(const VertexBufferClass& srcBuffer) {
 		GP::VertexBufferClass::CopySubData(srcBuffer, 0, 0, DataSizeInBytes);
 	}
 }
-void VertexBufferClass::CopySubData(const VertexBufferClass& srcBuffer, unsigned int srcOffsetInBytes, unsigned int dstOffsetInBytes, unsigned int amountOfBytesToCopy) {
+void VertexBufferClass::CopySubData(const VertexBufferClass& srcBuffer, size_t srcOffsetInBytes, size_t dstOffsetInBytes, size_t amountOfBytesToCopy) {
 	GP::VertexBufferClass::CopySubData(srcBuffer, srcOffsetInBytes, dstOffsetInBytes, amountOfBytesToCopy);
 }
 
-void VertexBufferClass::GetSubData(unsigned int offsetInBytes, unsigned int amountOfBytesToCopy, void* data) const {
+void VertexBufferClass::GetSubData(size_t offsetInBytes, size_t amountOfBytesToCopy, void* data) const {
 	GP::VertexBufferClass::GetSubData(offsetInBytes, amountOfBytesToCopy, data);
 }
 void VertexBufferClass::GetData(void* data) const {
