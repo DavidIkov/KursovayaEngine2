@@ -102,7 +102,7 @@ namespace KE2::Graphics::Primitives {
         DLLTREATMENT virtual ~TextureClass() noexcept(false);
 
         DLLTREATMENT virtual void SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data,
-            DataSettingsStruct::DataFormatOnCPU_Enum dataFormatOnCPU, DataSettingsStruct::DataTypeOnCPU_Enum dataTypeOnCPU);
+            DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType);
 
         //if you dont use some axes in pixelsAmounts then dont leave them 0, use 1
         //make sure that your texture have enough pixels for copying
@@ -116,11 +116,11 @@ namespace KE2::Graphics::Primitives {
 		DLLTREATMENT virtual void GetSubData(Vector3U offset, void* buffer, Vector3U pixelsAmount, 
             DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const;
 
-        DLLTREATMENT virtual void sSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX);
-        DLLTREATMENT virtual void sSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY);
-        DLLTREATMENT virtual void sSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt);
-        DLLTREATMENT virtual void sSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt);
-        DLLTREATMENT virtual void sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode);
+        DLLTREATMENT virtual void SetSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX);
+        DLLTREATMENT virtual void SetSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY);
+        DLLTREATMENT virtual void SetSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt);
+        DLLTREATMENT virtual void SetSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt);
+        DLLTREATMENT virtual void SetSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode);
 
 		typedef unsigned int TextureID_Type;
 		inline TextureID_Type gID() const noexcept { return ID; }

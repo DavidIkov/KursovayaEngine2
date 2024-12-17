@@ -11,22 +11,32 @@ namespace KE2::Graphics::Abstractions {
 
 		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
             enum ErrorsEnum {
+				DataSettingsForCPU_AreNotSetUp,
 #ifdef KE2_Debug
 				TryingToUseDifferentDataSettings,
 #endif
-				DataSettingsForCPU_AreNotSetUp,
             };
             ErrorsEnum Error;
             inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
         }; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
 
 		using SettingsStruct = Primitives::TextureClass::SettingsStruct;
-		using DataSettingsStruct = Primitives::TextureClass::DataSettingsStruct;
+		struct DataSettingsStruct {
+			using DataFormatOnGPU_Enum = Primitives::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum;
+			using DataFormatOnCPU_Enum = Primitives::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum;
+			using DataTypeOnCPU_Enum = Primitives::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum;
+
+			const DataFormatOnGPU_Enum DataFormatOnGPU;
+			DataFormatOnCPU_Enum DataFormatOnCPU = DataFormatOnCPU_Enum::None;
+			DataTypeOnCPU_Enum DataTypeOnCPU = DataTypeOnCPU_Enum::None;
+
+			operator Primitives::TextureClass::DataSettingsStruct() { return { DataFormatOnGPU,DataFormatOnCPU,DataTypeOnCPU }; }
+		};
 		using DimensionsEnum = Primitives::TextureClass::DimensionsEnum;
 	protected:
 		Vector3U Size;
 		SettingsStruct Settings;
-		const DataSettingsStruct DataSettings;
+		DataSettingsStruct DataSettings;
 		unsigned int MipmapLevels;
 	public:
 
@@ -49,11 +59,8 @@ namespace KE2::Graphics::Abstractions {
 
 	private:
 		inline virtual void SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data,
-			DataSettingsStruct::DataFormatOnCPU_Enum dataFormatOnCPU, DataSettingsStruct::DataTypeOnCPU_Enum dataTypeOnCPU) override final {
-#ifdef KE2_Debug
-			if (DataSettings.DataFormatOnCPU != dataFormatOnCPU || DataSettings.DataTypeOnCPU != dataTypeOnCPU)
-				ErrorsSystemNamespace::SendError << "Trying to use different data settings" >> ErrorsEnumWrapperStruct(ErrorsEnum::TryingToUseDifferentDataSettings);
-#endif
+			DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) override final {
+			DataSettings.DataFormatOnCPU = dataFormat; DataSettings.DataTypeOnCPU = dataType;
 			SetSubData(pixelsOffset, pixelsAmount, data);
 		}
 	public:
@@ -94,23 +101,30 @@ namespace KE2::Graphics::Abstractions {
 
 		inline Vector3U gSize() const noexcept { return Size; }
 
-		DLLTREATMENT virtual void sSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX) override final;
+		inline virtual void SetSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX) override final { Settings.WrapTypeByX = wrapTypeByX; Primitives::TextureClass::SetSettings_WrapTypeByX(wrapTypeByX); }
 		inline SettingsStruct::WrapTypeEnum gSettings_WrapTypeByX() const noexcept { return Settings.WrapTypeByX; }
-		DLLTREATMENT virtual void sSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY) override final;
+		inline virtual void SetSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY) override final { Settings.WrapTypeByY = wrapTypeByY; Primitives::TextureClass::SetSettings_WrapTypeByY(wrapTypeByY); }
 		inline SettingsStruct::WrapTypeEnum gSettings_WrapTypeByY() const noexcept { return Settings.WrapTypeByY; }
-		DLLTREATMENT virtual void sSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt) override final;
+		inline virtual void SetSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt) override final { Settings.DownscalingFilt = downscalingFilt; Primitives::TextureClass::SetSettings_DownscalingFilt(downscalingFilt); }
 		inline SettingsStruct::DownscalingFilterFuncEnum gSettings_DownscalingFilt() const noexcept { return Settings.DownscalingFilt; }
-		DLLTREATMENT virtual void sSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt) override final;
+		inline virtual void SetSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt) override final { Settings.UpscalingFilt = upscalingFilt; Primitives::TextureClass::SetSettings_UpscalingFilt(upscalingFilt); }
 		inline SettingsStruct::UpscalingFilterFuncEnum gSettings_UpscalingFilt() const noexcept { return Settings.UpscalingFilt; }
-		DLLTREATMENT virtual void sSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode) override final;
+		inline virtual void SetSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode) override final { Settings.DepthStencilReadMode = depthStencilReadMode; Primitives::TextureClass::SetSettings_DepthStencilReadMode(depthStencilReadMode); }
 		inline SettingsStruct::DepthStencilReadModeEnum gSettings_DepthStencilReadMode() const noexcept { return Settings.DepthStencilReadMode; }
 
 		inline SettingsStruct gSettings() const noexcept { return Settings; }
-		DLLTREATMENT void sSettings(SettingsStruct newSets);
+		inline void SetSettings(SettingsStruct newSets) {
+			SetSettings_WrapTypeByX(newSets.WrapTypeByX); SetSettings_WrapTypeByY(newSets.WrapTypeByY);
+			SetSettings_DownscalingFilt(newSets.DownscalingFilt); SetSettings_UpscalingFilt(newSets.UpscalingFilt);
+			SetSettings_DepthStencilReadMode(newSets.DepthStencilReadMode);
+		}
 
 		inline DataSettingsStruct::DataFormatOnGPU_Enum gDataSettings_DataFormatOnGPU() const noexcept { return DataSettings.DataFormatOnGPU; }
 		inline DataSettingsStruct::DataFormatOnCPU_Enum gDataSettings_DataFormatOnCPU() const noexcept { return DataSettings.DataFormatOnCPU; }
 		inline DataSettingsStruct::DataTypeOnCPU_Enum gDataSettings_DataTypeOnCPU() const noexcept { return DataSettings.DataTypeOnCPU; }
+
+		inline void sDataSettings_DataFormatOnCPU(DataSettingsStruct::DataFormatOnCPU_Enum dataFormatOnCPU) noexcept { DataSettings.DataFormatOnCPU = dataFormatOnCPU; }
+		inline void sDataSettings_DataTypeOnCPU(DataSettingsStruct::DataTypeOnCPU_Enum dataTypeOnCPU) noexcept { DataSettings.DataTypeOnCPU = dataTypeOnCPU; }
 
 		inline DataSettingsStruct gDataSettings() const noexcept { return DataSettings; }
 
