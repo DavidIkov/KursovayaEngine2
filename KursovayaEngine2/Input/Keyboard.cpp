@@ -22,7 +22,7 @@ void KeyboardClass::_GLFW_KEYCALLBACK(int key, int scancode, int action, int mod
 	if (ind == (unsigned short int)PressableKeysEnum::ENUMEND) return;
 
 	bool pressedDown = action == GLFW_PRESS;
-	PressableKeysStates[ind] = pressedDown;
+	PressableKeysStates.Set(ind, pressedDown);
 	PressableKeysEvents[ind].FireEvent(&pressedDown);
 
 }

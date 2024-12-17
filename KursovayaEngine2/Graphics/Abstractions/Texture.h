@@ -1,5 +1,4 @@
 #pragma once
-#include"DLL.h"
 #include"Graphics/Primitives/Texture.h"
 #include"Tools/ClassFunctionsAccessController.h"
 
@@ -15,6 +14,7 @@ namespace KE2::Graphics::Abstractions {
 #ifdef KE2_Debug
 				TryingToUseDifferentDataSettings,
 #endif
+				DataSettingsForCPU_AreNotSetUp,
             };
             ErrorsEnum Error;
             inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
@@ -27,14 +27,16 @@ namespace KE2::Graphics::Abstractions {
 		Vector3U Size;
 		SettingsStruct Settings;
 		const DataSettingsStruct DataSettings;
+		unsigned int MipmapLevels;
 	public:
 
 		inline Primitives::TextureClass& gPrimitiveTextureClass() noexcept { return *this; }
 		inline const Primitives::TextureClass& gPrimitiveTextureClass() const noexcept { return *this; }
 
-		DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, SettingsStruct sets, DataSettingsStruct dataSets);
+		DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, unsigned int mipmapLevels, SettingsStruct sets, DataSettingsStruct dataSets);
 		//no taking responsibility for "data"
-		DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, SettingsStruct sets, DataSettingsStruct dataSets);
+		DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, unsigned int mipmapLevels, SettingsStruct sets, DataSettingsStruct dataSets);
+		DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, unsigned int mipmapLevels, DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU, SettingsStruct sets);
 		DLLTREATMENT TextureClass(const TextureClass& toCopy, bool copyTextureData = false);
 		DLLTREATMENT TextureClass(TextureClass&& toCopy) noexcept;
 		DLLTREATMENT virtual ~TextureClass() noexcept(false) override = default;
@@ -44,18 +46,6 @@ namespace KE2::Graphics::Abstractions {
 		inline virtual Primitives::TextureClass& operator=(Primitives::TextureClass&& toCopy) override final { return operator=(dynamic_cast<TextureClass&&>(toCopy)); }
 	public:
 		DLLTREATMENT virtual TextureClass& operator=(TextureClass&& toCopy);
-
-	private:
-		inline virtual void SetData(Vector3U pixelsAmount, const void* data, const DataSettingsStruct& dataSets) override final { 
-#ifdef KE2_Debug
-			if (dataSets != DataSettings)
-				ErrorsSystemNamespace::SendError << "Trying to use different data settings" >> ErrorsEnumWrapperStruct(ErrorsEnum::TryingToUseDifferentDataSettings);
-#endif
-			SetData(pixelsAmount, data);
-		}
-	public:
-		DLLTREATMENT virtual void SetData(Vector3U newSize, const void* data);
-		DLLTREATMENT virtual void SetData(const void* data);
 
 	private:
 		inline virtual void SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data,
@@ -69,9 +59,6 @@ namespace KE2::Graphics::Abstractions {
 	public:
 		//size of texture will remain same
 		DLLTREATMENT virtual void SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data);
-
-
-		DLLTREATMENT virtual void AllocatePixels(Vector3U newSize);
 
 	private:
 		inline virtual void CopySubData(const Primitives::TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount) override final {

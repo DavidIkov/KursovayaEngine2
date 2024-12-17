@@ -105,6 +105,9 @@
     <ClCompile Include="Graphics\Abstractions\IndexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\Abstractions\RenderBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\glad\include\glad\glad.h">
@@ -533,9 +536,6 @@
     <ClInclude Include="Graphics\Abstractions\VertexBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tools\AlignmentDummyClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Tools\GetOverlappingMemoryRegion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -567,6 +567,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tools\DynArr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\BoolsTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Abstractions\RenderBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

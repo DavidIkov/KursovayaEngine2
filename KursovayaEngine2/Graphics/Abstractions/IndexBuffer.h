@@ -1,5 +1,4 @@
 #pragma once
-#include"DLL.h"
 #include"Graphics/Primitives/IndexBuffer.h"
 
 namespace KE2::Graphics::Abstractions {

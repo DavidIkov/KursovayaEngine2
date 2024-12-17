@@ -12,10 +12,10 @@ namespace KE2::Graphics::Primitives {
 
 	class FrameBufferClass {
 		unsigned int ID = 0u;
+		Vector2U ViewportSize = Vector2U(0u);
 #if defined KE2_Debug
 		mutable bool Finished = false;
 #endif
-		Vector2U ViewportSize = Vector2U(0u);
 
 	public:
 

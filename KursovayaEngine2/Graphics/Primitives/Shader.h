@@ -6,15 +6,13 @@ namespace KE2::Graphics::Primitives {
 
 	class ShaderClass {
 		unsigned int ID = 0u;
-#ifdef KE2_Debug
-		mutable bool Compiled = false;
-#endif
 	public:
 		enum class TypesEnum :unsigned short int {
 			Fragment, Vertex, Geometry
 		};
 	private:
 #ifdef KE2_Debug
+		mutable bool Compiled = false;
 		const TypesEnum ShaderType;
 #endif
 	public:

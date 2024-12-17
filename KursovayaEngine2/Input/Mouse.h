@@ -1,6 +1,7 @@
 #pragma once
 #include"DLL.h"
 #include"Tools/Event.h"
+#include"Tools/BoolsTable.h"
 
 
 class MouseClass {
@@ -13,7 +14,7 @@ public:
 	};
 private:
 
-	bool PressableKeysStates[(unsigned short int)PressableKeysEnum::ENUMEND];
+	BoolsTableClass<(size_t)PressableKeysEnum::ENUMEND> PressableKeysStates;
 
 	//parameters: bool if it was pressed down or up:true=down,false=up
 	EventClass PressableKeysEvents[(unsigned short int)PressableKeysEnum::ENUMEND];

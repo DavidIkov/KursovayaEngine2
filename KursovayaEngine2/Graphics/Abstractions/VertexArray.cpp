@@ -6,7 +6,7 @@ namespace GP = Graphics::Primitives;
 
 VertexArrayClass::VertexArrayClass() {};
 VertexArrayClass::VertexArrayClass(const ArrayView<AttributeDataStruct>& attribsData) :
-	GP::VertexArrayClass(attribsData) {};
+	GP::VertexArrayClass(attribsData), AttribsData(attribsData) {};
 VertexArrayClass::VertexArrayClass(const VertexArrayClass& toCopy) :
 	GP::VertexArrayClass(toCopy.AttribsData), AttribsData(toCopy.AttribsData) {};
 VertexArrayClass::VertexArrayClass(VertexArrayClass&& toCopy) noexcept :

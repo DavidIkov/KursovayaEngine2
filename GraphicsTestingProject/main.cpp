@@ -45,12 +45,11 @@ int main()
 
         
         GP::FrameBufferClass FB(Vector2U(Width, Height));
-        GP::TextureClass FB_COLOR_TEX(GP::TextureClass::DimensionsEnum::Two, Vector3U(Width, Height, 0), nullptr,
+        GP::TextureClass FB_COLOR_TEX(GP::TextureClass::DimensionsEnum::Two, Vector3U(Width, Height, 0), 3,
+            GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
             GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,
             GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Nearest,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Nearest,
-            GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth },
-            GP::TextureClass::DataSettingsStruct{ GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
-            GP::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RGBA, GP::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte }
+            GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }
         );
         FB.AttachTexture(FB_COLOR_TEX.gID(), GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA);
         /*TextureClass FB_DEPTH_STENCIL_TEX(Width, Height, nullptr, TextureClass::TypeEnum::Texture2D,
@@ -84,7 +83,6 @@ int main()
         );
         
 
-        unsigned int floatsAmountPerVertex = 3 + 3 + 3 + 2;
         
         GP::ShaderProgramClass Test_SP(L"Shaders/simpleQuad.vs", L"Shaders/simpleQuad.fs");
         GA::VertexBufferClass Test_VB(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<float>({ 0.5f,0.5f,-0.5f,0.5f,-0.5f,-0.5f,0.5f,-0.5f }));
@@ -112,6 +110,8 @@ int main()
             GA::VertexArrayClass::AttributeDataStruct{ 3,VB2,false,0,2,sizeof(float) * (3 + 3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
             }));
 
+        unsigned int floatsAmountPerVertex = 3 + 3 + 3 + 2;// 0u; for (size_t i = 0; i < VA1.gAttributesData().gLen(); i++) floatsAmountPerVertex += VA1.gAttributeData(i).ComponentsAmount;
+
         GA::VertexBufferClass VB_QUAD(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<float>({1,-1,1,1,-1,1,1,-1,-1,-1,-1,1}));
         GA::VertexArrayClass VA_QUAD(ArrayView<GA::VertexArrayClass::AttributeDataStruct>({
             GA::VertexArrayClass::AttributeDataStruct{ 0,VB_QUAD,false,0,2,0,sizeof(float) * 2, GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float },
@@ -133,12 +133,12 @@ int main()
         SP.SetUniform1i("u_tex1", 0);
         SP.SetUniform1i("u_tex2", 1);
 
-        GA::TextureClass TEX0(GA::TextureClass::DimensionsEnum::Two, "Textures/blackFace.jpg",
+        GA::TextureClass TEX0(GA::TextureClass::DimensionsEnum::Two, "Textures/blackFace.jpg", 3,
             GA::TextureClass::SettingsStruct{ GA::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GA::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
             GA::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GA::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
             GA::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GA::TextureClass::DataSettingsStruct{GA::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
             GA::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RGB,GA::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte});
-        GA::TextureClass TEX1(GA::TextureClass::DimensionsEnum::Two, "Textures/simpleFace.png",
+        GA::TextureClass TEX1(GA::TextureClass::DimensionsEnum::Two, "Textures/simpleFace.png", 3,
             GA::TextureClass::SettingsStruct{ GA::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GA::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
             GA::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GA::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
             GA::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GA::TextureClass::DataSettingsStruct{GA::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
@@ -236,8 +236,6 @@ int main()
                 Matrix33F rotMat = Mat3D_RotBaseF;
                 xv = rotMat.RotateVectorC<0, 2>(xv, -CameraRotationByDelta[0]);
                 zv = rotMat.RotateVectorC<0, 2>(zv, -CameraRotationByDelta[0]);
-                //xv = rotMat.RotateVectorByTwoVectorsU<0, 2>(xv, -CameraRotationByDelta[0]);
-                //zv = rotMat.RotateVectorByTwoVectorsU<0, 2>(zv, -CameraRotationByDelta[0]);
                 CameraRotationMatrix = CameraRotationMatrix * Matrix33F(xv[0], xv[1], xv[2], 0.f, 1.f, 0.f, zv[0], zv[1], zv[2]);
 
 

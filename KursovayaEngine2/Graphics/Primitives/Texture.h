@@ -36,19 +36,19 @@ namespace KE2::Graphics::Primitives {
 		};
 		struct DataSettingsStruct {
 			enum class DataFormatOnGPU_Enum :unsigned char {
-				DepthComponent, DepthStencil, Red, RG, RGB, RGBA
+				DepthComponent, DepthStencil, StencilIndex, Red, RG, RGB, RGBA, None
 			};
 			enum class DataFormatOnCPU_Enum :unsigned char {
 				Red, RG, RGB, BGR, RGBA, BGRA, RedInteger, RG_Integer, RGB_Integer, BGR_Integer, RGBA_Integer, BGRA_Integer, StencilIndex,
-				DepthComponent, DepthStencil
+				DepthComponent, DepthStencil, None
 			};
 			enum class DataTypeOnCPU_Enum :unsigned char {
-				UnsignedByte, Byte, UnsignedShort, Short, UnsignedInt, Int, Float, UnsignedInt_24_8
+				UnsignedByte, Byte, UnsignedShort, Short, UnsignedInt, Int, Float, UnsignedInt_24_8, None
 			};
 
-			DataFormatOnGPU_Enum DataFormatOnGPU;
-			DataFormatOnCPU_Enum DataFormatOnCPU;
-			DataTypeOnCPU_Enum DataTypeOnCPU;
+			DataFormatOnGPU_Enum DataFormatOnGPU = DataFormatOnGPU_Enum::None;
+			DataFormatOnCPU_Enum DataFormatOnCPU = DataFormatOnCPU_Enum::None;
+			DataTypeOnCPU_Enum DataTypeOnCPU = DataTypeOnCPU_Enum::None;
 
             ComparisonByBytesMacro(DataSettingsStruct,==);
             ComparisonByBytesMacro(DataSettingsStruct,!=);
@@ -59,8 +59,6 @@ namespace KE2::Graphics::Primitives {
         };
     protected:
 
-        //they are static just to have ability to call then from inherited classes in future
-
 		static unsigned int _DataFormatOnGPU_SwitchCase(DataSettingsStruct::DataFormatOnGPU_Enum format) noexcept;
 		static unsigned int _DataFormatOnCPU_SwitchCase(DataSettingsStruct::DataFormatOnCPU_Enum format) noexcept;
 		static unsigned int _DataTypeOnCPU_SwitchCase(DataSettingsStruct::DataTypeOnCPU_Enum type) noexcept;
@@ -70,12 +68,12 @@ namespace KE2::Graphics::Primitives {
 		static unsigned int _UpscalingFilterFunc_SwitchCase(SettingsStruct::UpscalingFilterFuncEnum filt) noexcept;
 		static unsigned int _DepthStencilReadMode_SwitchCase(SettingsStruct::DepthStencilReadModeEnum readMode) noexcept;
 
+        static unsigned int _GL_TextureEnum_SwitchCase(TextureClass::DimensionsEnum dim) noexcept;
+
         unsigned int ID = 0u;
 
         const DimensionsEnum Dimensions;
         const unsigned int GL_TexEnum;
-
-        void _Constructor(Vector3U pixelsAmount, const void* data, const DataSettingsStruct& dataSets);
 
         void _UpdSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTyp) const;
         void _UpdSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTyp) const;
@@ -84,6 +82,8 @@ namespace KE2::Graphics::Primitives {
         void _UpdSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum readMode) const;
 
         void _UpdateSettings(const SettingsStruct& sets) const;
+
+        void _AllocatePixels(Vector3U pixelsAmount, unsigned int mipmapLevels, DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU);
     public:
 
         struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
@@ -94,17 +94,15 @@ namespace KE2::Graphics::Primitives {
             inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
         }; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
 
-        DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, ArrayView<void>* writeArrayView, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
-        DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
+        DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, ArrayView<void>* writeArrayView, unsigned int mipmapLevels, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
+        DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, unsigned int mipmapLevels, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
+        DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, unsigned int mipmapLevels, DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU, const SettingsStruct& sets);
         DLLTREATMENT TextureClass(TextureClass&& toCopy) noexcept;
         DLLTREATMENT virtual TextureClass& operator=(TextureClass&& toCopy);
         DLLTREATMENT virtual ~TextureClass() noexcept(false);
 
-        DLLTREATMENT virtual void SetData(Vector3U pixelsAmount, const void* data, const DataSettingsStruct& dataSets);
         DLLTREATMENT virtual void SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data,
             DataSettingsStruct::DataFormatOnCPU_Enum dataFormatOnCPU, DataSettingsStruct::DataTypeOnCPU_Enum dataTypeOnCPU);
-
-        DLLTREATMENT virtual void GenerateMipmaps();
 
         //if you dont use some axes in pixelsAmounts then dont leave them 0, use 1
         //make sure that your texture have enough pixels for copying

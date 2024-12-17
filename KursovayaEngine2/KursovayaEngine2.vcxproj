@@ -131,7 +131,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
-      <AdditionalOptions>/Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:preprocessor /w15038 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -149,7 +149,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
-      <AdditionalOptions>/Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:preprocessor /w15038 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -211,7 +211,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
-      <AdditionalOptions>/Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:preprocessor /w15038 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -252,6 +252,14 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|ARM'">$(IntDir)GA_IndexBuffer</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GA_IndexBuffer</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)GA_IndexBuffer</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Graphics\Abstractions\RenderBuffer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GA_RenderBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">$(IntDir)GA_RenderBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">$(IntDir)GA_RenderBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|ARM'">$(IntDir)GA_RenderBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GA_RenderBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)GA_RenderBuffer</ObjectFileName>
     </ClCompile>
     <ClCompile Include="Graphics\Abstractions\TextRenderer.cpp" />
     <ClCompile Include="Graphics\Abstractions\Texture.cpp">
@@ -301,7 +309,14 @@
     <ClCompile Include="Tools\ErrorsSystem.cpp" />
     <ClCompile Include="Tools\FileTypesReaders\Obj.cpp" />
     <ClCompile Include="Graphics\Primitives\FrameBuffer.cpp" />
-    <ClCompile Include="Graphics\Primitives\RenderBuffer.cpp" />
+    <ClCompile Include="Graphics\Primitives\RenderBuffer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GP_RenderBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">$(IntDir)GP_RenderBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GP_RenderBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">$(IntDir)GP_RenderBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|ARM'">$(IntDir)GP_RenderBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)GP_RenderBuffer</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="Graphics\Primitives\RenderingPreset.cpp" />
     <ClCompile Include="Graphics\Primitives\Shader.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GP_Shader</ObjectFileName>
@@ -436,6 +451,7 @@
     <ClInclude Include="Dependencies\stb_image\stb_image.h" />
     <ClInclude Include="DLL.h" />
     <ClInclude Include="Graphics\Abstractions\IndexBuffer.h" />
+    <ClInclude Include="Graphics\Abstractions\RenderBuffer.h" />
     <ClInclude Include="Graphics\Abstractions\VertexArray.h" />
     <ClInclude Include="Graphics\Abstractions\VertexBuffer.h" />
     <ClInclude Include="Graphics\Abstractions\TextRenderer.h" />
@@ -450,9 +466,9 @@
     <ClInclude Include="Maths\Matrix.h" />
     <ClInclude Include="Maths\Vector.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Tools\AlignmentDummyClass.h" />
     <ClInclude Include="Tools\ArrayView.h" />
     <ClInclude Include="Tools\BinarySearch.h" />
+    <ClInclude Include="Tools\BoolsTable.h" />
     <ClInclude Include="Tools\ClassFunctionsAccessController.h" />
     <ClInclude Include="Tools\DynArr.h" />
     <ClInclude Include="Tools\ErrorsSystem.h" />

@@ -4,15 +4,18 @@ using namespace KE2;
 using namespace Graphics::Abstractions;
 namespace GP = Graphics::Primitives;
 
-TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, SettingsStruct sets, DataSettingsStruct dataSets) :
-	GP::TextureClass(dimensions, filePath, &Size, nullptr, sets, dataSets), 
-	Settings(sets), DataSettings(dataSets) {}
-TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, SettingsStruct sets, DataSettingsStruct dataSets) :
-	Size(pixelsAmount), GP::TextureClass(dimensions, pixelsAmount, data, sets, dataSets), Settings(sets), DataSettings(dataSets) {}
-
+TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, unsigned int mipmapLevels, SettingsStruct sets, DataSettingsStruct dataSets) :
+	GP::TextureClass(dimensions, filePath, &Size, nullptr, mipmapLevels, sets, dataSets), 
+	Settings(sets), DataSettings(dataSets), MipmapLevels(mipmapLevels) {}
+TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, unsigned int mipmapLevels, SettingsStruct sets, DataSettingsStruct dataSets) :
+	GP::TextureClass(dimensions, pixelsAmount, data, mipmapLevels, sets, dataSets), 
+	Size(pixelsAmount), Settings(sets), DataSettings(dataSets), MipmapLevels(mipmapLevels) {}
+TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, unsigned int mipmapLevels, DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU, SettingsStruct sets) :
+	GP::TextureClass(dimensions, pixelsAmount, mipmapLevels, dataFormatOnGPU, sets), Size(pixelsAmount),
+	Settings(sets), DataSettings{ dataFormatOnGPU,DataSettingsStruct::DataFormatOnCPU_Enum::None,DataSettingsStruct::DataTypeOnCPU_Enum::None }, MipmapLevels(mipmapLevels) {};
 TextureClass::TextureClass(const TextureClass& toCopy, bool copyTextureData) :
-	Size(toCopy.Size), Settings(toCopy.Settings), DataSettings(toCopy.DataSettings),
-	GP::TextureClass(Dimensions, Size, nullptr, Settings, DataSettings) {
+	GP::TextureClass(toCopy.Dimensions, toCopy.Size, toCopy.MipmapLevels, toCopy.DataSettings.DataFormatOnGPU, Settings),
+	Size(toCopy.Size), Settings(toCopy.Settings), DataSettings(toCopy.DataSettings), MipmapLevels(toCopy.MipmapLevels) {
 	if (copyTextureData) GP::TextureClass::CopySubData(toCopy, Vector3U(0u), Vector3U(0u), Size);
 };
 TextureClass::TextureClass(TextureClass&& toCopy) noexcept:
@@ -28,23 +31,8 @@ TextureClass& TextureClass::operator=(TextureClass&& toCopy) {
 	new(this) TextureClass(std::move(toCopy));
 	return *this;
 }
-void TextureClass::SetData(Vector3U newSize, const void* data) {
-
-	if (newSize == Size)
-		GP::TextureClass::SetSubData(Vector3U(0u), newSize, data, DataSettings.DataFormatOnCPU, DataSettings.DataTypeOnCPU);
-	else {
-		GP::TextureClass::SetData(newSize, data, DataSettings);
-		Size = newSize;
-	}
-}
-void TextureClass::SetData(const void* data) {
-	GP::TextureClass::SetSubData(Vector3U(0u), Size, data, DataSettings.DataFormatOnCPU, DataSettings.DataTypeOnCPU);
-}
 void TextureClass::SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data) {
 	GP::TextureClass::SetSubData(pixelsOffset, pixelsAmount, data, DataSettings.DataFormatOnCPU, DataSettings.DataTypeOnCPU);
-}
-void TextureClass::AllocatePixels(Vector3U newSize) {
-	GP::TextureClass::SetData(newSize, nullptr, DataSettings);
 }
 void TextureClass::CopySubData(const TextureClass& srcTex, Vector3U offsetInSrc, Vector3U offsetInDst, Vector3U pixelsAmount) {
 	GP::TextureClass::CopySubData(srcTex, offsetInSrc, offsetInDst, pixelsAmount);

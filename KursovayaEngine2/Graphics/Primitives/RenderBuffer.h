@@ -4,6 +4,7 @@
 
 namespace KE2::Graphics::Primitives {
 	class RenderBufferClass {
+	protected:
 		unsigned int ID = 0u;
 	public:
 
@@ -18,7 +19,7 @@ namespace KE2::Graphics::Primitives {
 
 		DLLTREATMENT RenderBufferClass(unsigned int width, unsigned int height, bool createDepthBuffer, bool createStencilBuffer);
 		DLLTREATMENT RenderBufferClass(RenderBufferClass&& toCopy) noexcept;
-		DLLTREATMENT RenderBufferClass& operator=(RenderBufferClass&& toCopy);
+		DLLTREATMENT virtual RenderBufferClass& operator=(RenderBufferClass&& toCopy);
 		DLLTREATMENT virtual ~RenderBufferClass() noexcept(false);
 		DLLTREATMENT void Bind() const;
 		DLLTREATMENT static void Unbind();

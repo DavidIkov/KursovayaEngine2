@@ -1,15 +1,14 @@
 #pragma once
 #include"ArrayView.h"
 #include"ErrorsSystem.h"
-#include"AlignmentDummyClass.h"
 
 //by default after moving some object, destructor will get called for safety, if you dont want this behaviour you can disable it
-template<typename T, bool CallDestructorAfterMove = true>
+template<typename T, size_t CapacityExpansionSize = 10, bool CallDestructorAfterMove = true>
 class DynArr {
 protected:
-    using DT = typename AlignmentDummyClass<T>;
-    T* Arr = nullptr;
+    using DT = unsigned char[sizeof(T)];
     size_t Len = 0; size_t Capacity = 0; 
+    T* Arr = nullptr;
 
 public:
     struct IndexWentOutOfBoundsError:KE2::ErrorsSystemNamespace::ErrorBase{};
@@ -19,8 +18,6 @@ protected:
             KE2::ErrorsSystemNamespace::SendError << "Index went out of bounds" >> IndexWentOutOfBoundsError();
     }
 public:
-    size_t CapacityExpansionSize = 10;
-
 
     DynArr() {}
     DynArr(size_t capacity) : Capacity(capacity), Arr((T*)new DT[capacity]) {}

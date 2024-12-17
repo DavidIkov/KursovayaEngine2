@@ -82,7 +82,7 @@ GA::TextRendererClass::FontStruct::~FontStruct() {
 
 
 GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int characterSize, const char* fontDir, const wchar_t* chars) :
-    Texture(GA::TextureClass::DimensionsEnum::Two, Vector3U(0, 0, 0), nullptr, GA::TextureClass::SettingsStruct{
+    Texture(GA::TextureClass::DimensionsEnum::Two, Vector3U(0, 0, 0), nullptr, 0, GA::TextureClass::SettingsStruct{
                     GA::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,GA::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,
                     GA::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GA::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
                     GA::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth },
@@ -103,7 +103,7 @@ GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int charac
     unsigned int charsAmount = 0; while (chars[charsAmount] != L'\0') charsAmount++;
 
     Characters.ChangeCapacity(charsAmount);
-    DynArr<unsigned char*> buffers; buffers.ChangeCapacity(charsAmount);
+    DynArr<DynArr<unsigned char>> buffers; buffers.ChangeCapacity(charsAmount);
     DynArr<unsigned int> nums; nums.ChangeCapacity(charsAmount);
 
 
@@ -132,9 +132,7 @@ GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int charac
 
         FT_Face& face = *(FT_Face*)FreeTypeFace;
 
-        unsigned char* newBuffer = new unsigned char[face->glyph->bitmap.width * face->glyph->bitmap.rows];
-        memcpy(newBuffer, face->glyph->bitmap.buffer, sizeof(unsigned char) * face->glyph->bitmap.width * face->glyph->bitmap.rows);
-        buffers.InsertAtIndex(insertInd, newBuffer);
+        buffers.InsertAtIndex(insertInd, DynArr<unsigned char>(face->glyph->bitmap.width * face->glyph->bitmap.rows, face->glyph->bitmap.buffer));
 
         if (face->glyph->bitmap.width > maxWidth) maxWidth = face->glyph->bitmap.width;
         if (face->glyph->bitmap.rows > maxHeight) maxHeight = face->glyph->bitmap.rows;
@@ -155,7 +153,7 @@ GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int charac
 
     totalXSize += charsAmount + 1;
 
-    unsigned char* textureBuffer = new unsigned char[totalXSize * maxHeight] {0};
+    DynArr<unsigned char> textureBuffer(totalXSize * maxHeight, (unsigned char)0);
     
     {
         unsigned int xOffset = 1;
@@ -181,15 +179,9 @@ GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int charac
 
 	glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); // disable byte-alignment restriction
 
-    Texture.SetData(Vector3U(totalXSize, maxHeight, 0), textureBuffer);
+    Texture = TextureClass(TextureClass::DimensionsEnum::Two, Vector3U(totalXSize, maxHeight, 0u), textureBuffer, 3, Texture.gSettings(), Texture.gDataSettings());
     
 	glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 4)); // enable byte-alignment back
-    
-
-	delete[] textureBuffer;
-
-    for (unsigned int bi = 0; bi < charsAmount; bi++) delete[] buffers[bi];
-
 
 }
 

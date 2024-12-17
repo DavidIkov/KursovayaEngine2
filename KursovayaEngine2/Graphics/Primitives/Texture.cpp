@@ -19,10 +19,11 @@ unsigned int TextureClass::_DataFormatOnGPU_SwitchCase(DataSettingsStruct::DataF
     switch (format) {
     case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthComponent: return GL_DEPTH_COMPONENT24;
     case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthStencil: return GL_DEPTH24_STENCIL8;
-    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Red: return GL_RED;
-    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RG: return GL_RG;
-    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGB: return GL_RGB;
-    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA: return GL_RGBA;
+    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::StencilIndex: return GL_STENCIL_INDEX8;
+    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Red: return GL_R8;
+    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RG: return GL_RG8;
+    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGB: return GL_RGB8;
+    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA: return GL_RGBA8;
     default: return 0;
     }
 }
@@ -106,7 +107,7 @@ unsigned int TextureClass::_DepthStencilReadMode_SwitchCase(SettingsStruct::Dept
     }
 }
 
-static constexpr unsigned int _GL_TextureEnum_SwitchCase(TextureClass::DimensionsEnum dim) noexcept {
+unsigned int TextureClass::_GL_TextureEnum_SwitchCase(TextureClass::DimensionsEnum dim) noexcept {
     switch (dim) {
     case TextureClass::DimensionsEnum::One: return GL_TEXTURE_1D; break;
     case TextureClass::DimensionsEnum::Two: return GL_TEXTURE_2D; break;
@@ -116,15 +117,6 @@ static constexpr unsigned int _GL_TextureEnum_SwitchCase(TextureClass::Dimension
 }
 
 
-
-void TextureClass::_Constructor(Vector3U pixelsAmount, const void* data, const TextureClass::DataSettingsStruct& dataSets) {
-
-    glSC(glGenTextures(1, &ID));
-    Bind();
-
-    if (pixelsAmount != Vector3U(0u))
-        SetData(pixelsAmount, data, dataSets);
-}
 
 void TextureClass::_UpdSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTyp) const {
     Assert_Binded_Macro;
@@ -155,7 +147,7 @@ void TextureClass::_UpdateSettings(const SettingsStruct& sets) const {
     _UpdSettings_DepthStencilReadMode(sets.DepthStencilReadMode);
 }
 
-TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, ArrayView<void>* writeArrayView, const SettingsStruct& sets, const DataSettingsStruct& dataSets) 
+TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, ArrayView<void>* writeArrayView, unsigned int mipmapLevels, const SettingsStruct& sets, const DataSettingsStruct& dataSets) 
     :Dimensions(dimensions), GL_TexEnum(_GL_TextureEnum_SwitchCase(dimensions)) {
 
     int width, height, textureChannelsAmount;
@@ -166,18 +158,50 @@ TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vect
     if (writeSizePtr != nullptr) *writeSizePtr = Vector3U(width, height, 0);
     if (writeArrayView != nullptr) *writeArrayView = ArrayView<void>(textureData, width * height * sizeof(unsigned char));
 
-    _Constructor(Vector3U(width, height, 0), textureData, dataSets);
+	glSC(glGenTextures(1, &ID));
+    Bind();
+
+    _AllocatePixels(Vector3U(width, height, 0u), mipmapLevels, dataSets.DataFormatOnGPU);
+    SetSubData(Vector3U(0u), Vector3U(width, height, 0u), textureData, dataSets.DataFormatOnCPU, dataSets.DataTypeOnCPU);
+
+    glSC(glGenerateMipmap(GL_TexEnum));
+
     _UpdateSettings(sets);
     
     if (writeArrayView == nullptr) stbi_image_free(textureData);
 }
-TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, const SettingsStruct& sets, const DataSettingsStruct& dataSets) 
+TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, unsigned int mipmapLevels, const SettingsStruct& sets, const DataSettingsStruct& dataSets) 
     :Dimensions(dimensions), GL_TexEnum(_GL_TextureEnum_SwitchCase(dimensions)) {
-    _Constructor(pixelsAmount, data, dataSets);
+
+    if (pixelsAmount == Vector3U(0u)) return;
+
+	glSC(glGenTextures(1, &ID));
+	Bind();
+
+	_AllocatePixels(pixelsAmount, mipmapLevels, dataSets.DataFormatOnGPU);
+	SetSubData(Vector3U(0u), pixelsAmount, data, dataSets.DataFormatOnCPU, dataSets.DataTypeOnCPU);
+
+	glSC(glGenerateMipmap(GL_TexEnum));
+
+	_UpdateSettings(sets);
+
+}
+TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, unsigned int mipmapLevels, DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU, const SettingsStruct& sets) :
+    Dimensions(dimensions), GL_TexEnum(_GL_TextureEnum_SwitchCase(dimensions)) {
+
+    if (pixelsAmount == Vector3U(0u)) return;
+
+	glSC(glGenTextures(1, &ID));
+    Bind();
+
+	_AllocatePixels(pixelsAmount, mipmapLevels, dataFormatOnGPU);
+
+    glSC(glGenerateMipmap(GL_TexEnum));
+
     _UpdateSettings(sets);
 }
 TextureClass::TextureClass(TextureClass&& toCopy) noexcept :
-    Dimensions(toCopy.Dimensions), GL_TexEnum(toCopy.GL_TexEnum), ID(toCopy.ID) {
+    ID(toCopy.ID), Dimensions(toCopy.Dimensions), GL_TexEnum(toCopy.GL_TexEnum) {
     toCopy.ID = 0u;
 }
 TextureClass& TextureClass::operator=(TextureClass&& toCopy){
@@ -192,6 +216,17 @@ TextureClass::~TextureClass() noexcept(false) {
         ID = 0u;
     }
 }
+
+void TextureClass::_AllocatePixels(Vector3U pixelsAmount, unsigned int mipmapLevels, DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU) {
+    Assert_Binded_Macro;
+    unsigned int gl_dataFormatOnGPU = _DataFormatOnGPU_SwitchCase(dataFormatOnGPU);
+    switch (Dimensions) {
+    case DimensionsEnum::One: glSC(glTexStorage1D(GL_TexEnum, mipmapLevels, gl_dataFormatOnGPU, pixelsAmount[0])); return;
+    case DimensionsEnum::Two: glSC(glTexStorage2D(GL_TexEnum, mipmapLevels, gl_dataFormatOnGPU, pixelsAmount[0], pixelsAmount[1])); return;
+    case DimensionsEnum::Three: glSC(glTexStorage3D(GL_TexEnum, mipmapLevels, gl_dataFormatOnGPU, pixelsAmount[0], pixelsAmount[1], pixelsAmount[2])); return;
+    }
+}
+
 void TextureClass::CopySubData(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount) {
 
     glSC(glCopyImageSubData(srcTex.ID, srcTex.GL_TexEnum, 0, offsetInSource[0], offsetInSource[1], offsetInSource[2],
@@ -207,24 +242,10 @@ void TextureClass::CopySubData(const TextureClass& srcTex, Vector3U offsetInSour
     */
 }
 
-void TextureClass::SetData(Vector3U pixelsAmount, const void* data, const DataSettingsStruct& dataSets) {
-    Assert_Binded_Macro;
-
-    unsigned int gl_dataFormatOnGPU = _DataFormatOnGPU_SwitchCase(dataSets.DataFormatOnGPU);
-    unsigned int gl_dataFormatOnCPU = _DataFormatOnCPU_SwitchCase(dataSets.DataFormatOnCPU);
-    unsigned int gl_dataTypeOnCPU = _DataTypeOnCPU_SwitchCase(dataSets.DataTypeOnCPU);
-    switch (Dimensions) {
-    case DimensionsEnum::One: glSC(glTexImage1D(GL_TexEnum, 0, gl_dataFormatOnGPU, pixelsAmount[0], 0, gl_dataFormatOnCPU, gl_dataTypeOnCPU, data)); return;
-    case DimensionsEnum::Two: glSC(glTexImage2D(GL_TexEnum, 0, gl_dataFormatOnGPU, pixelsAmount[0], pixelsAmount[1], 0, gl_dataFormatOnCPU, gl_dataTypeOnCPU, data)); return;
-    case DimensionsEnum::Three: glSC(glTexImage3D(GL_TexEnum, 0, gl_dataFormatOnGPU, pixelsAmount[0], pixelsAmount[1], pixelsAmount[2], 0, gl_dataFormatOnCPU, gl_dataTypeOnCPU, data)); return;
-    }
-}
 void TextureClass::SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data,
     DataSettingsStruct::DataFormatOnCPU_Enum dataFormatOnCPU, DataSettingsStruct::DataTypeOnCPU_Enum dataTypeOnCPU) {
     Assert_Binded_Macro;
 
-    //glSC(glTexSubImage2D(GL_TEXTURE_2D, 0, pixelsOffset[0], pixelsOffset[1], pixelsAmount[0], pixelsAmount[1],
-    //    _DataFormatOnCPU_SwitchCase(dataFormatOnCPU), _DataTypeOnCPU_SwitchCase(dataTypeOnCPU), data));
     unsigned int gl_dataFormatOnCPU = _DataFormatOnCPU_SwitchCase(dataFormatOnCPU);
     unsigned int gl_dataTypeOnCPU = _DataTypeOnCPU_SwitchCase(dataTypeOnCPU);
     switch (Dimensions) {
@@ -234,10 +255,6 @@ void TextureClass::SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, cons
     }
 }
 
-void TextureClass::GenerateMipmaps() {
-    Assert_Binded_Macro;
-    glSC(glGenerateMipmap(GL_TexEnum));
-}
 
 void TextureClass::GetData(void* buffer, DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const {
     Assert_Binded_Macro;

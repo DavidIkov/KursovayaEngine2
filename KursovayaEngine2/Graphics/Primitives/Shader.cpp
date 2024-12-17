@@ -32,10 +32,10 @@ ShaderClass::ShaderClass(TypesEnum typ, const char* code)
 	glSC(glShaderSource(ID, 1, &code, 0));
 }
 ShaderClass::ShaderClass(ShaderClass&& toCopy) noexcept :
-#ifdef KE2_Debug
-	ShaderType(toCopy.ShaderType), Compiled(toCopy.Compiled),
-#endif
 	ID(toCopy.ID)
+#ifdef KE2_Debug
+	,Compiled(toCopy.Compiled), ShaderType(toCopy.ShaderType)
+#endif
 {
 	toCopy.ID = 0u;
 }

@@ -1,5 +1,4 @@
 #pragma once
-#include"DLL.h"
 #include"Graphics/Primitives/VertexArray.h"
 #include"Tools/DynArr.h"
 
@@ -26,8 +25,6 @@ namespace KE2::Graphics::Abstractions {
 	public:
 		DLLTREATMENT virtual VertexArrayClass& operator=(VertexArrayClass&& toCopy);
 
-		inline const DynArr<AttributeDataStruct>& gAttribsData() const noexcept { return AttribsData; }
-		
 		DLLTREATMENT virtual void SetAttributes(const ArrayView<AttributeDataStruct>& attribsData) override final;
 		DLLTREATMENT virtual void SetAttribute(const AttributeDataStruct& attribData) override final;
 		DLLTREATMENT virtual void EnableAttribute(unsigned int attribInd) override final;
