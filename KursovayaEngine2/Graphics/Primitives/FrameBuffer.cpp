@@ -19,6 +19,30 @@ ErrorsEnumWrapperStruct(ErrorsEnum::AlreadyFinished);
 #define Assert_Binded_Macro
 #endif
 
+unsigned int FrameBufferClass::_BufferDataFormat_SwitchCase(RenderBufferClass::BufferDataFormatEnum bufferDataFormat) noexcept {
+	switch (bufferDataFormat) {
+	case RenderBufferClass::BufferDataFormatEnum::Depth: return GL_DEPTH_ATTACHMENT;
+    case RenderBufferClass::BufferDataFormatEnum::DepthStencil: return GL_DEPTH_STENCIL_ATTACHMENT;
+    case RenderBufferClass::BufferDataFormatEnum::Stencil: return GL_STENCIL_ATTACHMENT;
+    case RenderBufferClass::BufferDataFormatEnum::Red: return GL_COLOR_ATTACHMENT0;
+    case RenderBufferClass::BufferDataFormatEnum::RG: return GL_COLOR_ATTACHMENT0;
+    case RenderBufferClass::BufferDataFormatEnum::RGB: return GL_COLOR_ATTACHMENT0;
+    case RenderBufferClass::BufferDataFormatEnum::RGBA: return GL_COLOR_ATTACHMENT0;
+	default: return 0;
+	}
+}
+unsigned int FrameBufferClass::_DataFormatOnGPU_SwitchCase(TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU) noexcept {
+	switch (dataFormatOnGPU) {
+	case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Depth: return GL_DEPTH_ATTACHMENT;
+    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthStencil: return GL_DEPTH_STENCIL_ATTACHMENT;
+    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Stencil: return GL_STENCIL_ATTACHMENT;
+    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Red: return GL_COLOR_ATTACHMENT0;
+    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RG: return GL_COLOR_ATTACHMENT0;
+    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGB: return GL_COLOR_ATTACHMENT0;
+    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA: return GL_COLOR_ATTACHMENT0;
+	default: return 0;
+	}
+}
 void FrameBufferClass::ClearColorBuffer() const {
 	Assert_Finished_Macro;
 	Assert_Binded_Macro;
@@ -68,32 +92,20 @@ FrameBufferClass::~FrameBufferClass() noexcept(false) {
 		ID = 0u;
 	}
 }
-void FrameBufferClass::AttachRenderBuffer(unsigned int renderBufferID, bool depthBufferEnabled, bool stencilBufferEnabled) const {
+void FrameBufferClass::AttachRenderBuffer(const RenderBufferClass& renderBuffer, RenderBufferClass::BufferDataFormatEnum bufferDataFormat, unsigned int colorAttachmentInd) {
 	Assert_Binded_Macro;
 	Assert_NotFinished_Macro;
 
-	if (depthBufferEnabled and stencilBufferEnabled) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBufferID)); }
-	else if (depthBufferEnabled and not stencilBufferEnabled) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBufferID)); }
-	else if (not depthBufferEnabled and stencilBufferEnabled) { glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBufferID)); }
-#if defined KE2_Debug
-	else ErrorsSystemNamespace::SendWarning << "no buffers selected to bind from RenderBuffer to FrameBuffer" >> ErrorsSystemNamespace::EndOfWarning;
-#endif
+	glSC(glFramebufferRenderbuffer(GL_FRAMEBUFFER, _BufferDataFormat_SwitchCase(bufferDataFormat) + colorAttachmentInd, GL_RENDERBUFFER, renderBuffer.gID()));
 }
-void FrameBufferClass::AttachTexture(unsigned int texID, TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum dataFormat) const {
+void FrameBufferClass::AttachTexture(const TextureClass& texture, TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU, unsigned int colorAttachmentInd) {
 	Assert_Binded_Macro;
 	Assert_NotFinished_Macro;
 
-	int glAtt = 0;
-	switch (dataFormat) {
-	case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthComponent: glAtt = GL_DEPTH_ATTACHMENT; break;
-	case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthStencil: glAtt = GL_DEPTH_STENCIL_ATTACHMENT; break;
-	case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Red: glAtt = GL_COLOR_ATTACHMENT0; break;
-	case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RG: glAtt = GL_COLOR_ATTACHMENT0; break;
-	case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGB: glAtt = GL_COLOR_ATTACHMENT0; break;
-	case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA: glAtt = GL_COLOR_ATTACHMENT0; break;
-	}
-	glSC(glFramebufferTexture2D(GL_FRAMEBUFFER, glAtt, GL_TEXTURE_2D, texID, 0));
+	glSC(glFramebufferTexture2D(GL_FRAMEBUFFER, _DataFormatOnGPU_SwitchCase(dataFormatOnGPU), GL_TEXTURE_2D, texture.gID(), 0));
 }
+
+
 void FrameBufferClass::Finish() const {
 	Assert_Binded_Macro;
 	Assert_NotFinished_Macro;

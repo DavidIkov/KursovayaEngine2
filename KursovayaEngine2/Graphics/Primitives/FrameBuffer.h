@@ -1,6 +1,7 @@
 #pragma once
 #include"DLL.h"
 #include"Texture.h"
+#include"RenderBuffer.h"
 #include<vector>
 #include"Tools/ErrorsSystem.h"
 
@@ -17,6 +18,8 @@ namespace KE2::Graphics::Primitives {
 		mutable bool Finished = false;
 #endif
 
+		static unsigned int _BufferDataFormat_SwitchCase(RenderBufferClass::BufferDataFormatEnum bufferDataFormat) noexcept;
+		static unsigned int _DataFormatOnGPU_SwitchCase(TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU) noexcept;
 	public:
 
 		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
@@ -52,8 +55,10 @@ namespace KE2::Graphics::Primitives {
 		DLLTREATMENT void Finish() const;
 		//if updViewportSize is true then it will update opengl's viewport size
 		DLLTREATMENT void Bind(bool updViewportSize = true) const;
-		DLLTREATMENT void AttachRenderBuffer(unsigned int renderBufferID, bool depthBufferEnabled, bool stencilBufferEnabled) const;
-		DLLTREATMENT void AttachTexture(unsigned int texID, TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum dataFormat) const;
+		//use colorAttachmentInd only if bufferDataFormat have somnething to do with colors, not depth/stencil
+		DLLTREATMENT void AttachRenderBuffer(const RenderBufferClass& renderBuffer, RenderBufferClass::BufferDataFormatEnum bufferDataFormat, unsigned int colorAttachmentInd = 0);
+		//use colorAttachmentInd only if dataFormatOnGPU have somnething to do with colors, not depth/stencil
+		DLLTREATMENT void AttachTexture(const TextureClass& texture, TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU, unsigned int colorAttachmentInd = 0);
 		DLLTREATMENT static void Unbind();
 		//if updViewportSize is true then it will update opengl's viewport size
 		inline Vector2U gViewportSize() const noexcept { return ViewportSize; }

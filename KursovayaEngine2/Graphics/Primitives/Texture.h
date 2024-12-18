@@ -36,11 +36,11 @@ namespace KE2::Graphics::Primitives {
 		};
 		struct DataSettingsStruct {
 			enum class DataFormatOnGPU_Enum :unsigned char {
-				DepthComponent, DepthStencil, StencilIndex, Red, RG, RGB, RGBA, None
+				Depth, DepthStencil, Stencil, Red, RG, RGB, RGBA, None
 			};
 			enum class DataFormatOnCPU_Enum :unsigned char {
-				Red, RG, RGB, BGR, RGBA, BGRA, RedInteger, RG_Integer, RGB_Integer, BGR_Integer, RGBA_Integer, BGRA_Integer, StencilIndex,
-				DepthComponent, DepthStencil, None
+				Red, RG, RGB, BGR, RGBA, BGRA, RedInteger, RG_Integer, RGB_Integer, BGR_Integer, RGBA_Integer, BGRA_Integer, Stencil,
+				Depth, DepthStencil, None
 			};
 			enum class DataTypeOnCPU_Enum :unsigned char {
 				UnsignedByte, Byte, UnsignedShort, Short, UnsignedInt, Int, Float, UnsignedInt_24_8, None

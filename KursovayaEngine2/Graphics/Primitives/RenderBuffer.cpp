@@ -6,16 +6,23 @@
 using namespace KE2;
 using namespace Graphics::Primitives;
 
-RenderBufferClass::RenderBufferClass(unsigned int width, unsigned int height, bool createDepthBuffer, bool createStencilBuffer) {
+
+unsigned int RenderBufferClass::_BufferDataFormat_SwitchCase(BufferDataFormatEnum bufferDataFormat) noexcept {
+	switch (bufferDataFormat) {
+    case BufferDataFormatEnum::Depth: return GL_DEPTH_COMPONENT24;
+    case BufferDataFormatEnum::DepthStencil: return GL_DEPTH24_STENCIL8;
+    case BufferDataFormatEnum::Stencil: return GL_STENCIL_INDEX8;
+    case BufferDataFormatEnum::Red: return GL_R8;
+    case BufferDataFormatEnum::RG: return GL_RG8;
+    case BufferDataFormatEnum::RGB: return GL_RGB8;
+    case BufferDataFormatEnum::RGBA: return GL_RGBA8;
+    default: return 0;
+    }
+}
+RenderBufferClass::RenderBufferClass(unsigned int width, unsigned int height, BufferDataFormatEnum bufferDataFormat) {
     glSC(glGenRenderbuffers(1, &ID));
     Bind();
-
-    if (createDepthBuffer and createStencilBuffer) { glSC(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height)); }
-    else if (createDepthBuffer and not createStencilBuffer) { glSC(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height)); }
-#if defined KE2_Debug
-    else if (not createDepthBuffer and createStencilBuffer) ErrorsSystemNamespace::SendError << "cant create RenderBuffer with stencil buffer but without depth buffer" >> ErrorsEnumWrapperStruct(ErrorsEnum::StencilBufferWithoutDepthBuffer);
-    else ErrorsSystemNamespace::SendError << "cant create RenderBuffer without any buffers" >> ErrorsEnumWrapperStruct(ErrorsEnum::NoBuffers);
-#endif
+    glSC(glRenderbufferStorage(GL_RENDERBUFFER, _BufferDataFormat_SwitchCase(bufferDataFormat), width, height));
 }
 RenderBufferClass::RenderBufferClass(RenderBufferClass&& toCopy) noexcept :
     ID(toCopy.ID) {

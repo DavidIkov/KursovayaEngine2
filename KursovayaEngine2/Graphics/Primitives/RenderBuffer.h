@@ -7,17 +7,14 @@ namespace KE2::Graphics::Primitives {
 	protected:
 		unsigned int ID = 0u;
 	public:
+		enum class BufferDataFormatEnum {
+			Depth, DepthStencil, Stencil, Red, RG, RGB, RGBA, None
+		};
+	protected:
+		static unsigned int _BufferDataFormat_SwitchCase(BufferDataFormatEnum bufferDataFormat) noexcept;
+	public:
 
-		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
-			enum ErrorsEnum {
-				StencilBufferWithoutDepthBuffer,
-				NoBuffers,
-			};
-			ErrorsEnum Error;
-			inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
-		}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
-
-		DLLTREATMENT RenderBufferClass(unsigned int width, unsigned int height, bool createDepthBuffer, bool createStencilBuffer);
+		DLLTREATMENT RenderBufferClass(unsigned int width, unsigned int height, BufferDataFormatEnum bufferDataFormat);
 		DLLTREATMENT RenderBufferClass(RenderBufferClass&& toCopy) noexcept;
 		DLLTREATMENT virtual RenderBufferClass& operator=(RenderBufferClass&& toCopy);
 		DLLTREATMENT virtual ~RenderBufferClass() noexcept(false);

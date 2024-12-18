@@ -17,9 +17,9 @@ using namespace Graphics::Primitives;
 
 unsigned int TextureClass::_DataFormatOnGPU_SwitchCase(DataSettingsStruct::DataFormatOnGPU_Enum format) noexcept {
     switch (format) {
-    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthComponent: return GL_DEPTH_COMPONENT24;
+    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Depth: return GL_DEPTH_COMPONENT24;
     case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthStencil: return GL_DEPTH24_STENCIL8;
-    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::StencilIndex: return GL_STENCIL_INDEX8;
+    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Stencil: return GL_STENCIL_INDEX8;
     case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Red: return GL_R8;
     case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RG: return GL_RG8;
     case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGB: return GL_RGB8;
@@ -41,8 +41,8 @@ unsigned int TextureClass::_DataFormatOnCPU_SwitchCase(DataSettingsStruct::DataF
     case TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::BGR_Integer: return GL_BGR_INTEGER;
     case TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RGBA_Integer: return GL_RGBA_INTEGER;
     case TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::BGRA_Integer: return GL_BGRA_INTEGER;
-    case TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::StencilIndex: return GL_STENCIL_INDEX;
-    case TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::DepthComponent: return GL_DEPTH_COMPONENT;
+    case TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::Stencil: return GL_STENCIL_INDEX;
+    case TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::Depth: return GL_DEPTH_COMPONENT;
     case TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::DepthStencil: return GL_DEPTH_STENCIL;
     default: return 0;
     }
@@ -221,9 +221,9 @@ void TextureClass::_AllocatePixels(Vector3U pixelsAmount, unsigned int mipmapLev
     Assert_Binded_Macro;
     unsigned int gl_dataFormatOnGPU = _DataFormatOnGPU_SwitchCase(dataFormatOnGPU);
     switch (Dimensions) {
-    case DimensionsEnum::One: glSC(glTexStorage1D(GL_TexEnum, mipmapLevels, gl_dataFormatOnGPU, pixelsAmount[0])); return;
-    case DimensionsEnum::Two: glSC(glTexStorage2D(GL_TexEnum, mipmapLevels, gl_dataFormatOnGPU, pixelsAmount[0], pixelsAmount[1])); return;
-    case DimensionsEnum::Three: glSC(glTexStorage3D(GL_TexEnum, mipmapLevels, gl_dataFormatOnGPU, pixelsAmount[0], pixelsAmount[1], pixelsAmount[2])); return;
+    case DimensionsEnum::One: glSC(glTexStorage1D(GL_TexEnum, mipmapLevels + 1, gl_dataFormatOnGPU, pixelsAmount[0])); return;
+    case DimensionsEnum::Two: glSC(glTexStorage2D(GL_TexEnum, mipmapLevels + 1, gl_dataFormatOnGPU, pixelsAmount[0], pixelsAmount[1])); return;
+    case DimensionsEnum::Three: glSC(glTexStorage3D(GL_TexEnum, mipmapLevels + 1, gl_dataFormatOnGPU, pixelsAmount[0], pixelsAmount[1], pixelsAmount[2])); return;
     }
 }
 

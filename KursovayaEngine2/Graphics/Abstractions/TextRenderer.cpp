@@ -179,7 +179,7 @@ GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int charac
 
 	glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); // disable byte-alignment restriction
 
-    Texture = TextureClass(TextureClass::DimensionsEnum::Two, Vector3U(totalXSize, maxHeight, 0u), textureBuffer, 3, Texture.gSettings(), Texture.gDataSettings());
+    Texture = TextureClass(TextureClass::DimensionsEnum::Two, Vector3U(totalXSize, maxHeight, 0u), textureBuffer, 0, Texture.gSettings(), Texture.gDataSettings());
     
 	glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 4)); // enable byte-alignment back
 

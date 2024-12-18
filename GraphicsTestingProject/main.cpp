@@ -45,13 +45,13 @@ int main()
 
         
         GP::FrameBufferClass FB(Vector2U(Width, Height));
-        GP::TextureClass FB_COLOR_TEX(GP::TextureClass::DimensionsEnum::Two, Vector3U(Width, Height, 0), 3,
+        GP::TextureClass FB_COLOR_TEX(GP::TextureClass::DimensionsEnum::Two, Vector3U(Width, Height, 0), 0,
             GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
             GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,
             GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Nearest,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Nearest,
             GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }
         );
-        FB.AttachTexture(FB_COLOR_TEX.gID(), GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA);
+        FB.AttachTexture(FB_COLOR_TEX, GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA);
         /*TextureClass FB_DEPTH_STENCIL_TEX(Width, Height, nullptr, TextureClass::TypeEnum::Texture2D,
             GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,
             GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Nearest,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Nearest,
@@ -59,8 +59,9 @@ int main()
             TextureClass::DataSettingsClass{ TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil,
             TextureClass::DataSettingsClass::DataFormatOnCPU_Enum::DepthStencil, TextureClass::DataSettingsClass::DataTypeInMemory_Enum::UnsignedInt_24_8 });
         FB.AttachTexture(FB_DEPTH_STENCIL_TEX.gID(), TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil);*/
-        GP::RenderBufferClass RB(Width, Height, true, true);
-        FB.AttachRenderBuffer(RB.gID(), true, true);
+        GP::RenderBufferClass RB(Width, Height, GP::RenderBufferClass::BufferDataFormatEnum::DepthStencil);
+        FB.AttachRenderBuffer(RB, GP::RenderBufferClass::BufferDataFormatEnum::DepthStencil);
+
         FB.Finish();
         FB.Unbind();
 
@@ -133,12 +134,12 @@ int main()
         SP.SetUniform1i("u_tex1", 0);
         SP.SetUniform1i("u_tex2", 1);
 
-        GA::TextureClass TEX0(GA::TextureClass::DimensionsEnum::Two, "Textures/blackFace.jpg", 3,
+        GA::TextureClass TEX0(GA::TextureClass::DimensionsEnum::Two, "Textures/blackFace.jpg", 2,
             GA::TextureClass::SettingsStruct{ GA::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GA::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
             GA::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GA::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
             GA::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GA::TextureClass::DataSettingsStruct{GA::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
             GA::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RGB,GA::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte});
-        GA::TextureClass TEX1(GA::TextureClass::DimensionsEnum::Two, "Textures/simpleFace.png", 3,
+        GA::TextureClass TEX1(GA::TextureClass::DimensionsEnum::Two, "Textures/simpleFace.png", 2,
             GA::TextureClass::SettingsStruct{ GA::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GA::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
             GA::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GA::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
             GA::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GA::TextureClass::DataSettingsStruct{GA::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
