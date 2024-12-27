@@ -1,6 +1,6 @@
 
 !!!!!MUTABLE VARIABLES
-mutable should mark variables that are responsible for class to work properly, like "Deleted" or stuff like that, that can also be usefull for debugging
+mutable should mark variables that are not directly describing some state of object OR variables that are used only when KE2_Debug is defined(debug variables)
 
 !!!!!NAMING CLASSES
 when you have some class that have a name for example "Shader" you should name it "ShaderClass" instead becouse naming it just "Shader" will take away
@@ -14,10 +14,9 @@ if in order to get/set somnething some calculations have to be done or its not t
 but if its trivial then name can start with g/s instead
 
 !!!!! ERRORS/WARNINGS
-warnings happen when error can be resolved without any problems, warnings NEVER throw
-errors happen when error cant be resolved without any problems, errors ALWAYS throw
-safety checks that check some input for a function and are checking some stuff about KE2 should
-happen ONLY in debug mode, in efficiency they are disabled, but safety checks that are working with
+-warning happens when input is incorrect BUT can be fixed without any problems, warnings NEVER throw
+-errors happen when input is incorrect and it cant be fixed without any problems, or output is not available, errors ALWAYS throw
+-safety checks that check input happens ONLY in debug mode, in efficiency they are disabled, but safety checks that are working with
 some third party software should happen on any config
-ALL errors should inherit from ErrorBase located at ErrorsSystem.h
+-ALL errors should inherit from ErrorBase located at ErrorsSystem.h, so they could be obtained with just catch(AnyError& err)
 

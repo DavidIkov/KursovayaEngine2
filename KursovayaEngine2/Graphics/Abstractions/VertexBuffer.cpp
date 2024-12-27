@@ -67,12 +67,11 @@ void VertexBufferClass::CopyData(const VertexBufferClass& srcBuffer) {
 void VertexBufferClass::CopySubData(const VertexBufferClass& srcBuffer, size_t srcOffsetInBytes, size_t dstOffsetInBytes, size_t amountOfBytesToCopy) {
 	GP::VertexBufferClass::CopySubData(srcBuffer, srcOffsetInBytes, dstOffsetInBytes, amountOfBytesToCopy);
 }
-
-void VertexBufferClass::GetSubData(size_t offsetInBytes, size_t amountOfBytesToCopy, void* data) const {
-	GP::VertexBufferClass::GetSubData(offsetInBytes, amountOfBytesToCopy, data);
-}
 void VertexBufferClass::GetData(void* data) const {
 	GP::VertexBufferClass::GetSubData(0, DataSizeInBytes, data);
+}
+void VertexBufferClass::GetSubData(size_t offsetInBytes, size_t amountOfBytesToCopy, void* data) const {
+	GP::VertexBufferClass::GetSubData(offsetInBytes, amountOfBytesToCopy, data);
 }
 
 

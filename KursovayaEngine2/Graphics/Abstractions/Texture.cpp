@@ -20,7 +20,7 @@ TextureClass::TextureClass(const TextureClass& toCopy, bool copyTextureData) :
 };
 TextureClass::TextureClass(TextureClass&& toCopy) noexcept:
 	GP::TextureClass(std::move(toCopy)), Size(toCopy.Size),
-	Settings(toCopy.Settings), DataSettings(toCopy.DataSettings) { }
+	Settings(toCopy.Settings), DataSettings(toCopy.DataSettings), MipmapLevels(toCopy.MipmapLevels) { }
 TextureClass& TextureClass::operator=(const TextureClass& toCopy) {
 	this->~TextureClass();
 	new(this) TextureClass(toCopy, false);

@@ -8,6 +8,8 @@
 #include"Graphics/Abstractions/VertexBuffer.h"
 #include"Graphics/Abstractions/VertexArray.h"
 #include"Graphics/Abstractions/IndexBuffer.h"
+#include"Graphics/Abstractions/RenderBuffer.h"
+#include"Graphics/Abstractions/FrameBuffer.h"
 #include"Graphics/Primitives/FrameBuffer.h"
 #include"Graphics/Primitives/VertexArray.h"
 #include"Graphics/Primitives/VertexBuffer.h"
@@ -44,14 +46,14 @@ int main()
             "¿¡¬√ƒ≈®∆«»… ÀÃÕŒœ–—“”‘’÷◊ÿŸ⁄€‹›ﬁﬂˇ˛˝¸˚˙˘¯˜ˆıÙÛÚÒÔÓÌÏÎÍÈËÁÊ∏Â‰„‚·‡");
 
         
-        GP::FrameBufferClass FB(Vector2U(Width, Height));
-        GP::TextureClass FB_COLOR_TEX(GP::TextureClass::DimensionsEnum::Two, Vector3U(Width, Height, 0), 0,
+        GA::FrameBufferClass FB(Vector2U(Width, Height));
+        GA::TextureClass FB_COLOR_TEX(GP::TextureClass::DimensionsEnum::Two, Vector3U(Width, Height, 0), 0,
             GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
             GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,
             GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Nearest,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Nearest,
             GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }
         );
-        FB.AttachTexture(FB_COLOR_TEX, GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA);
+        FB.AttachTexture(FB_COLOR_TEX);
         /*TextureClass FB_DEPTH_STENCIL_TEX(Width, Height, nullptr, TextureClass::TypeEnum::Texture2D,
             GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,
             GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Nearest,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Nearest,
@@ -59,8 +61,8 @@ int main()
             TextureClass::DataSettingsClass{ TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil,
             TextureClass::DataSettingsClass::DataFormatOnCPU_Enum::DepthStencil, TextureClass::DataSettingsClass::DataTypeInMemory_Enum::UnsignedInt_24_8 });
         FB.AttachTexture(FB_DEPTH_STENCIL_TEX.gID(), TextureClass::DataSettingsClass::DataFormatOnGPU_Enum::DepthStencil);*/
-        GP::RenderBufferClass RB(Width, Height, GP::RenderBufferClass::BufferDataFormatEnum::DepthStencil);
-        FB.AttachRenderBuffer(RB, GP::RenderBufferClass::BufferDataFormatEnum::DepthStencil);
+        GA::RenderBufferClass RB(Vector2U(Width, Height), GP::RenderBufferClass::BufferDataFormatEnum::DepthStencil);
+        FB.AttachRenderBuffer(RB);
 
         FB.Finish();
         FB.Unbind();
@@ -91,31 +93,31 @@ int main()
         GA::IndexBufferClass Test_IB(GA::IndexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<unsigned int>({ 0u,1u,2u,2u,3u,0u }));
         Test_IB.Unbind();
 		GA::VertexArrayClass Test_VA(ArrayView<GA::VertexArrayClass::AttributeDataStruct>({
-            GA::VertexArrayClass::AttributeDataStruct{ 0,Test_VB,false,0,2,0,sizeof(float) * 2, GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float },
-            GA::VertexArrayClass::AttributeDataStruct{ 1,Test_VB2,false,0,1,0,sizeof(float) * 1, GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
+            GA::VertexArrayClass::AttributeDataStruct{ Test_VB,false,0,2,0,sizeof(float) * 2, GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float },
+            GA::VertexArrayClass::AttributeDataStruct{ Test_VB2,false,0,1,0,sizeof(float) * 1, GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
             }));
 
         GA::VertexBufferClass VB1(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, L"Models3D/koleso.obj");
 		GA::VertexBufferClass VB2(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, L"Models3D/sphere.obj");
 
         GA::VertexArrayClass VA1(ArrayView<GA::VertexArrayClass::AttributeDataStruct>({
-            GA::VertexArrayClass::AttributeDataStruct{ 0,VB1,false,0,3,0,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float },
-            GA::VertexArrayClass::AttributeDataStruct{ 1,VB1,false,0,3,sizeof(float) * 3,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
-            GA::VertexArrayClass::AttributeDataStruct{ 2,VB1,false,0,3,sizeof(float) * (3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
-            GA::VertexArrayClass::AttributeDataStruct{ 3,VB1,false,0,2,sizeof(float) * (3 + 3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
+            GA::VertexArrayClass::AttributeDataStruct{ VB1,false,0,3,0,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float },
+            GA::VertexArrayClass::AttributeDataStruct{ VB1,false,0,3,sizeof(float) * 3,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
+            GA::VertexArrayClass::AttributeDataStruct{ VB1,false,0,3,sizeof(float) * (3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
+            GA::VertexArrayClass::AttributeDataStruct{ VB1,false,0,2,sizeof(float) * (3 + 3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
             }));
 		GA::VertexArrayClass VA2(ArrayView<GA::VertexArrayClass::AttributeDataStruct>({
-            GA::VertexArrayClass::AttributeDataStruct{ 0,VB2,false,0,3,0,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float },
-            GA::VertexArrayClass::AttributeDataStruct{ 1,VB2,false,0,3,sizeof(float) * 3,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
-            GA::VertexArrayClass::AttributeDataStruct{ 2,VB2,false,0,3,sizeof(float) * (3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
-            GA::VertexArrayClass::AttributeDataStruct{ 3,VB2,false,0,2,sizeof(float) * (3 + 3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
+            GA::VertexArrayClass::AttributeDataStruct{ VB2,false,0,3,0,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float },
+            GA::VertexArrayClass::AttributeDataStruct{ VB2,false,0,3,sizeof(float) * 3,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
+            GA::VertexArrayClass::AttributeDataStruct{ VB2,false,0,3,sizeof(float) * (3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
+            GA::VertexArrayClass::AttributeDataStruct{ VB2,false,0,2,sizeof(float) * (3 + 3 + 3),sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
             }));
 
         unsigned int floatsAmountPerVertex = 3 + 3 + 3 + 2;// 0u; for (size_t i = 0; i < VA1.gAttributesData().gLen(); i++) floatsAmountPerVertex += VA1.gAttributeData(i).ComponentsAmount;
 
         GA::VertexBufferClass VB_QUAD(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<float>({1,-1,1,1,-1,1,1,-1,-1,-1,-1,1}));
         GA::VertexArrayClass VA_QUAD(ArrayView<GA::VertexArrayClass::AttributeDataStruct>({
-            GA::VertexArrayClass::AttributeDataStruct{ 0,VB_QUAD,false,0,2,0,sizeof(float) * 2, GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float },
+            GA::VertexArrayClass::AttributeDataStruct{ VB_QUAD,false,0,2,0,sizeof(float) * 2, GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float },
             }));
 
 
@@ -260,7 +262,7 @@ int main()
             SP.SetUniform1f("u_VisualData.LightSourceReflectionMaxAngle", 40.f / 180.f * 3.14f);
             SP.SetUniform1f("u_VisualData.MinColorMultiplierForSurfaceLighting", 0.05f);
 
-            FB.Bind(true);
+            FB.Bind();
 
             Preset3D.Bind();
             FB.ClearAllBuffers();
@@ -332,7 +334,6 @@ int main()
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, VB2.gDataSizeInBytes() / sizeof(float) / floatsAmountPerVertex);
 
             FB.Unbind();
-            GP::FrameBufferClass::SetViewportSize_Static(Vector2U(Width, Height));
 
             QuadPreset.Bind();
             window.ClearColorBuffer();
@@ -376,8 +377,9 @@ int main()
         }
 
     }
-    catch (KE2::ErrorsSystemNamespace::AnyError&) {}
-    catch (...){}
+    catch (KE2::ErrorsSystemNamespace::AnyError& err) { std::cout << "crashed with message {" << err.what() << "}" << std::endl; }
+    catch (std::exception& exc) { std::cout << "crashed from stl exception with message {" << exc.what() << "}" << std::endl; }
+    catch (...) { std::cout << "crashed with unknown message or source" << std::endl; }
 
     return 0;
 }

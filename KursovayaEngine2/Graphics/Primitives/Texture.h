@@ -106,7 +106,7 @@ namespace KE2::Graphics::Primitives {
 
         //if you dont use some axes in pixelsAmounts then dont leave them 0, use 1
         //make sure that your texture have enough pixels for copying
-        DLLTREATMENT virtual void CopySubData(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount);
+        DLLTREATMENT void CopySubData(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount);
 
 		//this function is slow since it will get data from gpu to cpu
         //buffer should not be nullptr, it should point to already allocated memory

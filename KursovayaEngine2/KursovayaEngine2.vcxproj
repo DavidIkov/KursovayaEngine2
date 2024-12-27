@@ -129,7 +129,7 @@
       <PreprocessorDefinitions>KE2_Windows;KE2_Debug;KE2_x86;WIN32;_CONSOLE;%(PreprocessorDefinitions);_DEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
       <AdditionalOptions>/Zc:preprocessor /w15038 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -147,7 +147,7 @@
       <PreprocessorDefinitions>KE2_Windows;KE2_Debug;KE2_x86;WIN32;_CONSOLE;%(PreprocessorDefinitions);_DEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
       <AdditionalOptions>/Zc:preprocessor /w15038 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -167,7 +167,7 @@
       <PreprocessorDefinitions>KE2_Windows;KE2_Efficiency;KE2_x86;WIN32;_CONSOLE;%(PreprocessorDefinitions);NDEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
       <AdditionalOptions>/Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -189,7 +189,7 @@
       <PreprocessorDefinitions>KE2_Windows;KE2_Efficiency;KE2_x86;WIN32;_CONSOLE;%(PreprocessorDefinitions);NDEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
       <AdditionalOptions>/Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -209,7 +209,7 @@
       <PreprocessorDefinitions>KE2_Windows;KE2_Debug;KE2_x64;_CONSOLE;%(PreprocessorDefinitions);_DEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
       <AdditionalOptions>/Zc:preprocessor /w15038 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -229,7 +229,7 @@
       <PreprocessorDefinitions>KE2_Windows;KE2_Efficiency;KE2_x64;_CONSOLE;%(PreprocessorDefinitions);NDEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
       <AdditionalOptions>/Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -245,6 +245,14 @@
   <ItemGroup>
     <ClCompile Include="Dependencies\glad\src\glad.c" />
     <ClCompile Include="Dependencies\stb_image\stb_image.cpp" />
+    <ClCompile Include="Graphics\Abstractions\FrameBuffer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GA_FrameBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">$(IntDir)GA_FrameBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">$(IntDir)GA_FrameBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|ARM'">$(IntDir)GA_FrameBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GA_FrameBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)GA_FrameBuffer</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="Graphics\Abstractions\IndexBuffer.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GA_IndexBuffer</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">$(IntDir)GA_IndexBuffer</ObjectFileName>
@@ -308,7 +316,14 @@
     <ClCompile Include="Input\Mouse.cpp" />
     <ClCompile Include="Tools\ErrorsSystem.cpp" />
     <ClCompile Include="Tools\FileTypesReaders\Obj.cpp" />
-    <ClCompile Include="Graphics\Primitives\FrameBuffer.cpp" />
+    <ClCompile Include="Graphics\Primitives\FrameBuffer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GP_FrameBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|Win32'">$(IntDir)GP_FrameBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">$(IntDir)GP_FrameBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|ARM'">$(IntDir)GP_FrameBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)GP_FrameBuffer</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'">$(IntDir)GP_FrameBuffer</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="Graphics\Primitives\RenderBuffer.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)GP_RenderBuffer</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">$(IntDir)GP_RenderBuffer</ObjectFileName>
@@ -450,6 +465,7 @@
     <ClInclude Include="Dependencies\FreeType\ft2build.h" />
     <ClInclude Include="Dependencies\stb_image\stb_image.h" />
     <ClInclude Include="DLL.h" />
+    <ClInclude Include="Graphics\Abstractions\FrameBuffer.h" />
     <ClInclude Include="Graphics\Abstractions\IndexBuffer.h" />
     <ClInclude Include="Graphics\Abstractions\RenderBuffer.h" />
     <ClInclude Include="Graphics\Abstractions\VertexArray.h" />
@@ -470,9 +486,11 @@
     <ClInclude Include="Tools\BinarySearch.h" />
     <ClInclude Include="Tools\BoolsTable.h" />
     <ClInclude Include="Tools\ClassFunctionsAccessController.h" />
+    <ClInclude Include="Tools\ConnectionSlot.h" />
     <ClInclude Include="Tools\DynArr.h" />
     <ClInclude Include="Tools\ErrorsSystem.h" />
     <ClInclude Include="Tools\GetOverlappingMemoryRegion.h" />
+    <ClInclude Include="Tools\PtrToMember_ToOff.h" />
     <ClInclude Include="Tools\StaticLambda.h" />
     <ClInclude Include="Tools\UniversalLambda.h" />
     <ClInclude Include="OS_BasedStuff\FilesSystem.h" />

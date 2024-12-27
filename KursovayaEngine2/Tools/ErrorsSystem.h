@@ -45,9 +45,14 @@ namespace KE2::ErrorsSystemNamespace {
 	//means that error is already being thrown, so this variable can prevent another throw of error and potential crash
 	inline bool ThrowingError = false;
 	//used to catch any KE2 errors by reference, not depending on actual enum type
-	struct ErrorBase {
-		inline ErrorBase() noexcept { ThrowingError = true; }
-		inline ~ErrorBase() noexcept { ThrowingError = false; }
+	struct ErrorBase :public std::exception {
+	private:
+		friend class _SendErrorClass;
+		std::string Msg;
+	public:
+		virtual char const* what() const override { return Msg.empty() ? "Empty message" : Msg.c_str(); }
+		ErrorBase() noexcept { ThrowingError = true; }
+		~ErrorBase() noexcept { ThrowingError = false; }
 	};
 	typedef ErrorBase AnyError;
 	class _SendErrorClass :public _MessageCreatingClass {
@@ -58,6 +63,7 @@ namespace KE2::ErrorsSystemNamespace {
 		template<typename ErrWrapperTyp>
 		void operator>>(ErrWrapperTyp errWrapper) {
 			static_assert(std::is_base_of_v<ErrorBase, ErrWrapperTyp>, "error struct should be publicly derived from ErrorBase");
+			errWrapper.Msg = Msg;
 			_ProcessError_NoThrow();
 			throw errWrapper;
 		}

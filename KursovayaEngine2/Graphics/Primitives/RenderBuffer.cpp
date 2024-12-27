@@ -19,10 +19,10 @@ unsigned int RenderBufferClass::_BufferDataFormat_SwitchCase(BufferDataFormatEnu
     default: return 0;
     }
 }
-RenderBufferClass::RenderBufferClass(unsigned int width, unsigned int height, BufferDataFormatEnum bufferDataFormat) {
+RenderBufferClass::RenderBufferClass(Vector2U size, BufferDataFormatEnum bufferDataFormat) {
     glSC(glGenRenderbuffers(1, &ID));
     Bind();
-    glSC(glRenderbufferStorage(GL_RENDERBUFFER, _BufferDataFormat_SwitchCase(bufferDataFormat), width, height));
+    glSC(glRenderbufferStorage(GL_RENDERBUFFER, _BufferDataFormat_SwitchCase(bufferDataFormat), size[0], size[1]));
 }
 RenderBufferClass::RenderBufferClass(RenderBufferClass&& toCopy) noexcept :
     ID(toCopy.ID) {

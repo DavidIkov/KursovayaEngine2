@@ -20,7 +20,6 @@ namespace KE2::Graphics::Primitives {
 		}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
 
 		struct AttributeDataStruct {
-			unsigned int AttribInd;
 			//vertex buffer ID
 			VertexBufferClass::VertexBufferID_Type VB_ID;
 			/* used only if DataOnOnGPU is Float,
@@ -46,7 +45,7 @@ namespace KE2::Graphics::Primitives {
 			};
 			DataTypeInMemory_Enum DataTypeInMemory;
 			enum class DataTypeForReadingOnGPU_Enum :unsigned char {
-				Float,Int,Double
+				Float, Int, Double
 			};
 			DataTypeForReadingOnGPU_Enum DataTypeForReadingOnGPU;
 		};
@@ -58,7 +57,7 @@ namespace KE2::Graphics::Primitives {
 		DLLTREATMENT virtual ~VertexArrayClass() noexcept(false);
 
 		DLLTREATMENT virtual void SetAttributes(const ArrayView<AttributeDataStruct>& attribsData);
-		DLLTREATMENT virtual void SetAttribute(const AttributeDataStruct& attribData);
+		DLLTREATMENT virtual void SetAttribute(unsigned int attribInd, const AttributeDataStruct& attribData);
 		DLLTREATMENT virtual void EnableAttribute(unsigned int attribInd);
 		DLLTREATMENT virtual void DisableAttribute(unsigned int attribInd);
 

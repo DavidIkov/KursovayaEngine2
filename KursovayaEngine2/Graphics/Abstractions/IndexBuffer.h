@@ -50,19 +50,14 @@ namespace KE2::Graphics::Abstractions {
 			SetData(data);
 		}
 	public:
-		DLLTREATMENT virtual void SetData(const ArrayView<void>& data);
-		DLLTREATMENT virtual void SetSubData(size_t offsetInBytes, const ArrayView<void>& data) override;
+		DLLTREATMENT void SetData(const ArrayView<void>& data);
+		DLLTREATMENT void SetSubData(size_t offsetInBytes, const ArrayView<void>& data);
 
-		DLLTREATMENT virtual void CopyData(const IndexBufferClass& srcBuffer);
-	private:
-		inline virtual void CopySubData(const Primitives::IndexBufferClass& srcBuffer, size_t srcOffsetInBytes, size_t dstOffsetInBytes, size_t amountOfBytesToCopy) override final {
-			CopySubData(dynamic_cast<const IndexBufferClass&>(srcBuffer), srcOffsetInBytes, dstOffsetInBytes, amountOfBytesToCopy);
-		}
-	public:
-		DLLTREATMENT virtual void CopySubData(const IndexBufferClass& srcBuffer, size_t srcOffsetInBytes, size_t dstOffsetInBytes, size_t amountOfBytesToCopy);
+		DLLTREATMENT void CopyData(const IndexBufferClass& srcBuffer);
+		DLLTREATMENT void CopySubData(const IndexBufferClass& srcBuffer, size_t srcOffsetInBytes, size_t dstOffsetInBytes, size_t amountOfBytesToCopy);
 
 		//data should point to already allocated memory
-		DLLTREATMENT virtual void GetSubData(size_t offsetInBytes, size_t amountOfBytesToCopy, void* data) const override final;
+		DLLTREATMENT void GetSubData(size_t offsetInBytes, size_t amountOfBytesToCopy, void* data) const;
 		//data should point to already allocated memory
 		DLLTREATMENT void GetData(void* data) const;
 

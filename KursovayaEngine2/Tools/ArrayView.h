@@ -7,12 +7,12 @@ class ArrayView {
     friend class ArrayView;
     T* Data; size_t Len;
 public:
-    ArrayView(T* data, size_t len) :Data(data), Len(len) {};
-    ArrayView(const std::vector<T>& vec) :Data(&*vec.begin()), Len(vec.size()) {}
+    constexpr ArrayView(T* data, size_t len) noexcept:Data(data), Len(len) {};
+    ArrayView(const std::vector<T>& vec) noexcept:Data(&*vec.begin()), Len(vec.size()) {}
     template<size_t L>
-    ArrayView(T (&&arr)[L]) :Data(arr), Len(L) {};
+    constexpr ArrayView(T (&&arr)[L]) noexcept:Data(arr), Len(L) {};
 	template<size_t L>
-    ArrayView(T (&arr)[L]) :Data(arr), Len(L) {};
+    constexpr ArrayView(T (&arr)[L]) noexcept:Data(arr), Len(L) {};
 
     size_t gLen() const { return Len; };
     T& operator[](size_t ind) { return Data[ind]; };

@@ -47,12 +47,12 @@ static unsigned int _GetSizeOfTypeByBufferDataTypeEnum_SwitchCase(VertexArrayCla
     return 0;
 }
 */
-void VertexArrayClass::SetAttribute(const AttributeDataStruct& attribData) {
+void VertexArrayClass::SetAttribute(unsigned int attribInd, const AttributeDataStruct& attribData) {
     Assert_Binded_Macro;
 	if (attribData.VB_ID == 0)
 		ErrorsSystemNamespace::SendError << "Cant use zero vertex buffer for attribute" >> ErrorsEnumWrapperStruct(ErrorsEnum::ZeroVB_CantBeUsed);
 
-    EnableAttribute(attribData.AttribInd);
+    EnableAttribute(attribInd);
 
 	glSC(glBindBuffer(GL_ARRAY_BUFFER, attribData.VB_ID));
 	unsigned int glDataTypeOnCPU = 0;
@@ -67,24 +67,24 @@ void VertexArrayClass::SetAttribute(const AttributeDataStruct& attribData) {
 
 	switch (attribData.DataTypeForReadingOnGPU) {
 	case AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float: {
-		glSC(glVertexAttribPointer(attribData.AttribInd, attribData.ComponentsAmount, glDataTypeOnCPU, attribData.Normalize, attribData.ByteOffsetToNextElement, (const void*)(unsigned long long int)attribData.FirstElementByteOffset));
+		glSC(glVertexAttribPointer(attribInd, attribData.ComponentsAmount, glDataTypeOnCPU, attribData.Normalize, attribData.ByteOffsetToNextElement, (const void*)(unsigned long long int)attribData.FirstElementByteOffset));
 		break;
 	} case AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Int: {
-		glSC(glVertexAttribIPointer(attribData.AttribInd, attribData.ComponentsAmount, glDataTypeOnCPU, attribData.ByteOffsetToNextElement, (const void*)(unsigned long long int)attribData.FirstElementByteOffset));
+		glSC(glVertexAttribIPointer(attribInd, attribData.ComponentsAmount, glDataTypeOnCPU, attribData.ByteOffsetToNextElement, (const void*)(unsigned long long int)attribData.FirstElementByteOffset));
 		break;
 	} case AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Double: {
-		glSC(glVertexAttribLPointer(attribData.AttribInd, attribData.ComponentsAmount, glDataTypeOnCPU, attribData.ByteOffsetToNextElement, (const void*)(unsigned long long int)attribData.FirstElementByteOffset));
+		glSC(glVertexAttribLPointer(attribInd, attribData.ComponentsAmount, glDataTypeOnCPU, attribData.ByteOffsetToNextElement, (const void*)(unsigned long long int)attribData.FirstElementByteOffset));
 		break;
 	}
 	}
 
-	glSC(glVertexAttribDivisor(attribData.AttribInd, attribData.Divisor));
+	glSC(glVertexAttribDivisor(attribInd, attribData.Divisor));
 }
 void VertexArrayClass::SetAttributes(const ArrayView<AttributeDataStruct>& attribsData) {
     Assert_Binded_Macro;
 
     for (unsigned int i = 0; i < attribsData.gLen(); i++)
-        SetAttribute(attribsData[i]);
+        SetAttribute(i, attribsData[i]);
 
     glSC(glBindBuffer(GL_ARRAY_BUFFER, 0));
 

@@ -1,6 +1,7 @@
 #pragma once
 #include"DLL.h"
 #include"Tools/ErrorsSystem.h"
+#include"Maths/Vector.h"
 
 namespace KE2::Graphics::Primitives {
 	class RenderBufferClass {
@@ -14,7 +15,7 @@ namespace KE2::Graphics::Primitives {
 		static unsigned int _BufferDataFormat_SwitchCase(BufferDataFormatEnum bufferDataFormat) noexcept;
 	public:
 
-		DLLTREATMENT RenderBufferClass(unsigned int width, unsigned int height, BufferDataFormatEnum bufferDataFormat);
+		DLLTREATMENT RenderBufferClass(Vector2U size, BufferDataFormatEnum bufferDataFormat);
 		DLLTREATMENT RenderBufferClass(RenderBufferClass&& toCopy) noexcept;
 		DLLTREATMENT virtual RenderBufferClass& operator=(RenderBufferClass&& toCopy);
 		DLLTREATMENT virtual ~RenderBufferClass() noexcept(false);

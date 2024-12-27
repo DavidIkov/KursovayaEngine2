@@ -5,32 +5,37 @@
 //by default after moving some object, destructor will get called for safety, if you dont want this behaviour you can disable it
 template<typename T, size_t CapacityExpansionSize = 10, bool CallDestructorAfterMove = true>
 class DynArr {
+    template<typename, size_t, bool> friend class DynArr;
 protected:
     using DT = unsigned char[sizeof(T)];
-    size_t Len = 0; size_t Capacity = 0; 
+    size_t Len = 0; size_t Capacity = 0;
     T* Arr = nullptr;
 
 public:
-    struct IndexWentOutOfBoundsError:KE2::ErrorsSystemNamespace::ErrorBase{};
+    struct IndexWentOutOfBoundsError :KE2::ErrorsSystemNamespace::ErrorBase {};
 protected:
     void _SafetyCheckForIndex(size_t ind, size_t max) const {
         if (ind >= max)
             KE2::ErrorsSystemNamespace::SendError << "Index went out of bounds" >> IndexWentOutOfBoundsError();
     }
 public:
+    static constexpr T* DynArr<T>::* OffToArr = &DynArr<T>::Arr;
 
     DynArr() {}
     DynArr(size_t capacity) : Capacity(capacity), Arr((T*)new DT[capacity]) {}
-	DynArr(size_t len, const T& inst) :Len(len), Capacity(len), Arr((T*)new DT[len]) { for (size_t i = 0; i < len; i++) new(Arr + i) T(inst); }
+    DynArr(size_t len, const T& inst) :Len(len), Capacity(len), Arr((T*)new DT[len]) { for (size_t i = 0; i < len; i++) new(Arr + i) T(inst); }
     DynArr(size_t len, T const* arr) :Len(len), Capacity(len), Arr((T*)new DT[len]) { for (size_t i = 0; i < len; i++) new(Arr + i) T(arr[i]); }
-	DynArr(size_t len, T *&& arr) :Len(len), Capacity(len), Arr(arr) {}
-	DynArr(const ArrayView<T>& arrView) : Len(arrView.gLen()), Capacity(arrView.gLen()), Arr((T*)new DT[Len]) { for (size_t i = 0; i < Len; i++) new(Arr + i) T(arrView[i]); }
+    DynArr(size_t len, T*&& arr) :Len(len), Capacity(len), Arr(arr) {}
     DynArr(ArrayView<T>&& arrView) : Len(arrView.gLen()), Capacity(arrView.gLen()), Arr(arrView.gDataPtr()) {}
     DynArr(const ArrayView<void>& arrView) : Len(arrView.gLenInBytes() / sizeof(T)), Capacity(Len), Arr((T*)new DT[Len]) { for (size_t i = 0; i < Len; i++) new(Arr + i) T(arrView[i * sizeof(T)]); }
-    DynArr(ArrayView<void>&& arrView) : Len(arrView.gLenInBytes()/sizeof(T)), Capacity(Len), Arr((T*)arrView.gDataPtr()) {}
+    DynArr(ArrayView<void>&& arrView) : Len(arrView.gLenInBytes() / sizeof(T)), Capacity(Len), Arr((T*)arrView.gDataPtr()) {}
+    template<typename VT> DynArr(const ArrayView<VT>& arrView) : Len(arrView.gLen()), Capacity(Len), Arr((T*)new DT[Len]) { 
+        static_assert(std::is_constructible_v<T, const VT&>, "Cant construct from this type"); for (size_t i = 0; i < Len; i++) new(Arr + i) T(arrView[i]); } 
+    template<typename AT> DynArr(const DynArr<AT>& toCopy, bool copyCapacity = true) : Len(toCopy.Len), Capacity(copyCapacity ? toCopy.Capacity : toCopy.Len),
+        Arr((T*)new DT[Capacity]) { static_assert(std::is_constructible_v<AT, const T&>, "Cant convert to this type"); 
+        for (size_t i = 0; i < Len; i++) new(Arr + i) AT(toCopy.Arr[i]); }
+    DynArr(const DynArr<T>& toCopy) :DynArr(toCopy, true) {}
     DynArr(DynArr<T>&& toCopy) : Len(toCopy.Len), Capacity(toCopy.Capacity), Arr(toCopy.Arr) { toCopy.Arr = nullptr; toCopy.Len = 0; toCopy.Capacity = 0; }
-    DynArr(const DynArr<T>& toCopy, bool copyCapacity = true) :Len(toCopy.Len), Capacity(copyCapacity ? toCopy.Capacity : toCopy.Len), Arr((T*)new DT[Capacity]) { 
-        for (size_t i = 0; i < Len; i++) new(Arr + i) T(toCopy.Arr[i]); }
     virtual ~DynArr() { if (Arr != nullptr) { for (size_t i = 0; i < Len; i++) Arr[i].~T();
             delete[](void*)Arr; Arr = nullptr; Len = 0; Capacity = 0; } }
 
@@ -53,7 +58,7 @@ public:
     size_t gCapacity() const noexcept { return Capacity; }
 
     template<typename...ConstrTypes>
-    void InsertAtIndex(size_t ind, ConstrTypes&&...constrParams) {
+    T& InsertAtIndex(size_t ind, ConstrTypes&&...constrParams) {
 
         _SafetyCheckForIndex(ind, Len + 1);
 
@@ -79,11 +84,11 @@ public:
             new(Arr + ind) T(std::forward<ConstrTypes>(constrParams)...);
             Len++;
         }
-
+        return Arr[ind];
     }
 
 	template<typename...ConstrTypes>
-    void InsertAtEnd(ConstrTypes&&...constrParams) { InsertAtIndex(Len, std::forward<ConstrTypes>(constrParams)...); }
+    T& InsertAtEnd(ConstrTypes&&...constrParams) { return InsertAtIndex(Len, std::forward<ConstrTypes>(constrParams)...); }
 
     void ChangeCapacity(size_t newCapacity) {
         if (newCapacity == Capacity) return;
@@ -136,6 +141,15 @@ public:
         _SafetyCheckForIndex(startInd, Len - lenOfRegion + 1);
 
         for (size_t i = startInd; i < startInd + lenOfRegion; i++) Arr[i].~T();
+
+        RemoveRegion_WithoutDestructor(startInd, lenOfRegion);
+	}
+	void RemoveAtIndex_WithoutDestructor(size_t ind) {
+        RemoveRegion_WithoutDestructor(ind, 1);
+    }
+	void RemoveRegion_WithoutDestructor(size_t startInd, size_t lenOfRegion) {
+
+        _SafetyCheckForIndex(startInd, Len - lenOfRegion + 1);
 
         for (size_t i = startInd; i < Len - lenOfRegion; i++) {
             new(Arr + i) T(std::move(Arr[i + lenOfRegion]));

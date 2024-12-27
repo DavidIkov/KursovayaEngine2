@@ -4,17 +4,28 @@
 
 namespace KE2::Graphics::Abstractions {
 	class VertexArrayClass :protected Primitives::VertexArrayClass {
+	protected:
+		struct _AttributeDataStruct :Primitives::VertexArrayClass::AttributeDataStruct {
+			_AttributeDataStruct(const Primitives::VertexArrayClass::AttributeDataStruct toCopy) :Primitives::VertexArrayClass::AttributeDataStruct(toCopy) {};
+			bool Enabled = false;
+		};
+		DynArr<_AttributeDataStruct> AttribsData;
 	public:
 		using AttributeDataStruct = Primitives::VertexArrayClass::AttributeDataStruct;
-	protected:
-		DynArr<AttributeDataStruct> AttribsData;
-	public:
+
+		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
+			enum ErrorsEnum {
+				TryingToChangeAttributes,
+			};
+			ErrorsEnum Error;
+			inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
+		}; using ErrorsEnum = ErrorsEnumWrapperStruct::ErrorsEnum; using AnyError = ErrorsEnumWrapperStruct;
+
 
 		inline Primitives::VertexArrayClass& gPrimitiveVertexArrayClass() noexcept { return *this; }
 		inline const Primitives::VertexArrayClass& gPrimitiveVertexArrayClass() const noexcept { return *this; }
 
 
-		DLLTREATMENT VertexArrayClass();
 		DLLTREATMENT VertexArrayClass(const ArrayView<AttributeDataStruct>& attribsData);
 		DLLTREATMENT VertexArrayClass(const VertexArrayClass& toCopy);
 		DLLTREATMENT VertexArrayClass(VertexArrayClass&& toCopy) noexcept;
@@ -25,8 +36,8 @@ namespace KE2::Graphics::Abstractions {
 	public:
 		DLLTREATMENT virtual VertexArrayClass& operator=(VertexArrayClass&& toCopy);
 
-		DLLTREATMENT virtual void SetAttributes(const ArrayView<AttributeDataStruct>& attribsData) override final;
-		DLLTREATMENT virtual void SetAttribute(const AttributeDataStruct& attribData) override final;
+		DLLTREATMENT void SetAttributes(const ArrayView<AttributeDataStruct>& attribsData) override final;
+		DLLTREATMENT virtual void SetAttribute(unsigned int attribInd, const AttributeDataStruct& attribData) override final;
 		DLLTREATMENT virtual void EnableAttribute(unsigned int attribInd) override final;
 		DLLTREATMENT virtual void DisableAttribute(unsigned int attribInd) override final;
 
@@ -40,6 +51,8 @@ namespace KE2::Graphics::Abstractions {
 
 		inline const AttributeDataStruct& gAttributeData(unsigned int ind) const noexcept { return AttribsData[ind]; }
 		inline const DynArr<AttributeDataStruct>& gAttributesData() const noexcept { return AttribsData; }
+
+		inline bool gIsAttributeEnabled(unsigned int ind) const noexcept { return AttribsData[ind].Enabled; }
 
 		using Primitives::VertexArrayClass::Bind;
 		using Primitives::VertexArrayClass::Unbind;

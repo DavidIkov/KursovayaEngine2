@@ -1,6 +1,8 @@
 #pragma once
 #include"Graphics/Primitives/Texture.h"
 #include"Tools/ClassFunctionsAccessController.h"
+#include"Tools/DynArr.h"
+#include"Tools/ConnectionSlot.h"
 
 namespace KE2::Graphics::Abstractions {
 
@@ -12,9 +14,6 @@ namespace KE2::Graphics::Abstractions {
 		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
             enum ErrorsEnum {
 				DataSettingsForCPU_AreNotSetUp,
-#ifdef KE2_Debug
-				TryingToUseDifferentDataSettings,
-#endif
             };
             ErrorsEnum Error;
             inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
@@ -27,8 +26,10 @@ namespace KE2::Graphics::Abstractions {
 			using DataTypeOnCPU_Enum = Primitives::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum;
 
 			const DataFormatOnGPU_Enum DataFormatOnGPU;
-			DataFormatOnCPU_Enum DataFormatOnCPU = DataFormatOnCPU_Enum::None;
-			DataTypeOnCPU_Enum DataTypeOnCPU = DataTypeOnCPU_Enum::None;
+			
+			//theese parameters dont really describe any state of object, this varibales are just helpers to not pass them every time
+			mutable DataFormatOnCPU_Enum DataFormatOnCPU = DataFormatOnCPU_Enum::None;
+			mutable DataTypeOnCPU_Enum DataTypeOnCPU = DataTypeOnCPU_Enum::None;
 
 			operator Primitives::TextureClass::DataSettingsStruct() { return { DataFormatOnGPU,DataFormatOnCPU,DataTypeOnCPU }; }
 		};
@@ -37,7 +38,21 @@ namespace KE2::Graphics::Abstractions {
 		Vector3U Size;
 		SettingsStruct Settings;
 		DataSettingsStruct DataSettings;
-		unsigned int MipmapLevels;
+		const unsigned int MipmapLevels;
+
+		friend class FrameBufferClass;
+		struct BindingS:public ConnectionSlotC{
+			TextureClass* ThisT;
+			BindingS(TextureClass* thisT) noexcept:ThisT(thisT) {}
+			BindingS(BindingS&& toMove) noexcept:ThisT(toMove.ThisT) { toMove.ThisT = nullptr; }
+			~BindingS() override {
+				if (ThisT != nullptr) {
+					ThisT->Bindings.RemoveAtIndex_WithoutDestructor(this - *ThisT->Bindings);
+					ThisT = nullptr;
+				}
+			}
+		};
+		DynArr<BindingS> Bindings;
 	public:
 
 		inline Primitives::TextureClass& gPrimitiveTextureClass() noexcept { return *this; }
@@ -65,21 +80,13 @@ namespace KE2::Graphics::Abstractions {
 		}
 	public:
 		//size of texture will remain same
-		DLLTREATMENT virtual void SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data);
+		DLLTREATMENT void SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data);
 
-	private:
-		inline virtual void CopySubData(const Primitives::TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount) override final {
-			CopySubData(dynamic_cast<const TextureClass&>(srcTex), offsetInSource, offsetInDestination, pixelsAmount);
-		}
-	public:
-		DLLTREATMENT virtual void CopySubData(const TextureClass& srcTex, Vector3U offsetInSrc, Vector3U offsetInDst, Vector3U pixelsAmount);
+		DLLTREATMENT void CopySubData(const TextureClass& srcTex, Vector3U offsetInSrc, Vector3U offsetInDst, Vector3U pixelsAmount);
 
 	private:
 		inline virtual void GetData(void* buffer, DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const override final {
-#ifdef KE2_Debug
-			if (DataSettings.DataFormatOnCPU != dataFormat || DataSettings.DataTypeOnCPU != dataType)
-				ErrorsSystemNamespace::SendError << "Trying to use different data settings" >> ErrorsEnumWrapperStruct(ErrorsEnum::TryingToUseDifferentDataSettings);
-#endif
+			DataSettings.DataFormatOnCPU = dataFormat; DataSettings.DataTypeOnCPU = dataType;
 			GetData(buffer);
 		}
 	public:
@@ -89,10 +96,7 @@ namespace KE2::Graphics::Abstractions {
 	private:
 		inline virtual void GetSubData(Vector3U offset, void* buffer, Vector3U pixelsAmount,
 			DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const override final {
-#ifdef KE2_Debug
-			if (DataSettings.DataFormatOnCPU != dataFormat || DataSettings.DataTypeOnCPU != dataType)
-				ErrorsSystemNamespace::SendError << "Trying to use different data settings" >> ErrorsEnumWrapperStruct(ErrorsEnum::TryingToUseDifferentDataSettings);
-#endif
+			DataSettings.DataFormatOnCPU = dataFormat; DataSettings.DataTypeOnCPU = dataType;
 			GetSubData(offset, buffer, pixelsAmount);
 		}
 	public:
@@ -123,8 +127,8 @@ namespace KE2::Graphics::Abstractions {
 		inline DataSettingsStruct::DataFormatOnCPU_Enum gDataSettings_DataFormatOnCPU() const noexcept { return DataSettings.DataFormatOnCPU; }
 		inline DataSettingsStruct::DataTypeOnCPU_Enum gDataSettings_DataTypeOnCPU() const noexcept { return DataSettings.DataTypeOnCPU; }
 
-		inline void sDataSettings_DataFormatOnCPU(DataSettingsStruct::DataFormatOnCPU_Enum dataFormatOnCPU) noexcept { DataSettings.DataFormatOnCPU = dataFormatOnCPU; }
-		inline void sDataSettings_DataTypeOnCPU(DataSettingsStruct::DataTypeOnCPU_Enum dataTypeOnCPU) noexcept { DataSettings.DataTypeOnCPU = dataTypeOnCPU; }
+		inline void sDataSettings_DataFormatOnCPU(DataSettingsStruct::DataFormatOnCPU_Enum dataFormatOnCPU) const noexcept { DataSettings.DataFormatOnCPU = dataFormatOnCPU; }
+		inline void sDataSettings_DataTypeOnCPU(DataSettingsStruct::DataTypeOnCPU_Enum dataTypeOnCPU) const noexcept { DataSettings.DataTypeOnCPU = dataTypeOnCPU; }
 
 		inline DataSettingsStruct gDataSettings() const noexcept { return DataSettings; }
 
