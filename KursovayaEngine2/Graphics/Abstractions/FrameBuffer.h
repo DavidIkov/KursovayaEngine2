@@ -13,8 +13,7 @@ namespace KE2::Graphics::Abstractions {
 		using AttachmentTypesEnum = Primitives::FrameBufferClass::AttachmentTypesEnum;
 		
 		struct AttachmentS :protected ConnectionSlotC {
-			union PtrToAttachmentInstanceU { void* Ptr; RenderBufferClass* RB_Ptr; TextureClass* T_Ptr; 
-			PtrToAttachmentInstanceU(void* ptr) :Ptr(ptr) {} } PtrToAttachmentInstance;
+			union { void* Ptr; RenderBufferClass* RB_Ptr; TextureClass* T_Ptr; } PtrToAttachmentInstance;
 			enum class AttachmentInstanceTypeE: unsigned char { RenderBuffer, Texture } AttachmentInstanceType;
 
 			AttachmentTypesEnum AttachmentType;
@@ -23,7 +22,7 @@ namespace KE2::Graphics::Abstractions {
 			FrameBufferClass* ThisFB;
 
 			AttachmentS(FrameBufferClass* thisFB, void* attachmentInstancePtr, AttachmentInstanceTypeE attachmentInstanceTyp, 
-				AttachmentTypesEnum attachmentTyp, unsigned int colorAttachmentInd = 0u) noexcept: PtrToAttachmentInstance(attachmentInstancePtr), 
+				AttachmentTypesEnum attachmentTyp, unsigned int colorAttachmentInd = 0u) noexcept : PtrToAttachmentInstance{ attachmentInstancePtr },
 				AttachmentInstanceType(attachmentInstanceTyp), AttachmentType(attachmentTyp), ColorAttachmentInd(colorAttachmentInd), ThisFB(thisFB) { 
 				if (attachmentInstanceTyp == AttachmentInstanceTypeE::Texture)
 					ConnectionSlotC::Connect(PtrToAttachmentInstance.T_Ptr->Bindings.InsertAtEnd(TextureClass::BindingS(PtrToAttachmentInstance.T_Ptr)));

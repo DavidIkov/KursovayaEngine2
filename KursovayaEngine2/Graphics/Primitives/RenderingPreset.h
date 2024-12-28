@@ -84,6 +84,8 @@ namespace KE2::Graphics::Primitives {
 		RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor Blending_FuncForColor1;
 		RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor Blending_FuncForColor2;
 
+		bool ColorEnabledR, ColorEnabledG, ColorEnabledB, ColorEnabledA;
+
 		float ClearR;
 		float ClearG;
 		float ClearB;
@@ -106,39 +108,46 @@ namespace KE2::Graphics::Primitives {
 		void UpdBlending_ConstRGBA();
 		void UpdBlending_FuncForColor();
 
+		void UpdColorEnabledRGBA();
+
 		void UpdClearRGBA();
 
 	public:
 
-		DLLTREATMENT void sFaceCulling_Enabled(bool newVal);
-		DLLTREATMENT void sFaceCulling_FaceToCull(RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull newVal);
-		DLLTREATMENT void sFaceCulling_FaceDetermination(RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination newVal);
+		DLLTREATMENT void sFaceCulling_Enabled(bool newVal, bool updOnGPU = true);
+		DLLTREATMENT void sFaceCulling_FaceToCull(RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull newVal, bool updOnGPU = true);
+		DLLTREATMENT void sFaceCulling_FaceDetermination(RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination newVal, bool updOnGPU = true);
 
-		DLLTREATMENT void sDepthTest_Enabled(bool newVal);
-		DLLTREATMENT void sDepthTest_WriteInBufferEnabled(bool newVal);
-		DLLTREATMENT void sDepthTest_TypeOfComparison(RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison newVal);
+		DLLTREATMENT void sDepthTest_Enabled(bool newVal, bool updOnGPU = true);
+		DLLTREATMENT void sDepthTest_WriteInBufferEnabled(bool newVal, bool updOnGPU = true);
+		DLLTREATMENT void sDepthTest_TypeOfComparison(RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison newVal, bool updOnGPU = true);
 
-		DLLTREATMENT void sStencilTest_Enabled(bool newVal);
-		DLLTREATMENT void sStencilTest_BaseMask(unsigned int newVal);
-		DLLTREATMENT void sStencilTest_ComparisonType(RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison newVal);
-		DLLTREATMENT void sStencilTest_ReferenceValue(unsigned int newVal);
-		DLLTREATMENT void sStencilTest_Mask(unsigned int newVal);
-		DLLTREATMENT void sStencilTest_ActionOnSF(RenderingPresetEnumArgumentsNamespace::StencilTest::Actions newVal);
-		DLLTREATMENT void sStencilTest_ActionOnSPDF(RenderingPresetEnumArgumentsNamespace::StencilTest::Actions newVal);
-		DLLTREATMENT void sStencilTest_ActionOnSPDP(RenderingPresetEnumArgumentsNamespace::StencilTest::Actions newVal);
+		DLLTREATMENT void sStencilTest_Enabled(bool newVal, bool updOnGPU = true);
+		DLLTREATMENT void sStencilTest_BaseMask(unsigned int newVal, bool updOnGPU = true);
+		DLLTREATMENT void sStencilTest_ComparisonType(RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison newVal, bool updOnGPU = true);
+		DLLTREATMENT void sStencilTest_ReferenceValue(unsigned int newVal, bool updOnGPU = true);
+		DLLTREATMENT void sStencilTest_Mask(unsigned int newVal, bool updOnGPU = true);
+		DLLTREATMENT void sStencilTest_ActionOnSF(RenderingPresetEnumArgumentsNamespace::StencilTest::Actions newVal, bool updOnGPU = true);
+		DLLTREATMENT void sStencilTest_ActionOnSPDF(RenderingPresetEnumArgumentsNamespace::StencilTest::Actions newVal, bool updOnGPU = true);
+		DLLTREATMENT void sStencilTest_ActionOnSPDP(RenderingPresetEnumArgumentsNamespace::StencilTest::Actions newVal, bool updOnGPU = true);
 
-		DLLTREATMENT void sBlending_Enabled(bool newVal);
-		DLLTREATMENT void sBlending_ConstR(float newVal);
-		DLLTREATMENT void sBlending_ConstG(float newVal);
-		DLLTREATMENT void sBlending_ConstB(float newVal);
-		DLLTREATMENT void sBlending_ConstA(float newVal);
-		DLLTREATMENT void sBlending_FuncForColor1(RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor newVal);
-		DLLTREATMENT void sBlending_FuncForColor2(RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor newVal);
+		DLLTREATMENT void sBlending_Enabled(bool newVal, bool updOnGPU = true);
+		DLLTREATMENT void sBlending_ConstR(float newVal, bool updOnGPU = true);
+		DLLTREATMENT void sBlending_ConstG(float newVal, bool updOnGPU = true);
+		DLLTREATMENT void sBlending_ConstB(float newVal, bool updOnGPU = true);
+		DLLTREATMENT void sBlending_ConstA(float newVal, bool updOnGPU = true);
+		DLLTREATMENT void sBlending_FuncForColor1(RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor newVal, bool updOnGPU = true);
+		DLLTREATMENT void sBlending_FuncForColor2(RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor newVal, bool updOnGPU = true);
 
-		DLLTREATMENT void sClearR(float newVal);
-		DLLTREATMENT void sClearG(float newVal);
-		DLLTREATMENT void sClearB(float newVal);
-		DLLTREATMENT void sClearA(float newVal);
+		DLLTREATMENT void sColorEnabledR(bool newVal, bool updOnGPU = true);
+		DLLTREATMENT void sColorEnabledG(bool newVal, bool updOnGPU = true);
+		DLLTREATMENT void sColorEnabledB(bool newVal, bool updOnGPU = true);
+		DLLTREATMENT void sColorEnabledA(bool newVal, bool updOnGPU = true);
+
+		DLLTREATMENT void sClearR(float newVal, bool updOnGPU = true);
+		DLLTREATMENT void sClearG(float newVal, bool updOnGPU = true);
+		DLLTREATMENT void sClearB(float newVal, bool updOnGPU = true);
+		DLLTREATMENT void sClearA(float newVal, bool updOnGPU = true);
 
 
 
@@ -168,6 +177,11 @@ namespace KE2::Graphics::Primitives {
 			float f_Blending_ConstA,
 			RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor f_Blending_FuncForColor1,
 			RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor f_Blending_FuncForColor2,
+
+			bool f_ColorEnabledR,
+			bool f_ColorEnabledG,
+			bool f_ColorEnabledB,
+			bool f_ColorEnabledA,
 
 			float f_ClearR,
 			float f_ClearG,

@@ -31,6 +31,11 @@ RenderingPresetClass::RenderingPresetClass(
 	RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor f_Blending_FuncForColor1,
 	RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor f_Blending_FuncForColor2,
 
+	bool f_ColorEnabledR,
+	bool f_ColorEnabledG,
+	bool f_ColorEnabledB,
+	bool f_ColorEnabledA,
+
 	float f_ClearR,
 	float f_ClearG,
 	float f_ClearB,
@@ -43,10 +48,9 @@ StencilTest_ReferenceValue(f_StencilTest_ReferenceValue), StencilTest_Mask(f_Ste
 StencilTest_ActionOnSPDF(f_StencilTest_ActionOnSPDF), StencilTest_ActionOnSPDP(f_StencilTest_ActionOnSPDP),
 Blending_Enabled(f_Blending_Enabled), Blending_ConstR(f_Blending_ConstR), Blending_ConstG(f_Blending_ConstG), Blending_ConstB(f_Blending_ConstG), Blending_ConstA(f_Blending_ConstA),
 Blending_FuncForColor1(f_Blending_FuncForColor1), Blending_FuncForColor2(f_Blending_FuncForColor2),
+ColorEnabledR(f_ColorEnabledR), ColorEnabledG(f_ColorEnabledG), ColorEnabledB(f_ColorEnabledB), ColorEnabledA(f_ColorEnabledA),
 ClearR(f_ClearR), ClearG(f_ClearG), ClearB(f_ClearB), ClearA(f_ClearA)
-{
-
-}
+{ }
 
 RenderingPresetClass::RenderingPresetClass(const RenderingPresetClass& toCopy) {
 	memcpy(this, &toCopy, sizeof(RenderingPresetClass));
@@ -56,31 +60,35 @@ void RenderingPresetClass::operator=(const RenderingPresetClass& toCopy) {
 }
 
 
-void RenderingPresetClass::sFaceCulling_Enabled(bool newVal) { FaceCulling_Enabled = newVal; UpdFaceCulling_Enabled(); }
-void RenderingPresetClass::sFaceCulling_FaceToCull(RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull newVal) { FaceCulling_FaceToCull = newVal; UpdFaceCulling_FaceToCull(); }
-void RenderingPresetClass::sFaceCulling_FaceDetermination(RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination newVal) { FaceCulling_FaceDetermination = newVal; UpdFaceCulling_FaceDetermination(); }
-void RenderingPresetClass::sDepthTest_Enabled(bool newVal) { DepthTest_Enabled = newVal; UpdDepthTest_Enabled(); }
-void RenderingPresetClass::sDepthTest_WriteInBufferEnabled(bool newVal) { DepthTest_WriteInBufferEnabled = newVal; UpdDepthTest_WriteInBufferEnabled(); }
-void RenderingPresetClass::sDepthTest_TypeOfComparison(RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison newVal) { DepthTest_TypeOfComparison = newVal; UpdDepthTest_TypeOfComparison(); }
-void RenderingPresetClass::sStencilTest_Enabled(bool newVal) { StencilTest_Enabled = newVal; UpdStencilTest_Enabled(); }
-void RenderingPresetClass::sStencilTest_BaseMask(unsigned int newVal) { StencilTest_BaseMask = newVal; UpdStencilTest_BaseMask(); }
-void RenderingPresetClass::sStencilTest_ComparisonType(RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison newVal) { StencilTest_ComparisonType = newVal; UpdStencilTest_StencilFunc(); }
-void RenderingPresetClass::sStencilTest_ReferenceValue(unsigned int newVal) { StencilTest_ReferenceValue = newVal; UpdStencilTest_StencilFunc(); }
-void RenderingPresetClass::sStencilTest_Mask(unsigned int newVal) { StencilTest_Mask = newVal; UpdStencilTest_StencilFunc(); }
-void RenderingPresetClass::sStencilTest_ActionOnSF(RenderingPresetEnumArgumentsNamespace::StencilTest::Actions newVal) { StencilTest_ActionOnSF = newVal; UpdStencilTest_StencilOpFunc(); }
-void RenderingPresetClass::sStencilTest_ActionOnSPDF(RenderingPresetEnumArgumentsNamespace::StencilTest::Actions newVal) { StencilTest_ActionOnSPDF = newVal; UpdStencilTest_StencilOpFunc(); }
-void RenderingPresetClass::sStencilTest_ActionOnSPDP(RenderingPresetEnumArgumentsNamespace::StencilTest::Actions newVal) { StencilTest_ActionOnSPDP = newVal; UpdStencilTest_StencilOpFunc(); }
-void RenderingPresetClass::sBlending_Enabled(bool newVal) { Blending_Enabled = newVal; UpdBlending_Enabled(); }
-void RenderingPresetClass::sBlending_ConstR(float newVal) { Blending_ConstR = newVal; UpdBlending_ConstRGBA(); }
-void RenderingPresetClass::sBlending_ConstG(float newVal) { Blending_ConstG = newVal; UpdBlending_ConstRGBA(); }
-void RenderingPresetClass::sBlending_ConstB(float newVal) { Blending_ConstB = newVal; UpdBlending_ConstRGBA(); }
-void RenderingPresetClass::sBlending_ConstA(float newVal) { Blending_ConstA = newVal; UpdBlending_ConstRGBA(); }
-void RenderingPresetClass::sBlending_FuncForColor1(RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor newVal) { Blending_FuncForColor1 = newVal; UpdBlending_FuncForColor(); }
-void RenderingPresetClass::sBlending_FuncForColor2(RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor newVal) { Blending_FuncForColor2 = newVal; UpdBlending_FuncForColor(); }
-void RenderingPresetClass::sClearR(float newVal) { ClearR = newVal; UpdClearRGBA(); }
-void RenderingPresetClass::sClearG(float newVal) { ClearG = newVal; UpdClearRGBA(); }
-void RenderingPresetClass::sClearB(float newVal) { ClearB = newVal; UpdClearRGBA(); }
-void RenderingPresetClass::sClearA(float newVal) { ClearA = newVal; UpdClearRGBA(); }
+void RenderingPresetClass::sFaceCulling_Enabled(bool newVal, bool updOnGPU) { FaceCulling_Enabled = newVal; if (updOnGPU) UpdFaceCulling_Enabled(); }
+void RenderingPresetClass::sFaceCulling_FaceToCull(RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull newVal, bool updOnGPU) { FaceCulling_FaceToCull = newVal; if (updOnGPU) UpdFaceCulling_FaceToCull(); }
+void RenderingPresetClass::sFaceCulling_FaceDetermination(RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination newVal, bool updOnGPU) { FaceCulling_FaceDetermination = newVal; if (updOnGPU) UpdFaceCulling_FaceDetermination(); }
+void RenderingPresetClass::sDepthTest_Enabled(bool newVal, bool updOnGPU) { DepthTest_Enabled = newVal; if (updOnGPU) UpdDepthTest_Enabled(); }
+void RenderingPresetClass::sDepthTest_WriteInBufferEnabled(bool newVal, bool updOnGPU) { DepthTest_WriteInBufferEnabled = newVal; if (updOnGPU) UpdDepthTest_WriteInBufferEnabled(); }
+void RenderingPresetClass::sDepthTest_TypeOfComparison(RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison newVal, bool updOnGPU) { DepthTest_TypeOfComparison = newVal; if (updOnGPU) UpdDepthTest_TypeOfComparison(); }
+void RenderingPresetClass::sStencilTest_Enabled(bool newVal, bool updOnGPU) { StencilTest_Enabled = newVal; if (updOnGPU) UpdStencilTest_Enabled(); }
+void RenderingPresetClass::sStencilTest_BaseMask(unsigned int newVal, bool updOnGPU) { StencilTest_BaseMask = newVal; if (updOnGPU) UpdStencilTest_BaseMask(); }
+void RenderingPresetClass::sStencilTest_ComparisonType(RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison newVal, bool updOnGPU) { StencilTest_ComparisonType = newVal; if (updOnGPU) UpdStencilTest_StencilFunc(); }
+void RenderingPresetClass::sStencilTest_ReferenceValue(unsigned int newVal, bool updOnGPU) { StencilTest_ReferenceValue = newVal; if (updOnGPU) UpdStencilTest_StencilFunc(); }
+void RenderingPresetClass::sStencilTest_Mask(unsigned int newVal, bool updOnGPU) { StencilTest_Mask = newVal; if (updOnGPU) UpdStencilTest_StencilFunc(); }
+void RenderingPresetClass::sStencilTest_ActionOnSF(RenderingPresetEnumArgumentsNamespace::StencilTest::Actions newVal, bool updOnGPU) { StencilTest_ActionOnSF = newVal; if (updOnGPU) UpdStencilTest_StencilOpFunc(); }
+void RenderingPresetClass::sStencilTest_ActionOnSPDF(RenderingPresetEnumArgumentsNamespace::StencilTest::Actions newVal, bool updOnGPU) { StencilTest_ActionOnSPDF = newVal; if (updOnGPU) UpdStencilTest_StencilOpFunc(); }
+void RenderingPresetClass::sStencilTest_ActionOnSPDP(RenderingPresetEnumArgumentsNamespace::StencilTest::Actions newVal, bool updOnGPU) { StencilTest_ActionOnSPDP = newVal; if (updOnGPU) UpdStencilTest_StencilOpFunc(); }
+void RenderingPresetClass::sBlending_Enabled(bool newVal, bool updOnGPU) { Blending_Enabled = newVal; if (updOnGPU) UpdBlending_Enabled(); }
+void RenderingPresetClass::sBlending_ConstR(float newVal, bool updOnGPU) { Blending_ConstR = newVal; if (updOnGPU) UpdBlending_ConstRGBA(); }
+void RenderingPresetClass::sBlending_ConstG(float newVal, bool updOnGPU) { Blending_ConstG = newVal; if (updOnGPU) UpdBlending_ConstRGBA(); }
+void RenderingPresetClass::sBlending_ConstB(float newVal, bool updOnGPU) { Blending_ConstB = newVal; if (updOnGPU) UpdBlending_ConstRGBA(); }
+void RenderingPresetClass::sBlending_ConstA(float newVal, bool updOnGPU) { Blending_ConstA = newVal; if (updOnGPU) UpdBlending_ConstRGBA(); }
+void RenderingPresetClass::sBlending_FuncForColor1(RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor newVal, bool updOnGPU) { Blending_FuncForColor1 = newVal; if (updOnGPU) UpdBlending_FuncForColor(); }
+void RenderingPresetClass::sBlending_FuncForColor2(RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor newVal, bool updOnGPU) { Blending_FuncForColor2 = newVal; if (updOnGPU) UpdBlending_FuncForColor(); }
+void RenderingPresetClass::sColorEnabledR(bool newVal, bool updOnGPU) { ColorEnabledR = newVal; if (updOnGPU) UpdColorEnabledRGBA(); }
+void RenderingPresetClass::sColorEnabledG(bool newVal, bool updOnGPU) { ColorEnabledG = newVal; if (updOnGPU) UpdColorEnabledRGBA(); }
+void RenderingPresetClass::sColorEnabledB(bool newVal, bool updOnGPU) { ColorEnabledB = newVal; if (updOnGPU) UpdColorEnabledRGBA(); }
+void RenderingPresetClass::sColorEnabledA(bool newVal, bool updOnGPU) { ColorEnabledA = newVal; if (updOnGPU) UpdColorEnabledRGBA(); }
+void RenderingPresetClass::sClearR(float newVal, bool updOnGPU) { ClearR = newVal; if (updOnGPU) UpdClearRGBA(); }
+void RenderingPresetClass::sClearG(float newVal, bool updOnGPU) { ClearG = newVal; if (updOnGPU) UpdClearRGBA(); }
+void RenderingPresetClass::sClearB(float newVal, bool updOnGPU) { ClearB = newVal; if (updOnGPU) UpdClearRGBA(); }
+void RenderingPresetClass::sClearA(float newVal, bool updOnGPU) { ClearA = newVal; if (updOnGPU) UpdClearRGBA(); }
 
 
 void RenderingPresetClass::UpdFaceCulling_Enabled() {
@@ -201,7 +209,9 @@ void RenderingPresetClass::UpdBlending_FuncForColor() {
 	}
 	glSC(glBlendFunc(args[0], args[1]));
 }
-
+void RenderingPresetClass::UpdColorEnabledRGBA() {
+	glSC(glColorMask(ColorEnabledR, ColorEnabledG, ColorEnabledB, ColorEnabledA));
+}
 void RenderingPresetClass::UpdClearRGBA() {
 	glSC(glClearColor(ClearR, ClearG, ClearB, ClearA));
 }

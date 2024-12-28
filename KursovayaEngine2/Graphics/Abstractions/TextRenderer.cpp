@@ -19,7 +19,7 @@ GA::TextRendererClass::TextRendererClass(const char* vertexShaderDir, const char
     false, 0, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Equal, 1, 255, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
     GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
     true, 0, 0, 0, 0, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
-    0.f, 0.f, 0.f, 1.f
+    1, 1, 1, 1, 0.f, 0.f, 0.f, 1.f
 ) {
 
     AmountOfInstances++;
