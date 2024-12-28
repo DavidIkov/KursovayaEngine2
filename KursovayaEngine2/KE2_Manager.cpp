@@ -1,9 +1,12 @@
 #include"KE2_Manager.h"
 #include"stb_image/stb_image.h"
 #include"GLFW/glfw3.h"
+#include<iostream>
 
 using namespace KE2;
 using namespace Manager;
+
+std::ostream* KE2::Manager::OutputStream = &std::cout; 
 
 constexpr bool KE2::Manager::KE2_LibraryStruct::_IsKE2_InDebugConfig() noexcept {
 #if defined KE2_Debug

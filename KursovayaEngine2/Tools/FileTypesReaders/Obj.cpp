@@ -1,8 +1,9 @@
 #include"Obj.h"
-#include<iostream>
 #include"Maths/Vector.h"
 #include<limits>
-#include"OS_BasedStuff/FilesSystem.h"
+#include"KE2_Manager.h"
+#include<fstream>
+#include"Tools/Time.h"
 
 static unsigned int findSymbolInd(const std::string& txt, const char symbol, const unsigned int startInd) {
 	unsigned int i = startInd;
@@ -26,11 +27,14 @@ static int mini(int a1, int a2) {
 */
 
 //return packed data: Position,SmoothedNormal,FaceNormal,TextureCords
-std::vector<float> ReadObjFileType(const wchar_t* filePath) {
+std::vector<float> ReadObjFileType(const char* filePath) {
 
-	FilesSystemNamespace::OpenedFile file(filePath);
+	std::fstream file(filePath, std::ios::in);
 	std::string curLine;
 
+	if (KE2::Manager::OutputStream != nullptr) *KE2::Manager::OutputStream << "Starting processing .obj file \"" << filePath << "\"...  ";
+
+	float startTime = TimeNamespace::GetTime();
 
 	unsigned int fileVertexesAmount = 0;
 	unsigned int fileVertexConnectionsAmount = 0;
@@ -41,7 +45,7 @@ std::vector<float> ReadObjFileType(const wchar_t* filePath) {
 
 	//first step
 	{
-		while (file.GetNextLine(curLine)) {
+		while (std::getline(file,curLine)) {
 
 			std::string name = curLine.substr(0, findSymbolInd(curLine, ' ', 0));
 			if (name == "v")//vertex
@@ -60,13 +64,13 @@ std::vector<float> ReadObjFileType(const wchar_t* filePath) {
 
 	}
 	
-	file.GoToStartOfStream();
+	file.clear(); file.seekg(0);
 
 	unsigned int trianglesAmount = 0;
 
 	//second step
 	{
-		while (file.GetNextLine(curLine)) {
+		while (std::getline(file,curLine)) {
 
 			std::string name = curLine.substr(0, findSymbolInd(curLine, ' ', 0));
 			if (name == "v") {//vertex
@@ -205,6 +209,8 @@ std::vector<float> ReadObjFileType(const wchar_t* filePath) {
 			preparedData[pdi + 2] = unitVec[2];
 		}*/
 	}
+
+	if (KE2::Manager::OutputStream != nullptr) *KE2::Manager::OutputStream << "Finished processing .obj in " << TimeNamespace::GetTime() - startTime << " seconds" << std::endl;
 
 
 

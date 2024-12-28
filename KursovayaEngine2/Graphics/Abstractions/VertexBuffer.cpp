@@ -11,11 +11,11 @@ VertexBufferClass::VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode
 	BufferReadWriteMode(bufferReadWriteMode), DataSizeInBytes(data.gLenInBytes()) {
 	GP::VertexBufferClass::SetData(data, bufferReadWriteMode);
 }
-VertexBufferClass::VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const wchar_t* filePath) :
+VertexBufferClass::VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const char* filePath) :
 	BufferReadWriteMode(bufferReadWriteMode) {
-	std::wstring filePathStr(filePath);
-	std::wstring fileType = filePathStr.substr(filePathStr.find_last_of(L'.') + 1);
-	if (fileType == L"obj") {
+	std::string filePathStr(filePath);
+	std::string fileType = filePathStr.substr(filePathStr.find_last_of(L'.') + 1);
+	if (fileType == "obj") {
 		std::vector<float> data = ReadObjFileType(filePath);
 		DataSizeInBytes = data.size() * sizeof(float);
 		GP::VertexBufferClass::SetData(ArrayView<void>(&data[0], DataSizeInBytes), bufferReadWriteMode);

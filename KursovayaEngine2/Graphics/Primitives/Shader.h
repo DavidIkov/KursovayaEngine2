@@ -28,7 +28,7 @@ namespace KE2::Graphics::Primitives {
 			inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
 		}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
 
-		DLLTREATMENT ShaderClass(const wchar_t* filePath, TypesEnum typ);
+		DLLTREATMENT ShaderClass(const char* filePath, TypesEnum typ);
 		DLLTREATMENT ShaderClass(TypesEnum typ, const char* code);
 		DLLTREATMENT ShaderClass(ShaderClass&& toCopy) noexcept;
 		DLLTREATMENT ShaderClass& operator=(ShaderClass&& toCopy);

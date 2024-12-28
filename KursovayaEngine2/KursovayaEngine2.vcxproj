@@ -357,7 +357,6 @@
     <ClCompile Include="Tools\Time.cpp" />
     <ClCompile Include="Windows\Window.cpp" />
     <ClCompile Include="OS_BasedStuff\FileExplorerDialog.cpp" />
-    <ClCompile Include="OS_BasedStuff\FilesSystem.cpp" />
     <ClCompile Include="OS_BasedStuff\wchar_t_Operations.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -493,7 +492,6 @@
     <ClInclude Include="Tools\PtrToMember_ToOff.h" />
     <ClInclude Include="Tools\StaticLambda.h" />
     <ClInclude Include="Tools\UniversalLambda.h" />
-    <ClInclude Include="OS_BasedStuff\FilesSystem.h" />
     <ClInclude Include="OS_BasedStuff\wchar_t_Operations.h" />
     <ClInclude Include="Tools\FileTypesReaders\Obj.h" />
     <ClInclude Include="Graphics\Primitives\FrameBuffer.h" />

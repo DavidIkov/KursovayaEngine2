@@ -1,6 +1,7 @@
 #pragma once
 #include"DLL.h"
 #include"Tools/ErrorsSystem.h"
+#include<ostream>
 
 #if !defined KE2_DLL
 #if !defined KE2_User
@@ -21,7 +22,7 @@ namespace KE2::Manager {
 		inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
 	}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
 
-
+	extern std::ostream* OutputStream;//cout
 
 	class KE2_LibraryStruct {
 

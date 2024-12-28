@@ -29,7 +29,7 @@ namespace KE2::Graphics::Abstractions {
 		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode);
 		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const ArrayView<void>& data);
 		//filePath to some 3d object, right now only .obj is accepted
-		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const wchar_t* filePath);
+		DLLTREATMENT VertexBufferClass(BufferReadWriteModeEnum bufferReadWriteMode, const char* filePath);
 		DLLTREATMENT VertexBufferClass(const VertexBufferClass& toCopy, bool copyBufferData = false);
 		DLLTREATMENT VertexBufferClass(VertexBufferClass&& toCopy) noexcept;
 		DLLTREATMENT virtual ~VertexBufferClass() noexcept(false) override = default;

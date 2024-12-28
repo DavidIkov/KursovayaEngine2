@@ -2,7 +2,8 @@
 #include"glad/glad.h"
 #include<string>
 #include"Tools/GLDebug.h"
-#include"OS_BasedStuff/FilesSystem.h"
+#include<fstream>
+#include"KE2_Manager.h"
 
 using namespace KE2;
 using namespace Graphics::Primitives;
@@ -13,14 +14,21 @@ using namespace Graphics::Primitives;
 #define Assert_NotCompiled_Macro
 #endif
 
-ShaderClass::ShaderClass(const wchar_t* filePath, TypesEnum typ) 
+ShaderClass::ShaderClass(const char* filePath, TypesEnum typ) 
 #ifdef KE2_Debug
 	:ShaderType(typ)
 #endif
 {
 	glSC(ID = glCreateShader((typ == TypesEnum::Fragment) ? GL_FRAGMENT_SHADER : ((typ == TypesEnum::Vertex) ? GL_VERTEX_SHADER : GL_GEOMETRY_SHADER)));
-	std::string scode = FilesSystemNamespace::SaveFileToString(filePath);
-	const char* code = scode.c_str();
+	std::string srcCode; 
+	{
+		if(KE2::Manager::OutputStream != nullptr) *KE2::Manager::OutputStream << "Reading shader \"" << filePath << '\"' << std::endl;
+		std::fstream srcFile(filePath, std::ios_base::in); std::string	curLine;
+		size_t charactersAmount = 0; while (std::getline(srcFile, curLine)) charactersAmount += curLine.length() + 1;
+		srcFile.clear(); srcFile.seekg(0); srcCode.reserve(charactersAmount);
+		while (std::getline(srcFile, curLine)) srcCode += curLine + '\n';
+	}
+	const char* code = srcCode.c_str();
 	glSC(glShaderSource(ID, 1, &code, 0));
 }
 ShaderClass::ShaderClass(TypesEnum typ, const char* code) 

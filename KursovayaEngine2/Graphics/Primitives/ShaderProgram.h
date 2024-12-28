@@ -28,8 +28,8 @@ namespace KE2::Graphics::Primitives {
 		}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
 
 		DLLTREATMENT ShaderProgramClass();
-		DLLTREATMENT ShaderProgramClass(const wchar_t* vsPath, const wchar_t* fsPath);
-		DLLTREATMENT ShaderProgramClass(const wchar_t* vsPath, const wchar_t* gsPath, const wchar_t* fsPath);
+		DLLTREATMENT ShaderProgramClass(const char* vsPath, const char* fsPath);
+		DLLTREATMENT ShaderProgramClass(const char* vsPath, const char* gsPath, const char* fsPath);
 		DLLTREATMENT ShaderProgramClass(ShaderProgramClass&& toCopy) noexcept;
 		DLLTREATMENT ShaderProgramClass& operator=(ShaderProgramClass&& toCopy);
 		DLLTREATMENT void AttachShader(unsigned int id) const;

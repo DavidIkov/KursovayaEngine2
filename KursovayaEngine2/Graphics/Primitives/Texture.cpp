@@ -1,7 +1,6 @@
 #include"Texture.h"
 #include"stb_image/stb_image.h"
 #include"Tools/GLDebug.h"
-#include"Tools/ReadFromFile.h"
 #include"glad/glad.h"
 #include"Graphics/Globals.h"
 #include"FrameBuffer.h"

@@ -20,7 +20,7 @@ using namespace Graphics::Primitives;
 ShaderProgramClass::ShaderProgramClass() {
 	glSC(ID = glCreateProgram());
 }
-ShaderProgramClass::ShaderProgramClass(const wchar_t* vsPath, const wchar_t* fsPath) :ShaderProgramClass() {
+ShaderProgramClass::ShaderProgramClass(const char* vsPath, const char* fsPath) :ShaderProgramClass() {
 	ShaderClass VS(vsPath, ShaderClass::TypesEnum::Vertex);
 	VS.Compile();
 	AttachShader(VS.gID());
@@ -31,7 +31,7 @@ ShaderProgramClass::ShaderProgramClass(const wchar_t* vsPath, const wchar_t* fsP
 
 	LinkShaders();
 }
-ShaderProgramClass::ShaderProgramClass(const wchar_t* vsPath, const wchar_t* gsPath, const wchar_t* fsPath) :ShaderProgramClass() {
+ShaderProgramClass::ShaderProgramClass(const char* vsPath, const char* gsPath, const char* fsPath) :ShaderProgramClass() {
 	ShaderClass VS(vsPath, ShaderClass::TypesEnum::Vertex);
 	VS.Compile();
 	AttachShader(VS.gID());

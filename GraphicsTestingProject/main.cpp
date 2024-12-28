@@ -29,10 +29,10 @@ namespace GA = KE2::Graphics::Abstractions;
 int main()
 {
 
-    KE2::Manager::KE2_LibraryStruct KE2_Library;
     
     try {
 
+		KE2::Manager::KE2_LibraryStruct KE2_Library;
 
         KE2::Window::WindowClass::MonitorDataStruct MonitorData = KE2::Window::WindowClass::gPrimaryMonitorData();
 
@@ -40,7 +40,7 @@ int main()
         unsigned int Height = MonitorData.Size[1] / 2;
 
         KE2::Window::WindowClass window(&Width, &Height, "haiiiii", false, 1);
-        GA::TextRendererClass TEXT_RENDERER(L"Shaders/textNEW.vs", L"Shaders/textNEW.fs");
+        GA::TextRendererClass TEXT_RENDERER("Shaders/textNEW.vs", "Shaders/textNEW.fs");
         const GA::TextRendererClass::FontStruct& ArialFont = TEXT_RENDERER.AddFont(50, "Fonts/arial.ttf", L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
             "`abcdefghijklmnopqrstuvwxyz{|}~"\
             "¿¡¬√ƒ≈®∆«»… ÀÃÕŒœ–—“”‘’÷◊ÿŸ⁄€‹›ﬁﬂˇ˛˝¸˚˙˘¯˜ˆıÙÛÚÒÔÓÌÏÎÍÈËÁÊ∏Â‰„‚·‡");
@@ -51,7 +51,7 @@ int main()
             GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
             GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,
             GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Nearest,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Nearest,
-            GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }
+            GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::None }
         );
         FB.AttachTexture(FB_COLOR_TEX);
         /*TextureClass FB_DEPTH_STENCIL_TEX(Width, Height, nullptr, TextureClass::TypeEnum::Texture2D,
@@ -87,7 +87,7 @@ int main()
         
 
         
-        GP::ShaderProgramClass Test_SP(L"Shaders/simpleQuad.vs", L"Shaders/simpleQuad.fs");
+        GP::ShaderProgramClass Test_SP("Shaders/simpleQuad.vs", "Shaders/simpleQuad.fs");
         GA::VertexBufferClass Test_VB(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<float>({ 0.5f,0.5f,-0.5f,0.5f,-0.5f,-0.5f,0.5f,-0.5f }));
         GA::VertexBufferClass Test_VB2(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<float>({ 0.f,0.3f,0.6f,1.f }));
         GA::IndexBufferClass Test_IB(GA::IndexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<unsigned int>({ 0u,1u,2u,2u,3u,0u }));
@@ -97,8 +97,8 @@ int main()
             GA::VertexArrayClass::AttributeDataStruct{ Test_VB2,false,0,1,0,sizeof(float) * 1, GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float},
             }));
 
-        GA::VertexBufferClass VB1(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, L"Models3D/koleso.obj");
-		GA::VertexBufferClass VB2(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, L"Models3D/sphere.obj");
+        GA::VertexBufferClass VB1(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, "Models3D/koleso.obj");
+		GA::VertexBufferClass VB2(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, "Models3D/sphere.obj");
 
         GA::VertexArrayClass VA1(ArrayView<GA::VertexArrayClass::AttributeDataStruct>({
             GA::VertexArrayClass::AttributeDataStruct{ VB1,false,0,3,0,sizeof(float) * (3 + 3 + 3 + 2), GA::VertexArrayClass::AttributeDataStruct::DataTypeInMemory_Enum::Float, GA::VertexArrayClass::AttributeDataStruct::DataTypeForReadingOnGPU_Enum::Float },
@@ -121,13 +121,13 @@ int main()
             }));
 
 
-		GP::ShaderProgramClass SP(L"Shaders/full3d.vs", L"Shaders/full3d.fs");
+		GP::ShaderProgramClass SP("Shaders/full3d.vs", "Shaders/full3d.fs");
         
-        GP::ShaderProgramClass  SP_OUTLINE(L"Shaders/outline.vs", L"Shaders/outline.fs");
+        GP::ShaderProgramClass  SP_OUTLINE("Shaders/outline.vs", "Shaders/outline.fs");
 
-        GP::ShaderProgramClass SP_NORMAL(L"Shaders/normal.vs", L"Shaders/normal.gs", L"Shaders/normal.fs");
+        GP::ShaderProgramClass SP_NORMAL("Shaders/normal.vs", "Shaders/normal.gs", "Shaders/normal.fs");
 
-        GP::ShaderProgramClass QUAD_SP(L"Shaders/quad.vs", L"Shaders/quad.fs");
+        GP::ShaderProgramClass QUAD_SP("Shaders/quad.vs", "Shaders/quad.fs");
 
         QUAD_SP.Bind();
         QUAD_SP.SetUniform1i("u_Texture", 0);

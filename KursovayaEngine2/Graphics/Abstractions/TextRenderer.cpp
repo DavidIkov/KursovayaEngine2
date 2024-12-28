@@ -13,7 +13,7 @@ namespace GA = Graphics::Abstractions;
 void* GA::TextRendererClass::FreeTypeLib = nullptr;
 unsigned short GA::TextRendererClass::AmountOfInstances = 0;
 
-GA::TextRendererClass::TextRendererClass(const wchar_t* vertexShaderDir, const wchar_t* fragmentShaderDir) :TextPreset(
+GA::TextRendererClass::TextRendererClass(const char* vertexShaderDir, const char* fragmentShaderDir) :TextPreset(
     false, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
     false, true, GP::RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual,
     false, 0, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Equal, 1, 255, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,

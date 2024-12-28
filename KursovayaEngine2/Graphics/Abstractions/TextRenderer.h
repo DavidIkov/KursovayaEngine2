@@ -62,7 +62,7 @@ namespace KE2::Graphics::Abstractions {
 			inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
 		}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
 
-		DLLTREATMENT TextRendererClass(const wchar_t* vertexShaderDir, const wchar_t* fragmentShaderDir);
+		DLLTREATMENT TextRendererClass(const char* vertexShaderDir, const char* fragmentShaderDir);
 		DLLTREATMENT virtual ~TextRendererClass();
 		DLLTREATMENT const FontStruct& AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters);
 
