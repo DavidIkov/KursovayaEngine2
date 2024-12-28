@@ -76,7 +76,7 @@ public:
 		Type sum = Type(); for (unsigned int i = 0; i < AxesAmount; i++) sum += Axes[i] * Axes[i];
 		return sum;
 	}
-	Type Length() const noexcept { return sqrt(LengthSQ()); }
+	Type Length() const noexcept { return sqrtf(LengthSQ()); }
 
 	Vector<AxesAmount, Type> Normalize() const noexcept {
 		return (*this) / Length();
