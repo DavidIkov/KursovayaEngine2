@@ -39,6 +39,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>true</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -65,6 +66,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>true</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Efficiency|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -72,7 +74,7 @@
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <EnableASAN>true</EnableASAN>
+    <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -129,7 +131,7 @@
       <PreprocessorDefinitions>KE2_Windows;KE2_Debug;KE2_x86;WIN32;_CONSOLE;%(PreprocessorDefinitions);_DEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
       <AdditionalOptions>/Zc:preprocessor /w15038 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -147,7 +149,7 @@
       <PreprocessorDefinitions>KE2_Windows;KE2_Debug;KE2_x86;WIN32;_CONSOLE;%(PreprocessorDefinitions);_DEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
       <AdditionalOptions>/Zc:preprocessor /w15038 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -167,7 +169,7 @@
       <PreprocessorDefinitions>KE2_Windows;KE2_Efficiency;KE2_x86;WIN32;_CONSOLE;%(PreprocessorDefinitions);NDEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
       <AdditionalOptions>/Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -189,7 +191,7 @@
       <PreprocessorDefinitions>KE2_Windows;KE2_Efficiency;KE2_x86;WIN32;_CONSOLE;%(PreprocessorDefinitions);NDEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
       <AdditionalOptions>/Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -209,7 +211,7 @@
       <PreprocessorDefinitions>KE2_Windows;KE2_Debug;KE2_x64;_CONSOLE;%(PreprocessorDefinitions);_DEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
       <AdditionalOptions>/Zc:preprocessor /w15038 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -229,7 +231,7 @@
       <PreprocessorDefinitions>KE2_Windows;KE2_Efficiency;KE2_x64;_CONSOLE;%(PreprocessorDefinitions);NDEBUG;KE2_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KursovayaEngine2\Dependencies\FreeType;$(SolutionDir)KursovayaEngine2\Dependencies;$(SolutionDir)KursovayaEngine2\Dependencies\glfw\3.4_$(Platform)\include\;$(SolutionDir)KursovayaEngine2\Dependencies\glad\include\;$(SolutionDir)KursovayaEngine2</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
       <AdditionalOptions>/Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>

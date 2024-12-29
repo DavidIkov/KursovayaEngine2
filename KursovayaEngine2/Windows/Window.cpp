@@ -34,7 +34,7 @@ const MouseClass& WindowClass::gMouseHandle() const {
     return MouseHandle;
 }
 
-WindowClass::WindowClass(unsigned int* w, unsigned int* h, const char* title, bool fullscreen, unsigned int swapInterval) {
+WindowClass::WindowClass(unsigned int* w, unsigned int* h, const char* title, bool fullscreen, int vsyncValue) {
     
     glfwSetErrorCallback(+[](int code, const char* msg) {
         ErrorsSystemNamespace::SendError << "GLFW error with code [" << std::to_string(code) << "] and message: [" << msg << "]" >> GLFW_ErrorWrapperStruct(code);
@@ -52,7 +52,7 @@ WindowClass::WindowClass(unsigned int* w, unsigned int* h, const char* title, bo
 
     glfwMakeContextCurrent((GLFWwindow*)GLFW_WindowPtr);
 
-    glfwSwapInterval(swapInterval);
+    glfwSwapInterval(vsyncValue);
 
     glfwSetMouseButtonCallback((GLFWwindow*)GLFW_WindowPtr, [](GLFWwindow* window, int button, int action, int mods) {
         ((WindowClass*)glfwGetWindowUserPointer(window))->MouseHandle._GLFW_KEYCALLBACK(button, action, mods);

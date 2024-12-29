@@ -39,7 +39,7 @@ int main()
         unsigned int Width = MonitorData.Size[0] / 2;
         unsigned int Height = MonitorData.Size[1] / 2;
 
-        KE2::Window::WindowClass window(&Width, &Height, "haiiiii", false, 1);
+        KE2::Window::WindowClass window(&Width, &Height, "haiiiii", false, -1);
         GA::TextRendererClass TEXT_RENDERER("Shaders/textNEW.vs", "Shaders/textNEW.fs");
         const GA::TextRendererClass::FontStruct& ArialFont = TEXT_RENDERER.AddFont(50, "Fonts/arial.ttf", L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"\
             "`abcdefghijklmnopqrstuvwxyz{|}~"\
@@ -196,6 +196,9 @@ int main()
         unsigned int CurrentFPS_Counter = 0;
         unsigned int LastFPS_Counter = 0;
 
+        float TargetFPS = 120.f;
+
+        float previousFPS_Time = 1.f / TargetFPS;
 
         while (!window.WindowWaitingToClose()) {
             
@@ -203,7 +206,8 @@ int main()
             window.UpdateMouseData();
 
             float FrameStartTime = TimeNamespace::GetTime();
-            
+
+
             Object2Scale = Vector3F(sinf(TimeCounter)+1);
 
             Vector2I MouseDelta;

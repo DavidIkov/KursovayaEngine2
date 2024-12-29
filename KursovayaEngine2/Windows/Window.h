@@ -58,7 +58,7 @@ namespace KE2::Window {
         DLLTREATMENT void ClearAllBuffers();
 
         //will change width and height to actual window width and height
-        DLLTREATMENT WindowClass(unsigned int* w, unsigned int* h, const char* title, bool fullscreen, unsigned int swapInterval);
+        DLLTREATMENT WindowClass(unsigned int* w, unsigned int* h, const char* title, bool fullscreen, int vsyncValue);
         DLLTREATMENT bool WindowWaitingToClose() const;
         DLLTREATMENT void UpdateMouseData();
         DLLTREATMENT void SwapScreenBuffers();
