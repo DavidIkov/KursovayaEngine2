@@ -58,8 +58,8 @@ namespace KE2::Graphics::Primitives {
 
 		DLLTREATMENT virtual void SetAttributes(const ArrayView<AttributeDataStruct>& attribsData);
 		DLLTREATMENT virtual void SetAttribute(unsigned int attribInd, const AttributeDataStruct& attribData);
-		DLLTREATMENT virtual void EnableAttribute(unsigned int attribInd);
-		DLLTREATMENT virtual void DisableAttribute(unsigned int attribInd);
+		DLLTREATMENT void EnableAttribute(unsigned int attribInd);
+		DLLTREATMENT void DisableAttribute(unsigned int attribInd);
 
 		typedef unsigned int VertexArrayID_Type;
 		inline VertexArrayID_Type gID() const noexcept { return ID; }

@@ -487,8 +487,8 @@
     <ClInclude Include="Tools\BinarySearch.h" />
     <ClInclude Include="Tools\BoolsTable.h" />
     <ClInclude Include="Tools\ClassFunctionsAccessController.h" />
-    <ClInclude Include="Tools\ConnectionSlot.h" />
-    <ClInclude Include="Tools\DynArr.h" />
+    <ClInclude Include="Tools\Connections\BindingSlot.h" />
+    <ClInclude Include="Tools\Connections\ConnectionSlot.h" />
     <ClInclude Include="Tools\ErrorsSystem.h" />
     <ClInclude Include="Tools\GetOverlappingMemoryRegion.h" />
     <ClInclude Include="Tools\PtrToMember_ToOff.h" />

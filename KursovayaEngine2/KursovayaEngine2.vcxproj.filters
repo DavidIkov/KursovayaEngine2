@@ -563,9 +563,6 @@
     <ClInclude Include="Tools\UsefullMacros\ComparisonByBytes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tools\DynArr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Tools\BoolsTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -575,10 +572,13 @@
     <ClInclude Include="Graphics\Abstractions\FrameBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tools\ConnectionSlot.h">
+    <ClInclude Include="Tools\Connections\ConnectionSlot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tools\PtrToMember_ToOff.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\Connections\BindingSlot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

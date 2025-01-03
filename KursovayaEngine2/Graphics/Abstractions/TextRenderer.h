@@ -23,7 +23,7 @@ namespace KE2::Graphics::Abstractions {
 			};
 			TextureClass Texture;
 			void* FreeTypeFace;//FT_Face
-			DynArr<CharacterStruct> Characters;
+			std::vector<CharacterStruct> Characters;
 			int MaxCharacterUp = 0; int MaxCharacterDown = 0;
 
 			friend TextRendererClass;

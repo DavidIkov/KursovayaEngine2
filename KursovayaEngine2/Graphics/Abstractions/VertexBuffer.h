@@ -1,5 +1,4 @@
 #pragma once
-#include"Tools/DynArr.h"
 #include"Graphics/Primitives/VertexBuffer.h"
 
 namespace KE2::Graphics::Abstractions {

@@ -1,15 +1,10 @@
 #pragma once
 #include"Graphics/Primitives/VertexArray.h"
-#include"Tools/DynArr.h"
 
 namespace KE2::Graphics::Abstractions {
 	class VertexArrayClass :protected Primitives::VertexArrayClass {
 	protected:
-		struct _AttributeDataStruct :Primitives::VertexArrayClass::AttributeDataStruct {
-			_AttributeDataStruct(const Primitives::VertexArrayClass::AttributeDataStruct toCopy) :Primitives::VertexArrayClass::AttributeDataStruct(toCopy) {};
-			bool Enabled = false;
-		};
-		DynArr<_AttributeDataStruct> AttribsData;
+		std::vector<AttributeDataStruct> AttribsData;
 	public:
 		using AttributeDataStruct = Primitives::VertexArrayClass::AttributeDataStruct;
 
@@ -38,8 +33,9 @@ namespace KE2::Graphics::Abstractions {
 
 		DLLTREATMENT void SetAttributes(const ArrayView<AttributeDataStruct>& attribsData) override final;
 		DLLTREATMENT virtual void SetAttribute(unsigned int attribInd, const AttributeDataStruct& attribData) override final;
-		DLLTREATMENT virtual void EnableAttribute(unsigned int attribInd) override final;
-		DLLTREATMENT virtual void DisableAttribute(unsigned int attribInd) override final;
+
+		using Primitives::VertexArrayClass::EnableAttribute;
+		using Primitives::VertexArrayClass::DisableAttribute;
 
 		DLLTREATMENT void Change_VB_ID_InAttribute(unsigned int attribInd, Primitives::VertexBufferClass::VertexBufferID_Type vb_id);
 		DLLTREATMENT void Change_Normalize_InAttribute(unsigned int attribInd, bool normalize);
@@ -50,9 +46,7 @@ namespace KE2::Graphics::Abstractions {
 		DLLTREATMENT void Change_DataTypeForReadingOnGPU_InAttribute(unsigned int attribInd, AttributeDataStruct::DataTypeForReadingOnGPU_Enum dataTypeForReadingOnGPU);
 
 		inline const AttributeDataStruct& gAttributeData(unsigned int ind) const noexcept { return AttribsData[ind]; }
-		inline const DynArr<AttributeDataStruct>& gAttributesData() const noexcept { return AttribsData; }
-
-		inline bool gIsAttributeEnabled(unsigned int ind) const noexcept { return AttribsData[ind].Enabled; }
+		inline const std::vector<AttributeDataStruct>& gAttributesData() const noexcept { return AttribsData; }
 
 		using Primitives::VertexArrayClass::Bind;
 		using Primitives::VertexArrayClass::Unbind;

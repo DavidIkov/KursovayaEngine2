@@ -7,10 +7,10 @@ FrameBufferClass::FrameBufferClass() { }
 FrameBufferClass::FrameBufferClass(Vector2U viewportSize) :ViewportSize(viewportSize) {};
 FrameBufferClass::FrameBufferClass(const FrameBufferClass& toCopy) noexcept :
 	ViewportSize(toCopy.ViewportSize) {
-	for (size_t i = 0; i < toCopy.Attachments.gLen(); i++) {
-		if (toCopy.Attachments[i].AttachmentInstanceType == AttachmentS::AttachmentInstanceTypeE::RenderBuffer)
+	for (size_t i = 0; i < toCopy.Attachments.size(); i++) {
+		if (toCopy.Attachments[i].AttachmentInstanceType == AttachmentSlotC::AttachmentInstanceTypeE::RenderBuffer)
 			AttachRenderBuffer(*toCopy.Attachments[i].PtrToAttachmentInstance.RB_Ptr, toCopy.Attachments[i].ColorAttachmentInd);
-		else if (toCopy.Attachments[i].AttachmentInstanceType==AttachmentS::AttachmentInstanceTypeE::Texture)
+		else if (toCopy.Attachments[i].AttachmentInstanceType==AttachmentSlotC::AttachmentInstanceTypeE::Texture)
 			AttachTexture(*toCopy.Attachments[i].PtrToAttachmentInstance.T_Ptr, toCopy.Attachments[i].ColorAttachmentInd);
 	}
 	Finish();
@@ -29,28 +29,28 @@ void FrameBufferClass::AttachRenderBuffer(RenderBufferClass& renderBuffer, unsig
 	default: attachmentTyp = AttachmentTypesEnum::Color; break;
 	}
 
-	for (size_t i = 0; i < Attachments.gLen(); i++)
+	for (size_t i = 0; i < Attachments.size(); i++)
 		if (Attachments[i].AttachmentType == attachmentTyp) { 
-			Attachments.RemoveAtIndex(i); 
+			Attachments.erase(Attachments.begin() + i); 
 			GP::FrameBufferClass::UnattachRenderBuffer(attachmentTyp, colorAttachmentInd);
 			break; 
 		}
 
-	Attachments.InsertAtEnd(this, &renderBuffer, AttachmentS::AttachmentInstanceTypeE::RenderBuffer, attachmentTyp, colorAttachmentInd);
+	Attachments.emplace_back(&Attachments, &renderBuffer, AttachmentSlotC::AttachmentInstanceTypeE::RenderBuffer, attachmentTyp, colorAttachmentInd);
 	GP::FrameBufferClass::AttachRenderBuffer(renderBuffer, renderBuffer.BufferDataFormat, colorAttachmentInd);
 }
 void FrameBufferClass::UnattachRenderBuffer(RenderBufferClass& renderBuffer) {
-	for (size_t i = 0; i < Attachments.gLen(); i++)
+	for (size_t i = 0; i < Attachments.size(); i++)
 		if (Attachments[i].PtrToAttachmentInstance.RB_Ptr == &renderBuffer) { 
-			Attachments.RemoveAtIndex(i);
+			Attachments.erase(Attachments.begin() + i);
 			GP::FrameBufferClass::UnattachRenderBuffer(Attachments[i].AttachmentType, Attachments[i].ColorAttachmentInd);
 			break; 
 		}
 }
 void FrameBufferClass::UnattachRenderBuffer(RenderBufferClass::BufferDataFormatEnum bufferDataFormat, unsigned int colorAttachmentInd) {
-	for (size_t i = 0; i < Attachments.gLen(); i++) {
-		AttachmentS& att = Attachments[i];
-		if (att.AttachmentInstanceType == AttachmentS::AttachmentInstanceTypeE::RenderBuffer) {
+	for (size_t i = 0; i < Attachments.size(); i++) {
+		AttachmentSlotC& att = Attachments[i];
+		if (att.AttachmentInstanceType == AttachmentSlotC::AttachmentInstanceTypeE::RenderBuffer) {
 			if (att.AttachmentType == AttachmentTypesEnum::Depth && bufferDataFormat == RenderBufferClass::BufferDataFormatEnum::Depth ||
 				att.AttachmentType == AttachmentTypesEnum::Stencil && bufferDataFormat == RenderBufferClass::BufferDataFormatEnum::Stencil ||
 				att.AttachmentType == AttachmentTypesEnum::DepthStencil && bufferDataFormat == RenderBufferClass::BufferDataFormatEnum::DepthStencil ||
@@ -58,7 +58,7 @@ void FrameBufferClass::UnattachRenderBuffer(RenderBufferClass::BufferDataFormatE
 				bufferDataFormat != RenderBufferClass::BufferDataFormatEnum::Depth &&
 				bufferDataFormat != RenderBufferClass::BufferDataFormatEnum::Stencil &&
 				bufferDataFormat != RenderBufferClass::BufferDataFormatEnum::DepthStencil) {
-				Attachments.RemoveAtIndex(i);
+				Attachments.erase(Attachments.begin() + i);
 				GP::FrameBufferClass::UnattachRenderBuffer(Attachments[i].AttachmentType, Attachments[i].ColorAttachmentInd);
 				break;
 			}
@@ -66,9 +66,9 @@ void FrameBufferClass::UnattachRenderBuffer(RenderBufferClass::BufferDataFormatE
 	}
 }
 void FrameBufferClass::UnattachRenderBuffer(AttachmentTypesEnum attachmentType, unsigned int colorAttachmentInd) {
-	for (size_t i = 0; i < Attachments.gLen(); i++)
+	for (size_t i = 0; i < Attachments.size(); i++)
 		if (Attachments[i].AttachmentType == attachmentType) {
-			Attachments.RemoveAtIndex(i);
+			Attachments.erase(Attachments.begin() + i);
 			GP::FrameBufferClass::UnattachRenderBuffer(Attachments[i].AttachmentType, Attachments[i].ColorAttachmentInd);
 			break;
 		}
@@ -83,28 +83,28 @@ void FrameBufferClass::AttachTexture(TextureClass& texture, unsigned int colorAt
 	default: attachmentTyp = AttachmentTypesEnum::Color; break;
 	}
 
-	for (size_t i = 0; i < Attachments.gLen(); i++)
+	for (size_t i = 0; i < Attachments.size(); i++)
 		if (Attachments[i].AttachmentType == attachmentTyp) { 
-			Attachments.RemoveAtIndex(i); 
+			Attachments.erase(Attachments.begin() + i);
 			GP::FrameBufferClass::UnattachTexture(attachmentTyp, colorAttachmentInd);
 			break; 
 		}
 
-	Attachments.InsertAtEnd(this, &texture, AttachmentS::AttachmentInstanceTypeE::Texture, attachmentTyp, colorAttachmentInd);
+	Attachments.emplace_back(&Attachments, &texture, AttachmentSlotC::AttachmentInstanceTypeE::Texture, attachmentTyp, colorAttachmentInd);
 	GP::FrameBufferClass::AttachTexture(texture, texture.DataSettings.DataFormatOnGPU, colorAttachmentInd);
 }
 void FrameBufferClass::UnattachTexture(TextureClass& texture) {
-	for (size_t i = 0; i < Attachments.gLen(); i++)
+	for (size_t i = 0; i < Attachments.size(); i++)
 		if (Attachments[i].PtrToAttachmentInstance.T_Ptr == &texture) { 
-			Attachments.RemoveAtIndex(i);
+			Attachments.erase(Attachments.begin() + i);
 			GP::FrameBufferClass::UnattachTexture(Attachments[i].AttachmentType, Attachments[i].ColorAttachmentInd);
 			break; 
 		}
 }
 void FrameBufferClass::UnattachTexture(TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU, unsigned int colorAttachmentInd) {
-	for (size_t i = 0; i < Attachments.gLen(); i++) {
-		AttachmentS& att = Attachments[i];
-		if (att.AttachmentInstanceType == AttachmentS::AttachmentInstanceTypeE::Texture) {
+	for (size_t i = 0; i < Attachments.size(); i++) {
+		AttachmentSlotC& att = Attachments[i];
+		if (att.AttachmentInstanceType == AttachmentSlotC::AttachmentInstanceTypeE::Texture) {
 			if (att.AttachmentType == AttachmentTypesEnum::Depth && dataFormatOnGPU == TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Depth ||
 				att.AttachmentType == AttachmentTypesEnum::Stencil && dataFormatOnGPU == TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Stencil ||
 				att.AttachmentType == AttachmentTypesEnum::DepthStencil && dataFormatOnGPU == TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthStencil ||
@@ -112,7 +112,7 @@ void FrameBufferClass::UnattachTexture(TextureClass::DataSettingsStruct::DataFor
 				dataFormatOnGPU != TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Depth &&
 				dataFormatOnGPU != TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Stencil &&
 				dataFormatOnGPU != TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthStencil) {
-				Attachments.RemoveAtIndex(i);
+				Attachments.erase(Attachments.begin() + i);
 				GP::FrameBufferClass::UnattachTexture(att.AttachmentType, att.ColorAttachmentInd);
 				break;
 			}
@@ -120,9 +120,9 @@ void FrameBufferClass::UnattachTexture(TextureClass::DataSettingsStruct::DataFor
 	}
 }
 void FrameBufferClass::UnattachTexture(AttachmentTypesEnum attachmentType, unsigned int colorAttachmentInd) {
-	for (size_t i = 0; i < Attachments.gLen(); i++)
+	for (size_t i = 0; i < Attachments.size(); i++)
 		if (Attachments[i].AttachmentType == attachmentType) {
-			Attachments.RemoveAtIndex(i);
+			Attachments.erase(Attachments.begin() + i);
 			GP::FrameBufferClass::UnattachTexture(Attachments[i].AttachmentType, Attachments[i].ColorAttachmentInd);
 			break;
 		}

@@ -7,7 +7,7 @@ namespace GP = Graphics::Primitives;
 VertexArrayClass::VertexArrayClass(const ArrayView<AttributeDataStruct>& attribsData) :
 	GP::VertexArrayClass(attribsData), AttribsData(attribsData) {};
 VertexArrayClass::VertexArrayClass(const VertexArrayClass& toCopy) :
-	GP::VertexArrayClass(DynArr<AttributeDataStruct>(toCopy.AttribsData)), AttribsData(toCopy.AttribsData) {};
+	GP::VertexArrayClass(std::vector<AttributeDataStruct>(toCopy.AttribsData)), AttribsData(toCopy.AttribsData) {};
 VertexArrayClass::VertexArrayClass(VertexArrayClass&& toCopy) noexcept :
 	GP::VertexArrayClass(std::move(toCopy)), AttribsData(std::move(toCopy.AttribsData)) {};
 VertexArrayClass::~VertexArrayClass(){}
@@ -23,20 +23,12 @@ VertexArrayClass& VertexArrayClass::operator=(VertexArrayClass&& toCopy) {
 }
 
 void VertexArrayClass::SetAttributes(const ArrayView<AttributeDataStruct>& attribsData) {
-	AttribsData.ChangeCapacity(attribsData.gLen());
+	AttribsData.reserve(attribsData.gLen());
 	GP::VertexArrayClass::SetAttributes(attribsData);
 }
 void VertexArrayClass::SetAttribute(unsigned int attribInd, const AttributeDataStruct& attribData) {
 	AttribsData[attribInd] = attribData;
 	GP::VertexArrayClass::SetAttribute(attribInd, attribData);
-}
-void VertexArrayClass::EnableAttribute(unsigned int attribInd) {
-	AttribsData[attribInd].Enabled = true;
-	GP::VertexArrayClass::EnableAttribute(attribInd);
-}
-void VertexArrayClass::DisableAttribute(unsigned int attribInd) {
-	AttribsData[attribInd].Enabled = false;
-	GP::VertexArrayClass::DisableAttribute(attribInd);
 }
 void VertexArrayClass::Change_VB_ID_InAttribute(unsigned int attribInd, GP::VertexBufferClass::VertexBufferID_Type vb_id) 
 	{ AttribsData[attribInd].VB_ID = vb_id; SetAttribute(attribInd, AttribsData[attribInd]); }

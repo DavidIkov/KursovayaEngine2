@@ -1,8 +1,8 @@
 #pragma once
 #include"Shader.h"
 #include<string>
-#include"Tools/DynArr.h"
 #include"Tools/ClassFunctionsAccessController.h"
+#include<vector>
 
 namespace KE2::Graphics::Primitives {
 
@@ -53,7 +53,7 @@ namespace KE2::Graphics::Primitives {
 
 		DLLTREATMENT unsigned int GetUniformIDByName(const char* name) const;
 		DLLTREATMENT UniformData GetUniformData(unsigned int index) const;
-		DLLTREATMENT void GetUniformsData(DynArr<UniformData>& dynArr) const;
+		DLLTREATMENT void GetUniformsData(std::vector<UniformData>& dynArr) const;
 
 		DLLTREATMENT void SetUniform1f(unsigned int uniformID, float v0) const;
 		DLLTREATMENT void SetUniform2f(unsigned int uniformID, float v0, float v1) const;

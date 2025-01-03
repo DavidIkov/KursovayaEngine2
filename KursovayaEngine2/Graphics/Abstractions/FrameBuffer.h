@@ -12,37 +12,31 @@ namespace KE2::Graphics::Abstractions {
 	public:
 		using AttachmentTypesEnum = Primitives::FrameBufferClass::AttachmentTypesEnum;
 		
-		struct AttachmentS :protected ConnectionSlotC {
+	protected:
+		class AttachmentSlotC :public BindingSlotC<AttachmentSlotC> {
+			friend FrameBufferClass;
+		protected:
 			union { void* Ptr; RenderBufferClass* RB_Ptr; TextureClass* T_Ptr; } PtrToAttachmentInstance;
 			enum class AttachmentInstanceTypeE: unsigned char { RenderBuffer, Texture } AttachmentInstanceType;
 
 			AttachmentTypesEnum AttachmentType;
 			unsigned int ColorAttachmentInd = 0u;
 
-			FrameBufferClass* ThisFB;
-
-			AttachmentS(FrameBufferClass* thisFB, void* attachmentInstancePtr, AttachmentInstanceTypeE attachmentInstanceTyp, 
-				AttachmentTypesEnum attachmentTyp, unsigned int colorAttachmentInd = 0u) noexcept : PtrToAttachmentInstance{ attachmentInstancePtr },
-				AttachmentInstanceType(attachmentInstanceTyp), AttachmentType(attachmentTyp), ColorAttachmentInd(colorAttachmentInd), ThisFB(thisFB) { 
+		public:
+			AttachmentSlotC(std::vector<AttachmentSlotC>* vec, void* attachmentInstancePtr, AttachmentInstanceTypeE attachmentInstanceTyp, 
+				AttachmentTypesEnum attachmentTyp, unsigned int colorAttachmentInd = 0u) noexcept : SlotT(vec), PtrToAttachmentInstance{ attachmentInstancePtr },
+				AttachmentInstanceType(attachmentInstanceTyp), AttachmentType(attachmentTyp), ColorAttachmentInd(colorAttachmentInd) { 
 				if (attachmentInstanceTyp == AttachmentInstanceTypeE::Texture)
-					ConnectionSlotC::Connect(PtrToAttachmentInstance.T_Ptr->Bindings.InsertAtEnd(TextureClass::BindingS(PtrToAttachmentInstance.T_Ptr)));
+					Connect(PtrToAttachmentInstance.T_Ptr->Bindings.emplace_back(&PtrToAttachmentInstance.T_Ptr->Bindings));
 				else if (attachmentInstanceTyp == AttachmentInstanceTypeE::RenderBuffer)
-					ConnectionSlotC::Connect(PtrToAttachmentInstance.RB_Ptr->Bindings.InsertAtEnd(RenderBufferClass::BindingS(PtrToAttachmentInstance.RB_Ptr)));
+					Connect(PtrToAttachmentInstance.RB_Ptr->Bindings.emplace_back(&PtrToAttachmentInstance.RB_Ptr->Bindings));
 			};
-			AttachmentS(AttachmentS&& toMove) noexcept:PtrToAttachmentInstance(toMove.PtrToAttachmentInstance), AttachmentInstanceType(toMove.AttachmentInstanceType),
-			AttachmentType(toMove.AttachmentType), ColorAttachmentInd(toMove.ColorAttachmentInd), ThisFB(toMove.ThisFB) {
-				toMove.ThisFB = nullptr;
-			}
-			virtual ~AttachmentS() override {
-				if (ThisFB != nullptr) {
-					ThisFB->Attachments.RemoveAtIndex_WithoutDestructor(this - *ThisFB->Attachments);
-					ThisFB = nullptr;
-				}
-			}
+			AttachmentSlotC(AttachmentSlotC&& toMove) noexcept: SlotT(std::move(toMove)), 
+				PtrToAttachmentInstance(toMove.PtrToAttachmentInstance), AttachmentInstanceType(toMove.AttachmentInstanceType),
+				AttachmentType(toMove.AttachmentType), ColorAttachmentInd(toMove.ColorAttachmentInd) { }
+			AttachmentSlotC& operator=(AttachmentSlotC&& toMove) noexcept = default;
 		};
-		friend AttachmentS;
-	protected:
-		DynArr<AttachmentS> Attachments;
+		std::vector<AttachmentSlotC> Attachments;
 	public:
 		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
 			enum ErrorsEnum {

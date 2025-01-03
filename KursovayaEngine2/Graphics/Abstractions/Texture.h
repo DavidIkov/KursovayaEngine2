@@ -1,8 +1,7 @@
 #pragma once
 #include"Graphics/Primitives/Texture.h"
 #include"Tools/ClassFunctionsAccessController.h"
-#include"Tools/DynArr.h"
-#include"Tools/ConnectionSlot.h"
+#include"Tools/Connections/BindingSlot.h"
 
 namespace KE2::Graphics::Abstractions {
 
@@ -41,18 +40,7 @@ namespace KE2::Graphics::Abstractions {
 		const unsigned int MipmapLevels;
 
 		friend class FrameBufferClass;
-		struct BindingS:public ConnectionSlotC{
-			TextureClass* ThisT;
-			BindingS(TextureClass* thisT) noexcept:ThisT(thisT) {}
-			BindingS(BindingS&& toMove) noexcept:ThisT(toMove.ThisT) { toMove.ThisT = nullptr; }
-			~BindingS() override {
-				if (ThisT != nullptr) {
-					ThisT->Bindings.RemoveAtIndex_WithoutDestructor(this - *ThisT->Bindings);
-					ThisT = nullptr;
-				}
-			}
-		};
-		DynArr<BindingS> Bindings;
+		std::vector<BindingSlotC_Default> Bindings;
 	public:
 
 		inline Primitives::TextureClass& gPrimitiveTextureClass() noexcept { return *this; }

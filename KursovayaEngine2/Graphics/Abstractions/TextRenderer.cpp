@@ -102,9 +102,9 @@ GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int charac
 
     unsigned int charsAmount = 0; while (chars[charsAmount] != L'\0') charsAmount++;
 
-    Characters.ChangeCapacity(charsAmount);
-    DynArr<DynArr<unsigned char>> buffers; buffers.ChangeCapacity(charsAmount);
-    DynArr<unsigned int> nums; nums.ChangeCapacity(charsAmount);
+    Characters.reserve(charsAmount);
+    std::vector<std::vector<unsigned char>> buffers; buffers.reserve(charsAmount);
+    std::vector<unsigned int> nums; nums.reserve(charsAmount);
 
 
     unsigned int maxWidth = 0; unsigned int maxHeight = 0;
@@ -115,11 +115,11 @@ GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int charac
         unsigned int unicodeInd = (unsigned int)chars[chi];
 
 
-        size_t insertInd = (Characters.gLen() == 0) ? 0 : BinarySearch(*Characters, Characters.gLen(), unicodeInd,
+        size_t insertInd = (Characters.size() == 0) ? 0 : BinarySearch(&*Characters.begin(), Characters.size(), unicodeInd,
             +[](const unsigned int& v1, const CharacterStruct& v2)->bool {return v2.UnicodeInd > v1; },
             +[](const unsigned int& v1, const CharacterStruct& v2)->bool {return v1 == v2.UnicodeInd; });
 
-        if (insertInd<Characters.gLen() and Characters[insertInd].UnicodeInd == unicodeInd) continue;
+        if (insertInd<Characters.size() and Characters[insertInd].UnicodeInd == unicodeInd) continue;
 
         {
             int FT_CharLoadingError = FT_Load_Char(*(FT_Face*)FreeTypeFace, unicodeInd, FT_LOAD_RENDER);
@@ -132,7 +132,8 @@ GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int charac
 
         FT_Face& face = *(FT_Face*)FreeTypeFace;
 
-        buffers.InsertAtIndex(insertInd, DynArr<unsigned char>(face->glyph->bitmap.width * face->glyph->bitmap.rows, face->glyph->bitmap.buffer));
+        buffers.emplace(buffers.begin() + insertInd, std::vector<unsigned char>(face->glyph->bitmap.buffer, 
+            face->glyph->bitmap.buffer + face->glyph->bitmap.width * face->glyph->bitmap.rows));
 
         if (face->glyph->bitmap.width > maxWidth) maxWidth = face->glyph->bitmap.width;
         if (face->glyph->bitmap.rows > maxHeight) maxHeight = face->glyph->bitmap.rows;
@@ -142,7 +143,7 @@ GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int charac
 
         totalXSize += face->glyph->bitmap.width;
 
-        Characters.InsertAtIndex(insertInd, CharacterStruct{
+        Characters.emplace(Characters.begin() + insertInd, CharacterStruct{
             unicodeInd,
             Vector2U(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             Vector2I(face->glyph->bitmap_left, face->glyph->bitmap_top),
@@ -153,11 +154,11 @@ GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int charac
 
     totalXSize += charsAmount + 1;
 
-    DynArr<unsigned char> textureBuffer(totalXSize * maxHeight, (unsigned char)0);
+    std::vector<unsigned char> textureBuffer(totalXSize * maxHeight, (unsigned char)0);
     
     {
         unsigned int xOffset = 1;
-        for (unsigned int ci = 0; ci < Characters.gLen(); ci++) {
+        for (unsigned int ci = 0; ci < Characters.size(); ci++) {
             CharacterStruct& char_ = Characters[ci];
             char_.XOffsetInTexture = xOffset / (float)totalXSize;
             char_.SizeInTexture = Vector2F(char_.Size[0] / (float)totalXSize, char_.Size[1] / (float)maxHeight);
@@ -167,7 +168,7 @@ GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int charac
 
     {
         unsigned int xOffset = 0;
-        for (unsigned int ci = 0; ci < Characters.gLen(); ci++) {
+        for (unsigned int ci = 0; ci < Characters.size(); ci++) {
             CharacterStruct& char_ = Characters[ci];
             for (unsigned int x = 0; x < char_.Size[0]; x++) for (unsigned int y = 0; y < char_.Size[1]; y++) {
                 textureBuffer[ci + 1 + y * totalXSize + xOffset + x] = buffers[ci][(char_.Size[1] - y - 1) * char_.Size[0] + x];
@@ -179,8 +180,8 @@ GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int charac
 
 	glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); // disable byte-alignment restriction
 
-    Texture = TextureClass(TextureClass::DimensionsEnum::Two, Vector3U(totalXSize, maxHeight, 0u), textureBuffer, 0, Texture.gSettings(), Texture.gDataSettings());
-    
+    Texture = TextureClass(TextureClass::DimensionsEnum::Two, Vector3U(totalXSize, maxHeight, 0u), &*textureBuffer.begin(), 0, Texture.gSettings(), Texture.gDataSettings());
+
 	glSC(glPixelStorei(GL_UNPACK_ALIGNMENT, 4)); // enable byte-alignment back
 
 }
@@ -204,21 +205,22 @@ void GA::TextRendererClass::RenderText(const FontStruct& font, const wchar_t* te
     if (textLen == MAX_TEXT_LEN) ErrorsSystemNamespace::SendError << "Provided text is too big or end symbol was not found, current limit on symbols is: [" <<
         std::to_string(MAX_TEXT_LEN) << "]" >> ErrorsEnumWrapperStruct(ErrorsEnum::TextTooBigOrNoEndFound);
 
-    DynArr<size_t> charsInds; charsInds.ChangeLen(textLen);//adding +1 to mark unexisting characters, ind=0 will mean that character not found
+    std::vector<size_t> charsInds; charsInds.resize(textLen, 0);//adding +1 to mark unexisting characters, ind=0 will mean that character not found
     for (unsigned int ci = 0; ci < textLen; ci++) {
         charsInds[ci] = BinarySearch(
-            *font.Characters, font.Characters.gLen(), (unsigned int)text[ci],
+            &*font.Characters.begin(), font.Characters.size(), (unsigned int)text[ci],
             +[](const unsigned int& num, const FontStruct::CharacterStruct& ch)->bool {return num < ch.UnicodeInd; },
             +[](const unsigned int& num, const FontStruct::CharacterStruct& ch)->bool {return num == ch.UnicodeInd; });
-        if (charsInds[ci] >= font.Characters.gLen() or font.Characters[charsInds[ci]].UnicodeInd != (unsigned int)text[ci]) charsInds[ci] = 0;
+        if (charsInds[ci] >= font.Characters.size() or font.Characters[charsInds[ci]].UnicodeInd != (unsigned int)text[ci]) charsInds[ci] = 0;
 		else charsInds[ci]++;
     }
 
 
     unsigned int fullLocalXSize = 0;
     int maxUp = 0; int maxDown = 0;
+	unsigned int realTextLen = 0;
     for (unsigned int ci = 0; ci < textLen; ci++) {
-        if (charsInds[ci] == 0) continue;
+        if (charsInds[ci] == 0) continue; realTextLen++;
         const FontStruct::CharacterStruct& char_ = font.Characters[charsInds[ci] - 1];
         fullLocalXSize += char_.Advance;
         int up = char_.Bearing[1]; int down = char_.Size[1] - up;
@@ -237,7 +239,7 @@ void GA::TextRendererClass::RenderText(const FontStruct& font, const wchar_t* te
         else if (boxSize[0] == 0 and boxSize[1] != 0) localPixelsToTexPixels = byY;
         else if (boxSize[0] != 0 and boxSize[1] != 0) localPixelsToTexPixels = (byX > byY) ? byY : byX;
     }
-    
+
     float localPixelsToTexScaleByX = localPixelsToTexPixels / pixelsInTexture[0] * 2;
     float localPixelsToTexScaleByY = localPixelsToTexPixels / pixelsInTexture[1] * 2;
 
@@ -246,9 +248,9 @@ void GA::TextRendererClass::RenderText(const FontStruct& font, const wchar_t* te
     Vector2F scaledLocalOffset = ((localOffset + 1) / 2) * -realTextBoxSize;
 
 	float xOffset = 0;
-    DynArr<float> VertexBufferData; VertexBufferData.ChangeLen(6 * (2 + 2) * textLen); unsigned int realTextLen = 0;
-    for (unsigned int ci = 0; ci < textLen; ci++) {
-		if (charsInds[ci] == 0) continue;
+    std::vector<float> VertexBufferData; VertexBufferData.resize(6 * (2 + 2) * realTextLen, 0.f); 
+    for (unsigned int ci = 0, real_ci = 0; ci < textLen; ci++) {
+        if (charsInds[ci] == 0) continue;
 
         const FontStruct::CharacterStruct& char_ = font.Characters[charsInds[ci] - 1];
         
@@ -284,17 +286,15 @@ void GA::TextRendererClass::RenderText(const FontStruct& font, const wchar_t* te
             lbp[0],lbp[1],lbc[0],lbc[1],
         };
 
-        for (unsigned int i = 0; i < 6 * 4; i++) VertexBufferData[realTextLen * 4 * 6 + i] = data[i];
+        for (unsigned int i = 0; i < 6 * 4; i++) VertexBufferData[real_ci * 4 * 6 + i] = data[i];
 
-
+		real_ci++;
 
         xOffset += char_.Advance * localPixelsToTexScaleByX;
 
-        realTextLen++;
     }
 
-    VertexBufferData.CutDeadLength(realTextLen * 6 * 4);
-    TEXT_VB.SetData(ArrayView<void>(VertexBufferData, realTextLen * 6 * 4 * sizeof(float)), GP::VertexBufferClass::BufferReadWriteModeEnum::StreamDraw);
+    TEXT_VB.SetData(ArrayView<void>(VertexBufferData), GP::VertexBufferClass::BufferReadWriteModeEnum::StreamDraw);
     GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, 6 * realTextLen);
 
 
