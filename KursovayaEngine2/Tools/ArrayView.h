@@ -17,7 +17,7 @@ public:
     T const& operator[](size_t ind) const noexcept { return Data[ind]; };
 	T* gDataPtr() noexcept { return Data; }
     T const* gDataPtr() const noexcept { return Data; }
-    operator std::vector<T>() const && noexcept = delete;
+    operator std::vector<T>() const&& { std::vector<T> retVec; retVec.reserve(Len); for (size_t i = 0; i < Len; i++) retVec.emplace_back(std::move(Data[i])); return retVec; }
     operator std::vector<T>() const & { return std::vector<T>(Data, Data + Len); }
 
 

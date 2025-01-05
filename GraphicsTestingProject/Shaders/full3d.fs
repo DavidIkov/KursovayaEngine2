@@ -1,6 +1,7 @@
 #version 330 core
 
 out vec4 PixelColor;
+//layout(location = 0) out vec4 PixelColor;
 
 in vec3 t_PosInSpace;
 in vec2 t_TextureCords;

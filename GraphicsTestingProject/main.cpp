@@ -53,7 +53,7 @@ int main()
             GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Nearest,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Nearest,
             GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::None }
         );
-        FB.AttachTexture(FB_COLOR_TEX);
+        FB.AttachTexture(FB_COLOR_TEX, 0);
         /*TextureClass FB_DEPTH_STENCIL_TEX(Width, Height, nullptr, TextureClass::TypeEnum::Texture2D,
             GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,
             GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Nearest,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Nearest,
@@ -68,29 +68,25 @@ int main()
         FB.Unbind();
 
 
-        GP::RenderingPresetClass Preset3D(
-            true, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
-            true, true, GP::RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual,
-            true, 0xff, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::AlwaysPass, 1, 0xff, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
-            GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Replace,
-            true, 0, 0, 0, 0, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
-            1, 1, 1, 1,
-            0.1f, 0.2f, 0.3f, 0.f
-        );
-        GP::RenderingPresetClass QuadPreset(
-            false, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
-            false, true, GP::RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual,
-            false, 0, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Equal, 1, 255, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
-            GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
-            false, 0, 0, 0, 0, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
-            1, 1, 1, 1,
-            0.f, 0.f, 0.f, 1.f
-        );
-        
-
+        GP::RenderingPresetS Preset3D{
+            GP::RenderingPresetS::ColorsS{ Vector4B(true),Vector4F(0.1f,0.2f,0.3f,0.f),ArrayView<unsigned>({ 1 })},
+            GP::RenderingPresetS::BlendingS{true,Vector4F(0.f),GP::RenderingPresetS::BlendingS::BlendingFuncValE::Src0Alpha,
+            GP::RenderingPresetS::BlendingS::BlendingFuncValE::OneMinusSrc0Alpha},
+            GP::RenderingPresetS::FaceCullingS{true,GP::RenderingPresetS::FaceCullingS::FaceToCullE::Back,GP::RenderingPresetS::FaceCullingS::FaceDeterminationE::Clockwise},
+            GP::RenderingPresetS::DepthTestS{true,true,GP::RenderingPresetS::DepthTestS::TypeOfComparisonE::LessOrEqual},
+            GP::RenderingPresetS::StencilTestS{true,0xff,GP::RenderingPresetS::StencilTestS::ComparisonTypeE::AlwaysPass,1,0xff,
+            GP::RenderingPresetS::StencilTestS::ActionsE::Keep,GP::RenderingPresetS::StencilTestS::ActionsE::Keep,GP::RenderingPresetS::StencilTestS::ActionsE::Replace},
+        };
+		GP::RenderingPresetS QuadPreset{
+            GP::RenderingPresetS::ColorsS{ Vector4B(true),Vector4F(0.f,0.f,0.f,1.f),ArrayView<unsigned>({ 1 })},
+            GP::RenderingPresetS::BlendingS{false},
+            GP::RenderingPresetS::FaceCullingS{false},
+            GP::RenderingPresetS::DepthTestS{false},
+            GP::RenderingPresetS::StencilTestS{false},
+        };
         
         GP::ShaderProgramClass Test_SP("Shaders/simpleQuad.vs", "Shaders/simpleQuad.fs");
-        GA::VertexBufferClass Test_VB(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<float>({ 0.5f,0.5f,-0.5f,0.5f,-0.5f,-0.5f,0.5f,-0.5f }));
+        GA::VertexBufferClass Test_VB(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<float>({ 0.25f,0.25f,-0.25f,0.25f,-0.25f,-0.25f,0.25f,-0.25f }));
         GA::VertexBufferClass Test_VB2(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<float>({ 0.f,0.3f,0.6f,1.f }));
         GA::IndexBufferClass Test_IB(GA::IndexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<unsigned int>({ 0u,1u,2u,2u,3u,0u }));
         Test_IB.Unbind();
@@ -270,7 +266,7 @@ int main()
 
             FB.Bind();
 
-            Preset3D.Bind();
+            Preset3D.Update();
             FB.ClearAllBuffers();
 
             VA1.Bind();
@@ -287,9 +283,9 @@ int main()
             SP.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, VB2.gDataSizeInBytes() / sizeof(float) / floatsAmountPerVertex);
 
-            Preset3D.sStencilTest_BaseMask(0);
-            Preset3D.sStencilTest_ComparisonType(GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::NotEqual);
-            Preset3D.sDepthTest_Enabled(false);
+            GP::RenderingPresetS::StencilTestS::UpdBaseMask(0);
+            GP::RenderingPresetS::StencilTestS::UpdComparisonFunc(GP::RenderingPresetS::StencilTestS::ComparisonTypeE::NotEqual,Preset3D.StencilTest.ReferenceValue,Preset3D.StencilTest.Mask);
+            GP::RenderingPresetS::DepthTestS::UpdEnabled(false);
 
             {//outline
 
@@ -316,9 +312,7 @@ int main()
 
             }
 
-            Preset3D.sStencilTest_BaseMask(0xff);
-            Preset3D.sStencilTest_ComparisonType(GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::AlwaysPass);
-            Preset3D.sDepthTest_Enabled(true);
+            Preset3D.Update(Preset3D.StencilTest.Flags.BaseMask | Preset3D.StencilTest.Flags.ComparisonFunc | Preset3D.DepthTest.Flags.Enabled);
 
             SP_NORMAL.Bind();
             SP_NORMAL.SetUniform3fv("u_CameraPosition", 1, &CameraPosition[0]);
@@ -339,9 +333,12 @@ int main()
             SP_NORMAL.SetUniform3fv("u_ObjectScale", 1, &Object2Scale[0]);
             GP::RendererNamespace::DrawArrays(GP::RendererNamespace::PrimitivesEnum::Triangles, 0, VB2.gDataSizeInBytes() / sizeof(float) / floatsAmountPerVertex);
 
+			std::wstring camPosText = std::to_wstring(CameraPosition[0]) + L',' + std::to_wstring(CameraPosition[1]) + L',' + std::to_wstring(CameraPosition[2]) + L"; FPS: " + std::to_wstring(LastFPS_Counter);
+            TEXT_RENDERER.RenderText(ArialFont, camPosText.c_str(), Vector2F(1.f, 1.f), Vector2F(1.f, 1.f), Vector2U(Width, Height), Vector2F(0.f, 0.05f), 1.f);
+
             FB.Unbind();
 
-            QuadPreset.Bind();
+            QuadPreset.Update(~QuadPreset.Colors.Flags.ColorsOutputs);
             window.ClearColorBuffer();
             QUAD_SP.Bind();
 
@@ -366,10 +363,7 @@ int main()
 
 			//TEXT_RENDERER.RenderText(ArialFont, L"english русский ЙЖЁ!:(|&", Vector2F(-1,0), Vector2F(-1,0), Vector2U(Width, Height), Vector2F(1, 0), 0.5f);
             
-            std::wstring camPosText = std::to_wstring(CameraPosition[0]) + L',' + std::to_wstring(CameraPosition[1]) + L',' + std::to_wstring(CameraPosition[2]) + L"; FPS: " + std::to_wstring(LastFPS_Counter);
-            TEXT_RENDERER.RenderText(ArialFont, camPosText.c_str(), Vector2F(1.f, 1.f), Vector2F(1.f, 1.f), Vector2U(Width, Height), Vector2F(0.f, 0.05f), 1.f);
-
-            window.SwapScreenBuffers();
+			window.SwapScreenBuffers();
             window.ProcessEvents();
 
             unsigned int prevWholeTimeNumber = (unsigned int)TimeCounter;

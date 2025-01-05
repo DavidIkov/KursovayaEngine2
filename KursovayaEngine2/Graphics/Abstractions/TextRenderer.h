@@ -43,7 +43,7 @@ namespace KE2::Graphics::Abstractions {
 		std::list<FontStruct> Fonts;
 
 		Graphics::Primitives::ShaderProgramClass TEXT_SP;
-		Graphics::Primitives::RenderingPresetClass TextPreset;
+		Graphics::Primitives::RenderingPresetS TextPreset;
 		Graphics::Primitives::VertexArrayClass TEXT_VA;
 		Graphics::Primitives::VertexBufferClass TEXT_VB;
 

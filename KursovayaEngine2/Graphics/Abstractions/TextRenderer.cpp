@@ -13,14 +13,13 @@ namespace GA = Graphics::Abstractions;
 void* GA::TextRendererClass::FreeTypeLib = nullptr;
 unsigned short GA::TextRendererClass::AmountOfInstances = 0;
 
-GA::TextRendererClass::TextRendererClass(const char* vertexShaderDir, const char* fragmentShaderDir) :TextPreset(
-    false, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceToCull::Back, GP::RenderingPresetEnumArgumentsNamespace::FaceCulling::FaceDetermination::Clockwise,
-    false, true, GP::RenderingPresetEnumArgumentsNamespace::DepthTest::TypeOfComparison::LessOrEqual,
-    false, 0, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::TypeOfComparison::Equal, 1, 255, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
-    GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep, GP::RenderingPresetEnumArgumentsNamespace::StencilTest::Actions::Keep,
-    true, 0, 0, 0, 0, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::SrcAlpha, GP::RenderingPresetEnumArgumentsNamespace::Blending::FunctionForColor::OneMinusSrcAlpha,
-    1, 1, 1, 1, 0.f, 0.f, 0.f, 1.f
-) {
+GA::TextRendererClass::TextRendererClass(const char* vertexShaderDir, const char* fragmentShaderDir) :TextPreset{
+            GP::RenderingPresetS::ColorsS{ Vector4B(true),Vector4F(0.f,0.f,0.f,1.f),ArrayView<unsigned>({ 1 })},
+            GP::RenderingPresetS::BlendingS{true,Vector4F(0.f),GP::RenderingPresetS::BlendingS::BlendingFuncValE::Src0Alpha,
+            GP::RenderingPresetS::BlendingS::BlendingFuncValE::OneMinusSrc0Alpha},
+            GP::RenderingPresetS::FaceCullingS{false},
+            GP::RenderingPresetS::DepthTestS{false},
+            GP::RenderingPresetS::StencilTestS{false}, }{
 
     AmountOfInstances++;
 
@@ -193,7 +192,7 @@ void GA::TextRendererClass::RenderText(const FontStruct& font, const wchar_t* te
     
     if (boxSize[0] == 0 and boxSize[1] == 0) return;//theres nothing we can do
 
-	TextPreset.Bind();
+	TextPreset.Update();
     TEXT_SP.Bind();
     TEXT_VA.Bind();
     TEXT_VB.Bind();

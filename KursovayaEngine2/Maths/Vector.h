@@ -196,6 +196,11 @@ typedef Vector<2, double> Vector2D;
 typedef Vector<3, double> Vector3D;
 typedef Vector<4, double> Vector4D;
 
+typedef Vector<1, bool> Vector1B;
+typedef Vector<2, bool> Vector2B;
+typedef Vector<3, bool> Vector3B;
+typedef Vector<4, bool> Vector4B;
+
 constexpr inline Vector2F Vec2D_X_F = Vector2F(1.f, 0.f);
 constexpr inline Vector2F Vec2D_Y_F = Vector2F(0.f, 1.f);
 constexpr inline Vector2D Vec2D_X_D = Vector2D(1., 0.);
