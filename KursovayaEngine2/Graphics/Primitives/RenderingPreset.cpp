@@ -18,7 +18,7 @@ void RenderingPresetS::ColorsS::UpdColorsOutputs(const ArrayView<unsigned>& colo
 		if (elem == 0) elem = GL_NONE;
 		else elem += GL_COLOR_ATTACHMENT0 - 1;
 	}
-	glSC(glDrawBuffers(buffs.size(),&*buffs.begin()))
+	glSC(glDrawBuffers((int)buffs.size(), &*buffs.begin()));
 }
 void RenderingPresetS::BlendingS::UpdEnabled(bool enabled) {
 	if (enabled) { glSC(glEnable(GL_BLEND)); }
@@ -130,5 +130,36 @@ void RenderingPresetS::StencilTestS::UpdActionFunc(ActionsE actionOnSF, ActionsE
 		case ActionsE::Invert: args[i] = GL_INVERT; break;
 		}
 	} glSC(glStencilOp(args[0], args[1], args[2]));
+}
+void RenderingPresetS::LogicalOperationS::UpdEnabled(bool enabled) {
+	if (enabled) { glSC(glEnable(GL_COLOR_LOGIC_OP)); }
+	else { glSC(glDisable(GL_COLOR_LOGIC_OP)); }
+}
+void RenderingPresetS::LogicalOperationS::UpdOper(OperE oper) {
+	switch (oper) {
+	case OperE::Zero: glSC(glLogicOp(GL_CLEAR)); break;
+	case OperE::One: glSC(glLogicOp(GL_SET)); break;
+	case OperE::S: glSC(glLogicOp(GL_COPY)); break;
+	case OperE::IS: glSC(glLogicOp(GL_COPY_INVERTED)); break;
+	case OperE::D: glSC(glLogicOp(GL_NOOP)); break;
+	case OperE::ID: glSC(glLogicOp(GL_INVERT)); break;
+	case OperE::SAD: glSC(glLogicOp(GL_AND)); break;
+	case OperE::I_SAD: glSC(glLogicOp(GL_NAND)); break;
+	case OperE::SOD: glSC(glLogicOp(GL_OR)); break;
+	case OperE::I_SOD: glSC(glLogicOp(GL_NOR)); break;
+	case OperE::SXD: glSC(glLogicOp(GL_XOR)); break;
+	case OperE::I_SXD: glSC(glLogicOp(GL_EQUIV)); break;
+	case OperE::SAID: glSC(glLogicOp(GL_AND_REVERSE)); break;
+	case OperE::ISAD: glSC(glLogicOp(GL_AND_INVERTED)); break;
+	case OperE::SOID: glSC(glLogicOp(GL_OR_REVERSE)); break;
+	case OperE::ISOD: glSC(glLogicOp(GL_OR_INVERTED)); break;
+	}
+}
+void RenderingPresetS::ScissorTestS::UpdEnabled(bool enabled) {
+	if (enabled) { glSC(glEnable(GL_SCISSOR_TEST)); }
+	else { glSC(glDisable(GL_SCISSOR_TEST)); }
+}
+void RenderingPresetS::ScissorTestS::UpdOffsetAndBase(Vector2U offset, Vector2U size) {
+	glSC(glScissor(offset[0], offset[1], size[0], size[1]));
 }
 

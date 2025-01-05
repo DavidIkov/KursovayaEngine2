@@ -16,10 +16,7 @@ unsigned short GA::TextRendererClass::AmountOfInstances = 0;
 GA::TextRendererClass::TextRendererClass(const char* vertexShaderDir, const char* fragmentShaderDir) :TextPreset{
             GP::RenderingPresetS::ColorsS{ Vector4B(true),Vector4F(0.f,0.f,0.f,1.f),ArrayView<unsigned>({ 1 })},
             GP::RenderingPresetS::BlendingS{true,Vector4F(0.f),GP::RenderingPresetS::BlendingS::BlendingFuncValE::Src0Alpha,
-            GP::RenderingPresetS::BlendingS::BlendingFuncValE::OneMinusSrc0Alpha},
-            GP::RenderingPresetS::FaceCullingS{false},
-            GP::RenderingPresetS::DepthTestS{false},
-            GP::RenderingPresetS::StencilTestS{false}, }{
+            GP::RenderingPresetS::BlendingS::BlendingFuncValE::OneMinusSrc0Alpha} }{
 
     AmountOfInstances++;
 

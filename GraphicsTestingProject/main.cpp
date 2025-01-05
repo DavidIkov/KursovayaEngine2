@@ -77,13 +77,7 @@ int main()
             GP::RenderingPresetS::StencilTestS{true,0xff,GP::RenderingPresetS::StencilTestS::ComparisonTypeE::AlwaysPass,1,0xff,
             GP::RenderingPresetS::StencilTestS::ActionsE::Keep,GP::RenderingPresetS::StencilTestS::ActionsE::Keep,GP::RenderingPresetS::StencilTestS::ActionsE::Replace},
         };
-		GP::RenderingPresetS QuadPreset{
-            GP::RenderingPresetS::ColorsS{ Vector4B(true),Vector4F(0.f,0.f,0.f,1.f),ArrayView<unsigned>({ 1 })},
-            GP::RenderingPresetS::BlendingS{false},
-            GP::RenderingPresetS::FaceCullingS{false},
-            GP::RenderingPresetS::DepthTestS{false},
-            GP::RenderingPresetS::StencilTestS{false},
-        };
+		GP::RenderingPresetS QuadPreset{ GP::RenderingPresetS::ColorsS{ Vector4B(true),Vector4F(0.f,0.f,0.f,1.f),ArrayView<unsigned>({ 1 })}, };
         
         GP::ShaderProgramClass Test_SP("Shaders/simpleQuad.vs", "Shaders/simpleQuad.fs");
         GA::VertexBufferClass Test_VB(GA::VertexBufferClass::BufferReadWriteModeEnum::StaticDraw, ArrayView<float>({ 0.25f,0.25f,-0.25f,0.25f,-0.25f,-0.25f,0.25f,-0.25f }));

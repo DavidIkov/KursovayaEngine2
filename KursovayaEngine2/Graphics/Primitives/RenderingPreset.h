@@ -101,6 +101,34 @@ namespace KE2::Graphics::Primitives {
 		} StencilTest;
 		//TODO add ability to set stencil test for Front and Back faces, for example glStencilMaskSeparate
 
+		//determines bitwise operations between fragment color and texture color before writing
+		struct LogicalOperationS {
+			bool Enabled = false;
+			//S-source(fragment color),D-destination(texture color),I-inverse(~),A-and(&),O-or(|),X-xor(^)
+			//works only if texture have some kind of integer format, for more info google it
+			enum class OperE :char {
+				Zero, One, S, IS, D, ID, SAD, I_SAD, SOD, I_SOD, SXD, I_SXD, SAID, ISAD, SOID, ISOD
+			} Oper = OperE::S;
+
+			DLLTREATMENT static void UpdEnabled(bool enabled);
+			DLLTREATMENT static void UpdOper(OperE oper);
+
+			struct FlagsS { static constexpr int Enabled = 1 << 16, Oper = 1 << 17, All = Enabled | Oper; } Flags;
+		} LogicalOperation;
+
+		//all pixels that are not inside region, will be discarded
+		//it also works for clearing buffers and etc, so you can clear only portion of texture
+		struct ScissorTestS {
+			bool Enabled = false;
+			//default value of size should be size of window, but making this true is not all that easy, so its just 100 by 100 so you can notice this instantly
+			Vector2U Offset = Vector2U(0u), Size = Vector2U(100u, 100u);
+
+			DLLTREATMENT static void UpdEnabled(bool enabled);
+			DLLTREATMENT static void UpdOffsetAndBase(Vector2U offset, Vector2U size);
+
+			struct FlagsS { static constexpr int Enabled = 1 << 18, OffsetAndSize = 1 << 19, All = Enabled | OffsetAndSize; } Flags;
+		} ScissorTest;
+
 		void Update(int flags = ~0) {
 			if (flags & ColorsS::FlagsS::EnabledRGBA) ColorsS::UpdEnabledRGBA(Colors.EnabledRGBA);
 			if (flags & ColorsS::FlagsS::ClearRGBA) ColorsS::UpdClearRGBA(Colors.ClearRGBA);
@@ -122,6 +150,12 @@ namespace KE2::Graphics::Primitives {
 			if (flags & StencilTestS::FlagsS::BaseMask) StencilTestS::UpdBaseMask(StencilTest.BaseMask);
 			if (flags & StencilTestS::FlagsS::ComparisonFunc) StencilTestS::UpdComparisonFunc(StencilTest.ComparisonType, StencilTest.ReferenceValue, StencilTest.Mask);
 			if (flags & StencilTestS::FlagsS::ActionFunc) StencilTestS::UpdActionFunc(StencilTest.ActionOnSF, StencilTest.ActionOnSPDF, StencilTest.ActionOnSPDP);
+			
+			if (flags & LogicalOperationS::FlagsS::Enabled) LogicalOperationS::UpdEnabled(LogicalOperation.Enabled);
+			if (flags & LogicalOperationS::FlagsS::Oper) LogicalOperationS::UpdOper(LogicalOperation.Oper);
+
+			if (flags & ScissorTestS::FlagsS::Enabled) ScissorTestS::UpdEnabled(ScissorTest.Enabled);
+			if (flags & ScissorTestS::FlagsS::OffsetAndSize) ScissorTestS::UpdOffsetAndBase(ScissorTest.Offset, ScissorTest.Size);
 		}
 	};
 }
