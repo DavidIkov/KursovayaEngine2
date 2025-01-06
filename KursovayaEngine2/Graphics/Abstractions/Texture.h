@@ -93,22 +93,34 @@ namespace KE2::Graphics::Abstractions {
 
 		inline Vector3U gSize() const noexcept { return Size; }
 
-		inline virtual void SetSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX) override final { Settings.WrapTypeByX = wrapTypeByX; Primitives::TextureClass::SetSettings_WrapTypeByX(wrapTypeByX); }
-		inline SettingsStruct::WrapTypeEnum gSettings_WrapTypeByX() const noexcept { return Settings.WrapTypeByX; }
-		inline virtual void SetSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY) override final { Settings.WrapTypeByY = wrapTypeByY; Primitives::TextureClass::SetSettings_WrapTypeByY(wrapTypeByY); }
-		inline SettingsStruct::WrapTypeEnum gSettings_WrapTypeByY() const noexcept { return Settings.WrapTypeByY; }
+		inline virtual void SetSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapType) override final { Settings.WrapType[0] = wrapType; Primitives::TextureClass::SetSettings_WrapTypeByX(wrapType); }
+		inline SettingsStruct::WrapTypeEnum gSettings_WrapTypeByX() const noexcept { return Settings.WrapType[0]; }
+		inline virtual void SetSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapType) override final { Settings.WrapType[1] = wrapType; Primitives::TextureClass::SetSettings_WrapTypeByY(wrapType); }
+		inline SettingsStruct::WrapTypeEnum gSettings_WrapTypeByY() const noexcept { return Settings.WrapType[1]; }
+		inline virtual void SetSettings_WrapTypeByZ(SettingsStruct::WrapTypeEnum wrapType) override final { Settings.WrapType[2] = wrapType; Primitives::TextureClass::SetSettings_WrapTypeByZ(wrapType); }
+		inline SettingsStruct::WrapTypeEnum gSettings_WrapTypeByZ() const noexcept { return Settings.WrapType[2]; }
 		inline virtual void SetSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt) override final { Settings.DownscalingFilt = downscalingFilt; Primitives::TextureClass::SetSettings_DownscalingFilt(downscalingFilt); }
 		inline SettingsStruct::DownscalingFilterFuncEnum gSettings_DownscalingFilt() const noexcept { return Settings.DownscalingFilt; }
 		inline virtual void SetSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt) override final { Settings.UpscalingFilt = upscalingFilt; Primitives::TextureClass::SetSettings_UpscalingFilt(upscalingFilt); }
 		inline SettingsStruct::UpscalingFilterFuncEnum gSettings_UpscalingFilt() const noexcept { return Settings.UpscalingFilt; }
 		inline virtual void SetSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode) override final { Settings.DepthStencilReadMode = depthStencilReadMode; Primitives::TextureClass::SetSettings_DepthStencilReadMode(depthStencilReadMode); }
 		inline SettingsStruct::DepthStencilReadModeEnum gSettings_DepthStencilReadMode() const noexcept { return Settings.DepthStencilReadMode; }
+		inline virtual void SetSettings_SwizzleMaskByR(SettingsStruct::SwizzleMaskEnum swizzlingMask) override final { Settings.SwizzleMask[0] = swizzlingMask; Primitives::TextureClass::SetSettings_SwizzleMaskByR(swizzlingMask); }
+		inline SettingsStruct::SwizzleMaskEnum gSettings_SwizzleMaskByR() const noexcept { return Settings.SwizzleMask[0]; }
+		inline virtual void SetSettings_SwizzleMaskByG(SettingsStruct::SwizzleMaskEnum swizzlingMask) override final { Settings.SwizzleMask[1] = swizzlingMask; Primitives::TextureClass::SetSettings_SwizzleMaskByG(swizzlingMask); }
+		inline SettingsStruct::SwizzleMaskEnum gSettings_SwizzleMaskByG() const noexcept { return Settings.SwizzleMask[1]; }
+		inline virtual void SetSettings_SwizzleMaskByB(SettingsStruct::SwizzleMaskEnum swizzlingMask) override final { Settings.SwizzleMask[2] = swizzlingMask; Primitives::TextureClass::SetSettings_SwizzleMaskByB(swizzlingMask); }
+		inline SettingsStruct::SwizzleMaskEnum gSettings_SwizzleMaskByB() const noexcept { return Settings.SwizzleMask[2]; }
+		inline virtual void SetSettings_SwizzleMaskByA(SettingsStruct::SwizzleMaskEnum swizzlingMask) override final { Settings.SwizzleMask[3] = swizzlingMask; Primitives::TextureClass::SetSettings_SwizzleMaskByA(swizzlingMask); }
+		inline SettingsStruct::SwizzleMaskEnum gSettings_SwizzleMaskByA() const noexcept { return Settings.SwizzleMask[3]; }
 
 		inline SettingsStruct gSettings() const noexcept { return Settings; }
-		inline void SetSettings(SettingsStruct newSets) {
-			SetSettings_WrapTypeByX(newSets.WrapTypeByX); SetSettings_WrapTypeByY(newSets.WrapTypeByY);
+		inline virtual void SetSettings(SettingsStruct newSets) override {
+			SetSettings_WrapTypeByX(newSets.WrapType[0]); SetSettings_WrapTypeByY(newSets.WrapType[1]); SetSettings_WrapTypeByZ(newSets.WrapType[2]);
 			SetSettings_DownscalingFilt(newSets.DownscalingFilt); SetSettings_UpscalingFilt(newSets.UpscalingFilt);
 			SetSettings_DepthStencilReadMode(newSets.DepthStencilReadMode);
+			SetSettings_SwizzleMaskByR(newSets.SwizzleMask[0]); SetSettings_SwizzleMaskByG(newSets.SwizzleMask[1]);
+			SetSettings_SwizzleMaskByB(newSets.SwizzleMask[2]); SetSettings_SwizzleMaskByA(newSets.SwizzleMask[3]);
 		}
 
 		inline DataSettingsStruct::DataFormatOnGPU_Enum gDataSettings_DataFormatOnGPU() const noexcept { return DataSettings.DataFormatOnGPU; }

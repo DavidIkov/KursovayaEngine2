@@ -31,7 +31,7 @@ namespace KE2::Graphics::Abstractions {
 			struct GuardFromUser{};
 
 		public:
-			FontStruct(GuardFromUser, unsigned int characterSize, const char* fontDir, const wchar_t* chars);
+			FontStruct(GuardFromUser, unsigned int characterSize, const char* fontDir, const char32_t* chars);
 			FontStruct(const FontStruct&) = delete;
 			FontStruct(const FontStruct&&) = delete;
 			FontStruct& operator=(const FontStruct&) = delete;
@@ -64,7 +64,7 @@ namespace KE2::Graphics::Abstractions {
 
 		DLLTREATMENT TextRendererClass(const char* vertexShaderDir, const char* fragmentShaderDir);
 		DLLTREATMENT virtual ~TextRendererClass();
-		DLLTREATMENT const FontStruct& AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters);
+		DLLTREATMENT const FontStruct& AddFont(unsigned int characterSize, const char* fontDir, const char32_t* characters);
 
 		//pixelsInTexture is amount of pixels in the texture you are rendering this text to
 		//TODO add functionality for "dividingSymbols" and make so text will be separated in a few lines if possible

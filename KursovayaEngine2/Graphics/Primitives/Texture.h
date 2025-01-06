@@ -6,11 +6,11 @@
 #include"Tools/ArrayView.h"
 
 namespace KE2::Graphics::Primitives {
-    class TextureClass {
-    public:
+	class TextureClass {
+	public:
 		struct SettingsStruct {
 			enum class WrapTypeEnum :unsigned char {
-				ClampToEdge, ClampToBorder, MirroredRepeat, Repeat, MirrorClampToEdge
+				ClampToEdge, MirroredRepeat, Repeat, MirrorClampToEdge
 			};
 			enum class DownscalingFilterFuncEnum :unsigned char {
 				Nearest, Linear, NearestMipmapNearest, NearestMipmapLinear, LinearMipmapLinear, LinearMipmapNearest
@@ -23,15 +23,18 @@ namespace KE2::Graphics::Primitives {
 				/*you cant technically select mode as None but in here its used to just dont mention depth mode texture when they have nothing to do with depth*/
 				None
 			};
+			enum class SwizzleMaskEnum :char {
+				Red, Green, Blue, Alpha, Zero, One
+			};
 
-			WrapTypeEnum WrapTypeByX;
-			WrapTypeEnum WrapTypeByY;
-			DownscalingFilterFuncEnum DownscalingFilt;
-			UpscalingFilterFuncEnum UpscalingFilt;
-			DepthStencilReadModeEnum DepthStencilReadMode;
+			Vector<3, WrapTypeEnum> WrapType = Vector<3,WrapTypeEnum>(WrapTypeEnum::Repeat);
+			DownscalingFilterFuncEnum DownscalingFilt = DownscalingFilterFuncEnum::LinearMipmapLinear;
+			UpscalingFilterFuncEnum UpscalingFilt = UpscalingFilterFuncEnum::Linear;
+			DepthStencilReadModeEnum DepthStencilReadMode = DepthStencilReadModeEnum::Depth;
+			Vector<4, SwizzleMaskEnum> SwizzleMask = Vector<4, SwizzleMaskEnum>(SwizzleMaskEnum::Red, SwizzleMaskEnum::Green, SwizzleMaskEnum::Blue, SwizzleMaskEnum::Alpha);
 
 			ComparisonByBytesMacro(SettingsStruct,==);
-            ComparisonByBytesMacro(SettingsStruct,!=);
+			ComparisonByBytesMacro(SettingsStruct,!=);
 
 		};
 		struct DataSettingsStruct {
@@ -50,14 +53,14 @@ namespace KE2::Graphics::Primitives {
 			DataFormatOnCPU_Enum DataFormatOnCPU = DataFormatOnCPU_Enum::None;
 			DataTypeOnCPU_Enum DataTypeOnCPU = DataTypeOnCPU_Enum::None;
 
-            ComparisonByBytesMacro(DataSettingsStruct,==);
-            ComparisonByBytesMacro(DataSettingsStruct,!=);
+			ComparisonByBytesMacro(DataSettingsStruct,==);
+			ComparisonByBytesMacro(DataSettingsStruct,!=);
 		};
 
-        enum class DimensionsEnum :unsigned char {
-            One, Two, Three
-        };
-    protected:
+		enum class DimensionsEnum :unsigned char {
+			One, Two, Three
+		};
+	protected:
 
 		static unsigned int _DataFormatOnGPU_SwitchCase(DataSettingsStruct::DataFormatOnGPU_Enum format) noexcept;
 		static unsigned int _DataFormatOnCPU_SwitchCase(DataSettingsStruct::DataFormatOnCPU_Enum format) noexcept;
@@ -67,70 +70,87 @@ namespace KE2::Graphics::Primitives {
 		static unsigned int _DownscalingFilterFunc_SwitchCase(SettingsStruct::DownscalingFilterFuncEnum filt) noexcept;
 		static unsigned int _UpscalingFilterFunc_SwitchCase(SettingsStruct::UpscalingFilterFuncEnum filt) noexcept;
 		static unsigned int _DepthStencilReadMode_SwitchCase(SettingsStruct::DepthStencilReadModeEnum readMode) noexcept;
+		static unsigned int _SwizzleMask_SwitchCase(SettingsStruct::SwizzleMaskEnum swizzleMask) noexcept;
 
-        static unsigned int _GL_TextureEnum_SwitchCase(TextureClass::DimensionsEnum dim) noexcept;
+		static unsigned int _GL_TextureEnum_SwitchCase(TextureClass::DimensionsEnum dim) noexcept;
 
-        unsigned int ID = 0u;
+		unsigned int ID = 0u;
 
-        const DimensionsEnum Dimensions;
-        const unsigned int GL_TexEnum;
+		const DimensionsEnum Dimensions;
+		const unsigned int GL_TexEnum;
 
-        void _UpdSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTyp) const;
-        void _UpdSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTyp) const;
-        void _UpdSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum filt) const;
-        void _UpdSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum filt) const;
-        void _UpdSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum readMode) const;
+		void _UpdSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTyp) const;
+		void _UpdSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTyp) const;
+		void _UpdSettings_WrapTypeByZ(SettingsStruct::WrapTypeEnum wrapTyp) const;
+		void _UpdSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum filt) const;
+		void _UpdSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum filt) const;
+		void _UpdSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum readMode) const;
+		void _UpdSettings_SwizzleMaskByR(SettingsStruct::SwizzleMaskEnum swizzleMask) const;
+		void _UpdSettings_SwizzleMaskByG(SettingsStruct::SwizzleMaskEnum swizzleMask) const;
+		void _UpdSettings_SwizzleMaskByB(SettingsStruct::SwizzleMaskEnum swizzleMask) const;
+		void _UpdSettings_SwizzleMaskByA(SettingsStruct::SwizzleMaskEnum swizzleMask) const;
 
-        void _UpdateSettings(const SettingsStruct& sets) const;
+		void _AllocatePixels(Vector3U pixelsAmount, unsigned int mipmapLevels, DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU);
+	public:
 
-        void _AllocatePixels(Vector3U pixelsAmount, unsigned int mipmapLevels, DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU);
-    public:
+		struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
+			enum ErrorsEnum {
+				STB_IMAGE_Failed,
+			};
+			ErrorsEnum Error;
+			inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
+		}; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
 
-        struct ErrorsEnumWrapperStruct :KE2::ErrorsSystemNamespace::ErrorBase {
-            enum ErrorsEnum {
-                STB_IMAGE_Failed,
-            };
-            ErrorsEnum Error;
-            inline ErrorsEnumWrapperStruct(ErrorsEnum error) :Error(error) {};
-        }; using ErrorsEnum = ErrorsEnumWrapperStruct; using AnyError = ErrorsEnumWrapperStruct;
+		DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, ArrayView<void>* writeArrayView, unsigned int mipmapLevels, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
+		DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, unsigned int mipmapLevels, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
+		DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, unsigned int mipmapLevels, DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU, const SettingsStruct& sets);
+		DLLTREATMENT TextureClass(TextureClass&& toCopy) noexcept;
+		DLLTREATMENT virtual TextureClass& operator=(TextureClass&& toCopy);
+		DLLTREATMENT virtual ~TextureClass() noexcept(false);
 
-        DLLTREATMENT TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, ArrayView<void>* writeArrayView, unsigned int mipmapLevels, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
-        DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, const void* data, unsigned int mipmapLevels, const SettingsStruct& sets, const DataSettingsStruct& dataSets);
-        DLLTREATMENT TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, unsigned int mipmapLevels, DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU, const SettingsStruct& sets);
-        DLLTREATMENT TextureClass(TextureClass&& toCopy) noexcept;
-        DLLTREATMENT virtual TextureClass& operator=(TextureClass&& toCopy);
-        DLLTREATMENT virtual ~TextureClass() noexcept(false);
+		DLLTREATMENT virtual void SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data,
+			DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType);
 
-        DLLTREATMENT virtual void SetSubData(Vector3U pixelsOffset, Vector3U pixelsAmount, const void* data,
-            DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType);
-
-        //if you dont use some axes in pixelsAmounts then dont leave them 0, use 1
-        //make sure that your texture have enough pixels for copying
-        DLLTREATMENT void CopySubData(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount);
+		//if you dont use some axes in pixelsAmounts then dont leave them 0, use 1
+		//make sure that your texture have enough pixels for copying
+		DLLTREATMENT void CopySubData(const TextureClass& srcTex, Vector3U offsetInSource, Vector3U offsetInDestination, Vector3U pixelsAmount);
 
 		//this function is slow since it will get data from gpu to cpu
-        //buffer should not be nullptr, it should point to already allocated memory
-        DLLTREATMENT virtual void GetData(void* buffer, DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const;
-        //this function is slow since it will get data from gpu to cpu
-        //buffer should not be nullptr, it should point to already allocated memory
+		//buffer should not be nullptr, it should point to already allocated memory
+		DLLTREATMENT virtual void GetData(void* buffer, DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const;
+		//this function is slow since it will get data from gpu to cpu
+		//buffer should not be nullptr, it should point to already allocated memory
 		DLLTREATMENT virtual void GetSubData(Vector3U offset, void* buffer, Vector3U pixelsAmount, 
-            DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const;
+			DataSettingsStruct::DataFormatOnCPU_Enum dataFormat, DataSettingsStruct::DataTypeOnCPU_Enum dataType) const;
 
-        DLLTREATMENT virtual void SetSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX);
-        DLLTREATMENT virtual void SetSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY);
-        DLLTREATMENT virtual void SetSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt);
-        DLLTREATMENT virtual void SetSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt);
-        DLLTREATMENT virtual void SetSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode);
+		DLLTREATMENT virtual void SetSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapType);
+		DLLTREATMENT virtual void SetSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapType);
+		DLLTREATMENT virtual void SetSettings_WrapTypeByZ(SettingsStruct::WrapTypeEnum wrapType);
+		DLLTREATMENT virtual void SetSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt);
+		DLLTREATMENT virtual void SetSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt);
+		DLLTREATMENT virtual void SetSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode);
+		DLLTREATMENT virtual void SetSettings_SwizzleMaskByR(SettingsStruct::SwizzleMaskEnum swizzleMask);
+		DLLTREATMENT virtual void SetSettings_SwizzleMaskByG(SettingsStruct::SwizzleMaskEnum swizzleMask);
+		DLLTREATMENT virtual void SetSettings_SwizzleMaskByB(SettingsStruct::SwizzleMaskEnum swizzleMask);
+		DLLTREATMENT virtual void SetSettings_SwizzleMaskByA(SettingsStruct::SwizzleMaskEnum swizzleMask);
+
+		inline virtual void SetSettings(SettingsStruct sets) {
+			_UpdSettings_WrapTypeByX(sets.WrapType[0]); _UpdSettings_WrapTypeByY(sets.WrapType[1]); _UpdSettings_WrapTypeByZ(sets.WrapType[2]);
+			_UpdSettings_DownscalingFilt(sets.DownscalingFilt); _UpdSettings_UpscalingFilt(sets.UpscalingFilt);
+			_UpdSettings_DepthStencilReadMode(sets.DepthStencilReadMode);
+			_UpdSettings_SwizzleMaskByR(sets.SwizzleMask[0]); _UpdSettings_SwizzleMaskByG(sets.SwizzleMask[1]);
+			_UpdSettings_SwizzleMaskByB(sets.SwizzleMask[2]); _UpdSettings_SwizzleMaskByA(sets.SwizzleMask[3]);
+		}
 
 		typedef unsigned int TextureID_Type;
 		inline TextureID_Type gID() const noexcept { return ID; }
 		inline operator TextureID_Type() const noexcept { return ID; }
 
-        DLLTREATMENT void Bind(unsigned int bindingInd) const;
-        //will not set active texture, so it will replace texture in last binded slot(by opengl rules)
-        DLLTREATMENT void Bind() const;
-        DLLTREATMENT void Unbind() const;
+		DLLTREATMENT void Bind(unsigned int bindingInd) const;
+		//will not set active texture, so it will replace texture in last binded slot(by opengl rules)
+		DLLTREATMENT void Bind() const;
+		DLLTREATMENT void Unbind() const;
 
-        
-    };
+		
+	};
 }

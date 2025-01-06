@@ -72,7 +72,6 @@ unsigned int TextureClass::_DataTypeOnCPU_Sizeof_SwitchCase(DataSettingsStruct::
 unsigned int TextureClass::_WrapType_SwitchCase(SettingsStruct::WrapTypeEnum wrapTyp) noexcept {
     switch (wrapTyp) {
     case TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge: return GL_CLAMP_TO_EDGE;
-    case TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder: return GL_CLAMP_TO_BORDER;
     case TextureClass::SettingsStruct::WrapTypeEnum::MirroredRepeat: return GL_MIRRORED_REPEAT;
     case TextureClass::SettingsStruct::WrapTypeEnum::Repeat: return GL_REPEAT;
     case TextureClass::SettingsStruct::WrapTypeEnum::MirrorClampToEdge: return GL_MIRROR_CLAMP_TO_EDGE;
@@ -105,6 +104,16 @@ unsigned int TextureClass::_DepthStencilReadMode_SwitchCase(SettingsStruct::Dept
     default: return 0;
     }
 }
+unsigned int TextureClass::_SwizzleMask_SwitchCase(SettingsStruct::SwizzleMaskEnum swizzleMask) noexcept {
+    switch (swizzleMask) {
+    case SettingsStruct::SwizzleMaskEnum::Red: return GL_RED;
+    case SettingsStruct::SwizzleMaskEnum::Blue: return GL_BLUE;
+    case SettingsStruct::SwizzleMaskEnum::Green: return GL_GREEN;
+    case SettingsStruct::SwizzleMaskEnum::Alpha: return GL_ALPHA;
+    case SettingsStruct::SwizzleMaskEnum::Zero: return GL_ZERO;
+    case SettingsStruct::SwizzleMaskEnum::One: return GL_ONE;
+    }
+}
 
 unsigned int TextureClass::_GL_TextureEnum_SwitchCase(TextureClass::DimensionsEnum dim) noexcept {
     switch (dim) {
@@ -125,6 +134,10 @@ void TextureClass::_UpdSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTyp
     Assert_Binded_Macro;
     glSC(glTexParameteri(GL_TexEnum, GL_TEXTURE_WRAP_T, _WrapType_SwitchCase(wrapTyp)));
 }
+void TextureClass::_UpdSettings_WrapTypeByZ(SettingsStruct::WrapTypeEnum wrapTyp) const {
+    Assert_Binded_Macro;
+    glSC(glTexParameteri(GL_TexEnum, GL_TEXTURE_WRAP_R, _WrapType_SwitchCase(wrapTyp)));
+}
 void TextureClass::_UpdSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum filt) const {
     Assert_Binded_Macro;
     glSC(glTexParameteri(GL_TexEnum, GL_TEXTURE_MIN_FILTER, _DownscalingFilterFunc_SwitchCase(filt)));
@@ -137,14 +150,23 @@ void TextureClass::_UpdSettings_DepthStencilReadMode(SettingsStruct::DepthStenci
     Assert_Binded_Macro;
     glSC(glTexParameteri(GL_TexEnum, GL_DEPTH_STENCIL_TEXTURE_MODE, _DepthStencilReadMode_SwitchCase(readMode)));
 }
-
-void TextureClass::_UpdateSettings(const SettingsStruct& sets) const {
-    _UpdSettings_WrapTypeByX(sets.WrapTypeByX);
-    _UpdSettings_WrapTypeByY(sets.WrapTypeByY);
-    _UpdSettings_DownscalingFilt(sets.DownscalingFilt);
-    _UpdSettings_UpscalingFilt(sets.UpscalingFilt);
-    _UpdSettings_DepthStencilReadMode(sets.DepthStencilReadMode);
+void TextureClass::_UpdSettings_SwizzleMaskByR(SettingsStruct::SwizzleMaskEnum swizzleMask) const {
+    Assert_Binded_Macro;
+    glSC(glTexParameteri(GL_TexEnum, GL_TEXTURE_SWIZZLE_R, _SwizzleMask_SwitchCase(swizzleMask)));
 }
+void TextureClass::_UpdSettings_SwizzleMaskByG(SettingsStruct::SwizzleMaskEnum swizzleMask) const {
+    Assert_Binded_Macro;
+    glSC(glTexParameteri(GL_TexEnum, GL_TEXTURE_SWIZZLE_G, _SwizzleMask_SwitchCase(swizzleMask)));
+}
+void TextureClass::_UpdSettings_SwizzleMaskByB(SettingsStruct::SwizzleMaskEnum swizzleMask) const {
+    Assert_Binded_Macro;
+    glSC(glTexParameteri(GL_TexEnum, GL_TEXTURE_SWIZZLE_B, _SwizzleMask_SwitchCase(swizzleMask)));
+}
+void TextureClass::_UpdSettings_SwizzleMaskByA(SettingsStruct::SwizzleMaskEnum swizzleMask) const {
+    Assert_Binded_Macro;
+    glSC(glTexParameteri(GL_TexEnum, GL_TEXTURE_SWIZZLE_A, _SwizzleMask_SwitchCase(swizzleMask)));
+}
+
 
 TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vector3U* writeSizePtr, ArrayView<void>* writeArrayView, unsigned int mipmapLevels, const SettingsStruct& sets, const DataSettingsStruct& dataSets) 
     :Dimensions(dimensions), GL_TexEnum(_GL_TextureEnum_SwitchCase(dimensions)) {
@@ -165,7 +187,7 @@ TextureClass::TextureClass(DimensionsEnum dimensions, const char* filePath, Vect
 
     glSC(glGenerateMipmap(GL_TexEnum));
 
-    _UpdateSettings(sets);
+    SetSettings(sets);
     
     if (writeArrayView == nullptr) stbi_image_free(textureData);
 }
@@ -182,7 +204,7 @@ TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, con
 
 	glSC(glGenerateMipmap(GL_TexEnum));
 
-	_UpdateSettings(sets);
+	SetSettings(sets);
 
 }
 TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, unsigned int mipmapLevels, DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU, const SettingsStruct& sets) :
@@ -197,7 +219,7 @@ TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, uns
 
     glSC(glGenerateMipmap(GL_TexEnum));
 
-    _UpdateSettings(sets);
+    SetSettings(sets);
 }
 TextureClass::TextureClass(TextureClass&& toCopy) noexcept :
     ID(toCopy.ID), Dimensions(toCopy.Dimensions), GL_TexEnum(toCopy.GL_TexEnum) {
@@ -269,11 +291,16 @@ void TextureClass::GetSubData(Vector3U offset, void* buffer, Vector3U pixelsAmou
         _DataTypeOnCPU_Sizeof_SwitchCase(dataType) * pixelsAmount[0] * pixelsAmount[1] * pixelsAmount[2], buffer));
 }
 
-void TextureClass::SetSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTypeByX) { _UpdSettings_WrapTypeByX(wrapTypeByX); }
-void TextureClass::SetSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTypeByY) { _UpdSettings_WrapTypeByY(wrapTypeByY); }
+void TextureClass::SetSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapType) { _UpdSettings_WrapTypeByX(wrapType); }
+void TextureClass::SetSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapType) { _UpdSettings_WrapTypeByY(wrapType); }
+void TextureClass::SetSettings_WrapTypeByZ(SettingsStruct::WrapTypeEnum wrapType) { _UpdSettings_WrapTypeByZ(wrapType); }
 void TextureClass::SetSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum downscalingFilt) { _UpdSettings_DownscalingFilt(downscalingFilt); }
 void TextureClass::SetSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum upscalingFilt) { _UpdSettings_UpscalingFilt(upscalingFilt); }
 void TextureClass::SetSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum depthStencilReadMode) { _UpdSettings_DepthStencilReadMode(depthStencilReadMode); }
+void TextureClass::SetSettings_SwizzleMaskByR(SettingsStruct::SwizzleMaskEnum swizzleMask) { _UpdSettings_SwizzleMaskByR(swizzleMask); }
+void TextureClass::SetSettings_SwizzleMaskByG(SettingsStruct::SwizzleMaskEnum swizzleMask) { _UpdSettings_SwizzleMaskByG(swizzleMask); }
+void TextureClass::SetSettings_SwizzleMaskByB(SettingsStruct::SwizzleMaskEnum swizzleMask) { _UpdSettings_SwizzleMaskByB(swizzleMask); }
+void TextureClass::SetSettings_SwizzleMaskByA(SettingsStruct::SwizzleMaskEnum swizzleMask) { _UpdSettings_SwizzleMaskByA(swizzleMask); }
 
 void TextureClass::Bind(unsigned int textureInd) const {
 	glSC(glActiveTexture(GL_TEXTURE0 + textureInd));

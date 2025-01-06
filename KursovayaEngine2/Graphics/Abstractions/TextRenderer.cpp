@@ -64,7 +64,7 @@ GA::TextRendererClass::~TextRendererClass() {
     }
 }
 
-const GA::TextRendererClass::FontStruct& GA::TextRendererClass::AddFont(unsigned int characterSize, const char* fontDir, const wchar_t* characters) {
+const GA::TextRendererClass::FontStruct& GA::TextRendererClass::AddFont(unsigned int characterSize, const char* fontDir, const char32_t* characters) {
     const FontStruct& insertedFont = Fonts.emplace_back(FontStruct::GuardFromUser(), characterSize, fontDir, characters);
     return insertedFont;
 }
@@ -77,9 +77,11 @@ GA::TextRendererClass::FontStruct::~FontStruct() {
 }
 
 
-GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int characterSize, const char* fontDir, const wchar_t* chars) :
+GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int characterSize, const char* fontDir, const char32_t* chars) :
     Texture(GA::TextureClass::DimensionsEnum::Two, Vector3U(0, 0, 0), nullptr, 0, GA::TextureClass::SettingsStruct{
-                    GA::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,GA::TextureClass::SettingsStruct::WrapTypeEnum::ClampToBorder,
+                    Vector<3,GP::TextureClass::SettingsStruct::WrapTypeEnum>(
+						GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,
+						GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge),
                     GA::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GA::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
                     GA::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth },
                     GA::TextureClass::DataSettingsStruct{ GA::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Red,
