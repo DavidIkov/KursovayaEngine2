@@ -79,17 +79,6 @@ namespace KE2::Graphics::Primitives {
 		const DimensionsEnum Dimensions;
 		const unsigned int GL_TexEnum;
 
-		void _UpdSettings_WrapTypeByX(SettingsStruct::WrapTypeEnum wrapTyp) const;
-		void _UpdSettings_WrapTypeByY(SettingsStruct::WrapTypeEnum wrapTyp) const;
-		void _UpdSettings_WrapTypeByZ(SettingsStruct::WrapTypeEnum wrapTyp) const;
-		void _UpdSettings_DownscalingFilt(SettingsStruct::DownscalingFilterFuncEnum filt) const;
-		void _UpdSettings_UpscalingFilt(SettingsStruct::UpscalingFilterFuncEnum filt) const;
-		void _UpdSettings_DepthStencilReadMode(SettingsStruct::DepthStencilReadModeEnum readMode) const;
-		void _UpdSettings_SwizzleMaskByR(SettingsStruct::SwizzleMaskEnum swizzleMask) const;
-		void _UpdSettings_SwizzleMaskByG(SettingsStruct::SwizzleMaskEnum swizzleMask) const;
-		void _UpdSettings_SwizzleMaskByB(SettingsStruct::SwizzleMaskEnum swizzleMask) const;
-		void _UpdSettings_SwizzleMaskByA(SettingsStruct::SwizzleMaskEnum swizzleMask) const;
-
 		void _AllocatePixels(Vector3U pixelsAmount, unsigned int mipmapLevels, DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU);
 	public:
 
@@ -135,11 +124,11 @@ namespace KE2::Graphics::Primitives {
 		DLLTREATMENT virtual void SetSettings_SwizzleMaskByA(SettingsStruct::SwizzleMaskEnum swizzleMask);
 
 		inline virtual void SetSettings(SettingsStruct sets) {
-			_UpdSettings_WrapTypeByX(sets.WrapType[0]); _UpdSettings_WrapTypeByY(sets.WrapType[1]); _UpdSettings_WrapTypeByZ(sets.WrapType[2]);
-			_UpdSettings_DownscalingFilt(sets.DownscalingFilt); _UpdSettings_UpscalingFilt(sets.UpscalingFilt);
-			_UpdSettings_DepthStencilReadMode(sets.DepthStencilReadMode);
-			_UpdSettings_SwizzleMaskByR(sets.SwizzleMask[0]); _UpdSettings_SwizzleMaskByG(sets.SwizzleMask[1]);
-			_UpdSettings_SwizzleMaskByB(sets.SwizzleMask[2]); _UpdSettings_SwizzleMaskByA(sets.SwizzleMask[3]);
+			SetSettings_WrapTypeByX(sets.WrapType[0]); SetSettings_WrapTypeByY(sets.WrapType[1]); SetSettings_WrapTypeByZ(sets.WrapType[2]);
+			SetSettings_DownscalingFilt(sets.DownscalingFilt); SetSettings_UpscalingFilt(sets.UpscalingFilt);
+			SetSettings_DepthStencilReadMode(sets.DepthStencilReadMode);
+			SetSettings_SwizzleMaskByR(sets.SwizzleMask[0]); SetSettings_SwizzleMaskByG(sets.SwizzleMask[1]);
+			SetSettings_SwizzleMaskByB(sets.SwizzleMask[2]); SetSettings_SwizzleMaskByA(sets.SwizzleMask[3]);
 		}
 
 		typedef unsigned int TextureID_Type;

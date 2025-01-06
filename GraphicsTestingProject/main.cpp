@@ -55,6 +55,7 @@ int main()
 			GP::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Nearest,GP::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Nearest,
 			GP::TextureClass::SettingsStruct::DepthStencilReadModeEnum::None}
 		);
+		FB_COLOR_TEX.SetSettings_SwizzleMaskByR(GP::TextureClass::SettingsStruct::SwizzleMaskEnum::Green);
 		FB.AttachTexture(FB_COLOR_TEX, 0);
 		/*TextureClass FB_DEPTH_STENCIL_TEX(Width, Height, nullptr, TextureClass::TypeEnum::Texture2D,
 			GP::TextureClass::SettingsStruct{ GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,
