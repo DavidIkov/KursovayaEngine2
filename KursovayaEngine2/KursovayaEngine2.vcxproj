@@ -356,6 +356,7 @@
     <ClCompile Include="Tools\Event.cpp" />
     <ClCompile Include="Tools\GetOverlappingMemoryRegion.cpp" />
     <ClCompile Include="Tools\RandomNumber.cpp" />
+    <ClCompile Include="Tools\Raycast.cpp" />
     <ClCompile Include="Tools\Time.cpp" />
     <ClCompile Include="Windows\Window.cpp" />
     <ClCompile Include="OS_BasedStuff\FileExplorerDialog.cpp" />
@@ -492,6 +493,7 @@
     <ClInclude Include="Tools\ErrorsSystem.h" />
     <ClInclude Include="Tools\GetOverlappingMemoryRegion.h" />
     <ClInclude Include="Tools\PtrToMember_ToOff.h" />
+    <ClInclude Include="Tools\Raycast.h" />
     <ClInclude Include="Tools\StaticLambda.h" />
     <ClInclude Include="Tools\UniversalLambda.h" />
     <ClInclude Include="OS_BasedStuff\wchar_t_Operations.h" />
