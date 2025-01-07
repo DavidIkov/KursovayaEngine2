@@ -12,7 +12,7 @@ TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, con
 	Size(pixelsAmount), Settings(sets), DataSettings(dataSets), MipmapLevels(mipmapLevels) {}
 TextureClass::TextureClass(DimensionsEnum dimensions, Vector3U pixelsAmount, unsigned int mipmapLevels, DataSettingsStruct::DataFormatOnGPU_Enum dataFormatOnGPU, SettingsStruct sets) :
 	GP::TextureClass(dimensions, pixelsAmount, mipmapLevels, dataFormatOnGPU, sets), Size(pixelsAmount),
-	Settings(sets), DataSettings{ dataFormatOnGPU,DataSettingsStruct::DataFormatOnCPU_Enum::None,DataSettingsStruct::DataTypeOnCPU_Enum::None }, MipmapLevels(mipmapLevels) {};
+	Settings(sets), DataSettings{ dataFormatOnGPU }, MipmapLevels(mipmapLevels) {};
 TextureClass::TextureClass(const TextureClass& toCopy, bool copyTextureData) :
 	GP::TextureClass(toCopy.Dimensions, toCopy.Size, toCopy.MipmapLevels, toCopy.DataSettings.DataFormatOnGPU, Settings),
 	Size(toCopy.Size), Settings(toCopy.Settings), DataSettings(toCopy.DataSettings), MipmapLevels(toCopy.MipmapLevels) {

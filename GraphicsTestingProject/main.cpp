@@ -28,7 +28,13 @@ namespace GA = KE2::Graphics::Abstractions;
 
 int main()
 {
-
+	/*todo
+	uniform buffer objects
+	replace unicode/wchar with utf8 in text rendering
+	add ability to have more than one window with several contexts
+	new events system
+	more checks for wrong data input
+	*/
 	
 	try {
 
@@ -48,7 +54,7 @@ int main()
 		
 		GA::FrameBufferClass FB(Vector2U(Width, Height));
 		GA::TextureClass FB_COLOR_TEX(GP::TextureClass::DimensionsEnum::Two, Vector3U(Width, Height, 0), 0,
-			GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
+			GP::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA8UN,
 			GP::TextureClass::SettingsStruct{ Vector<3,GP::TextureClass::SettingsStruct::WrapTypeEnum>(
 				GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge,
 				GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge),
@@ -136,14 +142,14 @@ int main()
 				GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
 				GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat),
 			GA::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GA::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
-			GA::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GA::TextureClass::DataSettingsStruct{GA::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
+			GA::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GA::TextureClass::DataSettingsStruct{GA::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA8UN,
 			GA::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RGB,GA::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte});
 		GA::TextureClass TEX1(GA::TextureClass::DimensionsEnum::Two, "Textures/simpleFace.png", 2,
 			GA::TextureClass::SettingsStruct{ Vector<3,GP::TextureClass::SettingsStruct::WrapTypeEnum>(
 				GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat,
 				GP::TextureClass::SettingsStruct::WrapTypeEnum::Repeat),
 			GA::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GA::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
-			GA::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GA::TextureClass::DataSettingsStruct{GA::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA,
+			GA::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth }, GA::TextureClass::DataSettingsStruct{GA::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA8UN,
 			GA::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::RGBA,GA::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte});
 		
 

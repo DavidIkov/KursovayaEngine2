@@ -36,11 +36,7 @@ unsigned int FrameBufferClass::_DataFormatOnGPU_SwitchCase(TextureClass::DataSet
 	case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Depth: return GL_DEPTH_ATTACHMENT;
     case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::DepthStencil: return GL_DEPTH_STENCIL_ATTACHMENT;
     case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Stencil: return GL_STENCIL_ATTACHMENT;
-    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Red: return GL_COLOR_ATTACHMENT0;
-    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RG: return GL_COLOR_ATTACHMENT0;
-    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGB: return GL_COLOR_ATTACHMENT0;
-    case TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::RGBA: return GL_COLOR_ATTACHMENT0;
-	default: return 0;
+	default: return GL_COLOR_ATTACHMENT0;
 	}
 }
 unsigned int FrameBufferClass::_AttachmentType_SwitchCase(AttachmentTypesEnum attachmentType) noexcept {

@@ -38,20 +38,33 @@ namespace KE2::Graphics::Primitives {
 
 		};
 		struct DataSettingsStruct {
+			//those are not all possible formats but i dont really see good use case for others, for full list https://www.khronos.org/opengl/wiki/GLAPI/glTexImage2D
+			//N-normalized, means that when data will be accesed it will be normalized(aka divided by maximum value)
+			//S-signed, U-unsigned, and number means amount of bits, if no N is in name then value is not normalized
+			//note that opengl dont have to actually store in format that you provided becouse of hardware limitations, it will choose closest one,
+			//but most likely you will never notice this
 			enum class DataFormatOnGPU_Enum :unsigned char {
-				Depth, DepthStencil, Stencil, Red, RG, RGB, RGBA, None
+				Depth, DepthStencil, Stencil,
+				R8UN, RG8UN, RGB8UN, RGBA8UN,
+				R8SN, RG8SN, RGB8SN, RGBA8SN,
+				R32F, RG32F, RGB32F, RGBA32F,
+				R8S, RG8S, RGB8S, RGBA8S,
+				R32S, RG32S, RGB32S, RGBA32S,
+				R8U, RG8U, RGB8U, RGBA8U,
+				R32U, RG32U, RGB32U, RGBA32U,
 			};
+			//NN means not normalized, so you can pass a whole integer
 			enum class DataFormatOnCPU_Enum :unsigned char {
-				Red, RG, RGB, BGR, RGBA, BGRA, RedInteger, RG_Integer, RGB_Integer, BGR_Integer, RGBA_Integer, BGRA_Integer, Stencil,
-				Depth, DepthStencil, None
+				R, RG, RGB, BGR, RGBA, BGRA, R_NN, RG_NN, RGB_NN, BGR_NN, RGBA_NN, BGRA_NN, Stencil,
+				Depth, DepthStencil
 			};
 			enum class DataTypeOnCPU_Enum :unsigned char {
-				UnsignedByte, Byte, UnsignedShort, Short, UnsignedInt, Int, Float, UnsignedInt_24_8, None
+				UnsignedByte, Byte, UnsignedShort, Short, UnsignedInt, Int, Float, UnsignedInt_24_8
 			};
 
-			DataFormatOnGPU_Enum DataFormatOnGPU = DataFormatOnGPU_Enum::None;
-			DataFormatOnCPU_Enum DataFormatOnCPU = DataFormatOnCPU_Enum::None;
-			DataTypeOnCPU_Enum DataTypeOnCPU = DataTypeOnCPU_Enum::None;
+			DataFormatOnGPU_Enum DataFormatOnGPU = DataFormatOnGPU_Enum::RGB8UN;
+			DataFormatOnCPU_Enum DataFormatOnCPU = DataFormatOnCPU_Enum::RGB;
+			DataTypeOnCPU_Enum DataTypeOnCPU = DataTypeOnCPU_Enum::UnsignedByte;
 
 			ComparisonByBytesMacro(DataSettingsStruct,==);
 			ComparisonByBytesMacro(DataSettingsStruct,!=);

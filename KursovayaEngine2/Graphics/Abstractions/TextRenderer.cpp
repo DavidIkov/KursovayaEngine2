@@ -84,8 +84,8 @@ GA::TextRendererClass::FontStruct::FontStruct(GuardFromUser, unsigned int charac
 						GP::TextureClass::SettingsStruct::WrapTypeEnum::ClampToEdge),
                     GA::TextureClass::SettingsStruct::DownscalingFilterFuncEnum::Linear,GA::TextureClass::SettingsStruct::UpscalingFilterFuncEnum::Linear,
                     GA::TextureClass::SettingsStruct::DepthStencilReadModeEnum::Depth },
-                    GA::TextureClass::DataSettingsStruct{ GA::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::Red,
-                    GA::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::Red,GA::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte })
+                    GA::TextureClass::DataSettingsStruct{ GA::TextureClass::DataSettingsStruct::DataFormatOnGPU_Enum::R8UN,
+                    GA::TextureClass::DataSettingsStruct::DataFormatOnCPU_Enum::R,GA::TextureClass::DataSettingsStruct::DataTypeOnCPU_Enum::UnsignedByte })
 { 
     FreeTypeFace = new FT_Face;
 

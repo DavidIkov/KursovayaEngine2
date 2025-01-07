@@ -27,8 +27,8 @@ namespace KE2::Graphics::Abstractions {
 			const DataFormatOnGPU_Enum DataFormatOnGPU;
 			
 			//theese parameters dont really describe any state of object, this varibales are just helpers to not pass them every time
-			mutable DataFormatOnCPU_Enum DataFormatOnCPU = DataFormatOnCPU_Enum::None;
-			mutable DataTypeOnCPU_Enum DataTypeOnCPU = DataTypeOnCPU_Enum::None;
+			mutable DataFormatOnCPU_Enum DataFormatOnCPU = DataFormatOnCPU_Enum::RGB;
+			mutable DataTypeOnCPU_Enum DataTypeOnCPU = DataTypeOnCPU_Enum::UnsignedByte;
 
 			operator Primitives::TextureClass::DataSettingsStruct() { return { DataFormatOnGPU,DataFormatOnCPU,DataTypeOnCPU }; }
 		};
